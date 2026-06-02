@@ -1,5 +1,5 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users, Search, BarChart3, Trophy, ChevronRight, MapPin } from 'lucide-react';
+import { Users, Search, Trophy, ChevronRight, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -86,6 +86,9 @@ export default function TeamPageScreen({
       match.genderGroup === gender
     );
   });
+
+  const upcomingMatches = currentMatches.filter((match) => match.status !== 'Finished');
+  const finishedMatches = currentMatches.filter((match) => match.status === 'Finished');
 
   const formatScore = (match: SheetMatch) => {
     if (match.scoreFor === null || match.scoreAgainst === null) {
@@ -177,47 +180,41 @@ export default function TeamPageScreen({
            <ChevronRight className="relative z-10 group-hover:translate-x-1 transition-transform" />
         </button>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Team Standings */}
+        <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <h2 className="text-3xl font-black uppercase tracking-[0.22em] text-foreground leading-tight">
+              League<br />Standings
+            </h2>
+          </div>
+
+          <div className="flex items-center gap-3 self-start lg:self-end">
+            {(athleticsDataState?.loading || athleticsDataState?.refreshing) && (
+              <span className="text-[10px] font-black lowercase tracking-[0.18em] text-[#B5413F] animate-pulse">
+                syncing...
+              </span>
+            )}
+
+            {athleticsDataState?.lastUpdated && (
+              <span className="hidden sm:inline text-[10px] font-mono text-foreground/35">
+                {athleticsDataState.lastUpdated}
+              </span>
+            )}
+
+            <button
+              type="button"
+              onClick={() => athleticsDataState?.refresh()}
+              className="shrink-0 rounded-lg border border-border/10 bg-subcard px-4 py-2 text-[10px] font-black uppercase tracking-[0.18em] text-foreground/65 hover:border-[#B5413F]/40 hover:text-foreground transition-colors"
+            >
+              Refresh
+            </button>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+          {/* STANDINGS COLUMN */}
           <section className="space-y-4">
-            <div className="flex justify-between items-center font-bold tracking-widest uppercase">
-              <span className="text-sm text-foreground">League Standings</span>
+            <div className="bg-subcard rounded-2xl border border-border/10 overflow-hidden shadow-md">
 
-              <div className="flex items-center gap-2">
-                {(athleticsDataState?.loading || athleticsDataState?.refreshing) && (
-                  <span className="text-[10px] lowercase text-[#B5413F] animate-pulse">
-                    syncing...
-                  </span>
-                )}
-
-                {athleticsDataState?.lastUpdated && (
-                  <span className="hidden sm:inline text-[10px] text-foreground/35 font-mono normal-case tracking-normal">
-                    {athleticsDataState.lastUpdated}
-                  </span>
-                )}
-
-                <button
-                  type="button"
-                  onClick={() => athleticsDataState?.refresh()}
-                  className="bg-foreground/[0.05] border border-border/10 px-3 py-1 rounded text-[10px] text-foreground/70 hover:text-foreground hover:border-[#B5413F]/40 transition-colors"
-                >
-                  Refresh Sheets
-                </button>
-              </div>
-            </div>
-            
-            <div className="bg-subcard rounded-xl border border-border/10 overflow-hidden shadow-md">
-               <div className="p-4 border-b border-border/10 flex justify-between items-center bg-foreground/[0.02]">
-                  <div className="flex items-center gap-3">
-                     <span className="font-serif italic font-black text-2xl px-2 py-1 bg-[#5A1C2C]/10 text-[#5A1C2C] rounded border border-[#5A1C2C]/20 tracking-tighter">
-                        League
-                     </span>
-                     <span className="font-serif italic text-xl text-foreground">
-                        Standings
-                     </span>
-                  </div>
-                  <BarChart3 size={24} className="text-foreground/40" />
-               </div>
                
                {/* Table Header */}
                <div className="grid grid-cols-12 px-4 py-3 bg-[#5A1C2C]/5 border-b border-[#5A1C2C]/10 text-[#B5413F] text-[11px] font-black tracking-widest uppercase">
@@ -284,14 +281,14 @@ export default function TeamPageScreen({
             </div>
           </section>
 
-          {/* Schedule & Results */}
+          {/* UPCOMING MATCHES COLUMN */}
           <section className="space-y-4">
-            <h3 className="text-2xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-3">
-              Matches
+            <h3 className="text-3xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-5">
+              Upcoming Matches
             </h3>
 
             <div className="space-y-4">
-              {athleticsDataState?.loading && currentMatches.length === 0 ? (
+              {athleticsDataState?.loading && upcomingMatches.length === 0 ? (
                 <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse">
                   <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
                     Loading matches from Google Sheets...
@@ -306,17 +303,17 @@ export default function TeamPageScreen({
                     {athleticsDataState.error}
                   </p>
                 </div>
-              ) : currentMatches.length === 0 ? (
+              ) : upcomingMatches.length === 0 ? (
                 <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center bg-[#5A1C2C]/5">
                   <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
-                    No matches found
+                    No upcoming matches
                   </p>
                   <p className="text-xs text-foreground/40 mt-2">
-                    The Soccer_Matches sheet loaded, but no rows matched {sportLabels[sport]} · {displayDivision} · {gender}.
+                    Upcoming matches will appear when the sheet status is not Finished.
                   </p>
                 </div>
               ) : (
-                currentMatches.map((match) => (
+                upcomingMatches.map((match) => (
                   <div
                     key={match.id}
                     className={`relative bg-subcard rounded-2xl p-5 border border-border/10 border-l-[6px] ${matchAccentClass(match)} shadow-md overflow-hidden`}
@@ -342,29 +339,15 @@ export default function TeamPageScreen({
                             {match.date || 'Date TBD'} {match.time ? `· ${match.time}` : ''} {match.venue ? `· ${match.venue}` : ''}
                           </p>
                         )}
-
-                        {match.notes && (
-                          <p className="text-xs text-foreground/40 mt-2 italic bg-foreground/[0.02] p-2 rounded border border-border/5">
-                            {match.notes}
-                          </p>
-                        )}
                       </div>
 
                       <div className="text-right shrink-0">
-                        {match.scoreFor !== null && match.scoreAgainst !== null ? (
-                          <p className="text-4xl font-black tracking-tight text-foreground">
-                            {formatScore(match)}
-                          </p>
-                        ) : (
-                          <div>
-                            <p className="text-sm font-black uppercase tracking-widest text-foreground">
-                              {match.date || 'TBD'}
-                            </p>
-                            <p className="text-xs text-foreground/45 mt-1">
-                              {match.time || ''}
-                            </p>
-                          </div>
-                        )}
+                        <p className="text-sm font-black uppercase tracking-widest text-foreground">
+                          {match.date || 'TBD'}
+                        </p>
+                        <p className="text-xs text-foreground/45 mt-1">
+                          {match.time || ''}
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -374,21 +357,198 @@ export default function TeamPageScreen({
           </section>
         </div>
 
-        {/* JAAC Bracket Placeholder */}
-        {isCustomBanner && (
-          <section className="space-y-4">
+        {/* MATCH RESULTS SECTION */}
+        <section className="space-y-4 mt-10">
+          <h3 className="text-3xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-5">
+            Match Results
+          </h3>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {athleticsDataState?.loading && finishedMatches.length === 0 ? (
+              <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse lg:col-span-2">
+                <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
+                  Loading results from Google Sheets...
+                </p>
+              </div>
+            ) : finishedMatches.length === 0 ? (
+              <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center bg-[#5A1C2C]/5 lg:col-span-2">
+                <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
+                  No match results yet
+                </p>
+                <p className="text-xs text-foreground/40 mt-2">
+                  Finished matches will appear here after scores are entered.
+                </p>
+              </div>
+            ) : (
+              finishedMatches.map((match) => (
+                <div
+                  key={match.id}
+                  className={`relative bg-subcard rounded-2xl p-5 border border-border/10 border-l-[6px] ${matchAccentClass(match)} shadow-md overflow-hidden`}
+                >
+                  <div className="flex items-center justify-between gap-5">
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h4 className="text-xl font-black tracking-wide text-foreground uppercase">
+                          VS {match.opponent || 'TBD'}
+                        </h4>
+
+                        <span className={`px-2.5 py-1 rounded-md text-xs font-black uppercase tracking-widest border ${resultBadgeClass(match.result)}`}>
+                          {match.result || match.status}
+                        </span>
+                      </div>
+
+                      <p className="mt-3 text-xs font-black uppercase tracking-[0.22em] text-[#B5413F]">
+                        {matchLocationText(match)}
+                      </p>
+
+                      {(match.date || match.time || match.venue) && (
+                        <p className="mt-2 text-xs text-foreground/45">
+                          {match.date || 'Date TBD'} {match.time ? `· ${match.time}` : ''} {match.venue ? `· ${match.venue}` : ''}
+                        </p>
+                      )}
+
+                      {match.notes && (
+                        <p className="text-xs text-foreground/40 mt-2 italic bg-foreground/[0.02] p-2 rounded border border-border/5">
+                          {match.notes}
+                        </p>
+                      )}
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      {match.scoreFor !== null && match.scoreAgainst !== null ? (
+                        <p className="text-4xl font-black tracking-tight text-foreground">
+                          {formatScore(match)}
+                        </p>
+                      ) : (
+                        <p className="text-lg font-black text-foreground/40">
+                          —
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </section>
+
+        {/* JAAC Bracket */}
+        {sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
+          <section className="space-y-4 mt-10">
             <div className="flex items-center justify-between border-b border-border/5 pb-2">
-              <h3 className="text-lg font-black tracking-tight uppercase flex items-center gap-2">
-                JAAC Tournament Bracket
+              <h3 className="text-2xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-3">
+                JAAC Bracket
               </h3>
+
+              <span className="text-[10px] font-black uppercase tracking-[0.22em] text-foreground/35">
+                Semifinals & Final
+              </span>
             </div>
-            <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center">
-              <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
-                Bracket not connected yet
-              </p>
-              <p className="text-xs text-foreground/40 mt-2">
-                This section should later sync from a JAAC bracket sheet. Fake SPH/JIS/BSJ playoff matches have been removed.
-              </p>
+
+            <div className="bg-[#5A1C2C] rounded-2xl p-4 border border-[#BFD7EA]/10 shadow-md">
+              <div className="flex items-center justify-between mb-4">
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-white/60">
+                  @BSJ · Final Round
+                </p>
+                <p className="text-xs font-black uppercase tracking-[0.18em] text-white/60">
+                  2025
+                </p>
+              </div>
+
+              <div className="bg-[#061126] rounded-xl p-5 border border-white/5">
+                <div className="text-center mb-5">
+                  <h4 className="text-lg font-black uppercase tracking-[0.18em] text-yellow-300">
+                    JAAC Championship
+                  </h4>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/50 mt-1">
+                    Playoffs
+                  </p>
+                </div>
+
+                {/* Final */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center mb-5">
+                  <div className="rounded-lg overflow-hidden border border-white/10 border-l-4 border-l-yellow-400 bg-white/5">
+                    <div className="grid grid-cols-[1fr_48px] border-b border-white/5">
+                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white/55">
+                        SPH
+                      </div>
+                      <div className="px-3 py-2 text-xs font-black text-right text-white/55">
+                        0
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-[1fr_48px] bg-white/10">
+                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white">
+                        BSJ
+                      </div>
+                      <div className="px-3 py-2 text-xs font-black text-right text-yellow-300">
+                        2
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-white/5 border border-white/10 min-h-[72px] flex items-center justify-center">
+                    <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/45">
+                      Final
+                    </p>
+                  </div>
+                </div>
+
+                {/* Semifinals */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="rounded-lg bg-white/5 border border-white/10 overflow-hidden">
+                    <div className="px-3 py-2 border-b border-white/5">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                        Semifinals 1
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-[1fr_48px] bg-white/10">
+                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white">
+                        SPH
+                      </div>
+                      <div className="px-3 py-2 text-xs font-black text-right text-white">
+                        3
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-[1fr_48px] border-t border-white/5">
+                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white/55">
+                        JIS
+                      </div>
+                      <div className="px-3 py-2 text-xs font-black text-right text-white/55">
+                        1
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="rounded-lg bg-white/5 border border-white/10 overflow-hidden">
+                    <div className="px-3 py-2 border-b border-white/5">
+                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
+                        Semifinals 2
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-[1fr_48px] bg-white/10">
+                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white">
+                        BSJ
+                      </div>
+                      <div className="px-3 py-2 text-xs font-black text-right text-white">
+                        2
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-[1fr_48px] border-t border-white/5">
+                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white/55">
+                        ACS
+                      </div>
+                      <div className="px-3 py-2 text-xs font-black text-right text-white/55">
+                        0
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </section>
         )}

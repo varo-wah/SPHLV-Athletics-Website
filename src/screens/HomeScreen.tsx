@@ -1,6 +1,52 @@
 import { Trophy } from 'lucide-react';
+import { useMemo } from 'react';
+import { useAthleticsData } from '../hooks/useAthleticsData';
+import { SheetMatch } from '../services/parsers';
 
 export default function HomeScreen({ onNavigateToNews }: { onNavigateToNews?: () => void }) {
+  const athleticsDataState = useAthleticsData();
+
+  const recentFinishedMatch = useMemo(() => {
+    const finishedMatches = (athleticsDataState.data.soccerMatches || [])
+      .filter((match: SheetMatch) => {
+        return match.status === 'Finished' && match.scoreFor !== null && match.scoreAgainst !== null;
+      })
+      .sort((a: SheetMatch, b: SheetMatch) => {
+        const aTime = new Date(`${a.date} ${a.time || '00:00'}`).getTime();
+        const bTime = new Date(`${b.date} ${b.time || '00:00'}`).getTime();
+
+        if (Number.isNaN(aTime) && Number.isNaN(bTime)) return 0;
+        if (Number.isNaN(aTime)) return 1;
+        if (Number.isNaN(bTime)) return -1;
+
+        return bTime - aTime;
+      });
+
+    return finishedMatches[0] || null;
+  }, [athleticsDataState.data.soccerMatches]);
+
+  const recentResultTitle = recentFinishedMatch
+    ? `${recentFinishedMatch.genderGroup === 'Girls' ? 'Girls’' : recentFinishedMatch.genderGroup === 'Boys' ? 'Boys’' : 'SMA'} Soccer ${recentFinishedMatch.result === 'W' ? 'wins against' : recentFinishedMatch.result === 'L' ? 'lost against' : 'drew against'} ${recentFinishedMatch.opponent}`
+    : 'No recent result yet';
+
+  const recentResultScore = recentFinishedMatch && recentFinishedMatch.scoreFor !== null && recentFinishedMatch.scoreAgainst !== null
+    ? `${recentFinishedMatch.scoreFor}–${recentFinishedMatch.scoreAgainst}`
+    : '—';
+
+  const recentResultBadge = recentFinishedMatch?.result || '—';
+
+  const recentResultBadgeClass =
+    recentResultBadge === 'W'
+      ? 'text-green-400'
+      : recentResultBadge === 'L'
+        ? 'text-red-400'
+        : recentResultBadge === 'D'
+          ? 'text-yellow-300'
+          : 'text-foreground/40';
+
+  const recentResultSubtitle = recentFinishedMatch
+    ? `${recentFinishedMatch.tournament} · ${recentFinishedMatch.date || 'Date TBD'}${recentFinishedMatch.venue ? ` · ${recentFinishedMatch.venue}` : ''}`
+    : 'Finished match results will appear after coaches update the sheet.';
   return (
     <div className="animate-in fade-in duration-500 pb-8 px-4 space-y-6 mt-4">
       {/* New LV Athletics Banner */}
@@ -65,20 +111,23 @@ export default function HomeScreen({ onNavigateToNews }: { onNavigateToNews?: ()
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#B5413F]">
                 Result
               </p>
+
               <h3 className="text-lg font-black text-foreground mt-1">
-                Girls’ Soccer wins against JIS
+                {athleticsDataState.loading ? 'Loading latest result...' : recentResultTitle}
               </h3>
+
               <p className="text-xs text-foreground/45 mt-1">
-                Latest match result from connected sheets.
+                {athleticsDataState.error ? 'Google Sheets result sync unavailable.' : recentResultSubtitle}
               </p>
             </div>
 
             <div className="text-right">
               <p className="text-2xl font-black text-foreground">
-                2–0
+                {recentResultScore}
               </p>
-              <p className="text-xs font-black uppercase tracking-widest text-green-400">
-                W
+
+              <p className={`text-xs font-black uppercase tracking-widest ${recentResultBadgeClass}`}>
+                {recentResultBadge}
               </p>
             </div>
           </div>

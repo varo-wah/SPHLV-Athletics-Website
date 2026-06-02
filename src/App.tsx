@@ -92,7 +92,7 @@ export default function App() {
           <TeamsScreen onSelectTeam={navigateToTeam} />
         )}
         {activeTab === 'News' && <NewsScreen />}
-        {activeTab === 'ACSC' && <StandingsScreen athleticsDataState={athleticsDataState} />}
+        {activeTab === 'ACSC' && <AcscScreen onBack={() => handleTabChange('TeamPage')} />}
         
         <Sidebar 
           isOpen={isSidebarOpen} 
