@@ -71,7 +71,7 @@ export default function TeamPageScreen({
 
   const displayDivision = division === 'SMA' ? 'SMA / Varsity' : 'SMP';
 
-  const currentStandings = (athleticsDataState?.data?.soccerStandings || []).filter((standing) => {
+  const currentStandings = (athleticsDataState?.data?.standings || []).filter((standing) => {
     return (
       standing.sportKey === sport &&
       standing.level === division &&
@@ -79,7 +79,7 @@ export default function TeamPageScreen({
     );
   });
 
-  const currentMatches = (athleticsDataState?.data?.soccerMatches || []).filter((match) => {
+  const currentMatches = (athleticsDataState?.data?.matches || []).filter((match) => {
     return (
       match.sportKey === sport &&
       match.level === division &&

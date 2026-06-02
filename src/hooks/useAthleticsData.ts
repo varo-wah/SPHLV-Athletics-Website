@@ -11,12 +11,19 @@ import {
 export interface AthleticsData {
   standings: Standing[];
   matches: SheetMatch[];
-  rawStandingRows: CsvRow[];
-  rawMatchRows: CsvRow[];
+
+  rawSoccerMatchRows: CsvRow[];
+  rawSoccerStandingRows: CsvRow[];
+  rawBasketballMatchRows: CsvRow[];
+  rawBasketballStandingRows: CsvRow[];
 
   pages: any[];
-  soccerStandings: Standing[];
+
   soccerMatches: SheetMatch[];
+  soccerStandings: Standing[];
+
+  basketballMatches: SheetMatch[];
+  basketballStandings: Standing[];
 }
 
 export interface AthleticsDataState {
@@ -31,11 +38,19 @@ export interface AthleticsDataState {
 const EMPTY_DATA: AthleticsData = {
   standings: [],
   matches: [],
-  rawStandingRows: [],
-  rawMatchRows: [],
+
+  rawSoccerMatchRows: [],
+  rawSoccerStandingRows: [],
+  rawBasketballMatchRows: [],
+  rawBasketballStandingRows: [],
+
   pages: [],
-  soccerStandings: [],
+
   soccerMatches: [],
+  soccerStandings: [],
+
+  basketballMatches: [],
+  basketballStandings: [],
 };
 
 export function useAthleticsData(): AthleticsDataState {
@@ -57,29 +72,59 @@ export function useAthleticsData(): AthleticsDataState {
 
       setError(null);
 
-      const [matchRows, standingRows] = await Promise.all([
+      const [
+        soccerMatchRows,
+        soccerStandingRows,
+        basketballMatchRows,
+        basketballStandingRows,
+      ] = await Promise.all([
         fetchCsvRows(SHEET_URLS.soccerMatches),
         fetchCsvRows(SHEET_URLS.soccerStandings),
+        fetchCsvRows(SHEET_URLS.basketballMatches),
+        fetchCsvRows(SHEET_URLS.basketballStandings),
       ]);
 
-      const matches = parseMatches(matchRows, "Soccer");
-      const standings = parseStandings(standingRows, "Soccer");
+      const soccerMatches = parseMatches(soccerMatchRows, "Soccer");
+      const soccerStandings = parseStandings(soccerStandingRows, "Soccer");
+
+      const basketballMatches = parseMatches(basketballMatchRows, "Basketball");
+      const basketballStandings = parseStandings(basketballStandingRows, "Basketball");
+
+      const matches = [
+        ...soccerMatches,
+        ...basketballMatches,
+      ];
+
+      const standings = [
+        ...soccerStandings,
+        ...basketballStandings,
+      ];
 
       const nextData: AthleticsData = {
         standings,
         matches,
-        rawStandingRows: standingRows,
-        rawMatchRows: matchRows,
+
+        rawSoccerMatchRows: soccerMatchRows,
+        rawSoccerStandingRows: soccerStandingRows,
+        rawBasketballMatchRows: basketballMatchRows,
+        rawBasketballStandingRows: basketballStandingRows,
+
         pages: [],
-        soccerStandings: standings,
-        soccerMatches: matches,
+
+        soccerMatches,
+        soccerStandings,
+
+        basketballMatches,
+        basketballStandings,
       };
 
-      console.log("REFRESHED GOOGLE SHEETS DATA:", {
-        rawMatchRows: matchRows.length,
-        parsedMatches: matches.length,
-        rawStandingRows: standingRows.length,
-        parsedStandings: standings.length,
+      console.log("REFRESHED ATHLETICS DATA:", {
+        soccerMatches: soccerMatches.length,
+        soccerStandings: soccerStandings.length,
+        basketballMatches: basketballMatches.length,
+        basketballStandings: basketballStandings.length,
+        allMatches: matches.length,
+        allStandings: standings.length,
         updatedAt: new Date().toLocaleTimeString(),
       });
 
@@ -90,7 +135,7 @@ export function useAthleticsData(): AthleticsDataState {
       console.error("Google Sheets sync failed:", err);
 
       setError(
-         err instanceof Error
+        err instanceof Error
           ? err.message
           : "Failed to load Google Sheets data"
       );

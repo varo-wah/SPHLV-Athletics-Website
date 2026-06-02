@@ -127,10 +127,15 @@ export default function App() {
           <div>Refreshing: {String(athleticsDataState.refreshing)}</div>
           <div>Sync error: {athleticsDataState.error || "none"}</div>
           <div>Last updated: {athleticsDataState.lastUpdated || "never"}</div>
-          <div>Raw standings rows: {athleticsDataState.data.rawStandingRows.length}</div>
-          <div>Parsed standings rows: {athleticsDataState.data.soccerStandings.length}</div>
-          <div>Raw match rows: {athleticsDataState.data.rawMatchRows.length}</div>
-          <div>Parsed match rows: {athleticsDataState.data.soccerMatches.length}</div>
+          <div>Soccer raw matches: {athleticsDataState.data.rawSoccerMatchRows.length}</div>
+          <div>Soccer parsed matches: {athleticsDataState.data.soccerMatches.length}</div>
+          <div>Soccer raw standings: {athleticsDataState.data.rawSoccerStandingRows.length}</div>
+          <div>Soccer parsed standings: {athleticsDataState.data.soccerStandings.length}</div>
+          <div>Basketball raw matches: {athleticsDataState.data.rawBasketballMatchRows.length}</div>
+          <div>Basketball parsed matches: {athleticsDataState.data.basketballMatches.length}</div>
+          <div>Basketball raw standings: {athleticsDataState.data.rawBasketballStandingRows.length}</div>
+          <div>Basketball parsed standings: {athleticsDataState.data.basketballStandings.length}</div>
+          <div>All parsed matches: {athleticsDataState.data.matches.length}</div>
         </div>
       </main>
 

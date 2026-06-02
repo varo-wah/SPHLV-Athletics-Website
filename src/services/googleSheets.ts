@@ -76,15 +76,35 @@ export function parseCsv(text: string): CsvRow[] {
     const normalizedRow = rows[i].join(" ").toLowerCase();
 
     const looksLikeMatchHeader =
-      normalizedRow.includes("match id") &&
-      normalizedRow.includes("opponent") &&
-      normalizedRow.includes("lv goals") &&
-      normalizedRow.includes("opponent goals");
+      (
+        normalizedRow.includes("match id") ||
+        normalizedRow.includes("game id") ||
+        normalizedRow.includes("fixture id")
+      ) &&
+      (
+        normalizedRow.includes("opponent") ||
+        normalizedRow.includes("against") ||
+        normalizedRow.includes("team")
+      ) &&
+      (
+        normalizedRow.includes("lv goals") ||
+        normalizedRow.includes("lv points") ||
+        normalizedRow.includes("score for") ||
+        normalizedRow.includes("points for") ||
+        normalizedRow.includes("lv score")
+      );
 
     const looksLikeStandingsHeader =
       normalizedRow.includes("team") &&
-      normalizedRow.includes("wins") &&
-      normalizedRow.includes("points");
+      (
+        normalizedRow.includes("wins") ||
+        normalizedRow.includes("w")
+      ) &&
+      (
+        normalizedRow.includes("points") ||
+        normalizedRow.includes("pts") ||
+        normalizedRow.includes("pct")
+      );
 
     if (looksLikeMatchHeader || looksLikeStandingsHeader) {
       headerIndex = i;

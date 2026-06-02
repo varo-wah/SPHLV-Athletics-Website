@@ -311,11 +311,33 @@ export function parseMatches(rows: CsvRow[], fallbackSport: SheetSport): SheetMa
         makePageId(sport, level, genderGroup);
 
       const scoreFor = num(
-        get(row, "LV Goals", "Score For", "Goals For", "Points For", "Sets For", "LV Score", "For")
+        get(
+          row,
+          "LV Goals",
+          "LV Points",
+          "LV Score",
+          "Score For",
+          "Goals For",
+          "Points For",
+          "PF",
+          "For",
+          "Home Score"
+        )
       );
 
       const scoreAgainst = num(
-        get(row, "Opponent Goals", "Score Against", "Goals Against", "Points Against", "Sets Against", "Opponent Score", "Against")
+        get(
+          row,
+          "Opponent Goals",
+          "Opponent Points",
+          "Opponent Score",
+          "Score Against",
+          "Goals Against",
+          "Points Against",
+          "PA",
+          "Against",
+          "Away Score"
+        )
       );
 
       const hasScore = scoreFor !== null && scoreAgainst !== null;
@@ -331,9 +353,9 @@ export function parseMatches(rows: CsvRow[], fallbackSport: SheetSport): SheetMa
         tournament: normalizeTournament(get(row, "Tournament", "League", "Competition")),
         date: get(row, "Date", "Match Date"),
         time: get(row, "Time", "Match Time"),
-        opponent: get(row, "Opponent", "Against", "Team", "School") || "TBD",
+        opponent: get(row, "Opponent", "Against", "Opponent Team", "Team", "School") || "TBD",
         locationType: normalizeLocation(get(row, "Location Type", "Location", "Home/Away")),
-        venue: get(row, "Venue / Field", "Venue", "Place", "Field", "Court"),
+        venue: get(row, "Venue / Field", "Venue / Court", "Venue", "Place", "Field", "Court", "Gym"),
         status: normalizeStatus(get(row, "Status"), hasScore),
         result,
         scoreFor,
