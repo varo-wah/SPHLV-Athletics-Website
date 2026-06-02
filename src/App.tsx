@@ -11,6 +11,8 @@ import HomeScreen from './screens/HomeScreen';
 import AcscScreen from './screens/AcscScreen';
 import TeamPageScreen from './screens/TeamPageScreen';
 import TeamsScreen from './screens/TeamsScreen';
+import StandingsScreen from './screens/StandingsScreen';
+import { useAthleticsData } from './hooks/useAthleticsData';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('Home');
@@ -20,6 +22,8 @@ export default function App() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const [pendingSport, setPendingSport] = useState<SportTab | null>(null);
+
+  const athleticsDataState = useAthleticsData();
 
   const handleTabChange = (tab: AppTab) => {
     setActiveTab(tab);
@@ -53,6 +57,18 @@ export default function App() {
       <main className="max-w-xl mx-auto relative min-h-screen border-x border-border/[0.02] shadow-2xl bg-canvas/20">
         <TopBar onOpenMenu={() => setIsSidebarOpen(true)} />
         
+        {athleticsDataState.loading && (
+          <div style={{ padding: 10, textAlign: "center", color: "#BFD7EA", fontSize: 12 }}>
+            Loading Google Sheets data...
+          </div>
+        )}
+
+        {athleticsDataState.error && (
+          <div style={{ padding: 10, textAlign: "center", color: "#D32642", fontSize: 12 }}>
+            Google Sheets sync error: {athleticsDataState.error}
+          </div>
+        )}
+
         {activeTab === 'Home' && <HomeScreen onNavigateToNews={() => handleTabChange('News')} />}
         {activeTab === 'Schedule' && (
           <SportScheduleScreen sport={activeSport} gender={activeGender} onSportChange={setActiveSport} />
@@ -64,7 +80,7 @@ export default function App() {
           <TeamsScreen onSelectTeam={navigateToTeam} />
         )}
         {activeTab === 'News' && <NewsScreen />}
-        {activeTab === 'ACSC' && <AcscScreen sport={activeSport} gender={activeGender} />}
+        {activeTab === 'ACSC' && <StandingsScreen athleticsDataState={athleticsDataState} />}
         
         <Sidebar 
           isOpen={isSidebarOpen} 
