@@ -13,6 +13,10 @@ export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
   const response = await fetch(cacheBustedUrl, {
     method: "GET",
     cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache",
+      "Pragma": "no-cache",
+    },
   });
 
   if (!response.ok) {
@@ -20,12 +24,7 @@ export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
   }
 
   const text = await response.text();
-  const rows = parseCsv(text);
-
-  console.log("FETCHED CSV URL:", url);
-  console.log("PARSED CSV ROWS:", rows);
-
-  return rows;
+  return parseCsv(text);
 }
 
 export function parseCsv(text: string): CsvRow[] {

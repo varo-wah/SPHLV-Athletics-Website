@@ -123,8 +123,10 @@ export default function App() {
           color: "#BFD7EA",
           maxWidth: 260
         }}>
-          <div>Sheets loading: {String(athleticsDataState.loading)}</div>
+          <div>Loading: {String(athleticsDataState.loading)}</div>
+          <div>Refreshing: {String(athleticsDataState.refreshing)}</div>
           <div>Sync error: {athleticsDataState.error || "none"}</div>
+          <div>Last updated: {athleticsDataState.lastUpdated || "never"}</div>
           <div>Raw standings rows: {athleticsDataState.data.rawStandingRows.length}</div>
           <div>Parsed standings rows: {athleticsDataState.data.soccerStandings.length}</div>
           <div>Raw match rows: {athleticsDataState.data.rawMatchRows.length}</div>

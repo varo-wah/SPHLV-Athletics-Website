@@ -181,11 +181,29 @@ export default function TeamPageScreen({
           {/* Team Standings */}
           <section className="space-y-4">
             <div className="flex justify-between items-center font-bold tracking-widest uppercase">
-               <span className="text-sm text-foreground">League Standings</span>
-               <div className="flex items-center gap-2">
-                 {athleticsDataState?.loading && <span className="text-[10px] lowercase text-[#B5413F] animate-pulse">syncing...</span>}
-                 <span className="bg-foreground/[0.05] border border-border/10 px-3 py-1 rounded text-[10px] text-foreground/70">Sheets Sync</span>
-               </div>
+              <span className="text-sm text-foreground">League Standings</span>
+
+              <div className="flex items-center gap-2">
+                {(athleticsDataState?.loading || athleticsDataState?.refreshing) && (
+                  <span className="text-[10px] lowercase text-[#B5413F] animate-pulse">
+                    syncing...
+                  </span>
+                )}
+
+                {athleticsDataState?.lastUpdated && (
+                  <span className="hidden sm:inline text-[10px] text-foreground/35 font-mono normal-case tracking-normal">
+                    {athleticsDataState.lastUpdated}
+                  </span>
+                )}
+
+                <button
+                  type="button"
+                  onClick={() => athleticsDataState?.refresh()}
+                  className="bg-foreground/[0.05] border border-border/10 px-3 py-1 rounded text-[10px] text-foreground/70 hover:text-foreground hover:border-[#B5413F]/40 transition-colors"
+                >
+                  Refresh Sheets
+                </button>
+              </div>
             </div>
             
             <div className="bg-subcard rounded-xl border border-border/10 overflow-hidden shadow-md">
