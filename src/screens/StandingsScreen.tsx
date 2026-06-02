@@ -1,24 +1,14 @@
 import { useState } from "react";
-import { Standing } from "../services/parsers";
+import { AthleticsDataState } from "../hooks/useAthleticsData";
 
 interface StandingsScreenProps {
-  athleticsDataState: {
-    data: {
-      soccerStandings: Standing[];
-    };
-    loading: boolean;
-    error: string | null;
-  };
+  athleticsDataState: AthleticsDataState;
 }
 
-export default function StandingsScreen({
-  athleticsDataState,
-}: StandingsScreenProps) {
-  const { data, loading } = athleticsDataState;
+export default function StandingsScreen({ athleticsDataState }: StandingsScreenProps) {
+  const { data, loading, error } = athleticsDataState;
   const [levelFilter, setLevelFilter] = useState<"All" | "SMP" | "SMA">("All");
-  const [genderFilter, setGenderFilter] = useState<
-    "All" | "Boys" | "Girls" | "Combined"
-  >("All");
+  const [genderFilter, setGenderFilter] = useState<"All" | "Boys" | "Girls" | "Combined">("All");
 
   const standings = data.soccerStandings.filter((standing) => {
     if (levelFilter !== "All" && standing.level !== levelFilter) return false;
@@ -77,18 +67,29 @@ export default function StandingsScreen({
         </div>
       )}
 
-      {!loading && standings.length === 0 && (
+      {error && (
+        <div className="bg-subcard rounded-2xl p-6 border border-red-500/20 text-center">
+          <p className="text-sm font-bold uppercase tracking-widest text-red-400">
+            Google Sheets sync error
+          </p>
+          <p className="text-xs text-foreground/40 mt-2">
+            {error}
+          </p>
+        </div>
+      )}
+
+      {!loading && !error && standings.length === 0 && (
         <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center">
           <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
             Standings will appear once uploaded
           </p>
           <p className="text-xs text-foreground/40 mt-2">
-            Check the Soccer_Standings Google Sheet tab.
+            Check the Soccer_Standings Google Sheet tab and confirm the headers.
           </p>
         </div>
       )}
 
-      {!loading && standings.length > 0 && (
+      {!loading && !error && standings.length > 0 && (
         <div className="bg-subcard rounded-2xl border border-border/10 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -111,34 +112,19 @@ export default function StandingsScreen({
 
               <tbody>
                 {standings.map((standing) => (
-                  <tr
-                    key={standing.id}
-                    className="border-b border-border/5 last:border-0"
-                  >
+                  <tr key={standing.id} className="border-b border-border/5 last:border-0">
                     <td className="p-3 font-black">{standing.rank ?? "-"}</td>
                     <td className="p-3 font-bold">{standing.team}</td>
                     <td className="p-3 text-foreground/60">{standing.level}</td>
-                    <td className="p-3 text-foreground/60">
-                      {standing.genderGroup}
-                    </td>
-                    <td className="p-3 text-foreground/60">
-                      {standing.tournament}
-                    </td>
+                    <td className="p-3 text-foreground/60">{standing.genderGroup}</td>
+                    <td className="p-3 text-foreground/60">{standing.tournament}</td>
                     <td className="p-3 text-center">{standing.wins ?? "-"}</td>
                     <td className="p-3 text-center">{standing.draws ?? "-"}</td>
                     <td className="p-3 text-center">{standing.losses ?? "-"}</td>
-                    <td className="p-3 text-center font-black">
-                      {standing.points ?? "-"}
-                    </td>
-                    <td className="p-3 text-center">
-                      {standing.forValue ?? "-"}
-                    </td>
-                    <td className="p-3 text-center">
-                      {standing.againstValue ?? "-"}
-                    </td>
-                    <td className="p-3 text-center">
-                      {standing.difference ?? "-"}
-                    </td>
+                    <td className="p-3 text-center font-black">{standing.points ?? "-"}</td>
+                    <td className="p-3 text-center">{standing.forValue ?? "-"}</td>
+                    <td className="p-3 text-center">{standing.againstValue ?? "-"}</td>
+                    <td className="p-3 text-center">{standing.difference ?? "-"}</td>
                   </tr>
                 ))}
               </tbody>

@@ -7,7 +7,8 @@ export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
     return [];
   }
 
-  const cacheBustedUrl = `${url}&cacheBust=${Date.now()}`;
+  const separator = url.includes("?") ? "&" : "?";
+  const cacheBustedUrl = `${url}${separator}cacheBust=${Date.now()}`;
 
   const response = await fetch(cacheBustedUrl, {
     method: "GET",
@@ -19,7 +20,12 @@ export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
   }
 
   const text = await response.text();
-  return parseCsv(text);
+  const rows = parseCsv(text);
+
+  console.log("FETCHED CSV URL:", url);
+  console.log("PARSED CSV ROWS:", rows);
+
+  return rows;
 }
 
 export function parseCsv(text: string): CsvRow[] {
@@ -28,13 +34,13 @@ export function parseCsv(text: string): CsvRow[] {
   let row: string[] = [];
   let insideQuotes = false;
 
-  for (let i = 0; i < text.length; i++) {
+  for (let i = 0; i < text.length; i += 1) {
     const char = text[i];
     const next = text[i + 1];
 
     if (char === '"' && insideQuotes && next === '"') {
       current += '"';
-      i++;
+      i += 1;
     } else if (char === '"') {
       insideQuotes = !insideQuotes;
     } else if (char === "," && !insideQuotes) {
@@ -49,7 +55,7 @@ export function parseCsv(text: string): CsvRow[] {
       }
 
       if (char === "\r" && next === "\n") {
-        i++;
+        i += 1;
       }
     } else {
       current += char;
@@ -61,20 +67,45 @@ export function parseCsv(text: string): CsvRow[] {
     rows.push(row);
   }
 
-  if (rows.length === 0) return [];
+  if (rows.length === 0) {
+    return [];
+  }
 
-  const headers = rows[0].map((header) =>
-    header.trim().replace(/^\uFEFF/, "")
-  );
+  let headerIndex = 0;
+
+  for (let i = 0; i < rows.length; i += 1) {
+    const normalizedRow = rows[i].join(" ").toLowerCase();
+
+    const looksLikeMatchHeader =
+      normalizedRow.includes("match id") &&
+      normalizedRow.includes("opponent") &&
+      normalizedRow.includes("lv goals") &&
+      normalizedRow.includes("opponent goals");
+
+    const looksLikeStandingsHeader =
+      normalizedRow.includes("team") &&
+      normalizedRow.includes("wins") &&
+      normalizedRow.includes("points");
+
+    if (looksLikeMatchHeader || looksLikeStandingsHeader) {
+      headerIndex = i;
+      break;
+    }
+  }
+
+  const headers = rows[headerIndex].map((header, index) => {
+    const cleaned = header.trim().replace(/^\uFEFF/, "");
+    return cleaned || `Column ${index + 1}`;
+  });
 
   return rows
-    .slice(1)
+    .slice(headerIndex + 1)
     .filter((cells) => cells.some((cell) => cell.trim() !== ""))
     .map((cells) => {
       const obj: CsvRow = {};
 
       headers.forEach((header, index) => {
-        obj[header] = cells[index]?.trim() || "";
+        obj[header] = cells[index]?.trim() ?? "";
       });
 
       return obj;

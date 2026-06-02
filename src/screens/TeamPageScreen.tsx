@@ -1,19 +1,28 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users, Info, Trophy, MapPin, Search, BarChart3, ChevronRight } from 'lucide-react';
+import { Users, Search, BarChart3, Trophy, ChevronRight, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { AthleticsDataState } from '../hooks/useAthleticsData';
+import { SheetMatch } from '../services/parsers';
 
 interface TeamPageScreenProps {
   sport: SportTab;
   division: DivisionTab;
   gender: GenderTab;
   onNavigateToACSC?: () => void;
+  athleticsDataState?: AthleticsDataState;
 }
 
-export default function TeamPageScreen({ sport, division, gender, onNavigateToACSC }: TeamPageScreenProps) {
+export default function TeamPageScreen({
+  sport,
+  division,
+  gender,
+  onNavigateToACSC,
+  athleticsDataState,
+}: TeamPageScreenProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  
-  const isCustomBanner = sport === 'Soccer' && division === 'Varsity' && gender === 'Boys';
+
+  const isCustomBanner = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
 
   const defaultCarouselImages = [
     'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', // blank transparent
@@ -33,7 +42,7 @@ export default function TeamPageScreen({ sport, division, gender, onNavigateToAC
       setCurrentImageIndex((prev) => (prev + 1) % carouselImages.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [carouselImages.length]);
 
   const sportLabels: Record<SportTab, string> = {
     Basketball: 'Basketball',
@@ -41,19 +50,73 @@ export default function TeamPageScreen({ sport, division, gender, onNavigateToAC
     Soccer: 'Soccer',
     Badminton: 'Badminton',
     TrackAndField: 'Track & Field',
-    Swimming: 'Swimming',
   };
 
   const getHeroImage = () => {
     switch (sport) {
-      case 'Basketball': return 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80';
-      case 'Soccer': return 'https://images.unsplash.com/photo-1518605368461-1e1296221f8c?auto=format&fit=crop&w=800&q=80';
-      case 'Volleyball': return 'https://images.unsplash.com/photo-1592656094267-764a45160876?auto=format&fit=crop&w=800&q=80';
-      case 'Badminton': return 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=800&q=80';
-      case 'Swimming': return 'https://images.unsplash.com/photo-1519315901367-f34f9274ceb3?auto=format&fit=crop&w=800&q=80';
-      case 'TrackAndField': return 'https://images.unsplash.com/photo-1552674605-15c2145eba11?auto=format&fit=crop&w=800&q=80';
-      default: return 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80';
+      case 'Basketball':
+        return 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80';
+      case 'Soccer':
+        return 'https://images.unsplash.com/photo-1518605368461-1e1296221f8c?auto=format&fit=crop&w=800&q=80';
+      case 'Volleyball':
+        return 'https://images.unsplash.com/photo-1592656094267-764a45160876?auto=format&fit=crop&w=800&q=80';
+      case 'Badminton':
+        return 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=800&q=80';
+      case 'TrackAndField':
+        return 'https://images.unsplash.com/photo-1552674605-15c2145eba11?auto=format&fit=crop&w=800&q=80';
+      default:
+        return 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80';
     }
+  };
+
+  const displayDivision = division === 'SMA' ? 'SMA / Varsity' : 'SMP';
+
+  const currentStandings = (athleticsDataState?.data?.soccerStandings || []).filter((standing) => {
+    return (
+      standing.sportKey === sport &&
+      standing.level === division &&
+      standing.genderGroup === gender
+    );
+  });
+
+  const currentMatches = (athleticsDataState?.data?.soccerMatches || []).filter((match) => {
+    return (
+      match.sportKey === sport &&
+      match.level === division &&
+      match.genderGroup === gender
+    );
+  });
+
+  const formatScore = (match: SheetMatch) => {
+    if (match.scoreFor === null || match.scoreAgainst === null) {
+      return '-';
+    }
+    return `${match.scoreFor}–${match.scoreAgainst}`;
+  };
+
+  const resultColor = (result: string) => {
+    if (result === 'W') return 'text-green-400';
+    if (result === 'L') return 'text-red-400';
+    if (result === 'D') return 'text-yellow-300';
+    return 'text-foreground/40';
+  };
+
+  const resultBadgeClass = (result: string) => {
+    if (result === 'W') return 'bg-green-500/15 text-green-400 border-green-500/20';
+    if (result === 'L') return 'bg-red-500/15 text-red-400 border-red-500/20';
+    if (result === 'D') return 'bg-yellow-400/15 text-yellow-300 border-yellow-400/20';
+    return 'bg-[#BFD7EA]/10 text-[#BFD7EA] border-[#BFD7EA]/20';
+  };
+
+  const matchAccentClass = (match: SheetMatch) => {
+    if (match.result === 'W') return 'border-l-green-500';
+    if (match.result === 'L') return 'border-l-red-500';
+    if (match.result === 'D') return 'border-l-yellow-400';
+    return 'border-l-[#BFD7EA]/40';
+  };
+
+  const matchLocationText = (match: SheetMatch) => {
+    return (match.locationType || 'TBD').toUpperCase();
   };
 
   return (
@@ -80,7 +143,7 @@ export default function TeamPageScreen({ sport, division, gender, onNavigateToAC
                    color: '#5A1C2C',
                    textShadow: '0px 4px 10px rgba(0,0,0,0.5)'
                 }}>
-                  {division}<br />
+                  {displayDivision}<br />
                   {gender} {sportLabels[sport]}
                 </h2>
               </div>
@@ -92,16 +155,26 @@ export default function TeamPageScreen({ sport, division, gender, onNavigateToAC
       <div className="px-4 mt-8 space-y-12">
         <button 
            onClick={onNavigateToACSC}
-           className="w-full bg-[#5A1C2C] text-white p-4 rounded-xl font-bold flex items-center justify-between hover:bg-[#431420] transition-colors shadow-md border border-[#431420]/50 group"
+           className="w-full bg-gradient-to-r from-[#5A1C2C] via-[#7A001F] to-[#3A101B] text-white p-4 rounded-2xl font-bold flex items-center justify-between hover:brightness-110 transition-all shadow-[0_18px_45px_rgba(90,28,44,0.35)] border border-[#BFD7EA]/10 group overflow-hidden relative"
         >
-           <div className="flex items-center gap-3">
-              <Trophy className="text-yellow-400 group-hover:scale-110 transition-transform" />
+           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(191,215,234,0.18),transparent_35%)] pointer-events-none" />
+
+           <div className="flex items-center gap-3 relative z-10">
+              <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
+                 <Trophy className="text-yellow-300 group-hover:scale-110 transition-transform" />
+              </div>
+
               <div className="flex flex-col items-start leading-none gap-1">
-                 <span className="uppercase tracking-widest text-xs opacity-80">Tournament Results</span>
-                 <span className="text-lg font-black tracking-tight drop-shadow-sm">View ACSC Live Results</span>
+                 <span className="uppercase tracking-[0.22em] text-[10px] opacity-75">
+                    ACSC Results
+                 </span>
+                 <span className="text-lg font-black tracking-tight drop-shadow-sm">
+                    View ACSC Results
+                 </span>
               </div>
            </div>
-           <ChevronRight />
+
+           <ChevronRight className="relative z-10 group-hover:translate-x-1 transition-transform" />
         </button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -109,14 +182,17 @@ export default function TeamPageScreen({ sport, division, gender, onNavigateToAC
           <section className="space-y-4">
             <div className="flex justify-between items-center font-bold tracking-widest uppercase">
                <span className="text-sm text-foreground">League Standings</span>
-               <span className="bg-foreground/[0.05] border border-border/10 px-3 py-1 rounded text-[10px] text-foreground/70">WEEK 12</span>
+               <div className="flex items-center gap-2">
+                 {athleticsDataState?.loading && <span className="text-[10px] lowercase text-[#B5413F] animate-pulse">syncing...</span>}
+                 <span className="bg-foreground/[0.05] border border-border/10 px-3 py-1 rounded text-[10px] text-foreground/70">Sheets Sync</span>
+               </div>
             </div>
             
             <div className="bg-subcard rounded-xl border border-border/10 overflow-hidden shadow-md">
                <div className="p-4 border-b border-border/10 flex justify-between items-center bg-foreground/[0.02]">
                   <div className="flex items-center gap-3">
                      <span className="font-serif italic font-black text-2xl px-2 py-1 bg-[#5A1C2C]/10 text-[#5A1C2C] rounded border border-[#5A1C2C]/20 tracking-tighter">
-                        JAAC
+                        League
                      </span>
                      <span className="font-serif italic text-xl text-foreground">
                         Standings
@@ -127,45 +203,65 @@ export default function TeamPageScreen({ sport, division, gender, onNavigateToAC
                
                {/* Table Header */}
                <div className="grid grid-cols-12 px-4 py-3 bg-[#5A1C2C]/5 border-b border-[#5A1C2C]/10 text-[#B5413F] text-[11px] font-black tracking-widest uppercase">
-                  <div className="col-span-6">TEAM</div>
+                  <div className="col-span-1">RK</div>
+                  <div className="col-span-5">TEAM</div>
                   <div className="col-span-1 text-center">GP</div>
                   <div className="col-span-1 text-center">W</div>
+                  <div className="col-span-1 text-center">D</div>
                   <div className="col-span-1 text-center">L</div>
-                  <div className="col-span-3 text-right">PCT</div>
+                  <div className="col-span-2 text-right">PTS</div>
                </div>
 
                {/* Table Body */}
                <div className="flex flex-col">
-                  {[
-                    { id: '01', team: 'SPH', gp: 12, w: 10, l: 2, pct: '.833' },
-                    { id: '02', team: 'JIS', gp: 11, w: 8, l: 3, pct: '.727' },
-                    { id: '03', team: 'BSJ', gp: 12, w: 7, l: 5, pct: '.583' },
-                    { id: '04', team: 'ACS', gp: 12, w: 6, l: 6, pct: '.500' },
-                    { id: '05', team: 'GJS', gp: 11, w: 3, l: 8, pct: '.272' },
-                    { id: '06', team: 'AIS', gp: 11, w: 2, l: 9, pct: '.181' },
-                    { id: '07', team: 'ACG', gp: 11, w: 1, l: 10, pct: '.091' },
-                    { id: '08', team: 'STL', gp: 11, w: 0, l: 11, pct: '.000' },
-                  ].map((row, idx) => (
-                    <div key={idx} className="grid grid-cols-12 px-4 py-5 border-b border-border/5 items-center relative group">
-                       {idx === 0 && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#B5413F]" />}
-                       <div className="col-span-6 flex items-center gap-3">
-                         <span className="font-mono text-sm font-bold text-foreground/50">{row.id}</span>
-                         <span className="font-bold text-sm tracking-wide text-foreground uppercase pt-0.5 leading-tight w-24 sm:w-auto break-words">{row.team}</span>
-                       </div>
-                       <div className="col-span-1 text-center font-mono text-sm">{row.gp}</div>
-                       <div className="col-span-1 text-center font-mono text-sm">{row.w}</div>
-                       <div className="col-span-1 text-center font-mono text-sm">{row.l}</div>
-                       <div className="col-span-3 text-right font-mono text-sm font-bold text-[#B5413F]">{row.pct}</div>
+                  {athleticsDataState?.loading && currentStandings.length === 0 ? (
+                    <div className="p-6 text-center text-xs font-medium text-foreground/40 animate-pulse">
+                      Fetching live standings from Google Sheets...
                     </div>
-                  ))}
+                  ) : athleticsDataState?.error ? (
+                    <div className="p-6 text-center text-xs font-semibold text-red-500 bg-red-500/5">
+                      Failed to load. {athleticsDataState.error}
+                    </div>
+                  ) : currentStandings.length === 0 ? (
+                    <div className="p-8 text-center text-xs font-medium text-foreground/40 space-y-2">
+                      <p className="font-bold text-foreground/60">Standings will appear once uploaded</p>
+                      <p>
+                        No standings matches for {sportLabels[sport]} · {displayDivision} · {gender}.
+                      </p>
+                    </div>
+                  ) : (
+                    currentStandings.map((row, idx) => {
+                      const wins = row.wins ?? 0;
+                      const draws = row.draws ?? 0;
+                      const losses = row.losses ?? 0;
+                      const gp = wins + draws + losses;
+                      const pts = row.points ?? ((wins * 3) + draws);
+                      const rank = row.rank !== null ? String(row.rank) : String(idx + 1);
+
+                      return (
+                        <div key={row.id || idx} className="grid grid-cols-12 px-4 py-4 border-b border-border/5 items-center relative group">
+                          {idx === 0 && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#B5413F]" />}
+                          <div className="col-span-1">
+                            <span className="font-mono text-xs font-bold text-foreground/50">{rank}</span>
+                          </div>
+                          <div className="col-span-5 flex items-center pr-1">
+                            <span className="font-bold text-sm tracking-wide text-foreground uppercase pt-0.5 leading-tight break-words">{row.team}</span>
+                          </div>
+                          <div className="col-span-1 text-center font-mono text-xs">{gp}</div>
+                          <div className="col-span-1 text-center font-mono text-xs">{wins}</div>
+                          <div className="col-span-1 text-center font-mono text-xs">{draws}</div>
+                          <div className="col-span-1 text-center font-mono text-xs">{losses}</div>
+                          <div className="col-span-2 text-right font-mono text-sm font-bold text-[#B5413F]">{pts}</div>
+                        </div>
+                      );
+                    })
+                  )}
                </div>
 
                {/* Footer */}
-               <div className="px-5 py-4 bg-foreground/[0.02] flex justify-between items-center">
-                  <span className="italic text-foreground/40 text-xs font-serif">Last updated today 4:12 PM</span>
-                  <span className="text-[#B5413F] font-bold text-[10px] tracking-widest uppercase flex items-center gap-1">
-                     FULL TABLE <ChevronRight size={14} />
-                  </span>
+               <div className="px-5 py-4 bg-foreground/[0.02] flex justify-between items-center text-[10px] text-foreground/40 font-mono">
+                  <span>Google Sheets Synced</span>
+                  <span>Live Data</span>
                </div>
             </div>
           </section>
@@ -173,116 +269,109 @@ export default function TeamPageScreen({ sport, division, gender, onNavigateToAC
           {/* Schedule & Results */}
           <section className="space-y-4">
             <h3 className="text-2xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-3">
-              Match Schedule
+              Matches
             </h3>
-            <div className="space-y-3">
-              {[
-                { opponent: 'JIS', type: 'HOME', date: 'FRI, NOV 15', score: '2-0', win: true },
-                { opponent: 'BSJ', type: 'AWAY', date: 'SAT, NOV 23', score: '1-1', win: null },
-                { opponent: 'ISKL', type: 'AWAY', date: 'FRI, DEC 06', score: '0-1', win: false },
-                { opponent: 'ACS', type: 'HOME', date: 'SAT, DEC 14', score: '3-0', win: true },
-                { opponent: 'ACG', type: 'HOME', date: 'SAT, JAN 11', score: null, win: null },
-              ].map((match, idx) => (
-                <div key={idx} className="bg-subcard rounded-xl p-4 border border-border/10 shadow-sm flex items-center justify-between relative overflow-hidden group">
-                  <div className={`absolute left-0 top-0 bottom-0 w-[4px] ${match.win === true ? 'bg-green-500' : match.win === false ? 'bg-red-500' : match.score ? 'bg-yellow-500' : 'bg-border/20'}`} />
-                  <div className="pl-3">
-                    <p className="font-bold text-foreground text-[16px] uppercase tracking-wide flex items-center gap-2">
-                      vs {match.opponent}
-                      {match.score && (
-                         <span className={`px-2 py-0.5 rounded textxs font-black tracking-widest ${match.win === true ? 'bg-green-500/10 text-green-600' : match.win === false ? 'bg-red-500/10 text-red-600' : 'bg-yellow-500/10 text-yellow-600'}`}>
-                           {match.win === true ? 'W' : match.win === false ? 'L' : 'D'}
-                         </span>
-                      )}
-                    </p>
-                    <p className="text-xs text-[#5A1C2C] uppercase font-bold tracking-wider mt-1">
-                      {match.type}
-                    </p>
-                  </div>
-                  <div className="text-right text-foreground flex flex-col items-end">
-                    {match.score ? (
-                       <span className="font-black text-2xl tracking-tighter text-foreground">{match.score}</span>
-                    ) : (
-                       <>
-                         <p className="text-sm font-bold mb-0.5 whitespace-nowrap">{match.date}</p>
-                         <p className="text-xs font-mono opacity-70">16:00</p>
-                       </>
-                    )}
-                  </div>
+
+            <div className="space-y-4">
+              {athleticsDataState?.loading && currentMatches.length === 0 ? (
+                <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse">
+                  <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
+                    Loading matches from Google Sheets...
+                  </p>
                 </div>
-              ))}
+              ) : athleticsDataState?.error ? (
+                <div className="bg-subcard rounded-2xl p-8 border border-red-500/20 text-center">
+                  <p className="text-sm font-black uppercase tracking-widest text-red-400">
+                    Match sync error
+                  </p>
+                  <p className="text-xs text-foreground/40 mt-2">
+                    {athleticsDataState.error}
+                  </p>
+                </div>
+              ) : currentMatches.length === 0 ? (
+                <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center bg-[#5A1C2C]/5">
+                  <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
+                    No matches found
+                  </p>
+                  <p className="text-xs text-foreground/40 mt-2">
+                    The Soccer_Matches sheet loaded, but no rows matched {sportLabels[sport]} · {displayDivision} · {gender}.
+                  </p>
+                </div>
+              ) : (
+                currentMatches.map((match) => (
+                  <div
+                    key={match.id}
+                    className={`relative bg-subcard rounded-2xl p-5 border border-border/10 border-l-[6px] ${matchAccentClass(match)} shadow-md overflow-hidden`}
+                  >
+                    <div className="flex items-center justify-between gap-5">
+                      <div className="min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <h4 className="text-xl font-black tracking-wide text-foreground uppercase">
+                            VS {match.opponent || 'TBD'}
+                          </h4>
+
+                          <span className={`px-2.5 py-1 rounded-md text-xs font-black uppercase tracking-widest border ${resultBadgeClass(match.result)}`}>
+                            {match.result || match.status}
+                          </span>
+                        </div>
+
+                        <p className="mt-3 text-xs font-black uppercase tracking-[0.22em] text-[#B5413F]">
+                          {matchLocationText(match)}
+                        </p>
+
+                        {(match.date || match.time || match.venue) && (
+                          <p className="mt-2 text-xs text-foreground/45">
+                            {match.date || 'Date TBD'} {match.time ? `· ${match.time}` : ''} {match.venue ? `· ${match.venue}` : ''}
+                          </p>
+                        )}
+
+                        {match.notes && (
+                          <p className="text-xs text-foreground/40 mt-2 italic bg-foreground/[0.02] p-2 rounded border border-border/5">
+                            {match.notes}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="text-right shrink-0">
+                        {match.scoreFor !== null && match.scoreAgainst !== null ? (
+                          <p className="text-4xl font-black tracking-tight text-foreground">
+                            {formatScore(match)}
+                          </p>
+                        ) : (
+                          <div>
+                            <p className="text-sm font-black uppercase tracking-widest text-foreground">
+                              {match.date || 'TBD'}
+                            </p>
+                            <p className="text-xs text-foreground/45 mt-1">
+                              {match.time || ''}
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </section>
         </div>
 
-        {/* JAAC Bracket using ACSC styling specs */}
+        {/* JAAC Bracket Placeholder */}
         {isCustomBanner && (
           <section className="space-y-4">
-             <div className="flex items-center justify-between border-b border-border/5 pb-2">
-               <h3 className="text-lg font-black tracking-tight uppercase flex items-center gap-2">
-                 <Trophy size={18} className="text-[#5A1C2C]" />
-                 JAAC Tournament Bracket
-               </h3>
-             </div>
-             <div className="bg-[#5A1C2C] rounded-2xl border border-[#5A1C2C]/50 shadow-xl overflow-hidden p-5">
-                <div className="flex items-center justify-between text-white mb-4">
-                  <p className="text-sm text-white/90 font-medium tracking-wide">
-                    @BSJ - Final Round
-                  </p>
-                  <span className="text-xs uppercase tracking-widest font-bold opacity-80">2025</span>
-                </div>
-                <div className="bg-[#03142E] rounded-xl p-6 border-4 border-[#03142E] shadow-inner text-center">
-                   <div className="text-center text-white mb-6">
-                     <h4 className="text-2xl font-black uppercase tracking-tight mb-1 font-sans text-yellow-400 drop-shadow-md">JAAC CHAMPIONSHIP</h4>
-                     <p className="text-sm font-bold uppercase tracking-widest opacity-80">Playoffs</p>
-                   </div>
-                   
-                   <div className="flex flex-col gap-4 text-left">
-                      <div className="bg-white/10 rounded-lg p-1 border border-white/10 relative overflow-hidden">
-                         <div className="absolute top-0 bottom-0 left-0 w-2 bg-yellow-400" />
-                         <div className="grid grid-cols-12 items-center">
-                            <div className="col-span-8 p-3 flex flex-col gap-2">
-                               <div className="flex justify-between items-center bg-white/10 px-3 py-1.5 rounded text-white font-bold text-sm">
-                                  <span>SPH</span>
-                                  <span className="font-black text-yellow-400">2</span>
-                               </div>
-                               <div className="flex justify-between items-center px-3 py-1.5 rounded text-white/60 text-sm font-medium">
-                                  <span>BSJ</span>
-                                  <span>0</span>
-                               </div>
-                            </div>
-                            <div className="col-span-4 border-l border-white/10 h-full flex items-center justify-center bg-white/[0.02]">
-                               <span className="font-black tracking-widest text-xs uppercase text-white/50 transform -rotate-90 md:rotate-0 whitespace-nowrap">FINAL</span>
-                            </div>
-                         </div>
-                      </div>
-                      
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="bg-white/5 rounded-lg p-1 border border-white/5 relative">
-                           <p className="text-[10px] text-white/40 uppercase font-black tracking-widest italic text-center mb-1 pt-1">SF 1</p>
-                           <div className="flex flex-col gap-1 px-2 pb-2">
-                              <div className="flex justify-between items-center bg-white/10 px-2 py-1 rounded text-white font-bold text-xs">
-                                 <span>SPH</span><span>3</span>
-                              </div>
-                              <div className="flex justify-between items-center px-2 py-1 rounded text-white/60 text-xs font-medium">
-                                 <span>JIS</span><span>1</span>
-                              </div>
-                           </div>
-                        </div>
-                        <div className="bg-white/5 rounded-lg p-1 border border-white/5 relative">
-                           <p className="text-[10px] text-white/40 uppercase font-black tracking-widest italic text-center mb-1 pt-1">SF 2</p>
-                           <div className="flex flex-col gap-1 px-2 pb-2">
-                              <div className="flex justify-between items-center bg-white/10 px-2 py-1 rounded text-white font-bold text-xs">
-                                 <span>BSJ</span><span>2</span>
-                              </div>
-                              <div className="flex justify-between items-center px-2 py-1 rounded text-white/60 text-xs font-medium">
-                                 <span>ACS</span><span>0</span>
-                              </div>
-                           </div>
-                        </div>
-                      </div>
-                   </div>
-                </div>
-             </div>
+            <div className="flex items-center justify-between border-b border-border/5 pb-2">
+              <h3 className="text-lg font-black tracking-tight uppercase flex items-center gap-2">
+                JAAC Tournament Bracket
+              </h3>
+            </div>
+            <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center">
+              <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
+                Bracket not connected yet
+              </p>
+              <p className="text-xs text-foreground/40 mt-2">
+                This section should later sync from a JAAC bracket sheet. Fake SPH/JIS/BSJ playoff matches have been removed.
+              </p>
+            </div>
           </section>
         )}
 

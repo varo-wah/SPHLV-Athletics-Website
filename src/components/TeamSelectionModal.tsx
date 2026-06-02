@@ -7,8 +7,7 @@ import {
   VolleyballIcon, 
   SoccerIcon, 
   BadmintonIcon, 
-  TrackIcon, 
-  SwimmingIcon 
+  TrackIcon
 } from './SportIcons';
 
 interface TeamSelectionModalProps {
@@ -25,8 +24,7 @@ export default function TeamSelectionModal({ sport, onSelect, onClose }: TeamSel
     Volleyball: 'Volleyball',
     Soccer: 'Soccer',
     Badminton: 'Badminton',
-    TrackAndField: 'Track & Field',
-    Swimming: 'Swimming',
+    TrackAndField: 'Track & Field'
   };
 
   const getSportIcon = () => {
@@ -35,7 +33,6 @@ export default function TeamSelectionModal({ sport, onSelect, onClose }: TeamSel
       case 'Volleyball': return <VolleyballIcon size={32} />;
       case 'Soccer': return <SoccerIcon size={32} />;
       case 'Badminton': return <BadmintonIcon size={32} />;
-      case 'Swimming': return <SwimmingIcon size={32} />;
       case 'TrackAndField': return <TrackIcon size={32} />;
       default: return <BasketballIcon size={32} />;
     }
@@ -106,14 +103,14 @@ export default function TeamSelectionModal({ sport, onSelect, onClose }: TeamSel
                   </button>
                   
                   <button
-                    onClick={() => setSelectedDivision('Varsity')}
+                    onClick={() => setSelectedDivision('SMA')}
                     className="flex flex-col items-center justify-center p-6 bg-foreground/[0.02] border border-border/5 hover:border-[#5A1C2C]/50 hover:bg-[#5A1C2C]/10 rounded-xl transition-all group"
                   >
                     <span className="font-black tracking-tighter text-2xl text-[#5A1C2C]/80 group-hover:text-[#5A1C2C] uppercase mb-2 transition-all">
-                      VARSITY
+                      SMA
                     </span>
                     <span className="text-[10px] uppercase tracking-widest text-foreground/50 font-bold group-hover:text-foreground/80">
-                      High School
+                      High School / Varsity
                     </span>
                   </button>
                 </motion.div>
@@ -125,29 +122,45 @@ export default function TeamSelectionModal({ sport, onSelect, onClose }: TeamSel
                   exit={{ opacity: 0, x: 20 }}
                   className="grid grid-cols-2 gap-3 absolute inset-0"
                 >
-                  <button
-                    onClick={() => onSelect(selectedDivision, 'Boys')}
-                    className="flex flex-col items-center justify-center p-5 bg-foreground/[0.02] border border-border/5 hover:border-[#5A1C2C]/50 hover:bg-[#5A1C2C]/10 rounded-xl transition-all group"
-                  >
-                    <div className="mb-3 text-foreground/50 group-hover:text-[#5A1C2C] group-hover:scale-110 transition-all duration-300">
-                      {getSportIcon()}
-                    </div>
-                    <span className="font-bold tracking-widest text-sm text-foreground/80 group-hover:text-foreground uppercase">
-                      Boys
-                    </span>
-                  </button>
-                  
-                  <button
-                    onClick={() => onSelect(selectedDivision, 'Girls')}
-                    className="flex flex-col items-center justify-center p-5 bg-foreground/[0.02] border border-border/5 hover:border-[#5A1C2C]/50 hover:bg-[#5A1C2C]/10 rounded-xl transition-all group"
-                  >
-                    <div className="mb-3 text-foreground/50 group-hover:text-[#5A1C2C] group-hover:scale-110 transition-all duration-300">
-                      {getSportIcon()}
-                    </div>
-                    <span className="font-bold tracking-widest text-sm text-foreground/80 group-hover:text-foreground uppercase">
-                      Girls
-                    </span>
-                  </button>
+                  {(sport === 'Badminton' || sport === 'TrackAndField') ? (
+                    <button
+                      onClick={() => onSelect(selectedDivision, 'Combined')}
+                      className="col-span-2 flex flex-col items-center justify-center p-5 bg-foreground/[0.02] border border-border/5 hover:border-[#5A1C2C]/50 hover:bg-[#5A1C2C]/10 rounded-xl transition-all group"
+                    >
+                      <div className="mb-3 text-foreground/50 group-hover:text-[#5A1C2C] group-hover:scale-110 transition-all duration-300">
+                        {getSportIcon()}
+                      </div>
+                      <span className="font-bold tracking-widest text-sm text-foreground/80 group-hover:text-foreground uppercase">
+                        Combined
+                      </span>
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => onSelect(selectedDivision, 'Boys')}
+                        className="flex flex-col items-center justify-center p-5 bg-foreground/[0.02] border border-border/5 hover:border-[#5A1C2C]/50 hover:bg-[#5A1C2C]/10 rounded-xl transition-all group"
+                      >
+                        <div className="mb-3 text-foreground/50 group-hover:text-[#5A1C2C] group-hover:scale-110 transition-all duration-300">
+                          {getSportIcon()}
+                        </div>
+                        <span className="font-bold tracking-widest text-sm text-foreground/80 group-hover:text-foreground uppercase">
+                          Boys
+                        </span>
+                      </button>
+
+                      <button
+                        onClick={() => onSelect(selectedDivision, 'Girls')}
+                        className="flex flex-col items-center justify-center p-5 bg-foreground/[0.02] border border-border/5 hover:border-[#5A1C2C]/50 hover:bg-[#5A1C2C]/10 rounded-xl transition-all group"
+                      >
+                        <div className="mb-3 text-foreground/50 group-hover:text-[#5A1C2C] group-hover:scale-110 transition-all duration-300">
+                          {getSportIcon()}
+                        </div>
+                        <span className="font-bold tracking-widest text-sm text-foreground/80 group-hover:text-foreground uppercase">
+                          Girls
+                        </span>
+                      </button>
+                    </>
+                  )}
                 </motion.div>
               )}
             </AnimatePresence>

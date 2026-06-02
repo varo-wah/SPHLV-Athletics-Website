@@ -1,27 +1,39 @@
 import { useEffect, useState } from "react";
 import { SHEET_URLS } from "../config/sheets";
-import { fetchCsvRows } from "../services/googleSheets";
+import { CsvRow, fetchCsvRows } from "../services/googleSheets";
 import {
-  PageConfig,
   Standing,
-  parsePageConfig,
+  SheetMatch as SyncedMatch,
+  parseMatches,
   parseStandings,
 } from "../services/parsers";
 
-interface AthleticsData {
-  pages: PageConfig[];
+export interface AthleticsData {
+  standings: Standing[];
+  matches: SyncedMatch[];
+  rawStandingRows: CsvRow[];
+  rawMatchRows: CsvRow[];
+
+  // Backward compatibility
+  pages: any[];
   soccerStandings: Standing[];
+  soccerMatches: SyncedMatch[];
 }
 
-interface AthleticsDataState {
+export interface AthleticsDataState {
   data: AthleticsData;
   loading: boolean;
   error: string | null;
 }
 
 const EMPTY_DATA: AthleticsData = {
+  standings: [],
+  matches: [],
+  rawStandingRows: [],
+  rawMatchRows: [],
   pages: [],
   soccerStandings: [],
+  soccerMatches: [],
 };
 
 export function useAthleticsData(): AthleticsDataState {
@@ -42,25 +54,36 @@ export function useAthleticsData(): AthleticsDataState {
           error: null,
         });
 
-        const [pageConfigRows, soccerStandingRows] = await Promise.all([
-          fetchCsvRows(SHEET_URLS.pageConfig),
+        const [matchRows, standingRows] = await Promise.all([
+          fetchCsvRows(SHEET_URLS.soccerMatches),
           fetchCsvRows(SHEET_URLS.soccerStandings),
         ]);
 
-        const data: AthleticsData = {
-          pages: parsePageConfig(pageConfigRows),
-          soccerStandings: parseStandings(soccerStandingRows, "Soccer"),
-        };
+        const matches = parseMatches(matchRows, "Soccer");
+        const standings = parseStandings(standingRows, "Soccer");
+
+        console.log("RAW SOCCER MATCH ROWS:", matchRows);
+        console.log("PARSED SOCCER MATCHES:", matches);
+        console.log("RAW SOCCER STANDING ROWS:", standingRows);
+        console.log("PARSED SOCCER STANDINGS:", standings);
 
         if (!cancelled) {
           setState({
-            data,
+            data: {
+              standings,
+              matches,
+              rawStandingRows: standingRows,
+              rawMatchRows: matchRows,
+              pages: [],
+              soccerStandings: standings,
+              soccerMatches: matches,
+            },
             loading: false,
             error: null,
           });
         }
       } catch (error) {
-        console.error(error);
+        console.error("Google Sheets sync failed:", error);
 
         if (!cancelled) {
           setState({

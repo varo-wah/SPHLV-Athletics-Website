@@ -212,9 +212,11 @@ export default function AcscScreen({ sport = 'Soccer', gender = 'Boys' }: { spor
             
             <div className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] p-6 rounded-xl border border-white/10 shadow-inner flex flex-col items-center justify-center text-center">
                <h4 className="text-3xl font-black tracking-tight text-white uppercase drop-shadow-lg leading-tight mb-2">
-                 2026 ACSC <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-300">Girls Soccer</span> Tournament
+                 Match Results
                </h4>
-               <p className="font-mono text-sm tracking-widest text-white/70 bg-white/5 px-3 py-1 rounded">JAKARTA, INDONESIA</p>
+               <p className="text-xs text-white/70">
+                 Live results, standings, and completed matches from connected sheets.
+               </p>
                
                <div className="w-full bg-white/5 rounded-xl border border-white/10 mt-6 p-4">
                  <p className="text-xs font-bold uppercase tracking-widest text-white/50 mb-3">Host School</p>
@@ -232,7 +234,7 @@ export default function AcscScreen({ sport = 'Soccer', gender = 'Boys' }: { spor
       {!['Boys Soccer', 'Girls Volleyball', 'Boys Volleyball', 'Boys Basketball', 'Girls Soccer'].includes(sportName) && (
         <div className="bg-card border border-border/5 rounded-2xl p-8 text-center shadow-lg">
           <Trophy size={48} className="mx-auto text-foreground/20 mb-4" />
-          <h3 className="text-xl font-bold tracking-tight text-foreground/50 uppercase">Tournament Results Pending</h3>
+          <h3 className="text-xl font-bold tracking-tight text-foreground/50 uppercase">Match Results Pending</h3>
           <p className="text-sm text-foreground/40 mt-2">Data for the {sportName} ACSC tournament is not available at the moment.</p>
         </div>
       )}

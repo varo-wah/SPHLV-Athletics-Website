@@ -19,11 +19,39 @@ export interface Team {
 }
 
 export type MatchStage = 'APR-7' | 'APR-8' | 'APR-9' | 'APR-10' | 'APR-11';
-export type AppTab = 'Home' | 'Schedule' | 'News' | 'ACSC' | 'TeamPage' | 'Teams';
-export type SportTab = 'Basketball' | 'Volleyball' | 'Soccer' | 'Badminton' | 'TrackAndField' | 'Swimming';
-export type DivisionTab = 'SMP' | 'Varsity';
-export type GenderTab = 'Boys' | 'Girls';
-export type MatchStatus = 'Upcoming' | 'Live' | 'Finished';
+// NOTE: The internal "ACSC" tab currently powers the Match Results screen.
+// User-facing labels should say "Match Results", not "ACSC Results".
+export type AppTab =
+  | 'Home'
+  | 'Schedule'
+  | 'News'
+  | 'ACSC'
+  | 'TeamPage'
+  | 'Teams';
+
+export type SportTab =
+  | 'Basketball'
+  | 'Volleyball'
+  | 'Soccer'
+  | 'Badminton'
+  | 'TrackAndField';
+
+export type SheetSport =
+  | 'Basketball'
+  | 'Volleyball'
+  | 'Soccer'
+  | 'Badminton'
+  | 'Track & Field';
+
+export type DivisionTab = 'SMP' | 'SMA';
+
+export type GenderTab = 'Boys' | 'Girls' | 'Combined';
+
+export type TournamentTab = 'JAAC' | 'SPH Cup' | 'ACSC' | 'Season' | 'Other';
+
+export type MatchStatus = 'Upcoming' | 'Live' | 'Finished' | 'Postponed';
+
+export type MatchResult = 'W' | 'L' | 'D' | '';
 
 export interface TournamentEvent {
   id: string;

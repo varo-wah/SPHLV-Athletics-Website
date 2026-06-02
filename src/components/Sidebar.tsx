@@ -7,8 +7,7 @@ import {
   VolleyballIcon, 
   SoccerIcon, 
   BadmintonIcon, 
-  TrackIcon, 
-  SwimmingIcon 
+  TrackIcon
 } from './SportIcons';
 
 interface SidebarProps {
@@ -24,7 +23,6 @@ export default function Sidebar({ isOpen, onClose, onSelectSport }: SidebarProps
     { id: 'Soccer', label: 'SOCCER', icon: SoccerIcon },
     { id: 'Badminton', label: 'BADMINTON', icon: BadmintonIcon },
     { id: 'TrackAndField', label: 'TRACK & FIELD', icon: TrackIcon },
-    { id: 'Swimming', label: 'SWIMMING', icon: SwimmingIcon },
   ];
 
   return (

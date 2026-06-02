@@ -114,3 +114,41 @@ button {
   background: rgba(128, 0, 32, 0.4);
   border-radius: 999px;
 }
+
+.hero-image-card {
+  position: relative;
+  min-height: unset;
+  padding: 0;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(191, 215, 234, 0.16);
+  background: #12070c;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.42);
+}
+
+.hero-banner-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 180px;
+  object-fit: cover;
+}
+
+.hero-image-overlay {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to top, rgba(0, 0, 0, 0.68), transparent 46%),
+    linear-gradient(to right, rgba(0, 0, 0, 0.32), transparent 42%);
+  pointer-events: none;
+}
+
+@media (max-width: 560px) {
+  .hero-image-card {
+    border-radius: 16px;
+  }
+
+  .hero-banner-img {
+    min-height: 118px;
+  }
+}

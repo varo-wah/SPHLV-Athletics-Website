@@ -5,8 +5,7 @@ import {
   VolleyballIcon, 
   SoccerIcon, 
   BadmintonIcon, 
-  TrackIcon, 
-  SwimmingIcon 
+  TrackIcon
 } from '../components/SportIcons';
 
 interface TeamsScreenProps {
@@ -20,7 +19,6 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
     { id: 'Soccer', label: 'SOCCER', icon: SoccerIcon, hasSubDivisions: true },
     { id: 'Badminton', label: 'BADMINTON', icon: BadmintonIcon, hasSubDivisions: true },
     { id: 'TrackAndField', label: 'TRACK & FIELD', icon: TrackIcon, hasSubDivisions: false },
-    { id: 'Swimming', label: 'SWIMMING', icon: SwimmingIcon, hasSubDivisions: false },
   ];
 
   return (
@@ -68,19 +66,19 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
                   <div className="relative group">
                     <div className="absolute -inset-2 bg-[#5A1C2C] blur-xl opacity-30 rounded-full transition-opacity group-hover:opacity-50"></div>
                     <button
-                      onClick={() => onSelectTeam(sport.id, 'Varsity', 'Boys')}
+                      onClick={() => onSelectTeam(sport.id, 'SMA', 'Boys')}
                       className="relative w-full bg-[#5A1C2C] text-white px-5 py-3 rounded-full font-bold text-sm z-10 hover:scale-[1.02] active:scale-95 transition-all shadow-md flex items-center justify-center uppercase tracking-wide border border-white/20"
                     >
-                      Varsity Boys
+                      SMA Boys
                     </button>
                   </div>
                   <div className="relative group">
                     <div className="absolute -inset-2 bg-[#5A1C2C] blur-xl opacity-30 rounded-full transition-opacity group-hover:opacity-50"></div>
                     <button
-                      onClick={() => onSelectTeam(sport.id, 'Varsity', 'Girls')}
+                      onClick={() => onSelectTeam(sport.id, 'SMA', 'Girls')}
                       className="relative w-full bg-[#5A1C2C] text-white px-5 py-3 rounded-full font-bold text-sm z-10 hover:scale-[1.02] active:scale-95 transition-all shadow-md flex items-center justify-center uppercase tracking-wide border border-white/20"
                     >
-                      Varsity Girls
+                      SMA Girls
                     </button>
                   </div>
                 </div>
@@ -88,10 +86,10 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
                 <div className="relative group max-w-[200px]">
                   <div className="absolute -inset-2 bg-[#5A1C2C] blur-xl opacity-30 rounded-full transition-opacity group-hover:opacity-50"></div>
                   <button
-                    onClick={() => onSelectTeam(sport.id, 'Varsity', sport.id === 'Swimming' ? 'Girls' : 'Boys')}
+                    onClick={() => onSelectTeam(sport.id, 'SMA', 'Combined')}
                     className="relative w-full bg-[#5A1C2C] text-white px-5 py-3 rounded-full font-bold text-sm z-10 hover:scale-[1.02] active:scale-95 transition-all shadow-md flex items-center justify-center uppercase tracking-wide border border-white/20"
                   >
-                    Varsity Team
+                    SMA Combined
                   </button>
                 </div>
               )}

@@ -16,9 +16,9 @@ import { useAthleticsData } from './hooks/useAthleticsData';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<AppTab>('Home');
-  const [activeSport, setActiveSport] = useState<SportTab>('Basketball');
+  const [activeSport, setActiveSport] = useState<SportTab>('Soccer');
   const [activeGender, setActiveGender] = useState<GenderTab>('Boys');
-  const [activeDivision, setActiveDivision] = useState<DivisionTab>('Varsity');
+  const [activeDivision, setActiveDivision] = useState<DivisionTab>('SMA');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   
   const [pendingSport, setPendingSport] = useState<SportTab | null>(null);
@@ -71,10 +71,22 @@ export default function App() {
 
         {activeTab === 'Home' && <HomeScreen onNavigateToNews={() => handleTabChange('News')} />}
         {activeTab === 'Schedule' && (
-          <SportScheduleScreen sport={activeSport} gender={activeGender} onSportChange={setActiveSport} />
+          <SportScheduleScreen
+            sport={activeSport}
+            gender={activeGender}
+            division={activeDivision}
+            onSportChange={setActiveSport}
+            athleticsDataState={athleticsDataState}
+          />
         )}
         {activeTab === 'TeamPage' && (
-          <TeamPageScreen sport={activeSport} division={activeDivision} gender={activeGender} onNavigateToACSC={() => handleTabChange('ACSC')} />
+          <TeamPageScreen
+            sport={activeSport}
+            division={activeDivision}
+            gender={activeGender}
+            onNavigateToACSC={() => handleTabChange('ACSC')}
+            athleticsDataState={athleticsDataState}
+          />
         )}
         {activeTab === 'Teams' && (
           <TeamsScreen onSelectTeam={navigateToTeam} />
@@ -97,6 +109,27 @@ export default function App() {
             />
           )}
         </AnimatePresence>
+
+        <div style={{
+          position: "fixed",
+          right: 8,
+          bottom: 8,
+          zIndex: 9999,
+          background: "rgba(0,0,0,0.85)",
+          border: "1px solid rgba(191,215,234,0.25)",
+          borderRadius: 8,
+          padding: 10,
+          fontSize: 11,
+          color: "#BFD7EA",
+          maxWidth: 260
+        }}>
+          <div>Sheets loading: {String(athleticsDataState.loading)}</div>
+          <div>Sync error: {athleticsDataState.error || "none"}</div>
+          <div>Raw standings rows: {athleticsDataState.data.rawStandingRows.length}</div>
+          <div>Parsed standings rows: {athleticsDataState.data.soccerStandings.length}</div>
+          <div>Raw match rows: {athleticsDataState.data.rawMatchRows.length}</div>
+          <div>Parsed match rows: {athleticsDataState.data.soccerMatches.length}</div>
+        </div>
       </main>
 
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
