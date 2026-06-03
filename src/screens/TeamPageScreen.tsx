@@ -9,7 +9,6 @@ interface TeamPageScreenProps {
   sport: SportTab;
   division: DivisionTab;
   gender: GenderTab;
-  onNavigateToACSC?: () => void;
   athleticsDataState?: AthleticsDataState;
 }
 
@@ -17,7 +16,6 @@ export default function TeamPageScreen({
   sport,
   division,
   gender,
-  onNavigateToACSC,
   athleticsDataState,
 }: TeamPageScreenProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -170,29 +168,31 @@ export default function TeamPageScreen({
       </div>
 
       <div className="px-4 mt-8 space-y-12">
-        <button 
-           onClick={onNavigateToACSC}
-           className="w-full bg-gradient-to-r from-[#5A1C2C] via-[#7A001F] to-[#3A101B] text-white p-4 rounded-2xl font-bold flex items-center justify-between hover:brightness-110 transition-all shadow-[0_18px_45px_rgba(90,28,44,0.35)] border border-[#BFD7EA]/10 group overflow-hidden relative"
+        <a
+          href="https://acscconference.com/boys-soccer/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="w-full bg-gradient-to-r from-[#5A1C2C] via-[#7A001F] to-[#3A101B] text-white p-4 rounded-2xl font-bold flex items-center justify-between hover:brightness-110 transition-all shadow-[0_18px_45px_rgba(90,28,44,0.35)] border border-[#BFD7EA]/10 group overflow-hidden relative"
         >
-           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(191,215,234,0.18),transparent_35%)] pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(191,215,234,0.18),transparent_35%)] pointer-events-none" />
 
-           <div className="flex items-center gap-3 relative z-10">
-              <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
-                 <Trophy className="text-yellow-300 group-hover:scale-110 transition-transform" />
-              </div>
+          <div className="flex items-center gap-3 relative z-10">
+            <div className="w-11 h-11 rounded-xl bg-white/10 border border-white/10 flex items-center justify-center">
+              <Trophy className="text-yellow-300 group-hover:scale-110 transition-transform" />
+            </div>
 
-              <div className="flex flex-col items-start leading-none gap-1">
-                 <span className="uppercase tracking-[0.22em] text-[10px] opacity-75">
-                    ACSC Results
-                 </span>
-                 <span className="text-lg font-black tracking-tight drop-shadow-sm">
-                    View ACSC Results
-                 </span>
-              </div>
-           </div>
+            <div className="flex flex-col items-start leading-none gap-1">
+              <span className="uppercase tracking-[0.22em] text-[10px] opacity-75">
+                ACSC Website
+              </span>
+              <span className="text-lg font-black tracking-tight drop-shadow-sm">
+                Open ACSC Results
+              </span>
+            </div>
+          </div>
 
-           <ChevronRight className="relative z-10 group-hover:translate-x-1 transition-transform" />
-        </button>
+          <ChevronRight className="relative z-10 group-hover:translate-x-1 transition-transform" />
+        </a>
 
         <div className="mb-6 flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -224,7 +224,7 @@ export default function TeamPageScreen({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        <div className="space-y-10">
           {/* STANDINGS COLUMN */}
           <section className="space-y-4">
             <div className="bg-subcard rounded-2xl border border-border/10 overflow-hidden shadow-md">
@@ -377,7 +377,7 @@ export default function TeamPageScreen({
             Match Results
           </h3>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <div className="space-y-4">
             {athleticsDataState?.loading && finishedMatches.length === 0 ? (
               <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse lg:col-span-2">
                 <p className="text-sm font-black uppercase tracking-widest text-foreground/50">

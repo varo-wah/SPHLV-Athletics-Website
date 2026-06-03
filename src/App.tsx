@@ -6,7 +6,6 @@ import Sidebar from './components/Sidebar';
 import SportScheduleScreen from './screens/SportScheduleScreen';
 import NewsScreen from './screens/NewsScreen';
 import HomeScreen from './screens/HomeScreen';
-import AcscScreen from './screens/AcscScreen';
 import TeamPageScreen from './screens/TeamPageScreen';
 import TeamsScreen from './screens/TeamsScreen';
 import StandingsScreen from './screens/StandingsScreen';
@@ -65,7 +64,6 @@ export default function App() {
             sport={activeSport}
             division={activeDivision}
             gender={activeGender}
-            onNavigateToACSC={() => handleTabChange('ACSC')}
             athleticsDataState={athleticsDataState}
           />
         )}
@@ -73,7 +71,6 @@ export default function App() {
           <TeamsScreen onSelectTeam={navigateToTeam} />
         )}
         {activeTab === 'News' && <NewsScreen />}
-        {activeTab === 'ACSC' && <AcscScreen onBack={() => handleTabChange('TeamPage')} />}
         
         <Sidebar 
           isOpen={isSidebarOpen} 
