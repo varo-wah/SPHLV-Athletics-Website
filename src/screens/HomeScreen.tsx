@@ -52,7 +52,7 @@ export default function HomeScreen({ onNavigateToNews }: { onNavigateToNews?: ()
       {/* New LV Athletics Banner */}
       <div className="hero-image-card">
         <img
-          src="https://res.cloudinary.com/dpgt445lg/image/upload/v1780358463/ACSC_Girls_football_26_1_o8grc8.png"
+          src="https://res.cloudinary.com/dpgt445lg/image/upload/v1780443630/ACSC_Girls_football_26_2_bcdvak.png"
           alt="LV Athletics Banner"
           className="hero-banner-img"
         />

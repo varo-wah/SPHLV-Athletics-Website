@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { AnimatePresence } from 'motion/react';
 import { AppTab, SportTab, GenderTab, DivisionTab } from './types';
 import BottomNav from './components/BottomNav';
 import TopBar from './components/TopBar';
 import Sidebar from './components/Sidebar';
-import TeamSelectionModal from './components/TeamSelectionModal';
 import SportScheduleScreen from './screens/SportScheduleScreen';
 import NewsScreen from './screens/NewsScreen';
 import HomeScreen from './screens/HomeScreen';
@@ -20,29 +18,12 @@ export default function App() {
   const [activeGender, setActiveGender] = useState<GenderTab>('Boys');
   const [activeDivision, setActiveDivision] = useState<DivisionTab>('SMA');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  
-  const [pendingSport, setPendingSport] = useState<SportTab | null>(null);
 
   const athleticsDataState = useAthleticsData();
 
   const handleTabChange = (tab: AppTab) => {
     setActiveTab(tab);
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const handleSportClick = (sport: SportTab) => {
-    setPendingSport(sport);
-  };
-
-  const handleTeamSelect = (division: DivisionTab, gender: GenderTab) => {
-    if (pendingSport) {
-      setActiveSport(pendingSport);
-      setActiveDivision(division);
-      setActiveGender(gender);
-      setActiveTab('TeamPage');
-    }
-    setPendingSport(null);
-    setIsSidebarOpen(false);
   };
 
   const navigateToTeam = (sport: SportTab, division: DivisionTab, gender: GenderTab) => {
@@ -97,18 +78,8 @@ export default function App() {
         <Sidebar 
           isOpen={isSidebarOpen} 
           onClose={() => setIsSidebarOpen(false)} 
-          onSelectSport={handleSportClick} 
+          onSelectTeam={navigateToTeam} 
         />
-
-        <AnimatePresence>
-          {pendingSport && (
-            <TeamSelectionModal 
-              sport={pendingSport} 
-              onSelect={handleTeamSelect} 
-              onClose={() => setPendingSport(null)} 
-            />
-          )}
-        </AnimatePresence>
 
         <div style={{
           position: "fixed",

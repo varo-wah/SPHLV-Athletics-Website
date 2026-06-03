@@ -24,6 +24,20 @@ export default function TeamPageScreen({
 
   const isCustomBanner = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
 
+  const getCustomBannerUrl = (): string | null => {
+    if (sport === 'Soccer' && division === 'SMA') {
+      if (gender === 'Boys') {
+        return "https://res.cloudinary.com/dpgt445lg/image/upload/v1780125729/Varsity_boys_soccer_banner_mqpohw.png";
+      }
+      if (gender === 'Girls') {
+        return "https://res.cloudinary.com/dpgt445lg/image/upload/v1780443630/ACSC_Girls_football_26_2_bcdvak.png";
+      }
+    }
+    return null;
+  };
+
+  const customBannerUrl = getCustomBannerUrl();
+
   const defaultCarouselImages = [
     'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', // blank transparent
     'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
@@ -127,10 +141,10 @@ export default function TeamPageScreen({
       {/* Hero Header */}
       <div className="relative w-full border-b-[8px] border-[#5A1C2C] border-t-[8px]">
         <div className="aspect-[21/6] relative w-full overflow-hidden bg-black">
-          {isCustomBanner ? (
+          {customBannerUrl ? (
             <img 
-              src="https://res.cloudinary.com/dpgt445lg/image/upload/v1780125729/Varsity_boys_soccer_banner_mqpohw.png" 
-              alt="Varsity Boys Soccer" 
+              src={customBannerUrl} 
+              alt={`${division} ${gender} ${sportLabels[sport]}`} 
               className="w-full h-full object-cover"
             />
           ) : (
@@ -254,7 +268,7 @@ export default function TeamPageScreen({
                       const rank = row.rank !== null ? String(row.rank) : String(idx + 1);
 
                       return (
-                        <div key={row.id || idx} className="grid grid-cols-12 px-4 py-4 border-b border-border/5 items-center relative group">
+                        <div key={`${row.id || idx}-${idx}`} className="grid grid-cols-12 px-4 py-4 border-b border-border/5 items-center relative group">
                           {idx === 0 && <div className="absolute left-0 top-0 bottom-0 w-1 bg-[#B5413F]" />}
                           <div className="col-span-1">
                             <span className="font-mono text-xs font-bold text-foreground/50">{rank}</span>
@@ -313,9 +327,9 @@ export default function TeamPageScreen({
                   </p>
                 </div>
               ) : (
-                upcomingMatches.map((match) => (
+                upcomingMatches.map((match, idx) => (
                   <div
-                    key={match.id}
+                    key={`${match.id}-${idx}`}
                     className={`relative bg-subcard rounded-2xl p-5 border border-border/10 border-l-[6px] ${matchAccentClass(match)} shadow-md overflow-hidden`}
                   >
                     <div className="flex items-center justify-between gap-5">
@@ -380,9 +394,9 @@ export default function TeamPageScreen({
                 </p>
               </div>
             ) : (
-              finishedMatches.map((match) => (
+              finishedMatches.map((match, idx) => (
                 <div
-                  key={match.id}
+                  key={`${match.id}-${idx}`}
                   className={`relative bg-subcard rounded-2xl p-5 border border-border/10 border-l-[6px] ${matchAccentClass(match)} shadow-md overflow-hidden`}
                 >
                   <div className="flex items-center justify-between gap-5">

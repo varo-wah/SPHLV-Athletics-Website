@@ -111,8 +111,8 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
               </thead>
 
               <tbody>
-                {standings.map((standing) => (
-                  <tr key={standing.id} className="border-b border-border/5 last:border-0">
+                {standings.map((standing, index) => (
+                  <tr key={`${standing.id}-${index}`} className="border-b border-border/5 last:border-0">
                     <td className="p-3 font-black">{standing.rank ?? "-"}</td>
                     <td className="p-3 font-bold">{standing.team}</td>
                     <td className="p-3 text-foreground/60">{standing.level}</td>
