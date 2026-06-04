@@ -1,5 +1,5 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users, Search, Trophy, ChevronRight, MapPin } from 'lucide-react';
+import { Users, Search, Trophy, ChevronRight, MapPin, ChevronDown, ChevronUp } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -19,6 +19,8 @@ export default function TeamPageScreen({
   athleticsDataState,
 }: TeamPageScreenProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [showUpcomingMatches, setShowUpcomingMatches] = useState(true);
+  const [showMatchResults, setShowMatchResults] = useState(false);
 
   const isCustomBanner = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
 
@@ -297,37 +299,141 @@ export default function TeamPageScreen({
 
           {/* UPCOMING MATCHES COLUMN */}
           <section className="space-y-4">
-            <h3 className="text-3xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-5">
-              Upcoming Matches
-            </h3>
+            <button
+              type="button"
+              onClick={() => setShowUpcomingMatches((current) => !current)}
+              className="w-full flex items-center justify-between gap-4 text-left group"
+            >
+              <div className="flex items-center gap-4">
+                <h3 className="text-3xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-5">
+                  Upcoming Matches
+                </h3>
 
+                <span className="rounded-full border border-border/10 bg-subcard px-3 py-1 text-[10px] font-black uppercase tracking-widest text-foreground/45">
+                  {upcomingMatches.length}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2 rounded-xl border border-border/10 bg-subcard px-4 py-2 text-xs font-black uppercase tracking-widest text-[#B5413F] hover:text-foreground transition-colors">
+                {showUpcomingMatches ? 'Hide' : 'Show'}
+                {showUpcomingMatches ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </div>
+            </button>
+
+            {showUpcomingMatches && (
+              <div className="space-y-4">
+                {athleticsDataState?.loading && upcomingMatches.length === 0 ? (
+                  <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse">
+                    <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
+                      Loading matches from Google Sheets...
+                    </p>
+                  </div>
+                ) : athleticsDataState?.error ? (
+                  <div className="bg-subcard rounded-2xl p-8 border border-red-500/20 text-center">
+                    <p className="text-sm font-black uppercase tracking-widest text-red-400">
+                      Match sync error
+                    </p>
+                    <p className="text-xs text-foreground/40 mt-2">
+                      {athleticsDataState.error}
+                    </p>
+                  </div>
+                ) : upcomingMatches.length === 0 ? (
+                  <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center bg-[#5A1C2C]/5">
+                    <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
+                      No upcoming matches
+                    </p>
+                    <p className="text-xs text-foreground/40 mt-2">
+                      Upcoming matches will appear when the sheet status is not Finished.
+                    </p>
+                  </div>
+                ) : (
+                  upcomingMatches.map((match, idx) => (
+                    <div
+                      key={`${match.id}-${idx}`}
+                      className={`relative bg-subcard rounded-2xl p-5 border border-border/10 border-l-[6px] ${matchAccentClass(match)} shadow-md overflow-hidden`}
+                    >
+                      <div className="flex items-center justify-between gap-5">
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <h4 className="text-xl font-black tracking-wide text-foreground uppercase">
+                              VS {match.opponent || 'TBD'}
+                            </h4>
+
+                            <span className={`px-2.5 py-1 rounded-md text-xs font-black uppercase tracking-widest border ${resultBadgeClass(match.result)}`}>
+                              {match.result || match.status}
+                            </span>
+                          </div>
+
+                          <p className="mt-3 text-xs font-black uppercase tracking-[0.22em] text-[#B5413F]">
+                            {matchLocationText(match)}
+                          </p>
+
+                          {(match.date || match.time || match.venue) && (
+                            <p className="mt-2 text-xs text-foreground/45">
+                              {match.date || 'Date TBD'} {match.time ? `· ${match.time}` : ''} {match.venue ? `· ${match.venue}` : ''}
+                            </p>
+                          )}
+                        </div>
+
+                        <div className="text-right shrink-0">
+                          <p className="text-sm font-black uppercase tracking-widest text-foreground">
+                            {match.date || 'TBD'}
+                          </p>
+                          <p className="text-xs text-foreground/45 mt-1">
+                            {match.time || ''}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </section>
+        </div>
+
+        {/* MATCH RESULTS SECTION */}
+        <section className="space-y-4 mt-10">
+          <button
+            type="button"
+            onClick={() => setShowMatchResults((current) => !current)}
+            className="w-full flex items-center justify-between gap-4 text-left group"
+          >
+            <div className="flex items-center gap-4">
+              <h3 className="text-3xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-5">
+                Match Results
+              </h3>
+
+              <span className="rounded-full border border-border/10 bg-subcard px-3 py-1 text-[10px] font-black uppercase tracking-widest text-foreground/45">
+                {finishedMatches.length}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 rounded-xl border border-border/10 bg-subcard px-4 py-2 text-xs font-black uppercase tracking-widest text-[#B5413F] hover:text-foreground transition-colors">
+              {showMatchResults ? 'Hide' : 'Show'}
+              {showMatchResults ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </div>
+          </button>
+
+          {showMatchResults && (
             <div className="space-y-4">
-              {athleticsDataState?.loading && upcomingMatches.length === 0 ? (
+              {athleticsDataState?.loading && finishedMatches.length === 0 ? (
                 <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse">
                   <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
-                    Loading matches from Google Sheets...
+                    Loading results from Google Sheets...
                   </p>
                 </div>
-              ) : athleticsDataState?.error ? (
-                <div className="bg-subcard rounded-2xl p-8 border border-red-500/20 text-center">
-                  <p className="text-sm font-black uppercase tracking-widest text-red-400">
-                    Match sync error
-                  </p>
-                  <p className="text-xs text-foreground/40 mt-2">
-                    {athleticsDataState.error}
-                  </p>
-                </div>
-              ) : upcomingMatches.length === 0 ? (
+              ) : finishedMatches.length === 0 ? (
                 <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center bg-[#5A1C2C]/5">
                   <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
-                    No upcoming matches
+                    No match results yet
                   </p>
                   <p className="text-xs text-foreground/40 mt-2">
-                    Upcoming matches will appear when the sheet status is not Finished.
+                    Finished matches will appear here after scores are entered.
                   </p>
                 </div>
               ) : (
-                upcomingMatches.map((match, idx) => (
+                finishedMatches.map((match, idx) => (
                   <div
                     key={`${match.id}-${idx}`}
                     className={`relative bg-subcard rounded-2xl p-5 border border-border/10 border-l-[6px] ${matchAccentClass(match)} shadow-md overflow-hidden`}
@@ -353,97 +459,31 @@ export default function TeamPageScreen({
                             {match.date || 'Date TBD'} {match.time ? `· ${match.time}` : ''} {match.venue ? `· ${match.venue}` : ''}
                           </p>
                         )}
+
+                        {match.notes && (
+                          <p className="text-xs text-foreground/40 mt-2 italic bg-foreground/[0.02] p-2 rounded border border-border/5">
+                            {match.notes}
+                          </p>
+                        )}
                       </div>
 
                       <div className="text-right shrink-0">
-                        <p className="text-sm font-black uppercase tracking-widest text-foreground">
-                          {match.date || 'TBD'}
-                        </p>
-                        <p className="text-xs text-foreground/45 mt-1">
-                          {match.time || ''}
-                        </p>
+                        {match.scoreFor !== null && match.scoreAgainst !== null ? (
+                          <p className="text-4xl font-black tracking-tight text-foreground">
+                            {formatScore(match)}
+                          </p>
+                        ) : (
+                          <p className="text-lg font-black text-foreground/40">
+                            —
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
                 ))
               )}
             </div>
-          </section>
-        </div>
-
-        {/* MATCH RESULTS SECTION */}
-        <section className="space-y-4 mt-10">
-          <h3 className="text-3xl font-black tracking-tight text-foreground uppercase italic border-l-4 border-[#5A1C2C] pl-5">
-            Match Results
-          </h3>
-
-          <div className="space-y-4">
-            {athleticsDataState?.loading && finishedMatches.length === 0 ? (
-              <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse lg:col-span-2">
-                <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
-                  Loading results from Google Sheets...
-                </p>
-              </div>
-            ) : finishedMatches.length === 0 ? (
-              <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center bg-[#5A1C2C]/5 lg:col-span-2">
-                <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
-                  No match results yet
-                </p>
-                <p className="text-xs text-foreground/40 mt-2">
-                  Finished matches will appear here after scores are entered.
-                </p>
-              </div>
-            ) : (
-              finishedMatches.map((match, idx) => (
-                <div
-                  key={`${match.id}-${idx}`}
-                  className={`relative bg-subcard rounded-2xl p-5 border border-border/10 border-l-[6px] ${matchAccentClass(match)} shadow-md overflow-hidden`}
-                >
-                  <div className="flex items-center justify-between gap-5">
-                    <div className="min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h4 className="text-xl font-black tracking-wide text-foreground uppercase">
-                          VS {match.opponent || 'TBD'}
-                        </h4>
-
-                        <span className={`px-2.5 py-1 rounded-md text-xs font-black uppercase tracking-widest border ${resultBadgeClass(match.result)}`}>
-                          {match.result || match.status}
-                        </span>
-                      </div>
-
-                      <p className="mt-3 text-xs font-black uppercase tracking-[0.22em] text-[#B5413F]">
-                        {matchLocationText(match)}
-                      </p>
-
-                      {(match.date || match.time || match.venue) && (
-                        <p className="mt-2 text-xs text-foreground/45">
-                          {match.date || 'Date TBD'} {match.time ? `· ${match.time}` : ''} {match.venue ? `· ${match.venue}` : ''}
-                        </p>
-                      )}
-
-                      {match.notes && (
-                        <p className="text-xs text-foreground/40 mt-2 italic bg-foreground/[0.02] p-2 rounded border border-border/5">
-                          {match.notes}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="text-right shrink-0">
-                      {match.scoreFor !== null && match.scoreAgainst !== null ? (
-                        <p className="text-4xl font-black tracking-tight text-foreground">
-                          {formatScore(match)}
-                        </p>
-                      ) : (
-                        <p className="text-lg font-black text-foreground/40">
-                          —
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          )}
         </section>
 
         {/* JAAC Bracket */}
