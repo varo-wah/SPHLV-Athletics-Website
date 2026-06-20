@@ -20,11 +20,14 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
     <div className="px-4 pb-24 space-y-6">
       <div>
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-foreground/45">
-          Google Sheets Sync
+          Live Soccer Table
         </p>
         <h1 className="text-3xl font-black uppercase tracking-tight text-foreground">
           Soccer Standings
         </h1>
+        <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground/40">
+          Basketball and other sports will unlock after their sheets are published.
+        </p>
       </div>
 
       <div className="flex gap-2 overflow-x-auto pb-2">
@@ -81,10 +84,10 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
       {!loading && !error && standings.length === 0 && (
         <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center">
           <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
-            Standings will appear once uploaded
+            No soccer standings for this filter yet
           </p>
           <p className="text-xs text-foreground/40 mt-2">
-            Check the Soccer_Standings Google Sheet tab and confirm the headers.
+            Confirm the Soccer Standings sheet has rows for the selected level and gender.
           </p>
         </div>
       )}

@@ -9,6 +9,40 @@ interface HomeScreenProps {
 }
 
 export default function HomeScreen({ athleticsDataState, onNavigateToNews }: HomeScreenProps) {
+  const formatMatchDateTime = (match: SheetMatch | null) => {
+    if (!match) return 'Schedule pending';
+
+    const parsedDate = match.date ? new Date(`${match.date} ${match.time || '00:00'}`) : null;
+
+    if (parsedDate && !Number.isNaN(parsedDate.getTime())) {
+      const date = new Intl.DateTimeFormat('en-US', {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+      }).format(parsedDate);
+
+      return `${date}${match.time ? ` @ ${match.time}` : ''}`;
+    }
+
+    if (match.date || match.time) {
+      return `${match.date || 'Date TBD'}${match.time ? ` @ ${match.time}` : ''}`;
+    }
+
+    return 'Date TBD';
+  };
+
+  const getMatchTime = (match: SheetMatch) => {
+    const parsedDate = match.date ? new Date(`${match.date} ${match.time || '00:00'}`) : null;
+    return parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate.getTime() : Number.MAX_SAFE_INTEGER;
+  };
+
+  const nextUpcomingMatch = useMemo(() => {
+    const upcomingMatches = (athleticsDataState.data.soccerMatches || [])
+      .filter((match: SheetMatch) => match.status !== 'Finished')
+      .sort((a: SheetMatch, b: SheetMatch) => getMatchTime(a) - getMatchTime(b));
+
+    return upcomingMatches[0] || null;
+  }, [athleticsDataState.data.soccerMatches]);
 
   const recentFinishedMatch = useMemo(() => {
     const finishedMatches = (athleticsDataState.data.soccerMatches || [])
@@ -51,6 +85,23 @@ export default function HomeScreen({ athleticsDataState, onNavigateToNews }: Hom
   const recentResultSubtitle = recentFinishedMatch
     ? `${recentFinishedMatch.tournament} · ${recentFinishedMatch.date || 'Date TBD'}${recentFinishedMatch.venue ? ` · ${recentFinishedMatch.venue}` : ''}`
     : 'Finished match results will appear after coaches update the sheet.';
+
+  const nextMatchTitle = nextUpcomingMatch
+    ? `${nextUpcomingMatch.level} ${nextUpcomingMatch.genderGroup} Soccer vs ${nextUpcomingMatch.opponent}`
+    : 'No upcoming soccer match';
+
+  const nextMatchMeta = athleticsDataState.loading
+    ? 'Loading live schedule...'
+    : formatMatchDateTime(nextUpcomingMatch);
+
+  const syncStatus = athleticsDataState.error
+    ? `Sync issue: ${athleticsDataState.error}`
+    : athleticsDataState.refreshing
+      ? 'Refreshing Google Sheets...'
+      : athleticsDataState.lastUpdated
+        ? `Updated ${athleticsDataState.lastUpdated}`
+        : null;
+
   return (
     <div className="animate-in fade-in duration-500 pb-8 px-4 space-y-6 mt-4">
       {/* New LV Athletics Banner */}
@@ -73,12 +124,16 @@ export default function HomeScreen({ athleticsDataState, onNavigateToNews }: Hom
               NEXT MATCH
             </h3>
             <p className="text-lg font-black text-white mt-4 uppercase tracking-wide leading-snug">
-              Varsity Girls<br />
-              Soccer vs BSJ
+              {athleticsDataState.loading ? 'Loading live schedule' : nextMatchTitle}
             </p>
             <p className="text-[10px] text-white/70 tracking-widest mt-4 uppercase font-medium">
-              FRI, NOV 15 @ 7:00 PM
+              {nextMatchMeta}
             </p>
+            {nextUpcomingMatch?.venue && (
+              <p className="text-[10px] text-white/55 tracking-widest mt-2 uppercase font-medium">
+                {nextUpcomingMatch.venue}
+              </p>
+            )}
           </div>
         </div>
 
@@ -99,6 +154,16 @@ export default function HomeScreen({ athleticsDataState, onNavigateToNews }: Hom
           </div>
         </button>
       </div>
+
+      {syncStatus && (
+        <div className={`rounded-xl border px-4 py-3 text-[11px] font-bold uppercase tracking-[0.18em] ${
+          athleticsDataState.error
+            ? 'border-red-500/20 bg-red-500/5 text-red-400'
+            : 'border-border/10 bg-subcard text-foreground/45'
+        }`}>
+          {syncStatus}
+        </div>
+      )}
 
       {/* Recent Results Header */}
       <section className="space-y-4 pt-2">

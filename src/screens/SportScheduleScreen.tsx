@@ -2,6 +2,7 @@ import { GenderTab, SportTab, DivisionTab } from '../types';
 import { MapPin } from 'lucide-react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { SheetMatch } from '../services/parsers';
+import { useEffect } from 'react';
 
 interface SportScheduleScreenProps {
   sport: SportTab;
@@ -27,7 +28,13 @@ export default function SportScheduleScreen({
     }
   };
 
-  const SPORTS_LIST: SportTab[] = ['Basketball', 'Volleyball', 'Soccer', 'Badminton', 'TrackAndField'];
+  const SPORTS_LIST: SportTab[] = ['Soccer'];
+
+  useEffect(() => {
+    if (sport !== 'Soccer') {
+      onSportChange('Soccer');
+    }
+  }, [onSportChange, sport]);
 
   const currentMatches = data.soccerMatches.filter((match) => {
     return (
@@ -44,8 +51,11 @@ export default function SportScheduleScreen({
       {/* Header */}
       <div>
         <h2 className="text-3xl font-black text-foreground leading-[1] mb-6 tracking-tight uppercase px-2">
-          Tournament Schedule
+          Soccer Schedule
         </h2>
+        <p className="px-2 mb-4 text-xs font-bold uppercase tracking-[0.18em] text-foreground/45">
+          Live from published Google Sheets
+        </p>
         
         {/* Sport selection pills */}
         <div className="flex overflow-x-auto gap-3 pb-4 px-2 -mx-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] scroll-smooth">
@@ -96,7 +106,7 @@ export default function SportScheduleScreen({
               Schedule not available yet
             </p>
             <p className="text-xs text-foreground/40 mt-2">
-              Add Soccer_Matches CSV link or confirm rows match the selected sport, level, and gender.
+              Soccer is the only live schedule enabled in this stage. Confirm the sheet rows match the selected level and gender.
             </p>
           </div>
         )}

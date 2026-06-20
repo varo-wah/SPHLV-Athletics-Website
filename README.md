@@ -1,20 +1,36 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# SPHLV Athletics Website
 
-# Run and deploy your AI Studio app
+Live athletics site for SPH LV schedules, standings, team pages, and match results.
 
-This contains everything you need to run your app locally.
+## Current Data Scope
 
-View your app in AI Studio: https://ai.studio/apps/1b16a351-cf76-44cb-a2e4-82c32d563338
+- Soccer Matches and Soccer Standings are synced from published Google Sheets CSV URLs.
+- Basketball and other sports are intentionally disabled until their published sheet URLs are ready.
+- Netlify production uses `/api/sheets` through a Netlify Function so Google Sheets CSV fetches do not fail in the browser.
 
-## Run Locally
-
-**Prerequisites:**  Node.js
-
+## Local Development
 
 1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+
+   ```bash
+   npm install
+   ```
+
+2. Start the Vite dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+3. Open the local URL printed by Vite.
+
+## Verification
+
+```bash
+npm run lint
+npm run build
+```
+
+## Deployment
+
+Netlify builds with `npm run build`, publishes `dist`, and serves the sheets proxy from `netlify/functions/sheets.mts`.
