@@ -49,7 +49,12 @@ export default function App() {
           </div>
         )}
 
-        {activeTab === 'Home' && <HomeScreen onNavigateToNews={() => handleTabChange('News')} />}
+        {activeTab === 'Home' && (
+          <HomeScreen
+            athleticsDataState={athleticsDataState}
+            onNavigateToNews={() => handleTabChange('News')}
+          />
+        )}
         {activeTab === 'Schedule' && (
           <SportScheduleScreen
             sport={activeSport}
@@ -70,6 +75,9 @@ export default function App() {
         {activeTab === 'Teams' && (
           <TeamsScreen onSelectTeam={navigateToTeam} />
         )}
+        {activeTab === 'Standings' && (
+          <StandingsScreen athleticsDataState={athleticsDataState} />
+        )}
         {activeTab === 'News' && <NewsScreen />}
         
         <Sidebar 
@@ -77,34 +85,6 @@ export default function App() {
           onClose={() => setIsSidebarOpen(false)} 
           onSelectTeam={navigateToTeam} 
         />
-
-        <div style={{
-          position: "fixed",
-          right: 8,
-          bottom: 8,
-          zIndex: 9999,
-          background: "rgba(0,0,0,0.85)",
-          border: "1px solid rgba(191,215,234,0.25)",
-          borderRadius: 8,
-          padding: 10,
-          fontSize: 11,
-          color: "#BFD7EA",
-          maxWidth: 260
-        }}>
-          <div>Loading: {String(athleticsDataState.loading)}</div>
-          <div>Refreshing: {String(athleticsDataState.refreshing)}</div>
-          <div>Sync error: {athleticsDataState.error || "none"}</div>
-          <div>Last updated: {athleticsDataState.lastUpdated || "never"}</div>
-          <div>Soccer raw matches: {athleticsDataState.data.rawSoccerMatchRows.length}</div>
-          <div>Soccer parsed matches: {athleticsDataState.data.soccerMatches.length}</div>
-          <div>Soccer raw standings: {athleticsDataState.data.rawSoccerStandingRows.length}</div>
-          <div>Soccer parsed standings: {athleticsDataState.data.soccerStandings.length}</div>
-          <div>Basketball raw matches: {athleticsDataState.data.rawBasketballMatchRows.length}</div>
-          <div>Basketball parsed matches: {athleticsDataState.data.basketballMatches.length}</div>
-          <div>Basketball raw standings: {athleticsDataState.data.rawBasketballStandingRows.length}</div>
-          <div>Basketball parsed standings: {athleticsDataState.data.basketballStandings.length}</div>
-          <div>All parsed matches: {athleticsDataState.data.matches.length}</div>
-        </div>
       </main>
 
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />

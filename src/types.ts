@@ -24,6 +24,7 @@ export type MatchStage = 'APR-7' | 'APR-8' | 'APR-9' | 'APR-10' | 'APR-11';
 export type AppTab =
   | 'Home'
   | 'Schedule'
+  | 'Standings'
   | 'News'
   | 'ACSC'
   | 'TeamPage'

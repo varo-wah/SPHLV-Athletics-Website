@@ -7,8 +7,7 @@ export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
     return [];
   }
 
-  const separator = url.includes("?") ? "&" : "?";
-  const cacheBustedUrl = `${url}${separator}cacheBust=${Date.now()}`;
+  const cacheBustedUrl = `/api/sheets?url=${encodeURIComponent(url)}&cacheBust=${Date.now()}`;
 
   const response = await fetch(cacheBustedUrl, {
     method: "GET",

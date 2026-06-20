@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview",
+    "preview": "npm run build && node server.mjs",
+    "start": "node server.mjs",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit"
   },

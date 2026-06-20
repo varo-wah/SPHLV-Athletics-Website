@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Home, CalendarDays, FileText, Newspaper, Globe, Users } from 'lucide-react';
+import { Home, CalendarDays, Newspaper, Trophy, Users } from 'lucide-react';
 import { AppTab } from '../types';
 
 interface BottomNavProps {
@@ -12,6 +12,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
     { id: 'Home', label: 'HOME', icon: Home },
     { id: 'Teams', label: 'TEAMS', icon: Users },
     { id: 'Schedule', label: 'SCHEDULE', icon: CalendarDays },
+    { id: 'Standings', label: 'TABLE', icon: Trophy },
     { id: 'News', label: 'NEWS', icon: Newspaper },
   ];
 

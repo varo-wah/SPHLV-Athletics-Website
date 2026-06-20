@@ -1,10 +1,14 @@
 import { Trophy } from 'lucide-react';
 import { useMemo } from 'react';
-import { useAthleticsData } from '../hooks/useAthleticsData';
+import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { SheetMatch } from '../services/parsers';
 
-export default function HomeScreen({ onNavigateToNews }: { onNavigateToNews?: () => void }) {
-  const athleticsDataState = useAthleticsData();
+interface HomeScreenProps {
+  athleticsDataState: AthleticsDataState;
+  onNavigateToNews?: () => void;
+}
+
+export default function HomeScreen({ athleticsDataState, onNavigateToNews }: HomeScreenProps) {
 
   const recentFinishedMatch = useMemo(() => {
     const finishedMatches = (athleticsDataState.data.soccerMatches || [])
