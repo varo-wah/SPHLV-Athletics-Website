@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { SHEET_URLS } from "../config/sheets";
-import { CsvRow, fetchCsvRows } from "../services/googleSheets";
+import { MASTER_SCHEDULE_URLS, SHEET_URLS } from "../config/sheets";
+import { CsvRow, fetchCsvMatrix, fetchCsvRows } from "../services/googleSheets";
+import { ScheduleEvent } from "../data/scheduleTypes";
+import { parseMasterScheduleSeason } from "../services/masterScheduleParser";
 import {
   Standing,
   SheetMatch,
@@ -16,6 +18,8 @@ export interface AthleticsData {
   rawSoccerStandingRows: CsvRow[];
   rawBasketballMatchRows: CsvRow[];
   rawBasketballStandingRows: CsvRow[];
+  rawMasterScheduleRows: string[][][];
+  masterScheduleErrorCount: number;
 
   pages: any[];
 
@@ -24,6 +28,8 @@ export interface AthleticsData {
 
   basketballMatches: SheetMatch[];
   basketballStandings: Standing[];
+
+  masterScheduleEvents: ScheduleEvent[];
 }
 
 export interface AthleticsDataState {
@@ -43,6 +49,8 @@ const EMPTY_DATA: AthleticsData = {
   rawSoccerStandingRows: [],
   rawBasketballMatchRows: [],
   rawBasketballStandingRows: [],
+  rawMasterScheduleRows: [],
+  masterScheduleErrorCount: 0,
 
   pages: [],
 
@@ -51,6 +59,8 @@ const EMPTY_DATA: AthleticsData = {
 
   basketballMatches: [],
   basketballStandings: [],
+
+  masterScheduleEvents: [],
 };
 
 export function useAthleticsData(): AthleticsDataState {
@@ -72,16 +82,37 @@ export function useAthleticsData(): AthleticsDataState {
 
       setError(null);
 
+      const masterScheduleResultsPromise = Promise.all(
+        MASTER_SCHEDULE_URLS.map(async (sheet) => {
+          try {
+            return {
+              season: sheet.season,
+              matrix: await fetchCsvMatrix(sheet.url),
+              failed: false,
+            };
+          } catch (error) {
+            console.warn(`Master schedule sync failed for ${sheet.season}:`, error);
+            return {
+              season: sheet.season,
+              matrix: [] as string[][],
+              failed: true,
+            };
+          }
+        })
+      );
+
       const [
         soccerMatchRows,
         soccerStandingRows,
         basketballMatchRows,
         basketballStandingRows,
+        masterScheduleResults,
       ] = await Promise.all([
         fetchCsvRows(SHEET_URLS.soccerMatches),
         fetchCsvRows(SHEET_URLS.soccerStandings),
         fetchCsvRows(SHEET_URLS.basketballMatches),
         fetchCsvRows(SHEET_URLS.basketballStandings),
+        masterScheduleResultsPromise,
       ]);
 
       const soccerMatches = parseMatches(soccerMatchRows, "Soccer");
@@ -89,6 +120,10 @@ export function useAthleticsData(): AthleticsDataState {
 
       const basketballMatches = parseMatches(basketballMatchRows, "Basketball");
       const basketballStandings = parseStandings(basketballStandingRows, "Basketball");
+      const masterScheduleEvents = masterScheduleResults.flatMap((result) => {
+        return parseMasterScheduleSeason(result.season, result.matrix);
+      });
+      const masterScheduleErrorCount = masterScheduleResults.filter((result) => result.failed).length;
 
       const matches = [
         ...soccerMatches,
@@ -108,6 +143,8 @@ export function useAthleticsData(): AthleticsDataState {
         rawSoccerStandingRows: soccerStandingRows,
         rawBasketballMatchRows: basketballMatchRows,
         rawBasketballStandingRows: basketballStandingRows,
+        rawMasterScheduleRows: masterScheduleResults.map((result) => result.matrix),
+        masterScheduleErrorCount,
 
         pages: [],
 
@@ -116,6 +153,8 @@ export function useAthleticsData(): AthleticsDataState {
 
         basketballMatches,
         basketballStandings,
+
+        masterScheduleEvents,
       };
 
       console.log("REFRESHED ATHLETICS DATA:", {
@@ -123,6 +162,8 @@ export function useAthleticsData(): AthleticsDataState {
         soccerStandings: soccerStandings.length,
         basketballMatches: basketballMatches.length,
         basketballStandings: basketballStandings.length,
+        masterScheduleEvents: masterScheduleEvents.length,
+        masterScheduleErrorCount,
         allMatches: matches.length,
         allStandings: standings.length,
         updatedAt: new Date().toLocaleTimeString(),

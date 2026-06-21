@@ -1,5 +1,5 @@
-import { Trophy } from 'lucide-react';
-import { useMemo } from 'react';
+import { Activity, CalendarDays, MapPin, Newspaper, Trophy } from 'lucide-react';
+import { useMemo, useState } from 'react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { SheetMatch } from '../services/parsers';
 
@@ -9,6 +9,8 @@ interface HomeScreenProps {
 }
 
 export default function HomeScreen({ athleticsDataState, onNavigateToNews }: HomeScreenProps) {
+  const [activeFeaturePanel, setActiveFeaturePanel] = useState<'match' | 'result' | 'table'>('match');
+
   const formatMatchDateTime = (match: SheetMatch | null) => {
     if (!match) return 'Schedule pending';
 
@@ -102,9 +104,47 @@ export default function HomeScreen({ athleticsDataState, onNavigateToNews }: Hom
         ? `Updated ${athleticsDataState.lastUpdated}`
         : null;
 
+  const topStanding = useMemo(() => {
+    return [...(athleticsDataState.data.soccerStandings || [])]
+      .sort((a, b) => {
+        const aRank = a.rank ?? Number.MAX_SAFE_INTEGER;
+        const bRank = b.rank ?? Number.MAX_SAFE_INTEGER;
+        return aRank - bRank;
+      })[0] || null;
+  }, [athleticsDataState.data.soccerStandings]);
+
+  const featurePanels = {
+    match: {
+      eyebrow: 'Next Match',
+      title: athleticsDataState.loading ? 'Loading live schedule' : nextMatchTitle,
+      meta: nextMatchMeta,
+      detail: nextUpcomingMatch?.venue || 'Venue TBD',
+      stat: nextUpcomingMatch?.tournament || 'Live',
+      icon: CalendarDays,
+    },
+    result: {
+      eyebrow: 'Latest Result',
+      title: athleticsDataState.loading ? 'Loading latest result' : recentResultTitle,
+      meta: recentResultSubtitle,
+      detail: recentResultScore,
+      stat: recentResultBadge,
+      icon: Trophy,
+    },
+    table: {
+      eyebrow: 'Table Leader',
+      title: topStanding ? `${topStanding.team} leads ${topStanding.level} ${topStanding.genderGroup}` : 'Standings syncing',
+      meta: topStanding ? `${topStanding.tournament} · ${topStanding.points ?? 0} pts` : 'Soccer standings will appear after sync',
+      detail: topStanding ? `${topStanding.wins ?? 0}W ${topStanding.draws ?? 0}D ${topStanding.losses ?? 0}L` : 'No rows yet',
+      stat: topStanding ? `#${topStanding.rank ?? 1}` : 'Table',
+      icon: Activity,
+    },
+  };
+
+  const activeFeature = featurePanels[activeFeaturePanel];
+  const ActiveFeatureIcon = activeFeature.icon;
+
   return (
     <div className="animate-in fade-in duration-500 pb-8 px-4 space-y-6 mt-4">
-      {/* New LV Athletics Banner */}
       <div className="hero-image-card">
         <img
           src="https://res.cloudinary.com/dpgt445lg/image/upload/v1780443630/ACSC_Girls_football_26_2_bcdvak.png"
@@ -114,46 +154,63 @@ export default function HomeScreen({ athleticsDataState, onNavigateToNews }: Hom
         <div className="hero-image-overlay" />
       </div>
 
-      {/* Quick Feature Cards */}
-      <div className="grid grid-cols-2 gap-4">
-        <div className="bg-gradient-to-br from-[#6B1730] via-[#5A1C2C] to-[#431420] p-5 rounded-2xl flex flex-col items-start gap-4 border border-[#BFD7EA]/10 relative overflow-hidden shadow-[0_18px_45px_rgba(90,28,44,0.35)]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(191,215,234,0.14),transparent_36%)] pointer-events-none" />
+      <section className="home-live-card" aria-label="Live athletics summary">
+        <div className="home-live-card__field" aria-hidden="true">
+          <div className="home-live-card__line home-live-card__line--top" />
+          <div className="home-live-card__line home-live-card__line--middle" />
+          <div className="home-live-card__line home-live-card__line--bottom" />
+          <div className="home-live-card__marker home-live-card__marker--one" />
+          <div className="home-live-card__marker home-live-card__marker--two" />
+        </div>
 
-          <div className="text-left w-full relative z-10">
-            <h3 className="text-[13px] font-black text-white tracking-[0.22em] uppercase drop-shadow-md">
-              NEXT MATCH
-            </h3>
-            <p className="text-lg font-black text-white mt-4 uppercase tracking-wide leading-snug">
-              {athleticsDataState.loading ? 'Loading live schedule' : nextMatchTitle}
-            </p>
-            <p className="text-[10px] text-white/70 tracking-widest mt-4 uppercase font-medium">
-              {nextMatchMeta}
-            </p>
-            {nextUpcomingMatch?.venue && (
-              <p className="text-[10px] text-white/55 tracking-widest mt-2 uppercase font-medium">
-                {nextUpcomingMatch.venue}
-              </p>
-            )}
+        <div className="home-live-card__header">
+          <span className="home-live-card__sync">
+            <span />
+            Live Sheet Sync
+          </span>
+
+          <button type="button" onClick={onNavigateToNews} className="home-live-card__news">
+            <Newspaper size={14} />
+            News
+          </button>
+        </div>
+
+        <div className="home-live-card__main">
+          <div className="home-live-card__copy">
+            <p>{activeFeature.eyebrow}</p>
+            <h3>{activeFeature.title}</h3>
+            <span>{activeFeature.meta}</span>
+
+            <div className="home-live-card__detail">
+              <MapPin size={14} />
+              <strong>{activeFeature.detail}</strong>
+            </div>
+          </div>
+
+          <div className="home-live-card__stat">
+            <ActiveFeatureIcon size={20} />
+            <strong>{activeFeature.stat}</strong>
           </div>
         </div>
 
-        <button
-          onClick={onNavigateToNews}
-          className="text-left bg-subcard p-5 rounded-2xl flex flex-col items-start gap-4 border border-border/5 relative shadow-lg overflow-hidden group hover:bg-subcard-hover transition-colors"
-        >
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1599058917212-d750089bc07e?q=80&w=600&auto=format&fit=crop')] bg-cover bg-center opacity-10 group-hover:opacity-20 transition-opacity rounded-2xl grayscale mix-blend-luminosity" />
-          <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-[#5A1C2C]/20 pointer-events-none" />
-
-          <div className="relative z-10 w-full">
-            <h3 className="text-[13px] font-black text-white tracking-[0.22em] uppercase drop-shadow-md">
-              TEAM NEWS
-            </h3>
-            <p className="text-[10px] text-white/70 tracking-widest mt-4 uppercase font-medium drop-shadow-md">
-              UPDATED ROUND ROBIN
-            </p>
-          </div>
-        </button>
-      </div>
+        <div className="home-live-card__controls" aria-label="Live summary panels">
+          {([
+            ['match', 'Match'],
+            ['result', 'Result'],
+            ['table', 'Table'],
+          ] as const).map(([panel, label]) => (
+            <button
+              key={panel}
+              type="button"
+              onClick={() => setActiveFeaturePanel(panel)}
+              className={activeFeaturePanel === panel ? 'is-active' : ''}
+              aria-pressed={activeFeaturePanel === panel}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </section>
 
       {syncStatus && (
         <div className={`rounded-xl border px-4 py-3 text-[11px] font-bold uppercase tracking-[0.18em] ${
@@ -168,8 +225,8 @@ export default function HomeScreen({ athleticsDataState, onNavigateToNews }: Hom
       {/* Recent Results Header */}
       <section className="space-y-4 pt-2">
         <div className="flex items-center gap-3">
-          <Trophy size={22} className="text-[#5A1C2C]" />
-          <h2 className="text-2xl font-black uppercase italic tracking-[0.18em] text-foreground">
+          <Trophy size={22} className="text-[#C1121F] dark:text-[#5A1C2C]" />
+          <h2 className="text-2xl font-black uppercase italic tracking-[0.18em] text-foreground dark:text-foreground">
             Recent Results
           </h2>
         </div>

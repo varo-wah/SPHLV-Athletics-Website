@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Home, CalendarDays, Newspaper, Trophy, Users } from 'lucide-react';
+import { Home, CalendarDays, Newspaper, Users } from 'lucide-react';
 import { AppTab } from '../types';
 
 interface BottomNavProps {
@@ -12,13 +12,12 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
     { id: 'Home', label: 'HOME', icon: Home },
     { id: 'Teams', label: 'TEAMS', icon: Users },
     { id: 'Schedule', label: 'SCHEDULE', icon: CalendarDays },
-    { id: 'Standings', label: 'TABLE', icon: Trophy },
     { id: 'News', label: 'NEWS', icon: Newspaper },
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/10 bg-header/95 backdrop-blur-2xl">
-      <div className="max-w-xl mx-auto h-20 px-2 pb-safe flex items-center justify-around">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-border/80 bg-header/95 backdrop-blur-2xl dark:border-border/10">
+      <div className="w-full max-w-[1120px] mx-auto h-20 px-2 pb-safe flex items-center justify-around">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = tab.id === activeTab;
@@ -32,8 +31,8 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               <div
                 className={`relative h-10 w-14 rounded-2xl flex items-center justify-center transition-all ${
                   isActive
-                    ? 'bg-[#5A1C2C] text-[#ffffff]'
-                    : 'text-foreground/50 hover:text-foreground/70'
+                    ? 'bg-[#C1121F] text-white shadow-[0_10px_24px_rgba(193,18,31,0.2)] dark:bg-[#5A1C2C] dark:text-[#ffffff]'
+                    : 'text-[#6B7280] hover:text-[#C1121F] dark:text-foreground/50 dark:hover:text-foreground/70'
                 }`}
               >
                 <Icon size={22} strokeWidth={isActive ? 2.4 : 2} />
@@ -41,7 +40,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
 
               <span
                 className={`mt-1 text-[10px] sm:text-[11px] font-bold tracking-wider ${
-                  isActive ? 'text-foreground' : 'text-foreground/50'
+                  isActive ? 'text-[#C1121F] dark:text-foreground' : 'text-[#6B7280] dark:text-foreground/50'
                 }`}
               >
                 {tab.label}

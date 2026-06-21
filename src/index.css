@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   
@@ -13,20 +15,38 @@
   --color-background: var(--background);
   --color-border: var(--border);
   --color-shadow: var(--shadow);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-ring: var(--ring);
 }
 
 :root {
   color-scheme: light;
-  --card: #ffffff;
-  --subcard: #fafafa;
-  --subcard-hover: #f0f0f0;
-  --canvas: #f0f0f0;
-  --header: #ffffff;
-  --overlay: rgba(255,255,255,0.4);
-  --foreground: #050505;
-  --background: #ffffff;
-  --border: rgba(0,0,0,0.1);
-  --shadow: rgba(255,255,255,0);
+  --card: #f8f8fa;
+  --subcard: #f7f7f9;
+  --subcard-hover: #fee2e2;
+  --canvas: #f5f5f7;
+  --header: #fbfbfd;
+  --overlay: rgba(255,255,255,0.78);
+  --foreground: #1f2937;
+  --background: #f5f5f7;
+  --border: #e5e7eb;
+  --shadow: rgba(15, 23, 42, 0.08);
+  --primary: #b91c1c;
+  --primary-foreground: #ffffff;
+  --secondary: #f3f4f6;
+  --secondary-foreground: #7f1d1d;
+  --muted: #f3f4f6;
+  --muted-foreground: #6b7280;
+  --accent: #fee2e2;
+  --accent-foreground: #7f1d1d;
+  --ring: #c1121f;
 }
 
 .dark {
@@ -41,6 +61,15 @@
   --background: #050102;
   --border: rgba(255,255,255,0.05);
   --shadow: #000000;
+  --primary: #B5413F;
+  --primary-foreground: #ffffff;
+  --secondary: #1c1618;
+  --secondary-foreground: #ffffff;
+  --muted: #1c1618;
+  --muted-foreground: rgba(255,255,255,0.55);
+  --accent: rgba(181,65,63,0.18);
+  --accent-foreground: #ffffff;
+  --ring: #B5413F;
 }
 
 * {
@@ -71,17 +100,138 @@ button {
   font: inherit;
 }
 
+:root input,
+:root select,
+:root textarea {
+  color: var(--foreground);
+}
+
+:root input::placeholder,
+:root textarea::placeholder {
+  color: var(--muted-foreground);
+}
+
+:root ::selection {
+  background: var(--accent);
+  color: var(--accent-foreground);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: rgba(255, 255, 255, 0.25);
+}
+
 .bg-ucl-gradient {
+  background:
+    radial-gradient(circle at 10% 0%, rgba(193, 18, 31, 0.12), transparent 30%),
+    radial-gradient(circle at 90% 8%, rgba(127, 29, 29, 0.08), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #f5f5f7 42%, #eeeeef 100%);
+}
+
+.dark .bg-ucl-gradient {
   background: var(--canvas);
 }
 
 .ucl-panel {
-  background: var(--card);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.86)),
+    var(--card);
   box-shadow:
     0 24px 80px var(--shadow),
     inset 0 1px 0 var(--border);
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
+}
+
+.dark .ucl-panel {
+  background: var(--card);
+}
+
+:root:not(.dark) .bg-header\/90 {
+  background-color: rgba(251, 251, 253, 0.9);
+}
+
+:root:not(.dark) .border-border\/5 {
+  border-color: #e5e7eb;
+}
+
+:root:not(.dark) main.bg-canvas\/20 {
+  background:
+    radial-gradient(circle at 18% 0%, rgba(193, 18, 31, 0.05), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(245, 245, 247, 0.9));
+  border-color: rgba(229, 231, 235, 0.86);
+}
+
+:root:not(.dark) .sph-app-shell {
+  --foreground: #1f2937;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  color: #1f2937;
+}
+
+:root:not(.dark) .sph-app-shell .bg-card,
+:root:not(.dark) .sph-app-shell .bg-subcard,
+:root:not(.dark) .sph-app-shell .bg-subcard\/40,
+:root:not(.dark) .sph-app-shell .bg-subcard\/50,
+:root:not(.dark) .sph-app-shell .bg-subcard\/70,
+:root:not(.dark) .sph-app-shell .bg-subcard\/80 {
+  --foreground: #1f2937;
+  --muted-foreground: #6b7280;
+  --border: #e5e7eb;
+  background-color: #f8f8fa;
+  color: #1f2937;
+  border-color: #e5e7eb;
+  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.07);
+}
+
+:root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.025\],
+:root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.02\],
+:root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.03\],
+:root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.035\],
+:root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.04\] {
+  background-color: #eceef2;
+  color: #1f2937;
+  border-color: #d8dce3;
+}
+
+:root:not(.dark) input[class*="bg-subcard"],
+:root:not(.dark) input[class*="bg-card"],
+:root:not(.dark) textarea[class*="bg-subcard"],
+:root:not(.dark) textarea[class*="bg-card"] {
+  color: #1f2937;
+}
+
+:root:not(.dark) input[class*="bg-subcard"]::placeholder,
+:root:not(.dark) input[class*="bg-card"]::placeholder,
+:root:not(.dark) textarea[class*="bg-subcard"]::placeholder,
+:root:not(.dark) textarea[class*="bg-card"]::placeholder {
+  color: #6b7280;
+}
+
+:root:not(.dark) .text-\[\#B5413F\],
+:root:not(.dark) .text-\[\#F06865\],
+:root:not(.dark) .text-\[\#D85A57\] {
+  color: #c1121f;
+}
+
+:root:not(.dark) .text-\[\#5A1C2C\] {
+  color: #7f1d1d;
+}
+
+:root:not(.dark) .bg-\[\#B5413F\] {
+  background-color: #c1121f;
+}
+
+:root:not(.dark) .bg-\[\#5A1C2C\] {
+  background-color: #7f1d1d;
+}
+
+:root:not(.dark) .border-\[\#B5413F\] {
+  border-color: #c1121f;
+}
+
+:root:not(.dark) .border-\[\#5A1C2C\] {
+  border-color: #7f1d1d;
 }
 
 .no-scrollbar::-webkit-scrollbar {
@@ -115,6 +265,312 @@ button {
   border-radius: 999px;
 }
 
+.home-live-card {
+  position: relative;
+  min-height: 262px;
+  padding: 20px;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid rgba(191, 215, 234, 0.16);
+  background:
+    radial-gradient(circle at 88% 20%, rgba(191, 215, 234, 0.16), transparent 32%),
+    linear-gradient(135deg, rgba(107, 23, 48, 0.98), rgba(66, 12, 27, 0.96) 48%, rgba(10, 4, 6, 0.98));
+  box-shadow: 0 26px 70px rgba(90, 28, 44, 0.34);
+  isolation: isolate;
+}
+
+.home-live-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(5, 1, 2, 0.12), transparent 42%, rgba(191, 215, 234, 0.06)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.035) 0 1px, transparent 1px 38px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.home-live-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 0 42%, rgba(191, 215, 234, 0.11) 48%, transparent 55%);
+  transform: translateX(-70%);
+  animation: home-card-scan 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.home-live-card__field {
+  position: absolute;
+  inset: 16px;
+  border: 1px solid rgba(191, 215, 234, 0.14);
+  border-radius: 16px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.home-live-card__line,
+.home-live-card__marker {
+  position: absolute;
+}
+
+.home-live-card__line {
+  left: 48%;
+  right: 8%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(191, 215, 234, 0.28), transparent);
+}
+
+.home-live-card__line--top {
+  top: 28%;
+}
+
+.home-live-card__line--middle {
+  top: 50%;
+}
+
+.home-live-card__line--bottom {
+  top: 72%;
+}
+
+.home-live-card__marker {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #bfd7ea;
+  box-shadow: 0 0 24px rgba(191, 215, 234, 0.72);
+  animation: home-card-marker 4.4s ease-in-out infinite;
+}
+
+.home-live-card__marker--one {
+  right: 22%;
+  top: 33%;
+}
+
+.home-live-card__marker--two {
+  right: 11%;
+  bottom: 21%;
+  animation-delay: 1.2s;
+}
+
+.home-live-card__header,
+.home-live-card__main,
+.home-live-card__controls {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+}
+
+.home-live-card__header {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.home-live-card__sync,
+.home-live-card__news,
+.home-live-card__copy p,
+.home-live-card__copy span,
+.home-live-card__detail,
+.home-live-card__controls button {
+  text-transform: uppercase;
+}
+
+.home-live-card__sync,
+.home-live-card__news {
+  min-height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(191, 215, 234, 0.16);
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  backdrop-filter: blur(12px);
+}
+
+.home-live-card__sync {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+}
+
+.home-live-card__sync span {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: #39d98a;
+  box-shadow: 0 0 0 0 rgba(57, 217, 138, 0.72);
+  animation: home-card-pulse 1.8s ease-out infinite;
+}
+
+.home-live-card__news {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 11px;
+  transition: border-color 160ms ease, color 160ms ease, background-color 160ms ease;
+}
+
+.home-live-card__news:hover {
+  border-color: rgba(191, 215, 234, 0.34);
+  background: rgba(191, 215, 234, 0.14);
+  color: #ffffff;
+}
+
+.home-live-card__main {
+  justify-content: space-between;
+  gap: 18px;
+  margin-top: 32px;
+}
+
+.home-live-card__copy {
+  min-width: 0;
+  max-width: 360px;
+}
+
+.home-live-card__copy p {
+  margin: 0 0 10px;
+  color: #bfd7ea;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.24em;
+}
+
+.home-live-card__copy h3 {
+  margin: 0;
+  max-width: 13ch;
+  color: #ffffff;
+  font-size: 32px;
+  line-height: 1.02;
+  font-weight: 950;
+  text-transform: uppercase;
+  text-wrap: balance;
+  text-shadow: 0 12px 28px rgba(0, 0, 0, 0.46);
+}
+
+.home-live-card__copy span {
+  display: block;
+  margin-top: 13px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.home-live-card__detail {
+  margin-top: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 100%;
+  color: rgba(255, 255, 255, 0.58);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+}
+
+.home-live-card__detail strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.home-live-card__stat {
+  position: relative;
+  z-index: 1;
+  width: 104px;
+  height: 104px;
+  flex: 0 0 104px;
+  border-radius: 18px;
+  border: 1px solid rgba(191, 215, 234, 0.18);
+  background: rgba(5, 1, 2, 0.42);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 18px 44px rgba(0, 0, 0, 0.24);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  color: #bfd7ea;
+  backdrop-filter: blur(14px);
+}
+
+.home-live-card__stat strong {
+  max-width: 82px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 950;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+
+.home-live-card__controls {
+  gap: 8px;
+  margin-top: 26px;
+}
+
+.home-live-card__controls button {
+  min-width: 78px;
+  height: 34px;
+  border: 1px solid rgba(191, 215, 234, 0.14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.07);
+  color: rgba(255, 255, 255, 0.62);
+  font-size: 10px;
+  font-weight: 950;
+  letter-spacing: 0.16em;
+  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, transform 160ms ease;
+}
+
+.home-live-card__controls button:hover,
+.home-live-card__controls button.is-active {
+  border-color: rgba(191, 215, 234, 0.36);
+  background: rgba(191, 215, 234, 0.16);
+  color: #ffffff;
+}
+
+.home-live-card__controls button:active {
+  transform: scale(0.97);
+}
+
+@keyframes home-card-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(57, 217, 138, 0.72);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(57, 217, 138, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(57, 217, 138, 0);
+  }
+}
+
+@keyframes home-card-scan {
+  0%,
+  38% {
+    transform: translateX(-70%);
+  }
+  70%,
+  100% {
+    transform: translateX(70%);
+  }
+}
+
+@keyframes home-card-marker {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.58;
+  }
+  50% {
+    transform: translate3d(-18px, 12px, 0);
+    opacity: 1;
+  }
+}
+
 .hero-image-card {
   position: relative;
   min-height: unset;
@@ -143,12 +599,306 @@ button {
   pointer-events: none;
 }
 
+.varsity-boys-soccer-hero {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 12% 36%, rgba(181, 65, 63, 0.34), transparent 32%),
+    radial-gradient(circle at 80% 48%, rgba(191, 215, 234, 0.14), transparent 34%),
+    linear-gradient(108deg, #090203 0%, #2a0711 42%, #071019 100%);
+  isolation: isolate;
+}
+
+.varsity-boys-soccer-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05), transparent 18%, transparent 82%, rgba(255, 255, 255, 0.06)),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 42px);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.varsity-boys-soccer-hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(115deg, transparent 0 44%, rgba(191, 215, 234, 0.12) 50%, transparent 58%);
+  transform: translateX(-70%);
+  animation: varsity-hero-scan 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.varsity-boys-soccer-hero__field {
+  position: absolute;
+  inset: 38px 44px 28px;
+  border: 1px solid rgba(191, 215, 234, 0.16);
+  border-radius: 24px;
+  pointer-events: none;
+  opacity: 0.62;
+}
+
+.varsity-boys-soccer-hero__field::before,
+.varsity-boys-soccer-hero__field::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(191, 215, 234, 0.18);
+}
+
+.varsity-boys-soccer-hero__field::before {
+  left: 50%;
+}
+
+.varsity-boys-soccer-hero__field::after {
+  left: 18%;
+  box-shadow: 320px 0 0 rgba(191, 215, 234, 0.12);
+}
+
+.varsity-boys-soccer-hero__circle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 110px;
+  height: 110px;
+  border: 1px solid rgba(191, 215, 234, 0.18);
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+}
+
+.varsity-boys-soccer-hero__box {
+  position: absolute;
+  top: 26%;
+  width: 78px;
+  height: 48%;
+  border: 1px solid rgba(191, 215, 234, 0.15);
+}
+
+.varsity-boys-soccer-hero__box--left {
+  left: 0;
+  border-left: 0;
+}
+
+.varsity-boys-soccer-hero__box--right {
+  right: 0;
+  border-right: 0;
+}
+
+.varsity-boys-soccer-hero__runner {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #bfd7ea;
+  box-shadow: 0 0 24px rgba(191, 215, 234, 0.72);
+  animation: varsity-runner 4.8s ease-in-out infinite;
+}
+
+.varsity-boys-soccer-hero__runner--one {
+  right: 27%;
+  top: 28%;
+}
+
+.varsity-boys-soccer-hero__runner--two {
+  right: 14%;
+  bottom: 23%;
+  animation-delay: 1.2s;
+}
+
+.varsity-boys-soccer-hero__content {
+  position: relative;
+  z-index: 1;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  padding: 42px 56px 34px;
+}
+
+.varsity-boys-soccer-hero__copy {
+  min-width: 0;
+}
+
+.varsity-boys-soccer-hero__copy p,
+.varsity-boys-soccer-hero__copy span,
+.varsity-boys-soccer-hero__stats span {
+  text-transform: uppercase;
+}
+
+.varsity-boys-soccer-hero__copy p {
+  margin: 0 0 10px;
+  color: #bfd7ea;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: 0.24em;
+}
+
+.varsity-boys-soccer-hero__copy h1 {
+  margin: 0;
+  max-width: 13ch;
+  color: #ffffff;
+  font-size: clamp(48px, 8.2vw, 82px);
+  line-height: 0.9;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  text-wrap: balance;
+  text-shadow:
+    0 4px 0 rgba(90, 28, 44, 0.9),
+    0 18px 34px rgba(0, 0, 0, 0.55);
+}
+
+.varsity-boys-soccer-hero__meta {
+  align-self: flex-start;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  max-width: 190px;
+  padding-top: 8px;
+}
+
+.varsity-boys-soccer-hero__meta span {
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(191, 215, 234, 0.16);
+  background: rgba(5, 1, 2, 0.34);
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 10px;
+  font-weight: 950;
+  line-height: 1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  backdrop-filter: blur(12px);
+}
+
+@keyframes varsity-hero-scan {
+  0%,
+  38% {
+    transform: translateX(-70%);
+  }
+  70%,
+  100% {
+    transform: translateX(70%);
+  }
+}
+
+@keyframes varsity-runner {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.58;
+  }
+  50% {
+    transform: translate3d(-20px, 14px, 0);
+    opacity: 1;
+  }
+}
+
 @media (max-width: 560px) {
+  .home-live-card {
+    min-height: 280px;
+    padding: 18px;
+    border-radius: 16px;
+  }
+
+  .home-live-card__main {
+    align-items: flex-end;
+    gap: 12px;
+    margin-top: 28px;
+  }
+
+  .home-live-card__copy h3 {
+    max-width: 11ch;
+    font-size: 25px;
+  }
+
+  .home-live-card__copy span,
+  .home-live-card__detail {
+    font-size: 10px;
+    letter-spacing: 0.11em;
+  }
+
+  .home-live-card__stat {
+    width: 82px;
+    height: 82px;
+    flex-basis: 82px;
+    border-radius: 15px;
+  }
+
+  .home-live-card__stat strong {
+    max-width: 68px;
+    font-size: 13px;
+  }
+
+  .home-live-card__controls {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .home-live-card__controls button {
+    min-width: 0;
+    width: 100%;
+    padding: 0 8px;
+    letter-spacing: 0.12em;
+  }
+
   .hero-image-card {
     border-radius: 16px;
   }
 
   .hero-banner-img {
     min-height: 118px;
+  }
+
+  .varsity-boys-soccer-hero__field {
+    inset: 28px 18px 18px;
+    border-radius: 18px;
+  }
+
+  .varsity-boys-soccer-hero__content {
+    padding: 32px 22px 24px;
+    gap: 10px;
+  }
+
+  .varsity-boys-soccer-hero__copy p {
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    margin-bottom: 7px;
+  }
+
+  .varsity-boys-soccer-hero__copy h1 {
+    max-width: 13ch;
+    font-size: clamp(38px, 13vw, 58px);
+    line-height: 0.88;
+  }
+
+  .varsity-boys-soccer-hero__meta {
+    flex-direction: column;
+    align-self: flex-start;
+    gap: 7px;
+    max-width: 92px;
+    padding-top: 6px;
+  }
+
+  .varsity-boys-soccer-hero__meta span {
+    min-height: 28px;
+    width: 100%;
+    padding: 0 8px;
+    font-size: 8px;
+    letter-spacing: 0.1em;
   }
 }

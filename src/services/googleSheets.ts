@@ -7,6 +7,20 @@ export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
     return [];
   }
 
+  const text = await fetchCsvText(url);
+  return parseCsv(text);
+}
+
+export async function fetchCsvMatrix(url: string): Promise<string[][]> {
+  if (!hasValidSheetUrl(url)) {
+    return [];
+  }
+
+  const text = await fetchCsvText(url);
+  return parseCsvMatrix(text);
+}
+
+async function fetchCsvText(url: string): Promise<string> {
   const cacheBustedUrl = `/api/sheets?url=${encodeURIComponent(url)}&cacheBust=${Date.now()}`;
 
   const response = await fetch(cacheBustedUrl, {
@@ -22,11 +36,10 @@ export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
     throw new Error(`Failed to fetch CSV: ${response.status}`);
   }
 
-  const text = await response.text();
-  return parseCsv(text);
+  return response.text();
 }
 
-export function parseCsv(text: string): CsvRow[] {
+export function parseCsvMatrix(text: string): string[][] {
   const rows: string[][] = [];
   let current = "";
   let row: string[] = [];
@@ -64,6 +77,16 @@ export function parseCsv(text: string): CsvRow[] {
     row.push(current.trim());
     rows.push(row);
   }
+
+  if (rows.length === 0) {
+    return [];
+  }
+
+  return rows;
+}
+
+export function parseCsv(text: string): CsvRow[] {
+  const rows = parseCsvMatrix(text);
 
   if (rows.length === 0) {
     return [];
