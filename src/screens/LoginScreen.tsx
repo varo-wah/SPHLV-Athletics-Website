@@ -1,29 +1,29 @@
 import { useState, type FormEvent } from 'react';
-import { Bell, LogOut, Mail, ShieldCheck, UserRound } from 'lucide-react';
+import { Bell, KeyRound, LogOut, ShieldCheck, UserRound } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginScreen() {
-  const { authError, firebaseReady, sendMagicLink, signOutUser, user } = useAuth();
-  const [email, setEmail] = useState('');
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const { authError, firebaseReady, signInWithPasscode, signOutUser, user } = useAuth();
+  const [passcode, setPasscode] = useState('');
+  const [status, setStatus] = useState<'idle' | 'checking'>('idle');
   const [localError, setLocalError] = useState<string | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setLocalError(null);
 
-    if (!email.trim()) {
-      setLocalError('Enter an email address first.');
+    if (!passcode.trim()) {
+      setLocalError('Enter the team passcode first.');
       return;
     }
 
-    setStatus('sending');
+    setStatus('checking');
     try {
-      await sendMagicLink(email);
-      setStatus('sent');
+      await signInWithPasscode(passcode);
+      setStatus('idle');
     } catch (error) {
-      console.error('Failed to send Firebase sign-in link', error);
-      setLocalError('The sign-in link could not be sent. Check Firebase Auth settings.');
+      console.error('Failed to sign in with passcode', error);
+      setLocalError('That passcode did not work.');
       setStatus('idle');
     }
   };
@@ -41,14 +41,14 @@ export default function LoginScreen() {
               Sign in
             </h1>
             <p className="mt-4 max-w-xl text-sm font-semibold leading-relaxed text-foreground/55">
-              Save followed sports now. Match alerts and score notifications can be added after login and follows are stable.
+              Enter the SPHLV athletics passcode to save followed sports. Match alerts and score notifications can be added after follows are stable.
             </p>
 
             <div className="mt-6 grid gap-3 sm:grid-cols-3">
               {[
-                { icon: Mail, title: 'Email link', copy: 'No password needed' },
+                { icon: KeyRound, title: 'Passcode', copy: 'Fast access' },
                 { icon: Bell, title: 'Follows', copy: 'Save sports' },
-                { icon: ShieldCheck, title: 'Private', copy: 'Your account only' },
+                { icon: ShieldCheck, title: 'Firebase', copy: 'Saved account' },
               ].map((item) => {
                 const Icon = item.icon;
                 return (
@@ -78,7 +78,7 @@ export default function LoginScreen() {
                       Signed in
                     </p>
                     <p className="truncate text-sm font-black text-foreground">
-                      {user.email}
+                      {user.email || 'SPHLV passcode account'}
                     </p>
                   </div>
                 </div>
@@ -102,15 +102,15 @@ export default function LoginScreen() {
 
                 <label className="block space-y-2">
                   <span className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">
-                    Email address
+                    Team passcode
                   </span>
                   <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.035] px-4 py-3">
-                    <Mail size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+                    <KeyRound size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
                     <input
-                      type="email"
-                      value={email}
-                      onChange={(event) => setEmail(event.target.value)}
-                      placeholder="you@example.com"
+                      type="password"
+                      value={passcode}
+                      onChange={(event) => setPasscode(event.target.value)}
+                      placeholder="Enter passcode"
                       className="min-w-0 flex-1 bg-transparent text-sm font-bold text-foreground outline-none placeholder:text-foreground/30"
                     />
                   </div>
@@ -122,18 +122,12 @@ export default function LoginScreen() {
                   </p>
                 )}
 
-                {status === 'sent' && (
-                  <p className="rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm font-bold text-green-700 dark:text-green-300">
-                    Check your email, then open the sign-in link on this same device.
-                  </p>
-                )}
-
                 <button
                   type="submit"
-                  disabled={!firebaseReady || status === 'sending'}
+                  disabled={!firebaseReady || status === 'checking'}
                   className="flex w-full items-center justify-center rounded-2xl bg-[#C1121F] px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#991B1B] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-[#B5413F] dark:hover:bg-[#8F3432]"
                 >
-                  {status === 'sending' ? 'Sending link' : 'Send magic link'}
+                  {status === 'checking' ? 'Checking passcode' : 'Sign in'}
                 </button>
               </form>
             )}
