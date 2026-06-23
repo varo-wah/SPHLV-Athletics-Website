@@ -69,14 +69,14 @@ export function SportFollowsProvider({ children }: { children: ReactNode }) {
 
       if (followedSet.has(sport)) {
         await deleteDoc(followRef);
-        await setDoc(userRef, { email: user.email, updatedAt: serverTimestamp() }, { merge: true });
+        await setDoc(userRef, { email: user.email || null, updatedAt: serverTimestamp() }, { merge: true });
         return;
       }
 
       await setDoc(
         userRef,
         {
-          email: user.email,
+          email: user.email || null,
           updatedAt: serverTimestamp(),
         },
         { merge: true },

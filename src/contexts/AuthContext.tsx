@@ -11,6 +11,7 @@ import {
   isSignInWithEmailLink,
   onAuthStateChanged,
   sendSignInLinkToEmail,
+  signInAnonymously,
   signInWithEmailLink,
   signOut,
   type User,
@@ -30,6 +31,7 @@ interface AuthContextValue {
   openLoginModal: () => void;
   closeLoginModal: () => void;
   sendMagicLink: (email: string) => Promise<void>;
+  signInWithPasscode: (passcode: string) => Promise<void>;
   signOutUser: () => Promise<void>;
 }
 
@@ -43,7 +45,8 @@ async function syncUserProfile(user: User) {
   await setDoc(
     userRef,
     {
-      email: user.email,
+      email: user.email || null,
+      authMode: user.isAnonymous ? 'passcode' : 'email-link',
       updatedAt: serverTimestamp(),
       ...(!userSnapshot.exists() ? { createdAt: serverTimestamp() } : {}),
     },
@@ -143,6 +146,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await sendSignInLinkToEmail(firebaseAuth, cleanEmail, actionCodeSettings);
   }, []);
 
+  const signInWithPasscode = useCallback(async (passcode: string) => {
+    if (!firebaseAuth) {
+      setAuthError('Firebase is not configured for this build.');
+      return;
+    }
+
+    const configuredPasscode = import.meta.env.VITE_LOGIN_PASSCODE;
+    if (!configuredPasscode) {
+      setAuthError('Login passcode is not configured for this build.');
+      return;
+    }
+
+    if (passcode.trim() !== configuredPasscode) {
+      setAuthError('Incorrect passcode.');
+      throw new Error('Incorrect passcode');
+    }
+
+    setAuthError(null);
+    const credential = await signInAnonymously(firebaseAuth);
+    await syncUserProfile(credential.user);
+    setLoginModalOpen(false);
+  }, []);
+
   const signOutUser = useCallback(async () => {
     if (!firebaseAuth) return;
     await signOut(firebaseAuth);
@@ -158,9 +184,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       openLoginModal,
       closeLoginModal,
       sendMagicLink,
+      signInWithPasscode,
       signOutUser,
     }),
-    [authError, closeLoginModal, loading, loginModalOpen, openLoginModal, sendMagicLink, signOutUser, user],
+    [authError, closeLoginModal, loading, loginModalOpen, openLoginModal, sendMagicLink, signInWithPasscode, signOutUser, user],
   );
 
   return (
