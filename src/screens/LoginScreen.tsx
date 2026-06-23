@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { LockKeyhole, LogOut, Mail, UserRound } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { getFirebaseAuthMessage } from '../utils/firebaseAuthErrors';
 
 export default function LoginScreen() {
   const { authError, createAccountWithPassword, firebaseReady, signInWithPassword, signOutUser, user } = useAuth();
@@ -29,7 +30,10 @@ export default function LoginScreen() {
       setStatus('idle');
     } catch (error) {
       console.error('Firebase email/password auth failed', error);
-      setLocalError(authMode === 'create' ? 'Could not create that account.' : 'Email or password is incorrect.');
+      setLocalError(getFirebaseAuthMessage(
+        error,
+        authMode === 'create' ? 'Could not create that account.' : 'Email or password is incorrect.',
+      ));
       setStatus('idle');
     }
   };

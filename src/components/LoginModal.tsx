@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { LockKeyhole, Mail, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { getFirebaseAuthMessage } from '../utils/firebaseAuthErrors';
 
 export default function LoginModal() {
   const {
@@ -38,7 +39,10 @@ export default function LoginModal() {
       setStatus('idle');
     } catch (error) {
       console.error('Firebase email/password auth failed', error);
-      setLocalError(authMode === 'create' ? 'Could not create that account.' : 'Email or password is incorrect.');
+      setLocalError(getFirebaseAuthMessage(
+        error,
+        authMode === 'create' ? 'Could not create that account.' : 'Email or password is incorrect.',
+      ));
       setStatus('idle');
     }
   };
