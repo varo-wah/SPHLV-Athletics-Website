@@ -8,6 +8,7 @@ import {
   BadmintonIcon,
   TrackIcon,
 } from '../components/SportIcons';
+import SportFollowButton from '../components/SportFollowButton';
 
 interface TeamsScreenProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
@@ -148,13 +149,16 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
                   </div>
                 </div>
 
-                <span className={`shrink-0 rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] ${
-                  isSoccer
-                    ? 'border-green-500/20 bg-green-500/10 text-green-400'
-                    : 'border-border/10 bg-foreground/[0.025] text-foreground/40'
-                }`}>
-                  {sport.status}
-                </span>
+                <div className="flex shrink-0 flex-col items-end gap-2">
+                  <span className={`rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-[0.15em] ${
+                    isSoccer
+                      ? 'border-green-500/20 bg-green-500/10 text-green-400'
+                      : 'border-border/10 bg-foreground/[0.025] text-foreground/40'
+                  }`}>
+                    {sport.status}
+                  </span>
+                  <SportFollowButton sport={sport.id} compact />
+                </div>
               </div>
 
               <div className="mt-5 grid gap-2 sm:grid-cols-2">

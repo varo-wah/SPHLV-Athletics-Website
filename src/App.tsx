@@ -10,8 +10,20 @@ import TeamPageScreen from './screens/TeamPageScreen';
 import TeamsScreen from './screens/TeamsScreen';
 import StandingsScreen from './screens/StandingsScreen';
 import { useAthleticsData } from './hooks/useAthleticsData';
+import { AuthProvider } from './contexts/AuthContext';
+import { SportFollowsProvider } from './contexts/SportFollowsContext';
 
 export default function App() {
+  return (
+    <AuthProvider>
+      <SportFollowsProvider>
+        <AthleticsApp />
+      </SportFollowsProvider>
+    </AuthProvider>
+  );
+}
+
+function AthleticsApp() {
   const [activeTab, setActiveTab] = useState<AppTab>('Home');
   const [activeSport, setActiveSport] = useState<SportTab>('Soccer');
   const [activeGender, setActiveGender] = useState<GenderTab>('Boys');
