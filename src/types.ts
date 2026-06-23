@@ -26,6 +26,7 @@ export type AppTab =
   | 'Schedule'
   | 'Standings'
   | 'News'
+  | 'Login'
   | 'ACSC'
   | 'TeamPage'
   | 'Teams';

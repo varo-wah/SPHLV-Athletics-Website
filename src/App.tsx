@@ -9,6 +9,7 @@ import HomeScreen from './screens/HomeScreen';
 import TeamPageScreen from './screens/TeamPageScreen';
 import TeamsScreen from './screens/TeamsScreen';
 import StandingsScreen from './screens/StandingsScreen';
+import LoginScreen from './screens/LoginScreen';
 import { useAthleticsData } from './hooks/useAthleticsData';
 import { AuthProvider } from './contexts/AuthContext';
 import { SportFollowsProvider } from './contexts/SportFollowsContext';
@@ -47,7 +48,10 @@ function AthleticsApp() {
   return (
     <div className="min-h-screen bg-ucl-gradient pb-24 font-sans">
       <main className="sph-app-shell w-full max-w-[1120px] mx-auto relative min-h-screen border-x border-border/[0.02] shadow-2xl bg-canvas/20">
-        <TopBar onOpenMenu={() => setIsSidebarOpen(true)} />
+        <TopBar
+          onOpenMenu={() => setIsSidebarOpen(true)}
+          onOpenLogin={() => handleTabChange('Login')}
+        />
         
         {athleticsDataState.loading && (
           <div style={{ padding: 10, textAlign: "center", color: "#BFD7EA", fontSize: 12 }}>
@@ -91,6 +95,7 @@ function AthleticsApp() {
           <StandingsScreen athleticsDataState={athleticsDataState} />
         )}
         {activeTab === 'News' && <NewsScreen />}
+        {activeTab === 'Login' && <LoginScreen />}
         
         <Sidebar 
           isOpen={isSidebarOpen} 

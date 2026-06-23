@@ -4,11 +4,12 @@ import { useAuth } from '../contexts/AuthContext';
 
 interface TopBarProps {
   onOpenMenu: () => void;
+  onOpenLogin: () => void;
 }
 
-export default function TopBar({ onOpenMenu }: TopBarProps) {
+export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
   const [isDark, setIsDark] = useState(true);
-  const { loading, openLoginModal, signOutUser, user } = useAuth();
+  const { loading, signOutUser, user } = useAuth();
 
   useEffect(() => {
     if (isDark) {
@@ -52,7 +53,7 @@ export default function TopBar({ onOpenMenu }: TopBarProps) {
         ) : (
           <button
             type="button"
-            onClick={openLoginModal}
+            onClick={onOpenLogin}
             disabled={loading}
             className="rounded-full border border-[#C1121F]/20 bg-[#FEE2E2] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#7F1D1D] transition-colors hover:bg-[#C1121F] hover:text-white disabled:opacity-50 dark:border-[#B5413F]/25 dark:bg-[#B5413F]/12 dark:text-[#FCA5A5] dark:hover:bg-[#B5413F] dark:hover:text-white"
           >
