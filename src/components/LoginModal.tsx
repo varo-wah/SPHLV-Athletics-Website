@@ -1,16 +1,19 @@
 import { useState, type FormEvent } from 'react';
-import { KeyRound, X } from 'lucide-react';
+import { LockKeyhole, Mail, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginModal() {
   const {
     authError,
     closeLoginModal,
+    createAccountWithPassword,
     firebaseReady,
     loginModalOpen,
-    signInWithPasscode,
+    signInWithPassword,
   } = useAuth();
-  const [passcode, setPasscode] = useState('');
+  const [authMode, setAuthMode] = useState<'sign-in' | 'create'>('sign-in');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [status, setStatus] = useState<'idle' | 'checking'>('idle');
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -20,18 +23,22 @@ export default function LoginModal() {
     event.preventDefault();
     setLocalError(null);
 
-    if (!passcode.trim()) {
-      setLocalError('Enter the team passcode first.');
+    if (!email.trim() || !password.trim()) {
+      setLocalError('Enter your email and password first.');
       return;
     }
 
     setStatus('checking');
     try {
-      await signInWithPasscode(passcode);
+      if (authMode === 'create') {
+        await createAccountWithPassword(email, password);
+      } else {
+        await signInWithPassword(email, password);
+      }
       setStatus('idle');
     } catch (error) {
-      console.error('Failed to sign in with passcode', error);
-      setLocalError('That passcode did not work.');
+      console.error('Firebase email/password auth failed', error);
+      setLocalError(authMode === 'create' ? 'Could not create that account.' : 'Email or password is incorrect.');
       setStatus('idle');
     }
   };
@@ -50,7 +57,7 @@ export default function LoginModal() {
                 Sign in
               </h2>
               <p className="mt-2 text-sm font-semibold leading-relaxed text-white/70">
-                Enter the SPHLV athletics passcode to save followed sports.
+                Use your email and password to save followed sports.
               </p>
             </div>
             <button
@@ -73,15 +80,31 @@ export default function LoginModal() {
 
           <label className="block space-y-2">
             <span className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">
-              Team passcode
+              Email
             </span>
             <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.025] px-4 py-3">
-              <KeyRound size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+              <Mail size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+              <input
+                type="email"
+                value={email}
+                onChange={(event) => setEmail(event.target.value)}
+                placeholder="you@example.com"
+                className="min-w-0 flex-1 bg-transparent text-sm font-bold text-foreground outline-none placeholder:text-foreground/30"
+              />
+            </div>
+          </label>
+
+          <label className="block space-y-2">
+            <span className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">
+              Password
+            </span>
+            <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.025] px-4 py-3">
+              <LockKeyhole size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
               <input
                 type="password"
-                value={passcode}
-                onChange={(event) => setPasscode(event.target.value)}
-                placeholder="Enter passcode"
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                placeholder="Password"
                 className="min-w-0 flex-1 bg-transparent text-sm font-bold text-foreground outline-none placeholder:text-foreground/30"
               />
             </div>
@@ -98,7 +121,18 @@ export default function LoginModal() {
             disabled={!firebaseReady || status === 'checking'}
             className="flex w-full items-center justify-center rounded-2xl bg-[#C1121F] px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#991B1B] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-[#B5413F] dark:hover:bg-[#8F3432]"
           >
-            {status === 'checking' ? 'Checking passcode' : 'Sign in'}
+            {status === 'checking' ? 'Checking account' : authMode === 'create' ? 'Create account' : 'Sign in'}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setAuthMode((current) => current === 'sign-in' ? 'create' : 'sign-in');
+              setLocalError(null);
+            }}
+            className="w-full text-center text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 transition-colors hover:text-[#C1121F] dark:hover:text-[#D85A57]"
+          >
+            {authMode === 'create' ? 'Already have an account? Sign in' : 'Need an account? Create one'}
           </button>
         </form>
       </div>

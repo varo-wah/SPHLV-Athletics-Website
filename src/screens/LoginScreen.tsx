@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react';
-import { Bell, KeyRound, LogOut, ShieldCheck, UserRound } from 'lucide-react';
+import { LockKeyhole, LogOut, Mail, UserRound } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginScreen() {
-  const { authError, firebaseReady, signInWithPasscode, signOutUser, user } = useAuth();
-  const [passcode, setPasscode] = useState('');
+  const { authError, createAccountWithPassword, firebaseReady, signInWithPassword, signOutUser, user } = useAuth();
+  const [authMode, setAuthMode] = useState<'sign-in' | 'create'>('sign-in');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [status, setStatus] = useState<'idle' | 'checking'>('idle');
   const [localError, setLocalError] = useState<string | null>(null);
 
@@ -12,18 +14,22 @@ export default function LoginScreen() {
     event.preventDefault();
     setLocalError(null);
 
-    if (!passcode.trim()) {
-      setLocalError('Enter the team passcode first.');
+    if (!email.trim() || !password.trim()) {
+      setLocalError('Enter your email and password first.');
       return;
     }
 
     setStatus('checking');
     try {
-      await signInWithPasscode(passcode);
+      if (authMode === 'create') {
+        await createAccountWithPassword(email, password);
+      } else {
+        await signInWithPassword(email, password);
+      }
       setStatus('idle');
     } catch (error) {
-      console.error('Failed to sign in with passcode', error);
-      setLocalError('That passcode did not work.');
+      console.error('Firebase email/password auth failed', error);
+      setLocalError(authMode === 'create' ? 'Could not create that account.' : 'Email or password is incorrect.');
       setStatus('idle');
     }
   };
@@ -41,29 +47,8 @@ export default function LoginScreen() {
               Sign in
             </h1>
             <p className="mt-4 max-w-xl text-sm font-semibold leading-relaxed text-foreground/55">
-              Enter the SPHLV athletics passcode to save followed sports. Match alerts and score notifications can be added after follows are stable.
+              Use your email and password to save followed sports. Match alerts and score notifications can be added after follows are stable.
             </p>
-
-            <div className="mt-6 grid gap-3 sm:grid-cols-3">
-              {[
-                { icon: KeyRound, title: 'Passcode', copy: 'Fast access' },
-                { icon: Bell, title: 'Follows', copy: 'Save sports' },
-                { icon: ShieldCheck, title: 'Firebase', copy: 'Saved account' },
-              ].map((item) => {
-                const Icon = item.icon;
-                return (
-                  <div key={item.title} className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-4">
-                    <Icon size={20} className="text-[#C1121F] dark:text-[#D85A57]" />
-                    <p className="mt-3 text-xs font-black uppercase tracking-[0.14em] text-foreground">
-                      {item.title}
-                    </p>
-                    <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.12em] text-foreground/38">
-                      {item.copy}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
           </div>
 
           <div className="relative rounded-[1.75rem] border border-border/10 bg-canvas/70 p-4 shadow-[0_20px_60px_rgba(0,0,0,0.14)] dark:bg-foreground/[0.025]">
@@ -102,15 +87,31 @@ export default function LoginScreen() {
 
                 <label className="block space-y-2">
                   <span className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">
-                    Team passcode
+                    Email
                   </span>
                   <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.035] px-4 py-3">
-                    <KeyRound size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+                    <Mail size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      placeholder="you@example.com"
+                      className="min-w-0 flex-1 bg-transparent text-sm font-bold text-foreground outline-none placeholder:text-foreground/30"
+                    />
+                  </div>
+                </label>
+
+                <label className="block space-y-2">
+                  <span className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">
+                    Password
+                  </span>
+                  <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.035] px-4 py-3">
+                    <LockKeyhole size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
                     <input
                       type="password"
-                      value={passcode}
-                      onChange={(event) => setPasscode(event.target.value)}
-                      placeholder="Enter passcode"
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      placeholder="Password"
                       className="min-w-0 flex-1 bg-transparent text-sm font-bold text-foreground outline-none placeholder:text-foreground/30"
                     />
                   </div>
@@ -127,7 +128,18 @@ export default function LoginScreen() {
                   disabled={!firebaseReady || status === 'checking'}
                   className="flex w-full items-center justify-center rounded-2xl bg-[#C1121F] px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#991B1B] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-[#B5413F] dark:hover:bg-[#8F3432]"
                 >
-                  {status === 'checking' ? 'Checking passcode' : 'Sign in'}
+                  {status === 'checking' ? 'Checking account' : authMode === 'create' ? 'Create account' : 'Sign in'}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAuthMode((current) => current === 'sign-in' ? 'create' : 'sign-in');
+                    setLocalError(null);
+                  }}
+                  className="w-full text-center text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 transition-colors hover:text-[#C1121F] dark:hover:text-[#D85A57]"
+                >
+                  {authMode === 'create' ? 'Already have an account? Sign in' : 'Need an account? Create one'}
                 </button>
               </form>
             )}

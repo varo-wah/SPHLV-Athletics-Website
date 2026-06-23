@@ -8,19 +8,15 @@ import {
   type ReactNode,
 } from 'react';
 import {
-  isSignInWithEmailLink,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
-  sendSignInLinkToEmail,
-  signInAnonymously,
-  signInWithEmailLink,
+  signInWithEmailAndPassword,
   signOut,
   type User,
 } from 'firebase/auth';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { firebaseAuth, firebaseConfigComplete, firebaseDb } from '../lib/firebase';
 import LoginModal from '../components/LoginModal';
-
-const AUTH_EMAIL_STORAGE_KEY = 'sphlv-auth-email-link';
 
 interface AuthContextValue {
   user: User | null;
@@ -30,8 +26,8 @@ interface AuthContextValue {
   loginModalOpen: boolean;
   openLoginModal: () => void;
   closeLoginModal: () => void;
-  sendMagicLink: (email: string) => Promise<void>;
-  signInWithPasscode: (passcode: string) => Promise<void>;
+  createAccountWithPassword: (email: string, password: string) => Promise<void>;
+  signInWithPassword: (email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
 }
 
@@ -46,7 +42,7 @@ async function syncUserProfile(user: User) {
     userRef,
     {
       email: user.email || null,
-      authMode: user.isAnonymous ? 'passcode' : 'email-link',
+      authMode: user.isAnonymous ? 'anonymous' : 'email-password',
       updatedAt: serverTimestamp(),
       ...(!userSnapshot.exists() ? { createdAt: serverTimestamp() } : {}),
     },
@@ -85,86 +81,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return unsubscribe;
   }, []);
 
-  useEffect(() => {
-    if (!firebaseAuth || typeof window === 'undefined') return;
-    if (!isSignInWithEmailLink(firebaseAuth, window.location.href)) return;
-
-    let cancelled = false;
-
-    async function completeEmailLinkSignIn() {
-      setLoading(true);
-      setAuthError(null);
-
-      try {
-        const storedEmail = window.localStorage.getItem(AUTH_EMAIL_STORAGE_KEY);
-        const email = storedEmail || window.prompt('Confirm the email address used for sign in.');
-
-        if (!email) {
-          setAuthError('Email confirmation is required to complete sign in.');
-          return;
-        }
-
-        const credential = await signInWithEmailLink(firebaseAuth, email, window.location.href);
-        window.localStorage.removeItem(AUTH_EMAIL_STORAGE_KEY);
-        await syncUserProfile(credential.user);
-
-        if (!cancelled) {
-          setLoginModalOpen(false);
-          window.history.replaceState({}, document.title, window.location.origin + window.location.pathname);
-        }
-      } catch (error) {
-        console.error('Firebase email-link sign in failed', error);
-        if (!cancelled) {
-          setAuthError('That sign-in link could not be completed. Request a fresh link and try again.');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    completeEmailLinkSignIn();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const sendMagicLink = useCallback(async (email: string) => {
+  const signInWithPassword = useCallback(async (email: string, password: string) => {
     if (!firebaseAuth) {
       setAuthError('Firebase is not configured for this build.');
       return;
     }
 
     setAuthError(null);
-    const cleanEmail = email.trim().toLowerCase();
-    const actionCodeSettings = {
-      url: `${window.location.origin}${window.location.pathname}`,
-      handleCodeInApp: true,
-    };
-
-    window.localStorage.setItem(AUTH_EMAIL_STORAGE_KEY, cleanEmail);
-    await sendSignInLinkToEmail(firebaseAuth, cleanEmail, actionCodeSettings);
+    const credential = await signInWithEmailAndPassword(firebaseAuth, email.trim().toLowerCase(), password);
+    await syncUserProfile(credential.user);
+    setLoginModalOpen(false);
   }, []);
 
-  const signInWithPasscode = useCallback(async (passcode: string) => {
+  const createAccountWithPassword = useCallback(async (email: string, password: string) => {
     if (!firebaseAuth) {
       setAuthError('Firebase is not configured for this build.');
       return;
     }
 
-    const configuredPasscode = import.meta.env.VITE_LOGIN_PASSCODE;
-    if (!configuredPasscode) {
-      setAuthError('Login passcode is not configured for this build.');
-      return;
-    }
-
-    if (passcode.trim() !== configuredPasscode) {
-      setAuthError('Incorrect passcode.');
-      throw new Error('Incorrect passcode');
-    }
-
     setAuthError(null);
-    const credential = await signInAnonymously(firebaseAuth);
+    const credential = await createUserWithEmailAndPassword(firebaseAuth, email.trim().toLowerCase(), password);
     await syncUserProfile(credential.user);
     setLoginModalOpen(false);
   }, []);
@@ -183,11 +119,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loginModalOpen,
       openLoginModal,
       closeLoginModal,
-      sendMagicLink,
-      signInWithPasscode,
+      createAccountWithPassword,
+      signInWithPassword,
       signOutUser,
     }),
-    [authError, closeLoginModal, loading, loginModalOpen, openLoginModal, sendMagicLink, signInWithPasscode, signOutUser, user],
+    [authError, closeLoginModal, createAccountWithPassword, loading, loginModalOpen, openLoginModal, signInWithPassword, signOutUser, user],
   );
 
   return (
