@@ -367,17 +367,17 @@ export default function TeamPageScreen({
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(90,28,44,0.18),transparent_34%,rgba(191,215,234,0.08))]" />
 
         <div className="relative flex items-center justify-between gap-2 sm:gap-5">
-          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.04] text-xs font-black uppercase tracking-wider text-foreground/60 sm:h-16 sm:w-16 sm:text-base">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.04] text-xs font-black uppercase tracking-wider text-foreground/60 sm:h-12 sm:w-12">
               LV
             </div>
 
             <div className="min-w-0">
               <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#B5413F] sm:text-[10px]">
-                SPH LV
+                Home
               </p>
-              <h4 className="truncate text-sm font-black uppercase leading-tight text-foreground sm:text-xl md:text-2xl">
-                SPH LV
+              <h4 className="truncate text-sm font-black uppercase leading-tight text-foreground sm:text-lg md:text-xl">
+                SPH LV Eagles
               </h4>
             </div>
           </div>
@@ -580,7 +580,7 @@ export default function TeamPageScreen({
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-10 xl:grid-cols-[minmax(0,1.04fr)_minmax(360px,0.96fr)] xl:items-start">
+        <div className="grid grid-cols-1 gap-10 2xl:grid-cols-[minmax(620px,1.04fr)_minmax(560px,0.96fr)] 2xl:items-start">
           {/* STANDINGS COLUMN */}
           <section className="space-y-4">
             <div className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
