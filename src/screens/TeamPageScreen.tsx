@@ -219,25 +219,20 @@ export default function TeamPageScreen({
 
           {onToggle && (
             <motion.span
-              className="flex items-center gap-2 rounded-xl border border-border/10 bg-subcard px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#B5413F] transition-colors group-hover:border-[#B5413F]/30 group-hover:text-foreground"
-              animate={{
-                backgroundColor: expanded ? 'rgba(181,65,63,0.16)' : 'rgba(255,255,255,0.03)',
-                scale: expanded ? 1.02 : 1,
-              }}
-              transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+              className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition-colors ${
+                expanded
+                  ? 'border-[#B5413F]/25 bg-[#B5413F]/12 text-foreground'
+                  : 'border-border/10 bg-subcard text-[#B5413F] group-hover:border-[#B5413F]/30 group-hover:text-foreground'
+              }`}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 34 }}
             >
-              <motion.span
-                key={expanded ? 'hide' : 'show'}
-                initial={{ y: 6, opacity: 0, filter: 'blur(3px)' }}
-                animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
-                exit={{ y: -6, opacity: 0, filter: 'blur(3px)' }}
-                transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-              >
+              <span>
                 {expanded ? 'Hide' : 'Show'}
-              </motion.span>
+              </span>
               <motion.span
                 animate={{ rotate: expanded ? 180 : 0 }}
-                transition={{ type: 'spring', stiffness: 520, damping: 34 }}
+                transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
               >
                 <ChevronDown size={15} />
               </motion.span>
@@ -711,17 +706,17 @@ export default function TeamPageScreen({
               {showUpcomingMatches && (
                 <motion.div
                   key="upcoming-matches"
-                  initial={{ height: 0, opacity: 0, y: -10, filter: 'blur(6px)' }}
-                  animate={{ height: 'auto', opacity: 1, y: 0, filter: 'blur(0px)' }}
-                  exit={{ height: 0, opacity: 0, y: -10, filter: 'blur(6px)' }}
-                  transition={{ type: 'spring', stiffness: 360, damping: 36, mass: 0.9 }}
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                   className="overflow-hidden"
                 >
                   <motion.div
-                    initial={{ y: -8 }}
-                    animate={{ y: 0 }}
-                    exit={{ y: -8 }}
-                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    initial={{ y: -6, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -6, opacity: 0 }}
+                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                     className="space-y-4"
                   >
                 {athleticsDataState?.loading && upcomingMatches.length === 0 ? (
@@ -768,17 +763,17 @@ export default function TeamPageScreen({
             {showMatchResults && (
               <motion.div
                 key="match-results"
-                initial={{ height: 0, opacity: 0, y: -10, filter: 'blur(6px)' }}
-                animate={{ height: 'auto', opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ height: 0, opacity: 0, y: -10, filter: 'blur(6px)' }}
-                transition={{ type: 'spring', stiffness: 360, damping: 36, mass: 0.9 }}
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
                 className="overflow-hidden"
               >
                 <motion.div
-                  initial={{ y: -8 }}
-                  animate={{ y: 0 }}
-                  exit={{ y: -8 }}
-                  transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  initial={{ y: -6, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -6, opacity: 0 }}
+                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
                   className="space-y-4"
                 >
               {athleticsDataState?.loading && finishedMatches.length === 0 ? (
