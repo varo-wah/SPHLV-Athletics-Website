@@ -505,16 +505,19 @@ export default function TeamPageScreen({
           <ChevronRight size={20} className="relative z-10 text-foreground/45 transition-transform group-hover:translate-x-1 group-hover:text-[#B5413F]" />
         </a>
 
-        <div className="mb-6 max-w-[780px] overflow-hidden rounded-3xl border border-border/10 bg-subcard/40 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.16)]">
-          <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
-                Live table
-              </p>
-              <h2 className="mt-2 text-3xl font-black uppercase tracking-[0.16em] text-foreground leading-tight sm:text-4xl">
-                League<br />Standings
-              </h2>
-            </div>
+        <div className="grid grid-cols-1 gap-10 2xl:grid-cols-[minmax(620px,1.04fr)_minmax(560px,0.96fr)] 2xl:items-start">
+          {/* STANDINGS COLUMN */}
+          <section className="space-y-4">
+            <div className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/40 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.16)]">
+              <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
+                    Live table
+                  </p>
+                  <h2 className="mt-2 text-3xl font-black uppercase tracking-[0.16em] text-foreground leading-tight sm:text-4xl">
+                    League<br />Standings
+                  </h2>
+                </div>
 
             <div className="flex flex-wrap items-center gap-3">
               {(athleticsDataState?.loading || athleticsDataState?.refreshing) && (
@@ -580,9 +583,6 @@ export default function TeamPageScreen({
           )}
         </div>
 
-        <div className="grid grid-cols-1 gap-10 2xl:grid-cols-[minmax(620px,1.04fr)_minmax(560px,0.96fr)] 2xl:items-start">
-          {/* STANDINGS COLUMN */}
-          <section className="space-y-4">
             <div className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
                <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-[#5A1C2C]/10 bg-[#5A1C2C]/10 px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-[#B5413F] sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px]">
                   <div>Rank</div>
