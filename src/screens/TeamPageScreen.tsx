@@ -1,5 +1,5 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users, Search, Trophy, ChevronLeft, ChevronRight, MapPin, ChevronDown, ChevronUp, CalendarDays, Clock } from 'lucide-react';
+import { Users, Search, Trophy, ChevronLeft, ChevronRight, MapPin, ChevronDown, CalendarDays, Clock } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -218,10 +218,30 @@ export default function TeamPageScreen({
           )}
 
           {onToggle && (
-            <span className="flex items-center gap-2 rounded-xl border border-border/10 bg-subcard px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#B5413F] transition-colors group-hover:border-[#B5413F]/30 group-hover:text-foreground">
-              {expanded ? 'Hide' : 'Show'}
-              {expanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
-            </span>
+            <motion.span
+              className="flex items-center gap-2 rounded-xl border border-border/10 bg-subcard px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-[#B5413F] transition-colors group-hover:border-[#B5413F]/30 group-hover:text-foreground"
+              animate={{
+                backgroundColor: expanded ? 'rgba(181,65,63,0.16)' : 'rgba(255,255,255,0.03)',
+                scale: expanded ? 1.02 : 1,
+              }}
+              transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+            >
+              <motion.span
+                key={expanded ? 'hide' : 'show'}
+                initial={{ y: 6, opacity: 0, filter: 'blur(3px)' }}
+                animate={{ y: 0, opacity: 1, filter: 'blur(0px)' }}
+                exit={{ y: -6, opacity: 0, filter: 'blur(3px)' }}
+                transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+              >
+                {expanded ? 'Hide' : 'Show'}
+              </motion.span>
+              <motion.span
+                animate={{ rotate: expanded ? 180 : 0 }}
+                transition={{ type: 'spring', stiffness: 520, damping: 34 }}
+              >
+                <ChevronDown size={15} />
+              </motion.span>
+            </motion.span>
           )}
         </div>
       </>
@@ -687,8 +707,23 @@ export default function TeamPageScreen({
               onToggle={() => setShowUpcomingMatches((current) => !current)}
             />
 
-            {showUpcomingMatches && (
-              <div className="space-y-4">
+            <AnimatePresence initial={false}>
+              {showUpcomingMatches && (
+                <motion.div
+                  key="upcoming-matches"
+                  initial={{ height: 0, opacity: 0, y: -10, filter: 'blur(6px)' }}
+                  animate={{ height: 'auto', opacity: 1, y: 0, filter: 'blur(0px)' }}
+                  exit={{ height: 0, opacity: 0, y: -10, filter: 'blur(6px)' }}
+                  transition={{ type: 'spring', stiffness: 360, damping: 36, mass: 0.9 }}
+                  className="overflow-hidden"
+                >
+                  <motion.div
+                    initial={{ y: -8 }}
+                    animate={{ y: 0 }}
+                    exit={{ y: -8 }}
+                    transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                    className="space-y-4"
+                  >
                 {athleticsDataState?.loading && upcomingMatches.length === 0 ? (
                   <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse">
                     <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
@@ -712,8 +747,10 @@ export default function TeamPageScreen({
                 ) : (
                   upcomingMatches.map((match, idx) => renderMatchCard(match, idx))
                 )}
-              </div>
-            )}
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </section>
         </div>
 
@@ -727,8 +764,23 @@ export default function TeamPageScreen({
             onToggle={() => setShowMatchResults((current) => !current)}
           />
 
-          {showMatchResults && (
-            <div className="space-y-4">
+          <AnimatePresence initial={false}>
+            {showMatchResults && (
+              <motion.div
+                key="match-results"
+                initial={{ height: 0, opacity: 0, y: -10, filter: 'blur(6px)' }}
+                animate={{ height: 'auto', opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ height: 0, opacity: 0, y: -10, filter: 'blur(6px)' }}
+                transition={{ type: 'spring', stiffness: 360, damping: 36, mass: 0.9 }}
+                className="overflow-hidden"
+              >
+                <motion.div
+                  initial={{ y: -8 }}
+                  animate={{ y: 0 }}
+                  exit={{ y: -8 }}
+                  transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+                  className="space-y-4"
+                >
               {athleticsDataState?.loading && finishedMatches.length === 0 ? (
                 <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse">
                   <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
@@ -743,8 +795,10 @@ export default function TeamPageScreen({
               ) : (
                 finishedMatches.map((match, idx) => renderResultCard(match, idx))
               )}
-            </div>
-          )}
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </section>
 
         {/* JAAC Bracket */}
