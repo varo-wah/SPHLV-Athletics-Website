@@ -387,7 +387,7 @@ export default function TeamPageScreen({
               {resultLabel}
             </span>
 
-            <div className="rounded-2xl bg-[#101733] px-3 py-2 shadow-[0_14px_35px_rgba(0,0,0,0.28)] sm:px-5">
+            <div className="rounded-2xl bg-[#5A1C2C] px-3 py-2 shadow-[0_14px_35px_rgba(90,28,44,0.34)] sm:px-5">
               {hasScore ? (
                 <p className="whitespace-nowrap text-2xl font-black leading-none tracking-tight text-white sm:text-4xl">
                   {match.scoreFor} : {match.scoreAgainst}
