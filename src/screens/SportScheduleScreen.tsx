@@ -406,10 +406,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
               key={season}
               type="button"
               onClick={() => changeSeason(season)}
-              className={`group relative shrink-0 overflow-hidden rounded-2xl border px-4 py-2.5 text-left transition-all hover:-translate-y-0.5 ${
+              className={`group relative shrink-0 overflow-hidden rounded-2xl border px-4 py-2.5 text-left transition-colors ${
                 activeSeason === season
                   ? 'border-[#C1121F] bg-[#C1121F] text-white shadow-[0_12px_30px_rgba(193,18,31,0.18)] dark:border-[#B5413F]/40 dark:bg-[#B5413F] dark:text-white'
-                  : 'border-border bg-subcard text-foreground hover:border-[#C1121F]/35 hover:bg-[#FEE2E2] dark:border-border/10 dark:bg-subcard dark:text-foreground/60 dark:hover:text-foreground'
+                  : 'border-border bg-subcard text-foreground hover:border-[#C1121F]/30 hover:bg-[#5A1C2C]/12 dark:border-border/10 dark:bg-subcard dark:text-foreground/60 dark:hover:bg-[#5A1C2C]/18 dark:hover:text-foreground'
               }`}
             >
               <span className="relative z-10 flex items-center gap-3">
@@ -419,7 +419,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] ${
                   activeSeason === season
                     ? 'border-white bg-white text-[#C1121F] shadow-[0_8px_18px_rgba(0,0,0,0.12)] dark:border-white dark:bg-white dark:text-[#C1121F]'
-                    : 'border-[#D1D5DB] bg-[#E5E7EB] text-[#1F2937] dark:border-white/10 dark:bg-white/10 dark:text-white/70'
+                    : 'border-border/10 bg-foreground/[0.045] text-foreground/60 group-hover:border-[#C1121F]/20 group-hover:bg-[#5A1C2C]/18 dark:border-white/10 dark:bg-white/10 dark:text-white/70'
                 }`}>
                   {seasonEventCounts[season] || 0}
                 </span>
