@@ -505,7 +505,7 @@ export default function TeamPageScreen({
           <ChevronRight size={20} className="relative z-10 text-foreground/45 transition-transform group-hover:translate-x-1 group-hover:text-[#B5413F]" />
         </a>
 
-        <div className="mb-6 overflow-hidden rounded-3xl border border-border/10 bg-subcard/40 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.16)]">
+        <div className="mb-6 max-w-[780px] overflow-hidden rounded-3xl border border-border/10 bg-subcard/40 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.16)]">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
