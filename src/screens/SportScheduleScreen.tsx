@@ -5,7 +5,6 @@ import scheduleDataJson from '../data/schedule.json';
 import { ScheduleData, ScheduleEvent, ScheduleEventType } from '../data/scheduleTypes';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { DivisionTab, GenderTab, SportTab } from '../types';
-import SportFollowButton from '../components/SportFollowButton';
 
 const fallbackScheduleData = scheduleDataJson as ScheduleData;
 
@@ -20,14 +19,6 @@ const EVENT_TYPE_STYLES: Record<ScheduleEventType, string> = {
 
 const ALL = 'All';
 type ScheduleView = 'list' | 'calendar';
-const FOLLOWABLE_SPORTS: { id: SportTab; label: string }[] = [
-  { id: 'Basketball', label: 'Basketball' },
-  { id: 'Volleyball', label: 'Volleyball' },
-  { id: 'Soccer', label: 'Soccer' },
-  { id: 'Badminton', label: 'Badminton' },
-  { id: 'TrackAndField', label: 'Track' },
-];
-
 interface SelectedCalendarDay {
   label: string;
   events: ScheduleEvent[];
@@ -461,23 +452,6 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
               </button>
             );
           })}
-        </div>
-
-        <div className="space-y-2">
-          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">
-            Follow sports
-          </p>
-          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-            {FOLLOWABLE_SPORTS.map((followSport) => (
-              <div key={followSport.id} className="min-w-fit">
-                <SportFollowButton
-                  sport={followSport.id}
-                  compact
-                  className="w-full"
-                />
-              </div>
-            ))}
-          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-5">

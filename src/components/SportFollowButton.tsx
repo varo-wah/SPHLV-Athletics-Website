@@ -15,6 +15,10 @@ export default function SportFollowButton({ sport, compact = false, className = 
   const following = isFollowingSport(sport);
   const Icon = following ? BellRing : Bell;
 
+  if (!user) {
+    return null;
+  }
+
   return (
     <button
       type="button"
@@ -29,7 +33,7 @@ export default function SportFollowButton({ sport, compact = false, className = 
       } ${className}`}
     >
       <Icon size={compact ? 13 : 14} />
-      {following ? 'Following' : user ? 'Follow' : 'Sign in'}
+      {following ? 'Following' : 'Follow'}
     </button>
   );
 }
