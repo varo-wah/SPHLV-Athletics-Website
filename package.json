@@ -11,7 +11,8 @@
     "start": "node server.mjs",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "deploy:firebase": "npm run build && firebase deploy --only hosting,functions,firestore:rules"
+    "deploy:firebase": "npm run build && firebase deploy --only hosting,firestore:rules",
+    "deploy:firebase:full": "npm run build && firebase deploy --only hosting,functions,firestore:rules"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",

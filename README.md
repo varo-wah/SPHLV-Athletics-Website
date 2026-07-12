@@ -33,7 +33,7 @@ npm run build
 
 ## Deployment
 
-Netlify builds with `npm run build`, publishes `dist`, and serves the sheets proxy from `netlify/functions/sheets.mts`.
+Netlify builds with `npm run build`, publishes `dist`, and serves the sheets proxy from `netlify/functions/sheets.mts`. Firebase production builds should set `VITE_SHEETS_PROXY_BASE_URL` to the Netlify site origin so the public Firebase site uses that proxy without requiring Blaze.
 
 ### Firebase Hosting
 
@@ -48,10 +48,16 @@ firebase login
 firebase use --add
 ```
 
-Deploy:
+Deploy Firebase Hosting and Firestore rules on the Spark plan:
 
 ```bash
 npm run deploy:firebase
+```
+
+Deploy Hosting, Firestore rules, and Firebase Functions after upgrading to Blaze:
+
+```bash
+npm run deploy:firebase:full
 ```
 
 Required Firebase project setup:

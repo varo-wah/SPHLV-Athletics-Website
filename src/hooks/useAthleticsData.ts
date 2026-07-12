@@ -191,7 +191,7 @@ export function useAthleticsData(): AthleticsDataState {
 
     const intervalId = window.setInterval(() => {
       refresh();
-    }, 20000);
+    }, 60000);
 
     return () => {
       window.clearInterval(intervalId);

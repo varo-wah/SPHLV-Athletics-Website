@@ -2,6 +2,9 @@ import { hasValidSheetUrl } from "../config/sheets";
 
 export type CsvRow = Record<string, string>;
 
+const sheetsProxyBaseUrl = (import.meta.env.VITE_SHEETS_PROXY_BASE_URL ?? "")
+  .replace(/\/+$/, "");
+
 export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
   if (!hasValidSheetUrl(url)) {
     return [];
@@ -21,15 +24,10 @@ export async function fetchCsvMatrix(url: string): Promise<string[][]> {
 }
 
 async function fetchCsvText(url: string): Promise<string> {
-  const cacheBustedUrl = `/api/sheets?url=${encodeURIComponent(url)}&cacheBust=${Date.now()}`;
+  const proxyUrl = `${sheetsProxyBaseUrl}/api/sheets?url=${encodeURIComponent(url)}`;
 
-  const response = await fetch(cacheBustedUrl, {
+  const response = await fetch(proxyUrl, {
     method: "GET",
-    cache: "no-store",
-    headers: {
-      "Cache-Control": "no-cache",
-      "Pragma": "no-cache",
-    },
   });
 
   if (!response.ok) {
