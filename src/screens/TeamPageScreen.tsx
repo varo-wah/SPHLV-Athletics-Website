@@ -12,6 +12,15 @@ interface TeamPageScreenProps {
   athleticsDataState?: AthleticsDataState;
 }
 
+type TeamPageSection = 'matches' | 'results' | 'standings' | 'players';
+
+const teamPageSections: { id: TeamPageSection; label: string }[] = [
+  { id: 'matches', label: 'Matches' },
+  { id: 'results', label: 'Results' },
+  { id: 'standings', label: 'Standings' },
+  { id: 'players', label: 'Players & Stats' },
+];
+
 export default function TeamPageScreen({
   sport,
   division,
@@ -19,8 +28,9 @@ export default function TeamPageScreen({
   athleticsDataState,
 }: TeamPageScreenProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [activeSection, setActiveSection] = useState<TeamPageSection>('matches');
   const [showUpcomingMatches, setShowUpcomingMatches] = useState(true);
-  const [showMatchResults, setShowMatchResults] = useState(false);
+  const [showMatchResults, setShowMatchResults] = useState(true);
 
   const isCustomBanner = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
 
@@ -94,6 +104,12 @@ export default function TeamPageScreen({
     }, 4000);
     return () => clearInterval(timer);
   }, [carouselImages.length]);
+
+  useEffect(() => {
+    setActiveSection('matches');
+    setShowUpcomingMatches(true);
+    setShowMatchResults(true);
+  }, [sport, division, gender]);
 
   const sportLabels: Record<SportTab, string> = {
     Basketball: 'Basketball',
@@ -493,7 +509,53 @@ export default function TeamPageScreen({
         </div>
       </div>
 
-      <div className="px-4 sm:px-6 lg:px-8 mt-5 space-y-8">
+      <nav
+        aria-label={`${displayDivision} ${gender} ${sportLabels[sport]} sections`}
+        className="border-b border-border/10 bg-subcard/95 px-3 shadow-[0_12px_36px_rgba(0,0,0,0.16)] backdrop-blur sm:px-6 lg:px-8"
+      >
+        <div
+          role="tablist"
+          aria-label="Team page sections"
+          className="mx-auto flex max-w-[1500px] gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {teamPageSections.map((section) => {
+            const isActive = activeSection === section.id;
+
+            return (
+              <button
+                key={section.id}
+                id={`team-section-tab-${section.id}`}
+                type="button"
+                role="tab"
+                aria-selected={isActive}
+                aria-controls="team-section-panel"
+                onClick={() => setActiveSection(section.id)}
+                className={`relative min-w-fit flex-1 rounded-xl px-4 py-3 text-[11px] font-black uppercase tracking-[0.16em] transition-colors sm:px-6 sm:text-xs ${
+                  isActive
+                    ? 'bg-[#B5413F]/14 text-foreground'
+                    : 'text-foreground/42 hover:bg-foreground/[0.035] hover:text-foreground/75'
+                }`}
+              >
+                {section.label}
+                <span
+                  aria-hidden="true"
+                  className={`absolute inset-x-4 -bottom-2 h-0.5 rounded-full bg-[#B5413F] transition-opacity ${
+                    isActive ? 'opacity-100' : 'opacity-0'
+                  }`}
+                />
+              </button>
+            );
+          })}
+        </div>
+      </nav>
+
+      <div
+        id="team-section-panel"
+        role="tabpanel"
+        aria-labelledby={`team-section-tab-${activeSection}`}
+        className="px-4 sm:px-6 lg:px-8 mt-5 space-y-8"
+      >
+        {activeSection === 'results' && (
         <a
           href="https://acscconference.com/boys-soccer/"
           target="_blank"
@@ -519,9 +581,11 @@ export default function TeamPageScreen({
 
           <ChevronRight size={20} className="relative z-10 text-foreground/45 transition-transform group-hover:translate-x-1 group-hover:text-[#B5413F]" />
         </a>
+        )}
 
-        <div className="grid grid-cols-1 gap-10 2xl:grid-cols-[minmax(620px,1.04fr)_minmax(560px,0.96fr)] 2xl:items-start">
+        <div className="space-y-10">
           {/* STANDINGS COLUMN */}
+          {activeSection === 'standings' && (
           <section className="space-y-4">
             <div className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/40 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.16)]">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
@@ -691,8 +755,10 @@ export default function TeamPageScreen({
                </div>
             </div>
           </section>
+          )}
 
           {/* UPCOMING MATCHES COLUMN */}
+          {activeSection === 'matches' && (
           <section className="space-y-4">
             <SectionHeader
               title="Upcoming Matches"
@@ -747,9 +813,11 @@ export default function TeamPageScreen({
               )}
             </AnimatePresence>
           </section>
+          )}
         </div>
 
         {/* MATCH RESULTS SECTION */}
+        {activeSection === 'results' && (
         <section className="space-y-4 mt-10">
           <SectionHeader
             title="Match Results"
@@ -795,9 +863,10 @@ export default function TeamPageScreen({
             )}
           </AnimatePresence>
         </section>
+        )}
 
         {/* JAAC Bracket */}
-        {sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
+        {activeSection === 'results' && sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
           <section className="space-y-4 mt-10">
             <SectionHeader
               title="JAAC Bracket"
@@ -913,6 +982,7 @@ export default function TeamPageScreen({
         )}
 
         {/* Team Photo */}
+        {activeSection === 'players' && (
         <section className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -992,8 +1062,10 @@ export default function TeamPageScreen({
             </div>
           </div>
         </section>
+        )}
 
         {/* Player Roster */}
+        {activeSection === 'players' && (
         <section className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -1051,6 +1123,7 @@ export default function TeamPageScreen({
             })}
           </div>
         </section>
+        )}
 
       </div>
     </div>
