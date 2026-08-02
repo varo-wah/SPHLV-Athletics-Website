@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
+    "dev:production": "VITE_RELEASE_CHANNEL=production vite --port=3000 --host=0.0.0.0",
+    "dev:prototype": "VITE_RELEASE_CHANNEL=prototype vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "build:production": "VITE_RELEASE_CHANNEL=production vite build",
     "build:prototype": "VITE_RELEASE_CHANNEL=prototype vite build",

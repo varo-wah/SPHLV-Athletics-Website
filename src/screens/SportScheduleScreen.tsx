@@ -337,7 +337,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       .filter((event) => (
         event.season === activeSeason
         && isMeaningfulScheduleEvent(event)
-        && isVisibleScheduleEvent(event.season, eventSportKey(event))
+        && isVisibleScheduleEvent(event.season, eventSportKey(event), event.team)
       ))
       .sort((a, b) => {
         const dateCompare = (a.date || '').localeCompare(b.date || '');
@@ -458,7 +458,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
               Master schedule
             </p>
             <p className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
-              {IS_PROTOTYPE ? `${activeSeason} · Prototype schedule` : `${LAUNCH_SEASON} · Soccer & Volleyball`}
+              {IS_PROTOTYPE ? `${activeSeason} · Prototype schedule` : `${LAUNCH_SEASON} · Launch teams`}
             </p>
           </div>
 

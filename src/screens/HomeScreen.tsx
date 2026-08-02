@@ -6,7 +6,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { getTeamFavoriteLabel } from '../utils/teamFavorites';
-import { isLaunchTeamSport } from '../config/launchSports';
+import { isLaunchTeamSelection } from '../config/launchSports';
 import {
   BadmintonIcon,
   BasketballIcon,
@@ -39,7 +39,9 @@ export default function HomeScreen({
   const [activeFeaturePanel, setActiveFeaturePanel] = useState<'match' | 'result' | 'table'>('match');
   const { user } = useAuth();
   const { favoriteTeams, loading: favoritesLoading, error: favoritesError } = useTeamFavorites();
-  const visibleFavoriteTeams = favoriteTeams.filter((favorite) => isLaunchTeamSport(favorite.sport));
+  const visibleFavoriteTeams = favoriteTeams.filter((favorite) => (
+    isLaunchTeamSelection(favorite.sport, favorite.division, favorite.gender)
+  ));
 
   const formatMatchDateTime = (match: SheetMatch | null) => {
     if (!match) return 'Schedule pending';

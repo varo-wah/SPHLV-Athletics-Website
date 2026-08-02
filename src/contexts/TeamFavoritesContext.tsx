@@ -16,7 +16,7 @@ import {
   getTeamFavoriteLabel,
 } from '../utils/teamFavorites';
 import { useAuth } from './AuthContext';
-import { isLaunchTeamSport } from '../config/launchSports';
+import { isLaunchTeamSelection } from '../config/launchSports';
 
 interface TeamFavoritesContextValue {
   favoriteTeams: FavoriteTeam[];
@@ -67,7 +67,10 @@ export function TeamFavoritesProvider({ children }: { children: ReactNode }) {
       (snapshot) => {
         const nextFavorites = snapshot.docs.flatMap((favoriteDoc) => {
           const data = favoriteDoc.data();
-          if (!isFavoriteTeamDocument(data) || !isLaunchTeamSport(data.sportKey)) return [];
+          if (
+            !isFavoriteTeamDocument(data)
+            || !isLaunchTeamSelection(data.sportKey, data.division, data.gender)
+          ) return [];
 
           return [{
             key: favoriteDoc.id,
@@ -111,7 +114,7 @@ export function TeamFavoritesProvider({ children }: { children: ReactNode }) {
 
   const toggleTeamFavorite = useCallback(
     async (sport: SportTab, division: DivisionTab, gender: GenderTab) => {
-      if (!isLaunchTeamSport(sport)) return;
+      if (!isLaunchTeamSelection(sport, division, gender)) return;
 
       if (!user || !firebaseDb) {
         openLoginModal();

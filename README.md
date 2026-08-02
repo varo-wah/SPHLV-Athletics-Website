@@ -2,8 +2,8 @@
 
 SPH LV Athletics has two release channels built from the same codebase:
 
-- Firebase Hosting is the official production site and defaults to Season 1 Soccer and Volleyball.
-- Netlify is the prototype site and exposes the complete in-progress sports and season catalog.
+- Firebase Hosting is the only official deployment. Production shows the six approved Season 1 teams: SMA Soccer, SMA Volleyball, and SMP Basketball for boys and girls.
+- The complete in-progress sports and season catalog is viewed locally from the `prototype` branch.
 
 ## Release Channels
 
@@ -14,7 +14,7 @@ npm run build:production
 npm run build:prototype
 ```
 
-Production hides unfinished sports and stale favorites for those sports. Prototype uses the same Firebase Authentication and Firestore data, but displays a persistent Prototype badge.
+Production hides unfinished teams and stale favorites for those teams. Prototype uses the same Firebase Authentication and Firestore data, but displays a persistent Prototype badge.
 
 ## Local Development
 
@@ -24,13 +24,19 @@ Production hides unfinished sports and stale favorites for those sports. Prototy
    npm install
    ```
 
-2. Start the Vite dev server:
+2. Start the production-restricted Vite dev server:
 
    ```bash
    npm run dev
    ```
 
-3. Open the local URL printed by Vite.
+3. To view the complete prototype locally instead, run:
+
+   ```bash
+   npm run dev:prototype
+   ```
+
+4. Open the local URL printed by Vite.
 
 ## Verification
 
@@ -42,7 +48,7 @@ npm run build:prototype
 
 ## Deployment
 
-Netlify builds the explicit prototype profile, publishes `dist`, and serves the sheets proxy from `netlify/functions/sheets.mts`. Its production branch should be `prototype`. Firebase production builds should set `VITE_SHEETS_PROXY_BASE_URL` to the Netlify site origin so the public Firebase site uses that proxy without requiring Blaze.
+The prototype is not deployed to a second hosting provider. Contributors check out the `prototype` branch and run `npm run dev:prototype`. Firebase production builds may set `VITE_SHEETS_PROXY_BASE_URL` to the existing sheets proxy origin when Firebase Functions are unavailable on the current plan.
 
 ### Firebase Hosting
 

@@ -13,6 +13,7 @@ import {
   IS_PROTOTYPE,
   LAUNCH_SEASON,
   LAUNCH_TEAM_SPORTS,
+  isLaunchTeamSelection,
 } from '../config/launchSports';
 
 interface TeamsScreenProps {
@@ -62,7 +63,7 @@ const allSports: SportDirectory[] = [
   {
     id: 'Basketball',
     label: 'Basketball',
-    season: 'Season 1 / 2',
+    season: IS_PROTOTYPE ? 'Season 1 / 2' : LAUNCH_SEASON,
     status: 'Schedule only',
     icon: BasketballIcon,
     teams: teamOptions,
@@ -85,7 +86,14 @@ const allSports: SportDirectory[] = [
   },
 ];
 
-const sports = allSports.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
+const sports = allSports
+  .filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id))
+  .map((sport) => ({
+    ...sport,
+    teams: sport.teams.filter((team) => (
+      isLaunchTeamSelection(sport.id, team.division, team.gender)
+    )),
+  }));
 const visibleSportCount = sports.length;
 const visibleTeamCount = sports.reduce((total, sport) => total + sport.teams.length, 0);
 const visibleSeasonCount = IS_PROTOTYPE ? 4 : 1;

@@ -9,7 +9,11 @@ import {
   BadmintonIcon,
   TrackIcon,
 } from './SportIcons';
-import { IS_PROTOTYPE, LAUNCH_TEAM_SPORTS } from '../config/launchSports';
+import {
+  IS_PROTOTYPE,
+  LAUNCH_TEAM_SPORTS,
+  isLaunchTeamSelection,
+} from '../config/launchSports';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -54,9 +58,15 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
     setOpenSport((current) => (current === sport ? null : sport));
   };
 
-  const getTeamsForSport = (sport: SportTab) => (
-    sport === 'Badminton' || sport === 'TrackAndField' ? combinedTeams : standardTeams
-  );
+  const getTeamsForSport = (sport: SportTab) => {
+    const availableTeams = sport === 'Badminton' || sport === 'TrackAndField'
+      ? combinedTeams
+      : standardTeams;
+
+    return availableTeams.filter((team) => (
+      isLaunchTeamSelection(sport, team.division, team.gender)
+    ));
+  };
 
   return (
     <AnimatePresence>
@@ -211,7 +221,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
                   Athletics Department
                 </p>
                 <p className="mt-1 text-xs font-bold text-foreground/34">
-                  {IS_PROTOTYPE ? 'Prototype catalog · shared account data' : 'Season 1 · Soccer and Volleyball'}
+                  {IS_PROTOTYPE ? 'Prototype catalog · shared account data' : 'Season 1 · 6 launch teams'}
                 </p>
               </div>
             </div>

@@ -14,7 +14,7 @@ import { useAthleticsData } from './hooks/useAthleticsData';
 import { AuthProvider } from './contexts/AuthContext';
 import { SportFollowsProvider } from './contexts/SportFollowsContext';
 import { TeamFavoritesProvider } from './contexts/TeamFavoritesContext';
-import { isLaunchTeamSport } from './config/launchSports';
+import { isLaunchTeamSelection } from './config/launchSports';
 
 export default function App() {
   return (
@@ -43,7 +43,7 @@ function AthleticsApp() {
   };
 
   const navigateToTeam = (sport: SportTab, division: DivisionTab, gender: GenderTab) => {
-    if (!isLaunchTeamSport(sport)) {
+    if (!isLaunchTeamSelection(sport, division, gender)) {
       setActiveTab('Teams');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
