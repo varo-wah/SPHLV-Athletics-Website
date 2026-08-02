@@ -1,15 +1,47 @@
-import { Activity, CalendarDays, MapPin, Newspaper, Trophy } from 'lucide-react';
+import { Activity, CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { SheetMatch } from '../services/parsers';
+import { useAuth } from '../contexts/AuthContext';
+import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
+import { DivisionTab, GenderTab, SportTab } from '../types';
+import { getTeamFavoriteLabel } from '../utils/teamFavorites';
+import { isLaunchTeamSelection } from '../config/launchSports';
+import {
+  BadmintonIcon,
+  BasketballIcon,
+  SoccerIcon,
+  TrackIcon,
+  VolleyballIcon,
+} from '../components/SportIcons';
 
 interface HomeScreenProps {
   athleticsDataState: AthleticsDataState;
   onNavigateToNews?: () => void;
+  onNavigateToTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
+  onBrowseTeams: () => void;
 }
 
-export default function HomeScreen({ athleticsDataState, onNavigateToNews }: HomeScreenProps) {
+const favoriteTeamIcons = {
+  Basketball: BasketballIcon,
+  Volleyball: VolleyballIcon,
+  Soccer: SoccerIcon,
+  Badminton: BadmintonIcon,
+  TrackAndField: TrackIcon,
+};
+
+export default function HomeScreen({
+  athleticsDataState,
+  onNavigateToNews,
+  onNavigateToTeam,
+  onBrowseTeams,
+}: HomeScreenProps) {
   const [activeFeaturePanel, setActiveFeaturePanel] = useState<'match' | 'result' | 'table'>('match');
+  const { user } = useAuth();
+  const { favoriteTeams, loading: favoritesLoading, error: favoritesError } = useTeamFavorites();
+  const visibleFavoriteTeams = favoriteTeams.filter((favorite) => (
+    isLaunchTeamSelection(favorite.sport, favorite.division, favorite.gender)
+  ));
 
   const formatMatchDateTime = (match: SheetMatch | null) => {
     if (!match) return 'Schedule pending';
@@ -153,6 +185,99 @@ export default function HomeScreen({ athleticsDataState, onNavigateToNews }: Hom
         />
         <div className="hero-image-overlay" />
       </div>
+
+      {user && (
+        <section
+          aria-labelledby="my-teams-heading"
+          className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/70 p-4 shadow-[0_18px_55px_rgba(0,0,0,0.14)] backdrop-blur-xl sm:p-5"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#F4C95D]/25 bg-[#F4C95D]/10 text-[#F4C95D]">
+                <Star size={18} fill="currentColor" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[9px] font-black uppercase tracking-[0.22em] text-[#B5413F]">
+                  Quick access
+                </p>
+                <h2 id="my-teams-heading" className="text-xl font-black uppercase tracking-[0.08em] text-foreground">
+                  My Teams
+                </h2>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={onBrowseTeams}
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-2 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/55 transition-colors hover:border-[#B5413F]/30 hover:bg-[#B5413F]/10 hover:text-foreground"
+            >
+              <Plus size={13} />
+              Browse
+            </button>
+          </div>
+
+          {favoritesLoading ? (
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3" aria-label="Loading favorite teams">
+              {[0, 1, 2].map((item) => (
+                <div key={item} className="h-[72px] animate-pulse rounded-2xl bg-foreground/[0.035]" />
+              ))}
+            </div>
+          ) : visibleFavoriteTeams.length > 0 ? (
+            <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+              {visibleFavoriteTeams.map((favorite) => {
+                const Icon = favoriteTeamIcons[favorite.sport];
+                const label = getTeamFavoriteLabel(favorite);
+
+                return (
+                  <button
+                    key={favorite.key}
+                    type="button"
+                    onClick={() => onNavigateToTeam(favorite.sport, favorite.division, favorite.gender)}
+                    className="group flex min-h-[72px] items-center justify-between gap-3 rounded-2xl border border-border/10 bg-foreground/[0.025] px-3.5 py-3 text-left transition-all hover:-translate-y-0.5 hover:border-[#B5413F]/30 hover:bg-[#B5413F]/10"
+                  >
+                    <div className="flex min-w-0 items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors group-hover:border-[#B5413F]/25 group-hover:text-[#D85A57]">
+                        <Icon size={19} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="truncate text-sm font-black uppercase tracking-[0.07em] text-foreground">
+                          {label}
+                        </p>
+                        <p className="mt-1 text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">
+                          Open team
+                        </p>
+                      </div>
+                    </div>
+                    <ChevronRight size={16} className="shrink-0 text-foreground/30 transition-transform group-hover:translate-x-0.5 group-hover:text-[#B5413F]" />
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={onBrowseTeams}
+              className="mt-4 flex w-full items-center justify-between gap-4 rounded-2xl border border-dashed border-border/15 bg-foreground/[0.018] px-4 py-4 text-left transition-colors hover:border-[#B5413F]/30 hover:bg-[#B5413F]/8"
+            >
+              <div>
+                <p className="text-sm font-black uppercase tracking-[0.08em] text-foreground/75">
+                  No favorite teams yet
+                </p>
+                <p className="mt-1 text-xs font-semibold text-foreground/38">
+                  Open a team and tap Favorite to add it here.
+                </p>
+              </div>
+              <ChevronRight size={18} className="shrink-0 text-foreground/35" />
+            </button>
+          )}
+
+          {favoritesError && (
+            <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-red-400">
+              {favoritesError}
+            </p>
+          )}
+        </section>
+      )}
 
       <section className="home-live-card" aria-label="Live athletics summary">
         <div className="home-live-card__field" aria-hidden="true">

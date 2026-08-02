@@ -54,7 +54,7 @@ export function parseMasterScheduleSeason(season: string, matrix: string[][]): S
     headers.forEach(({ columnIndex, team }) => {
       const text = clean(row[columnIndex]);
 
-      if (!text) {
+      if (!text || !/[A-Za-z0-9]/.test(text)) {
         return;
       }
 
@@ -180,7 +180,11 @@ function detectEventType(text: string, team: string): ScheduleEventType {
 }
 
 function detectTime(text: string): string | null {
-  const match = text.match(/\b\d{1,2}(?::\d{2})?\s*(?:am|pm)\b|\b\d{1,2}:\d{2}\b/i);
+  const candidates = [...text.matchAll(/\b\d{1,2}(?::\d{2})?\s*(?:am|pm)\b|\b\d{1,2}:\d{2}\b/gi)];
+  const match = candidates.find((candidate) => {
+    const prefix = text.slice(Math.max(0, (candidate.index ?? 0) - 5), candidate.index).toLowerCase();
+    return !/gym\s*$/.test(prefix);
+  });
   return match?.[0] ?? null;
 }
 

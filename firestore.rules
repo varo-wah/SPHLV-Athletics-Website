@@ -8,6 +8,10 @@ service cloud.firestore {
       match /sportFollows/{sportKey} {
         allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
       }
+
+      match /teamFavorites/{teamKey} {
+        allow read, create, update, delete: if request.auth != null && request.auth.uid == userId;
+      }
     }
   }
 }

@@ -11,6 +11,7 @@ import { collection, deleteDoc, doc, onSnapshot, serverTimestamp, setDoc } from 
 import { firebaseDb } from '../lib/firebase';
 import { SportTab } from '../types';
 import { useAuth } from './AuthContext';
+import { isLaunchTeamSport } from '../config/launchSports';
 
 interface SportFollowsContextValue {
   followedSports: SportTab[];
@@ -38,7 +39,11 @@ export function SportFollowsProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onSnapshot(
       followsRef,
       (snapshot) => {
-        setFollowedSports(snapshot.docs.map((followDoc) => followDoc.id as SportTab));
+        setFollowedSports(
+          snapshot.docs
+            .map((followDoc) => followDoc.id as SportTab)
+            .filter(isLaunchTeamSport),
+        );
         setLoading(false);
       },
       (error) => {
@@ -59,6 +64,8 @@ export function SportFollowsProvider({ children }: { children: ReactNode }) {
 
   const toggleSportFollow = useCallback(
     async (sport: SportTab) => {
+      if (!isLaunchTeamSport(sport)) return;
+
       if (!user || !firebaseDb) {
         openLoginModal();
         return;

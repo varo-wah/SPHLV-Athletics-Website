@@ -9,6 +9,12 @@ import {
   TrackIcon,
 } from '../components/SportIcons';
 import SportFollowButton from '../components/SportFollowButton';
+import {
+  IS_PROTOTYPE,
+  LAUNCH_SEASON,
+  LAUNCH_TEAM_SPORTS,
+  isLaunchTeamSelection,
+} from '../config/launchSports';
 
 interface TeamsScreenProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
@@ -37,29 +43,29 @@ const teamOptions: TeamOption[] = [
   { division: 'SMP', gender: 'Girls', label: 'SMP Girls', note: 'Middle School' },
 ];
 
-const sports: SportDirectory[] = [
+const allSports: SportDirectory[] = [
   {
     id: 'Soccer',
     label: 'Soccer',
-    season: 'Season 1 / 3',
+    season: IS_PROTOTYPE ? 'Season 1 / 3' : LAUNCH_SEASON,
     status: 'Live sheets',
     icon: SoccerIcon,
     teams: teamOptions,
   },
   {
-    id: 'Basketball',
-    label: 'Basketball',
-    season: 'Season 1 / 2',
+    id: 'Volleyball',
+    label: 'Volleyball',
+    season: IS_PROTOTYPE ? 'Season 1 / 2' : LAUNCH_SEASON,
     status: 'Schedule only',
-    icon: BasketballIcon,
+    icon: VolleyballIcon,
     teams: teamOptions,
   },
   {
-    id: 'Volleyball',
-    label: 'Volleyball',
-    season: 'Season 1 / 2',
+    id: 'Basketball',
+    label: 'Basketball',
+    season: IS_PROTOTYPE ? 'Season 1 / 2' : LAUNCH_SEASON,
     status: 'Schedule only',
-    icon: VolleyballIcon,
+    icon: BasketballIcon,
     teams: teamOptions,
   },
   {
@@ -79,6 +85,18 @@ const sports: SportDirectory[] = [
     teams: [{ division: 'SMA', gender: 'Combined', label: 'Varsity Combined', note: 'SMA' }],
   },
 ];
+
+const sports = allSports
+  .filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id))
+  .map((sport) => ({
+    ...sport,
+    teams: sport.teams.filter((team) => (
+      isLaunchTeamSelection(sport.id, team.division, team.gender)
+    )),
+  }));
+const visibleSportCount = sports.length;
+const visibleTeamCount = sports.reduce((total, sport) => total + sport.teams.length, 0);
+const visibleSeasonCount = IS_PROTOTYPE ? 4 : 1;
 
 export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
   return (
@@ -100,15 +118,15 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
 
           <div className="grid grid-cols-3 gap-2 sm:min-w-[260px]">
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-[#B5413F]">5</p>
+              <p className="text-2xl font-black text-[#B5413F]">{visibleSportCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Sports</p>
             </div>
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-foreground">17</p>
+              <p className="text-2xl font-black text-foreground">{visibleTeamCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Teams</p>
             </div>
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-foreground">4</p>
+              <p className="text-2xl font-black text-foreground">{visibleSeasonCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Seasons</p>
             </div>
           </div>

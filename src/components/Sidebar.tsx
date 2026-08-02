@@ -9,6 +9,11 @@ import {
   BadmintonIcon,
   TrackIcon,
 } from './SportIcons';
+import {
+  IS_PROTOTYPE,
+  LAUNCH_TEAM_SPORTS,
+  isLaunchTeamSelection,
+} from '../config/launchSports';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -24,13 +29,15 @@ type SportMenuItem = {
   featured?: boolean;
 };
 
-const sports: SportMenuItem[] = [
-  { id: 'Basketball', label: 'BASKETBALL', icon: BasketballIcon, status: 'Schedule' },
-  { id: 'Volleyball', label: 'VOLLEYBALL', icon: VolleyballIcon, status: 'Schedule' },
+const allSports: SportMenuItem[] = [
   { id: 'Soccer', label: 'SOCCER', icon: SoccerIcon, status: 'Live', featured: true },
+  { id: 'Volleyball', label: 'VOLLEYBALL', icon: VolleyballIcon, status: 'Schedule' },
+  { id: 'Basketball', label: 'BASKETBALL', icon: BasketballIcon, status: 'Schedule' },
   { id: 'Badminton', label: 'BADMINTON', icon: BadmintonIcon, status: 'Schedule' },
   { id: 'TrackAndField', label: 'TRACK & FIELD', icon: TrackIcon, status: 'Schedule' },
 ];
+
+const sports = allSports.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
 
 const standardTeams: { label: string; division: DivisionTab; gender: GenderTab }[] = [
   { label: 'SMP Boys', division: 'SMP', gender: 'Boys' },
@@ -52,11 +59,13 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
   };
 
   const getTeamsForSport = (sport: SportTab) => {
-    if (sport === 'Badminton' || sport === 'TrackAndField') {
-      return combinedTeams;
-    }
+    const availableTeams = sport === 'Badminton' || sport === 'TrackAndField'
+      ? combinedTeams
+      : standardTeams;
 
-    return standardTeams;
+    return availableTeams.filter((team) => (
+      isLaunchTeamSelection(sport, team.division, team.gender)
+    ));
   };
 
   return (
@@ -212,7 +221,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
                   Athletics Department
                 </p>
                 <p className="mt-1 text-xs font-bold text-foreground/34">
-                  Soccer sheets live · master schedule local
+                  {IS_PROTOTYPE ? 'Prototype catalog · shared account data' : 'Season 1 · 6 launch teams'}
                 </p>
               </div>
             </div>

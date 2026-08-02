@@ -1,12 +1,20 @@
 # SPHLV Athletics Website
 
-Live athletics site for SPH LV schedules, standings, team pages, and match results.
+SPH LV Athletics has two release channels built from the same codebase:
 
-## Current Data Scope
+- Firebase Hosting is the only official deployment. Production shows the six approved Season 1 teams: SMA Soccer, SMA Volleyball, and SMP Basketball for boys and girls.
+- The complete in-progress sports and season catalog is viewed locally from the `prototype` branch.
 
-- Soccer Matches and Soccer Standings are synced from published Google Sheets CSV URLs.
-- Basketball and other sports are intentionally disabled until their published sheet URLs are ready.
-- Netlify production uses `/api/sheets` through a Netlify Function so Google Sheets CSV fetches do not fail in the browser.
+## Release Channels
+
+The app fails closed to production when `VITE_RELEASE_CHANNEL` is missing or invalid.
+
+```bash
+npm run build:production
+npm run build:prototype
+```
+
+Production hides unfinished teams and stale favorites for those teams. Prototype uses the same Firebase Authentication and Firestore data, but displays a persistent Prototype badge.
 
 ## Local Development
 
@@ -16,24 +24,31 @@ Live athletics site for SPH LV schedules, standings, team pages, and match resul
    npm install
    ```
 
-2. Start the Vite dev server:
+2. Start the production-restricted Vite dev server:
 
    ```bash
    npm run dev
    ```
 
-3. Open the local URL printed by Vite.
+3. To view the complete prototype locally instead, run:
+
+   ```bash
+   npm run dev:prototype
+   ```
+
+4. Open the local URL printed by Vite.
 
 ## Verification
 
 ```bash
 npm run lint
-npm run build
+npm run build:production
+npm run build:prototype
 ```
 
 ## Deployment
 
-Netlify builds with `npm run build`, publishes `dist`, and serves the sheets proxy from `netlify/functions/sheets.mts`. Firebase production builds should set `VITE_SHEETS_PROXY_BASE_URL` to the Netlify site origin so the public Firebase site uses that proxy without requiring Blaze.
+The prototype is not deployed to a second hosting provider. Contributors check out the `prototype` branch and run `npm run dev:prototype`. Firebase production builds may set `VITE_SHEETS_PROXY_BASE_URL` to the existing sheets proxy origin when Firebase Functions are unavailable on the current plan.
 
 ### Firebase Hosting
 
@@ -53,6 +68,20 @@ Deploy Firebase Hosting and Firestore rules on the Spark plan:
 ```bash
 npm run deploy:firebase
 ```
+
+Merges to `main` are verified and deployed by `.github/workflows/deploy-production.yml`. Configure these GitHub Actions secrets before merging a release:
+
+- `FIREBASE_SERVICE_ACCOUNT_SPHLV_ATHLETICS`
+- `VITE_FIREBASE_API_KEY`
+- `VITE_FIREBASE_AUTH_DOMAIN`
+- `VITE_FIREBASE_PROJECT_ID`
+- `VITE_FIREBASE_STORAGE_BUCKET`
+- `VITE_FIREBASE_MESSAGING_SENDER_ID`
+- `VITE_FIREBASE_APP_ID`
+- `VITE_FIREBASE_MEASUREMENT_ID`
+- `VITE_SHEETS_PROXY_BASE_URL`
+
+Feature work is reviewed on `prototype`. A tested release is promoted from `prototype` to `main`; production hotfixes from `main` must be merged back into `prototype`.
 
 Deploy Hosting, Firestore rules, and Firebase Functions after upgrading to Blaze:
 
