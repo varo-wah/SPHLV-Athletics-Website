@@ -1,6 +1,7 @@
 import { LogOut, Menu, Moon, Sun, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { IS_PROTOTYPE } from '../config/launchSports';
 
 interface TopBarProps {
   onOpenMenu: () => void;
@@ -31,6 +32,11 @@ export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
           <Menu size={24} />
         </button>
         <span className="text-[#1F2937] font-bold tracking-wider text-sm dark:text-foreground">ATHLETICS DEPT</span>
+        {IS_PROTOTYPE && (
+          <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[8px] font-black uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
+            Prototype
+          </span>
+        )}
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
         <button

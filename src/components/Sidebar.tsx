@@ -6,7 +6,10 @@ import {
   BasketballIcon,
   VolleyballIcon,
   SoccerIcon,
+  BadmintonIcon,
+  TrackIcon,
 } from './SportIcons';
+import { IS_PROTOTYPE, LAUNCH_TEAM_SPORTS } from '../config/launchSports';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -22,17 +25,26 @@ type SportMenuItem = {
   featured?: boolean;
 };
 
-const sports: SportMenuItem[] = [
-  { id: 'Basketball', label: 'BASKETBALL', icon: BasketballIcon, status: 'Schedule' },
-  { id: 'Volleyball', label: 'VOLLEYBALL', icon: VolleyballIcon, status: 'Schedule' },
+const allSports: SportMenuItem[] = [
   { id: 'Soccer', label: 'SOCCER', icon: SoccerIcon, status: 'Live', featured: true },
+  { id: 'Volleyball', label: 'VOLLEYBALL', icon: VolleyballIcon, status: 'Schedule' },
+  { id: 'Basketball', label: 'BASKETBALL', icon: BasketballIcon, status: 'Schedule' },
+  { id: 'Badminton', label: 'BADMINTON', icon: BadmintonIcon, status: 'Schedule' },
+  { id: 'TrackAndField', label: 'TRACK & FIELD', icon: TrackIcon, status: 'Schedule' },
 ];
+
+const sports = allSports.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
 
 const standardTeams: { label: string; division: DivisionTab; gender: GenderTab }[] = [
   { label: 'SMP Boys', division: 'SMP', gender: 'Boys' },
   { label: 'SMP Girls', division: 'SMP', gender: 'Girls' },
   { label: 'SMA Boys', division: 'SMA', gender: 'Boys' },
   { label: 'SMA Girls', division: 'SMA', gender: 'Girls' },
+];
+
+const combinedTeams: { label: string; division: DivisionTab; gender: GenderTab }[] = [
+  { label: 'SMP Combined', division: 'SMP', gender: 'Combined' },
+  { label: 'SMA Combined', division: 'SMA', gender: 'Combined' },
 ];
 
 export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps) {
@@ -42,7 +54,9 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
     setOpenSport((current) => (current === sport ? null : sport));
   };
 
-  const getTeamsForSport = () => standardTeams;
+  const getTeamsForSport = (sport: SportTab) => (
+    sport === 'Badminton' || sport === 'TrackAndField' ? combinedTeams : standardTeams
+  );
 
   return (
     <AnimatePresence>
@@ -96,7 +110,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
               {sports.map((sport) => {
                 const Icon = sport.icon;
                 const isOpenSport = openSport === sport.id;
-                const teams = getTeamsForSport();
+                const teams = getTeamsForSport(sport.id);
 
                 return (
                   <div
@@ -197,7 +211,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
                   Athletics Department
                 </p>
                 <p className="mt-1 text-xs font-bold text-foreground/34">
-                  Soccer sheets live · master schedule local
+                  {IS_PROTOTYPE ? 'Prototype catalog · shared account data' : 'Season 1 · Soccer and Volleyball'}
                 </p>
               </div>
             </div>

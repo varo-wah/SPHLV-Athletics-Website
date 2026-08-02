@@ -5,9 +5,15 @@ import {
   BasketballIcon,
   VolleyballIcon,
   SoccerIcon,
+  BadmintonIcon,
+  TrackIcon,
 } from '../components/SportIcons';
 import SportFollowButton from '../components/SportFollowButton';
-import { LAUNCH_SEASON } from '../config/launchSports';
+import {
+  IS_PROTOTYPE,
+  LAUNCH_SEASON,
+  LAUNCH_TEAM_SPORTS,
+} from '../config/launchSports';
 
 interface TeamsScreenProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
@@ -36,36 +42,53 @@ const teamOptions: TeamOption[] = [
   { division: 'SMP', gender: 'Girls', label: 'SMP Girls', note: 'Middle School' },
 ];
 
-const sports: SportDirectory[] = [
+const allSports: SportDirectory[] = [
   {
     id: 'Soccer',
     label: 'Soccer',
-    season: LAUNCH_SEASON,
+    season: IS_PROTOTYPE ? 'Season 1 / 3' : LAUNCH_SEASON,
     status: 'Live sheets',
     icon: SoccerIcon,
     teams: teamOptions,
   },
   {
+    id: 'Volleyball',
+    label: 'Volleyball',
+    season: IS_PROTOTYPE ? 'Season 1 / 2' : LAUNCH_SEASON,
+    status: 'Schedule only',
+    icon: VolleyballIcon,
+    teams: teamOptions,
+  },
+  {
     id: 'Basketball',
     label: 'Basketball',
-    season: LAUNCH_SEASON,
+    season: 'Season 1 / 2',
     status: 'Schedule only',
     icon: BasketballIcon,
     teams: teamOptions,
   },
   {
-    id: 'Volleyball',
-    label: 'Volleyball',
-    season: LAUNCH_SEASON,
+    id: 'Badminton',
+    label: 'Badminton',
+    season: 'Season 3',
     status: 'Schedule only',
-    icon: VolleyballIcon,
+    icon: BadmintonIcon,
     teams: teamOptions,
+  },
+  {
+    id: 'TrackAndField',
+    label: 'Track & Field',
+    season: 'Season 3',
+    status: 'Schedule only',
+    icon: TrackIcon,
+    teams: [{ division: 'SMA', gender: 'Combined', label: 'Varsity Combined', note: 'SMA' }],
   },
 ];
 
-const launchSportCount = sports.length;
-const launchTeamCount = sports.reduce((total, sport) => total + sport.teams.length, 0);
-const launchSeasonCount = new Set(sports.map((sport) => sport.season)).size;
+const sports = allSports.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
+const visibleSportCount = sports.length;
+const visibleTeamCount = sports.reduce((total, sport) => total + sport.teams.length, 0);
+const visibleSeasonCount = IS_PROTOTYPE ? 4 : 1;
 
 export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
   return (
@@ -87,15 +110,15 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
 
           <div className="grid grid-cols-3 gap-2 sm:min-w-[260px]">
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-[#B5413F]">{launchSportCount}</p>
+              <p className="text-2xl font-black text-[#B5413F]">{visibleSportCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Sports</p>
             </div>
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-foreground">{launchTeamCount}</p>
+              <p className="text-2xl font-black text-foreground">{visibleTeamCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Teams</p>
             </div>
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-foreground">{launchSeasonCount}</p>
+              <p className="text-2xl font-black text-foreground">{visibleSeasonCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Seasons</p>
             </div>
           </div>

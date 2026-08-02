@@ -1,4 +1,4 @@
-import { useMemo, useState, type ElementType } from 'react';
+import { useEffect, useMemo, useState, type ElementType } from 'react';
 import { Archive, CalendarDays, CalendarRange, ChevronDown, ChevronUp, Clock, Filter, List, MapPin, Search, Trophy, Users, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import scheduleDataJson from '../data/schedule.json';
@@ -13,7 +13,11 @@ import {
   TrackIcon,
   VolleyballIcon,
 } from '../components/SportIcons';
-import { LAUNCH_SEASON } from '../config/launchSports';
+import {
+  IS_PROTOTYPE,
+  LAUNCH_SEASON,
+  isVisibleScheduleEvent,
+} from '../config/launchSports';
 
 const fallbackScheduleData = scheduleDataJson as ScheduleData;
 
@@ -296,8 +300,20 @@ function sortOptions(values: string[]) {
 export default function SportScheduleScreen({ athleticsDataState }: SportScheduleScreenProps) {
   const liveEvents = athleticsDataState?.data.masterScheduleEvents || [];
   const scheduleEvents = liveEvents.length > 0 ? liveEvents : fallbackScheduleData.events;
+  const seasons = useMemo(() => {
+    const availableSeasons = new Set(scheduleEvents.map((event) => event.season));
+    const configuredSeasons = fallbackScheduleData.seasons.filter((season) => availableSeasons.has(season));
+    const additionalSeasons = [...availableSeasons]
+      .filter((season) => !configuredSeasons.includes(season))
+      .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+    return configuredSeasons.length > 0
+      ? [...configuredSeasons, ...additionalSeasons]
+      : fallbackScheduleData.seasons;
+  }, [scheduleEvents]);
   const sourceFile = liveEvents.length > 0 ? 'Live Google Sheets Master Schedule' : fallbackScheduleData.sourceFile;
-  const activeSeason = LAUNCH_SEASON;
+  const [selectedSeason, setSelectedSeason] = useState(LAUNCH_SEASON);
+  const activeSeason = IS_PROTOTYPE ? selectedSeason : LAUNCH_SEASON;
   const [teamFilter, setTeamFilter] = useState(ALL);
   const [typeFilter, setTypeFilter] = useState(ALL);
   const [weekFilter, setWeekFilter] = useState(ALL);
@@ -310,9 +326,19 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const [showArchivedWeeks, setShowArchivedWeeks] = useState(false);
   const todayIso = localIsoDate();
 
+  useEffect(() => {
+    if (IS_PROTOTYPE && !seasons.includes(selectedSeason) && seasons[0]) {
+      setSelectedSeason(seasons[0]);
+    }
+  }, [seasons, selectedSeason]);
+
   const seasonEvents = useMemo(() => {
     return scheduleEvents
-      .filter((event) => event.season === activeSeason && isMeaningfulScheduleEvent(event))
+      .filter((event) => (
+        event.season === activeSeason
+        && isMeaningfulScheduleEvent(event)
+        && isVisibleScheduleEvent(event.season, eventSportKey(event))
+      ))
       .sort((a, b) => {
         const dateCompare = (a.date || '').localeCompare(b.date || '');
         if (dateCompare !== 0) return dateCompare;
@@ -370,6 +396,14 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     return archiveCompare || weekNumber(a) - weekNumber(b);
   });
   const visibleTeamCount = new Set(filteredEvents.map((event) => event.team)).size;
+  const seasonEventCounts = useMemo(() => (
+    scheduleEvents.reduce<Record<string, number>>((counts, event) => {
+      if (isMeaningfulScheduleEvent(event)) {
+        counts[event.season] = (counts[event.season] || 0) + 1;
+      }
+      return counts;
+    }, {})
+  ), [scheduleEvents]);
   const groupedCalendarEvents = useMemo(() => groupEventsByMonth(filteredEvents), [filteredEvents]);
   const visibleMonths = Object.keys(groupedCalendarEvents).sort((a, b) => {
     if (a === 'undated') return 1;
@@ -387,6 +421,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     setSearch('');
     setOpenFilter(null);
     setShowArchivedWeeks(false);
+  };
+
+  const changeSeason = (season: string) => {
+    setSelectedSeason(season);
+    clearFilters();
+    setCollapsedWeeks({});
+    setSelectedCalendarDay(null);
   };
 
   const toggleWeek = (week: string) => {
@@ -417,7 +458,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
               Master schedule
             </p>
             <p className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
-              Season 1 · Launch schedule
+              {IS_PROTOTYPE ? `${activeSeason} · Prototype schedule` : `${LAUNCH_SEASON} · Soccer & Volleyball`}
             </p>
           </div>
 
@@ -478,6 +519,36 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       </header>
 
       <section className="space-y-3">
+        {IS_PROTOTYPE && (
+          <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar" aria-label="Schedule seasons">
+            {seasons.map((season) => (
+              <button
+                key={season}
+                type="button"
+                onClick={() => changeSeason(season)}
+                className={`group relative shrink-0 overflow-hidden rounded-2xl border px-4 py-2.5 text-left transition-colors ${
+                  activeSeason === season
+                    ? 'border-[#C1121F] bg-[#C1121F] text-white shadow-[0_12px_30px_rgba(193,18,31,0.18)] dark:border-[#B5413F]/40 dark:bg-[#B5413F]'
+                    : 'border-border/10 bg-subcard text-foreground/60 hover:border-[#C1121F]/30 hover:bg-[#5A1C2C]/12 hover:text-foreground'
+                }`}
+              >
+                <span className="relative z-10 flex items-center gap-3">
+                  <span className="text-xs font-black uppercase tracking-[0.14em]">
+                    {season}
+                  </span>
+                  <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] ${
+                    activeSeason === season
+                      ? 'border-white bg-white text-[#C1121F]'
+                      : 'border-border/10 bg-foreground/[0.045] text-foreground/60'
+                  }`}>
+                    {seasonEventCounts[season] || 0}
+                  </span>
+                </span>
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="flex w-full rounded-2xl border border-border/10 bg-subcard p-1 shadow-[0_12px_34px_rgba(15,23,42,0.06)] sm:w-fit">
           {[
             { id: 'list' as const, label: 'List', icon: List },

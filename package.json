@@ -6,12 +6,15 @@
   "scripts": {
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
+    "build:production": "VITE_RELEASE_CHANNEL=production vite build",
+    "build:prototype": "VITE_RELEASE_CHANNEL=prototype vite build",
     "parse:schedule": "python3 scripts/parse_schedule.py",
     "preview": "npm run build && node server.mjs",
     "start": "node server.mjs",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
-    "deploy:firebase": "npm run build && firebase deploy --only hosting,firestore:rules",
+    "deploy:firebase": "npm run build:production && firebase deploy --only hosting,firestore:rules",
+    "deploy:firebase:ci": "npx --yes firebase-tools@15.20.0 deploy --only hosting,firestore:rules --project sphlv-athletics --non-interactive",
     "deploy:firebase:full": "npm run build && firebase deploy --only hosting,functions,firestore:rules"
   },
   "dependencies": {
