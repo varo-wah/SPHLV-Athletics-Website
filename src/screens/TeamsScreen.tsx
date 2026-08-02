@@ -5,10 +5,9 @@ import {
   BasketballIcon,
   VolleyballIcon,
   SoccerIcon,
-  BadmintonIcon,
-  TrackIcon,
 } from '../components/SportIcons';
 import SportFollowButton from '../components/SportFollowButton';
+import { LAUNCH_SEASON } from '../config/launchSports';
 
 interface TeamsScreenProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
@@ -41,7 +40,7 @@ const sports: SportDirectory[] = [
   {
     id: 'Soccer',
     label: 'Soccer',
-    season: 'Season 1 / 3',
+    season: LAUNCH_SEASON,
     status: 'Live sheets',
     icon: SoccerIcon,
     teams: teamOptions,
@@ -49,7 +48,7 @@ const sports: SportDirectory[] = [
   {
     id: 'Basketball',
     label: 'Basketball',
-    season: 'Season 1 / 2',
+    season: LAUNCH_SEASON,
     status: 'Schedule only',
     icon: BasketballIcon,
     teams: teamOptions,
@@ -57,28 +56,16 @@ const sports: SportDirectory[] = [
   {
     id: 'Volleyball',
     label: 'Volleyball',
-    season: 'Season 1 / 2',
+    season: LAUNCH_SEASON,
     status: 'Schedule only',
     icon: VolleyballIcon,
     teams: teamOptions,
   },
-  {
-    id: 'Badminton',
-    label: 'Badminton',
-    season: 'Season 3',
-    status: 'Schedule only',
-    icon: BadmintonIcon,
-    teams: teamOptions,
-  },
-  {
-    id: 'TrackAndField',
-    label: 'Track & Field',
-    season: 'Season 3',
-    status: 'Schedule only',
-    icon: TrackIcon,
-    teams: [{ division: 'SMA', gender: 'Combined', label: 'Varsity Combined', note: 'SMA' }],
-  },
 ];
+
+const launchSportCount = sports.length;
+const launchTeamCount = sports.reduce((total, sport) => total + sport.teams.length, 0);
+const launchSeasonCount = new Set(sports.map((sport) => sport.season)).size;
 
 export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
   return (
@@ -100,15 +87,15 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
 
           <div className="grid grid-cols-3 gap-2 sm:min-w-[260px]">
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-[#B5413F]">5</p>
+              <p className="text-2xl font-black text-[#B5413F]">{launchSportCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Sports</p>
             </div>
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-foreground">17</p>
+              <p className="text-2xl font-black text-foreground">{launchTeamCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Teams</p>
             </div>
             <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
-              <p className="text-2xl font-black text-foreground">4</p>
+              <p className="text-2xl font-black text-foreground">{launchSeasonCount}</p>
               <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Seasons</p>
             </div>
           </div>

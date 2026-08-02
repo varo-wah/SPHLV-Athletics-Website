@@ -22,7 +22,12 @@ export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
   return (
     <div className="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border/70 dark:border-border/5">
       <div className="flex items-center gap-3">
-        <button className="text-[#7F1D1D] hover:text-[#C1121F] dark:text-foreground dark:hover:text-foreground/80" onClick={onOpenMenu}>
+        <button
+          type="button"
+          aria-label="Open teams menu"
+          className="text-[#7F1D1D] hover:text-[#C1121F] dark:text-foreground dark:hover:text-foreground/80"
+          onClick={onOpenMenu}
+        >
           <Menu size={24} />
         </button>
         <span className="text-[#1F2937] font-bold tracking-wider text-sm dark:text-foreground">ATHLETICS DEPT</span>

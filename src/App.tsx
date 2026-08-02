@@ -13,12 +13,16 @@ import LoginScreen from './screens/LoginScreen';
 import { useAthleticsData } from './hooks/useAthleticsData';
 import { AuthProvider } from './contexts/AuthContext';
 import { SportFollowsProvider } from './contexts/SportFollowsContext';
+import { TeamFavoritesProvider } from './contexts/TeamFavoritesContext';
+import { isLaunchTeamSport } from './config/launchSports';
 
 export default function App() {
   return (
     <AuthProvider>
       <SportFollowsProvider>
-        <AthleticsApp />
+        <TeamFavoritesProvider>
+          <AthleticsApp />
+        </TeamFavoritesProvider>
       </SportFollowsProvider>
     </AuthProvider>
   );
@@ -39,10 +43,17 @@ function AthleticsApp() {
   };
 
   const navigateToTeam = (sport: SportTab, division: DivisionTab, gender: GenderTab) => {
+    if (!isLaunchTeamSport(sport)) {
+      setActiveTab('Teams');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     setActiveSport(sport);
     setActiveDivision(division);
     setActiveGender(gender);
     setActiveTab('TeamPage');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   return (
@@ -69,6 +80,8 @@ function AthleticsApp() {
           <HomeScreen
             athleticsDataState={athleticsDataState}
             onNavigateToNews={() => handleTabChange('News')}
+            onNavigateToTeam={navigateToTeam}
+            onBrowseTeams={() => handleTabChange('Teams')}
           />
         )}
         {activeTab === 'Schedule' && (

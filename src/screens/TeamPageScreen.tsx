@@ -1,9 +1,10 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users, Search, Trophy, ChevronLeft, ChevronRight, MapPin, ChevronDown, CalendarDays, Clock } from 'lucide-react';
+import { Users, Search, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { SheetMatch } from '../services/parsers';
+import TeamFavoriteButton from '../components/TeamFavoriteButton';
 
 interface TeamPageScreenProps {
   sport: SportTab;
@@ -12,13 +13,12 @@ interface TeamPageScreenProps {
   athleticsDataState?: AthleticsDataState;
 }
 
-type TeamPageSection = 'matches' | 'results' | 'standings' | 'players';
+type TeamPageSection = 'games' | 'standings' | 'players';
 
 const teamPageSections: { id: TeamPageSection; label: string }[] = [
-  { id: 'matches', label: 'Matches' },
-  { id: 'results', label: 'Results' },
+  { id: 'games', label: 'Games' },
   { id: 'standings', label: 'Standings' },
-  { id: 'players', label: 'Players & Stats' },
+  { id: 'players', label: 'Players' },
 ];
 
 export default function TeamPageScreen({
@@ -28,9 +28,7 @@ export default function TeamPageScreen({
   athleticsDataState,
 }: TeamPageScreenProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [activeSection, setActiveSection] = useState<TeamPageSection>('matches');
-  const [showUpcomingMatches, setShowUpcomingMatches] = useState(true);
-  const [showMatchResults, setShowMatchResults] = useState(true);
+  const [activeSection, setActiveSection] = useState<TeamPageSection>('games');
 
   const isCustomBanner = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
 
@@ -106,9 +104,7 @@ export default function TeamPageScreen({
   }, [carouselImages.length]);
 
   useEffect(() => {
-    setActiveSection('matches');
-    setShowUpcomingMatches(true);
-    setShowMatchResults(true);
+    setActiveSection('games');
   }, [sport, division, gender]);
 
   const sportLabels: Record<SportTab, string> = {
@@ -156,6 +152,17 @@ export default function TeamPageScreen({
 
   const upcomingMatches = currentMatches.filter((match) => match.status !== 'Finished');
   const finishedMatches = currentMatches.filter((match) => match.status === 'Finished');
+  const seasonGames = currentMatches
+    .map((match, index) => {
+      const dateValue = Date.parse(`${match.date || ''}T${match.time || '00:00'}`);
+      return {
+        match,
+        index,
+        dateValue: Number.isNaN(dateValue) ? Number.MAX_SAFE_INTEGER : dateValue,
+      };
+    })
+    .sort((a, b) => a.dateValue - b.dateValue || a.index - b.index)
+    .map(({ match }) => match);
   const standingsRows = currentStandings
     .map((row, idx) => {
       const wins = row.wins ?? 0;
@@ -206,17 +213,13 @@ export default function TeamPageScreen({
     title,
     detail,
     count,
-    expanded,
-    onToggle,
   }: {
     title: string;
     detail: string;
     count?: number;
-    expanded?: boolean;
-    onToggle?: () => void;
-  }) => {
-    const content = (
-      <>
+  }) => (
+    <div className="rounded-2xl border border-border/10 bg-subcard/50 px-4 py-4 shadow-sm">
+      <div className="flex items-center justify-between gap-4">
         <div className="min-w-0">
           <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
             {detail}
@@ -232,54 +235,10 @@ export default function TeamPageScreen({
               {count}
             </span>
           )}
-
-          {onToggle && (
-            <motion.span
-              className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-[10px] font-black uppercase tracking-[0.14em] transition-colors ${
-                expanded
-                  ? 'border-[#B5413F]/25 bg-[#B5413F]/12 text-foreground'
-                  : 'border-border/10 bg-subcard text-[#B5413F] group-hover:border-[#B5413F]/30 group-hover:text-foreground'
-              }`}
-              whileTap={{ scale: 0.98 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 34 }}
-            >
-              <span>
-                {expanded ? 'Hide' : 'Show'}
-              </span>
-              <motion.span
-                animate={{ rotate: expanded ? 180 : 0 }}
-                transition={{ duration: 0.24, ease: [0.16, 1, 0.3, 1] }}
-              >
-                <ChevronDown size={15} />
-              </motion.span>
-            </motion.span>
-          )}
-        </div>
-      </>
-    );
-
-    if (onToggle) {
-      return (
-        <button
-          type="button"
-          onClick={onToggle}
-          className="group w-full rounded-2xl border border-border/10 bg-subcard/50 px-4 py-4 text-left shadow-sm transition-colors hover:border-[#B5413F]/25"
-        >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            {content}
-          </div>
-        </button>
-      );
-    }
-
-    return (
-      <div className="rounded-2xl border border-border/10 bg-subcard/50 px-4 py-4 shadow-sm">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          {content}
         </div>
       </div>
-    );
-  };
+    </div>
+  );
 
   const EmptyPanel = ({ title, body }: { title: string; body: string }) => (
     <div className="rounded-2xl border border-border/10 bg-[#5A1C2C]/5 p-8 text-center">
@@ -302,153 +261,92 @@ export default function TeamPageScreen({
     return parts.map((part) => part[0]).join('').slice(0, 3).toUpperCase();
   };
 
-  const renderMatchCard = (match: SheetMatch, idx: number) => {
-    const badgeText = match.status || 'Scheduled';
-    const details = [
-      match.date || 'Date TBD',
-      match.time,
-      match.venue,
-    ].filter(Boolean).join(' · ');
+  const formatGameDate = (value: string) => {
+    if (!value) return 'DATE TBD';
+    const parsed = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(parsed.getTime())) return value.toUpperCase();
+
+    const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'short' })
+      .format(parsed)
+      .toUpperCase();
+    return `${weekday}, ${parsed.getMonth() + 1}/${parsed.getDate()}`;
+  };
+
+  const renderGameRow = (match: SheetMatch, idx: number) => {
+    const opponent = match.opponent || 'TBD';
+    const finished = match.status === 'Finished';
+    const hasScore = match.scoreFor !== null && match.scoreAgainst !== null;
+    const locationMarker = match.locationType === 'Away' ? '@' : 'VS';
+    const statusLabel = match.status === 'Live' ? 'Live' : 'Scheduled';
 
     return (
       <article
         key={`${match.id}-${idx}`}
-        className={`group relative overflow-hidden rounded-3xl border border-border/10 border-l-[6px] ${matchAccentClass(match)} bg-subcard p-4 shadow-[0_18px_55px_rgba(0,0,0,0.18)] transition-transform hover:-translate-y-0.5 sm:p-5`}
+        className={`grid min-h-[78px] grid-cols-[76px_28px_minmax(0,1fr)_auto] items-center gap-2 border-b border-border/10 border-l-[3px] px-3 py-3 last:border-b-0 sm:min-h-[84px] sm:grid-cols-[112px_36px_minmax(0,1fr)_auto] sm:gap-4 sm:px-5 ${matchAccentClass(match)}`}
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(191,215,234,0.11),transparent_34%)] opacity-80" />
+        <div className="min-w-0">
+          <p className="truncate text-xs font-black uppercase tracking-tight text-foreground sm:text-base">
+            {formatGameDate(match.date)}
+          </p>
+          <p className="mt-1 truncate text-[8px] font-black uppercase tracking-[0.13em] text-foreground/32 sm:text-[9px]">
+            {match.tournament}
+          </p>
+        </div>
 
-        <div className="relative grid gap-5 md:grid-cols-[1fr_auto] md:items-center">
-          <div className="min-w-0 space-y-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${resultBadgeClass(match.result)}`}>
-                {badgeText}
-              </span>
-              <span className="rounded-full border border-border/10 bg-foreground/[0.03] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/55">
-                {matchLocationText(match)}
-              </span>
-            </div>
+        <div className="text-center text-xs font-black uppercase text-foreground/48 sm:text-sm">
+          {locationMarker}
+        </div>
 
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
-                {displayDivision} {gender} {sportLabels[sport]}
-              </p>
-              <h4 className="mt-2 text-2xl font-black uppercase leading-tight tracking-tight text-foreground sm:text-3xl">
-                SPH LV <span className="text-foreground/35">vs</span> {match.opponent || 'TBD'}
-              </h4>
-            </div>
-
-            <div className="grid gap-2 text-xs font-semibold text-foreground/50 sm:grid-cols-2">
-              <div className="flex min-w-0 items-center gap-2">
-                <CalendarDays size={15} className="shrink-0 text-[#B5413F]" />
-                <span className="truncate">{match.date || 'Date TBD'}</span>
-              </div>
-
-              <div className="flex min-w-0 items-center gap-2">
-                <Clock size={15} className="shrink-0 text-[#B5413F]" />
-                <span className="truncate">{match.time || 'Time TBD'}</span>
-              </div>
-
-              <div className="flex min-w-0 items-center gap-2 sm:col-span-2">
-                <MapPin size={15} className="shrink-0 text-[#B5413F]" />
-                <span className="truncate">{match.venue || match.locationType || 'Venue TBD'}</span>
-              </div>
-            </div>
-
-            {match.notes && (
-              <p className="rounded-xl border border-border/5 bg-foreground/[0.02] p-3 text-xs italic leading-relaxed text-foreground/45">
-                {match.notes}
-              </p>
-            )}
+        <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.04] text-[9px] font-black uppercase tracking-wide text-foreground/62 sm:h-11 sm:w-11 sm:text-[10px]">
+            {teamInitials(opponent)}
           </div>
-
-          <div className="relative flex items-center justify-between gap-4 rounded-2xl border border-border/10 bg-foreground/[0.025] p-4 md:min-w-[150px] md:flex-col md:items-end md:text-right">
-            <span className="rounded-full border border-[#BFD7EA]/15 bg-[#BFD7EA]/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-[#BFD7EA]">
-              Next
-            </span>
-            <div className="text-right">
-              <p className="text-base font-black uppercase tracking-[0.12em] text-foreground">
-                {match.date || 'TBD'}
-              </p>
-              <p className="mt-1 text-xs font-semibold text-foreground/45">
-                {match.time || 'Time TBD'}
-              </p>
-            </div>
+          <div className="min-w-0">
+            <p className="truncate text-sm font-black uppercase tracking-[0.04em] text-foreground sm:text-lg">
+              {opponent}
+            </p>
+            <p className="mt-1 truncate text-[8px] font-black uppercase tracking-[0.12em] text-foreground/32 sm:text-[9px]">
+              {match.venue || matchLocationText(match)}
+            </p>
           </div>
         </div>
 
-        {details && (
-          <div className="relative mt-4 border-t border-border/5 pt-3 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35">
-            {details}
-          </div>
-        )}
-      </article>
-    );
-  };
-
-  const renderResultCard = (match: SheetMatch, idx: number) => {
-    const opponent = match.opponent || 'TBD';
-    const hasScore = match.scoreFor !== null && match.scoreAgainst !== null;
-    const resultLabel = match.result || 'Final';
-
-    return (
-      <article
-        key={`${match.id}-${idx}`}
-        className={`relative overflow-hidden rounded-3xl border border-border/10 border-l-[6px] ${matchAccentClass(match)} bg-subcard p-4 shadow-[0_18px_55px_rgba(0,0,0,0.18)] sm:p-5`}
-      >
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(90,28,44,0.18),transparent_34%,rgba(191,215,234,0.08))]" />
-
-        <div className="relative flex items-center justify-between gap-2 sm:gap-5">
-          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.04] text-xs font-black uppercase tracking-wider text-foreground/60 sm:h-12 sm:w-12">
-              LV
-            </div>
-
-            <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#B5413F] sm:text-[10px]">
-                Home
-              </p>
-              <h4 className="truncate text-sm font-black uppercase leading-tight text-foreground sm:text-lg md:text-xl">
-                SPH LV Eagles
-              </h4>
-            </div>
-          </div>
-
-          <div className="shrink-0 text-center">
-            <span className={`mx-auto mb-2 block w-fit rounded-full border px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.16em] sm:text-[10px] ${resultBadgeClass(match.result)}`}>
-              {resultLabel}
+        {finished ? (
+          <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
+            <span className={`text-base font-black uppercase sm:text-xl ${
+              match.result === 'W'
+                ? 'text-green-400'
+                : match.result === 'L'
+                  ? 'text-red-400'
+                  : 'text-yellow-300'
+            }`}>
+              {match.result || 'F'}
             </span>
-
-            <div className="rounded-2xl bg-[#5A1C2C] px-3 py-2 shadow-[0_14px_35px_rgba(90,28,44,0.34)] sm:px-5">
+            <div className="min-w-[48px] text-right">
               {hasScore ? (
-                <p className="whitespace-nowrap text-2xl font-black leading-none tracking-tight text-white sm:text-4xl">
-                  {match.scoreFor} : {match.scoreAgainst}
+                <p className="whitespace-nowrap font-mono text-base font-black text-foreground sm:text-xl">
+                  {match.scoreFor}–{match.scoreAgainst}
                 </p>
               ) : (
-                <p className="text-2xl font-black leading-none text-white/45 sm:text-4xl">-</p>
+                <p className="font-mono text-base font-black text-foreground/38 sm:text-xl">—</p>
               )}
             </div>
           </div>
-
-          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 text-right sm:gap-4">
-            <div className="min-w-0">
-              <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#B5413F] sm:text-[10px]">
-                Opponent
-              </p>
-              <h4 className="truncate text-sm font-black uppercase leading-tight text-foreground sm:text-xl md:text-2xl">
-                {opponent}
-              </h4>
-            </div>
-
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.04] text-xs font-black uppercase tracking-wider text-foreground/60 sm:h-16 sm:w-16 sm:text-base">
-              {teamInitials(opponent)}
+        ) : (
+          <div className="shrink-0 text-right">
+            <p className="whitespace-nowrap text-sm font-black uppercase text-foreground sm:text-lg">
+              {match.time || 'TBD'}
+            </p>
+            <div className="mt-1 flex justify-end">
+              <span className={`rounded-full border px-2 py-0.5 text-[7px] font-black uppercase tracking-[0.12em] sm:text-[8px] ${
+                match.status === 'Live'
+                  ? 'border-green-500/25 bg-green-500/10 text-green-400'
+                  : resultBadgeClass('')
+              }`}>
+                {statusLabel}
+              </span>
             </div>
           </div>
-        </div>
-
-        {match.notes && (
-          <p className="relative mt-4 rounded-xl border border-border/5 bg-foreground/[0.02] p-3 text-xs italic leading-relaxed text-foreground/45">
-            {match.notes}
-          </p>
         )}
       </article>
     );
@@ -458,7 +356,7 @@ export default function TeamPageScreen({
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
       {/* Hero Header */}
       <div className={`relative w-full ${isVarsityBoysSoccer ? '' : 'border-b-[8px] border-[#5A1C2C] border-t-[8px]'}`}>
-        <div className={`${isVarsityBoysSoccer ? 'relative w-full min-h-[300px] overflow-hidden bg-black sm:min-h-[340px]' : 'aspect-[21/6] relative w-full overflow-hidden bg-black'}`}>
+        <div className={`${isVarsityBoysSoccer ? 'relative h-[300px] w-full overflow-hidden bg-black sm:h-[340px]' : 'aspect-[21/6] relative w-full overflow-hidden bg-black'}`}>
           {isVarsityBoysSoccer ? (
             <section className="varsity-boys-soccer-hero" aria-label="Varsity Boys Soccer">
               <div className="varsity-boys-soccer-hero__field" aria-hidden="true">
@@ -506,17 +404,23 @@ export default function TeamPageScreen({
               </div>
             </>
           )}
+          <TeamFavoriteButton
+            sport={sport}
+            division={division}
+            gender={gender}
+            className="absolute right-4 top-4 z-20"
+          />
         </div>
       </div>
 
       <nav
         aria-label={`${displayDivision} ${gender} ${sportLabels[sport]} sections`}
-        className="border-b border-border/10 bg-subcard/95 px-3 shadow-[0_12px_36px_rgba(0,0,0,0.16)] backdrop-blur sm:px-6 lg:px-8"
+        className="pointer-events-none sticky top-16 z-40 px-3 py-3 sm:px-6 lg:px-8"
       >
         <div
           role="tablist"
           aria-label="Team page sections"
-          className="mx-auto flex max-w-[1500px] gap-1 overflow-x-auto py-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="pointer-events-auto mx-auto flex w-fit max-w-full gap-1 overflow-x-auto rounded-[1.4rem] border border-border/10 bg-canvas/80 p-1.5 shadow-[0_18px_55px_rgba(0,0,0,0.24)] backdrop-blur-2xl saturate-150 [scrollbar-width:none] supports-[backdrop-filter]:bg-canvas/65 [&::-webkit-scrollbar]:hidden"
         >
           {teamPageSections.map((section) => {
             const isActive = activeSection === section.id;
@@ -530,19 +434,13 @@ export default function TeamPageScreen({
                 aria-selected={isActive}
                 aria-controls="team-section-panel"
                 onClick={() => setActiveSection(section.id)}
-                className={`relative min-w-fit flex-1 rounded-xl px-4 py-3 text-[11px] font-black uppercase tracking-[0.16em] transition-colors sm:px-6 sm:text-xs ${
+                className={`relative min-w-fit rounded-[1.05rem] px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-200 sm:px-6 sm:text-[11px] ${
                   isActive
-                    ? 'bg-[#B5413F]/14 text-foreground'
-                    : 'text-foreground/42 hover:bg-foreground/[0.035] hover:text-foreground/75'
+                    ? 'bg-foreground/[0.10] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_24px_rgba(0,0,0,0.14)]'
+                    : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
                 {section.label}
-                <span
-                  aria-hidden="true"
-                  className={`absolute inset-x-4 -bottom-2 h-0.5 rounded-full bg-[#B5413F] transition-opacity ${
-                    isActive ? 'opacity-100' : 'opacity-0'
-                  }`}
-                />
               </button>
             );
           })}
@@ -555,34 +453,6 @@ export default function TeamPageScreen({
         aria-labelledby={`team-section-tab-${activeSection}`}
         className="px-4 sm:px-6 lg:px-8 mt-5 space-y-8"
       >
-        {activeSection === 'results' && (
-        <a
-          href="https://acscconference.com/boys-soccer/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative flex w-full items-center justify-between overflow-hidden rounded-2xl border border-border/10 bg-subcard/70 px-4 py-3 text-white shadow-[0_14px_38px_rgba(0,0,0,0.16)] transition-colors hover:border-[#B5413F]/30 hover:bg-subcard group"
-        >
-          <div className="absolute inset-y-0 left-0 w-1 bg-[#B5413F]" />
-
-          <div className="flex items-center gap-3 relative z-10">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#B5413F]/20 bg-[#B5413F]/10">
-              <Trophy size={19} className="text-[#B5413F] group-hover:scale-110 transition-transform" />
-            </div>
-
-            <div className="flex min-w-0 flex-col items-start gap-1 leading-none">
-              <span className="uppercase tracking-[0.22em] text-[9px] font-black text-foreground/40">
-                ACSC Website
-              </span>
-              <span className="truncate text-sm font-black tracking-tight text-foreground sm:text-base">
-                Open ACSC Results
-              </span>
-            </div>
-          </div>
-
-          <ChevronRight size={20} className="relative z-10 text-foreground/45 transition-transform group-hover:translate-x-1 group-hover:text-[#B5413F]" />
-        </a>
-        )}
-
         <div className="space-y-10">
           {/* STANDINGS COLUMN */}
           {activeSection === 'standings' && (
@@ -757,116 +627,84 @@ export default function TeamPageScreen({
           </section>
           )}
 
-          {/* UPCOMING MATCHES COLUMN */}
-          {activeSection === 'matches' && (
-          <section className="space-y-4">
-            <SectionHeader
-              title="Upcoming Matches"
-              detail="Live schedule"
-              count={upcomingMatches.length}
-              expanded={showUpcomingMatches}
-              onToggle={() => setShowUpcomingMatches((current) => !current)}
-            />
+          {/* GAMES */}
+          {activeSection === 'games' && (
+            <section className="space-y-4">
+              <div className="flex flex-col gap-4 rounded-2xl border border-border/10 bg-subcard/50 px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
+                    Schedule & results
+                  </p>
+                  <h2 className="mt-1 text-2xl font-black uppercase tracking-[0.08em] text-foreground sm:text-3xl">
+                    Season Games
+                  </h2>
+                </div>
 
-            <AnimatePresence initial={false}>
-              {showUpcomingMatches && (
-                <motion.div
-                  key="upcoming-matches"
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: 'auto', opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                  className="overflow-hidden"
-                >
-                  <motion.div
-                    initial={{ y: -6, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -6, opacity: 0 }}
-                    transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                    className="space-y-4"
-                  >
-                {athleticsDataState?.loading && upcomingMatches.length === 0 ? (
-                  <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse">
-                    <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
-                      Loading matches from Google Sheets...
-                    </p>
-                  </div>
-                ) : athleticsDataState?.error ? (
-                  <div className="bg-subcard rounded-2xl p-8 border border-red-500/20 text-center">
-                    <p className="text-sm font-black uppercase tracking-widest text-red-400">
-                      Match sync error
-                    </p>
-                    <p className="text-xs text-foreground/40 mt-2">
-                      {athleticsDataState.error}
-                    </p>
-                  </div>
-                ) : upcomingMatches.length === 0 ? (
-                  <EmptyPanel
-                    title="No upcoming matches"
-                    body="Upcoming matches will appear when the sheet status is not Finished."
-                  />
-                ) : (
-                  upcomingMatches.map((match, idx) => renderMatchCard(match, idx))
-                )}
-                  </motion.div>
-                </motion.div>
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full border border-border/10 bg-foreground/[0.025] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/48">
+                    {finishedMatches.length} Final
+                  </span>
+                  <span className="rounded-full border border-[#BFD7EA]/15 bg-[#BFD7EA]/8 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-[#BFD7EA]">
+                    {upcomingMatches.length} Scheduled
+                  </span>
+                </div>
+              </div>
+
+              {athleticsDataState?.loading && seasonGames.length === 0 ? (
+                <div className="animate-pulse rounded-2xl border border-border/10 bg-subcard p-8 text-center">
+                  <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
+                    Loading games from Google Sheets...
+                  </p>
+                </div>
+              ) : seasonGames.length === 0 ? (
+                <EmptyPanel
+                  title={athleticsDataState?.error ? 'Games unavailable' : 'No games yet'}
+                  body={athleticsDataState?.error || 'Scheduled games and completed results will appear together here.'}
+                />
+              ) : (
+                <div className="overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-[0_20px_60px_rgba(0,0,0,0.16)]">
+                  {seasonGames.map((match, idx) => renderGameRow(match, idx))}
+                  {athleticsDataState?.error && (
+                    <div className="border-t border-red-500/15 bg-red-500/5 px-4 py-3 text-[9px] font-black uppercase tracking-[0.14em] text-red-400">
+                      Live sync issue · showing the latest available games
+                    </div>
+                  )}
+                </div>
               )}
-            </AnimatePresence>
-          </section>
+
+              {sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
+                <a
+                  href="https://acscconference.com/boys-soccer/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl border border-border/10 bg-subcard/70 px-4 py-3 text-white shadow-[0_14px_38px_rgba(0,0,0,0.16)] transition-colors hover:border-[#B5413F]/30 hover:bg-subcard"
+                >
+                  <div className="absolute inset-y-0 left-0 w-1 bg-[#B5413F]" />
+
+                  <div className="relative z-10 flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#B5413F]/20 bg-[#B5413F]/10">
+                      <Trophy size={19} className="text-[#B5413F] transition-transform group-hover:scale-110" />
+                    </div>
+
+                    <div className="flex min-w-0 flex-col items-start gap-1 leading-none">
+                      <span className="text-[9px] font-black uppercase tracking-[0.22em] text-foreground/40">
+                        Postseason
+                      </span>
+                      <span className="truncate text-sm font-black tracking-tight text-foreground sm:text-base">
+                        Open ACSC Results
+                      </span>
+                    </div>
+                  </div>
+
+                  <ChevronRight size={20} className="relative z-10 text-foreground/45 transition-transform group-hover:translate-x-1 group-hover:text-[#B5413F]" />
+                </a>
+              )}
+            </section>
           )}
         </div>
 
-        {/* MATCH RESULTS SECTION */}
-        {activeSection === 'results' && (
-        <section className="space-y-4 mt-10">
-          <SectionHeader
-            title="Match Results"
-            detail="Completed fixtures"
-            count={finishedMatches.length}
-            expanded={showMatchResults}
-            onToggle={() => setShowMatchResults((current) => !current)}
-          />
-
-          <AnimatePresence initial={false}>
-            {showMatchResults && (
-              <motion.div
-                key="match-results"
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-                className="overflow-hidden"
-              >
-                <motion.div
-                  initial={{ y: -6, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  exit={{ y: -6, opacity: 0 }}
-                  transition={{ duration: 0.22, ease: [0.16, 1, 0.3, 1] }}
-                  className="space-y-4"
-                >
-              {athleticsDataState?.loading && finishedMatches.length === 0 ? (
-                <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center animate-pulse">
-                  <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
-                    Loading results from Google Sheets...
-                  </p>
-                </div>
-              ) : finishedMatches.length === 0 ? (
-                <EmptyPanel
-                  title="No match results yet"
-                  body="Finished matches will appear here after scores are entered."
-                />
-              ) : (
-                finishedMatches.map((match, idx) => renderResultCard(match, idx))
-              )}
-                </motion.div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </section>
-        )}
-
         {/* JAAC Bracket */}
-        {activeSection === 'results' && sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
+        {activeSection === 'standings' && sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
           <section className="space-y-4 mt-10">
             <SectionHeader
               title="JAAC Bracket"

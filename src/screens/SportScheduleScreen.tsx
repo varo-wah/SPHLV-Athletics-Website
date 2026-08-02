@@ -1,10 +1,19 @@
-import { useEffect, useMemo, useState, type ElementType } from 'react';
-import { CalendarDays, CalendarRange, ChevronDown, ChevronUp, Clock, Filter, List, MapPin, Search, Trophy, Users, X } from 'lucide-react';
+import { useMemo, useState, type ElementType } from 'react';
+import { Archive, CalendarDays, CalendarRange, ChevronDown, ChevronUp, Clock, Filter, List, MapPin, Search, Trophy, Users, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import scheduleDataJson from '../data/schedule.json';
 import { ScheduleData, ScheduleEvent, ScheduleEventType } from '../data/scheduleTypes';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { DivisionTab, GenderTab, SportTab } from '../types';
+import {
+  BadmintonIcon,
+  BasketballIcon,
+  SoccerIcon,
+  SwimmingIcon,
+  TrackIcon,
+  VolleyballIcon,
+} from '../components/SportIcons';
+import { LAUNCH_SEASON } from '../config/launchSports';
 
 const fallbackScheduleData = scheduleDataJson as ScheduleData;
 
@@ -131,6 +140,87 @@ function parseIsoDate(date: string | null) {
   return new Date(year, month - 1, day);
 }
 
+function localIsoDate(value = new Date()) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, '0');
+  const day = String(value.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function eventSportKey(event: ScheduleEvent): SportTab | 'Swimming' | null {
+  if (event.sportKey) return event.sportKey;
+
+  const team = event.team.toLowerCase();
+  if (team.includes('soccer')) return 'Soccer';
+  if (team.includes('basketball')) return 'Basketball';
+  if (team.includes('volleyball')) return 'Volleyball';
+  if (team.includes('badminton')) return 'Badminton';
+  if (team.includes('track')) return 'TrackAndField';
+  if (team.includes('swim')) return 'Swimming';
+  return null;
+}
+
+function sportIconForEvent(event: ScheduleEvent): ElementType {
+  switch (eventSportKey(event)) {
+    case 'Soccer': return SoccerIcon;
+    case 'Basketball': return BasketballIcon;
+    case 'Volleyball': return VolleyballIcon;
+    case 'Badminton': return BadmintonIcon;
+    case 'TrackAndField': return TrackIcon;
+    case 'Swimming': return SwimmingIcon;
+    default: return Trophy;
+  }
+}
+
+const TEAM_ACCENT_STYLES = [
+  { match: 'varsity boys soccer', rail: 'border-l-[#EF4444]', icon: 'text-[#F87171]' },
+  { match: 'varsity girls soccer', rail: 'border-l-[#F472B6]', icon: 'text-[#F9A8D4]' },
+  { match: 'varsity boys volleyball', rail: 'border-l-[#F59E0B]', icon: 'text-[#FBBF24]' },
+  { match: 'varsity girls volleyball', rail: 'border-l-[#A78BFA]', icon: 'text-[#C4B5FD]' },
+  { match: 'smp boys basketball', rail: 'border-l-[#3B82F6]', icon: 'text-[#60A5FA]' },
+  { match: 'smp girls basketball', rail: 'border-l-[#22D3EE]', icon: 'text-[#67E8F9]' },
+  { match: 'js 3-4 mixed basketball', rail: 'border-l-[#84CC16]', icon: 'text-[#A3E635]' },
+  { match: 'js 5-6 boys basketball', rail: 'border-l-[#6366F1]', icon: 'text-[#818CF8]' },
+  { match: 'js 5-6 girls basketball', rail: 'border-l-[#F97316]', icon: 'text-[#FB923C]' },
+  { match: 'swim', rail: 'border-l-[#14B8A6]', icon: 'text-[#5EEAD4]' },
+] as const;
+
+function teamAccentForEvent(event: ScheduleEvent) {
+  const team = event.team.toLowerCase();
+  return TEAM_ACCENT_STYLES.find((style) => team.includes(style.match)) || {
+    rail: 'border-l-[#94A3B8]',
+    icon: 'text-[#CBD5E1]',
+  };
+}
+
+function isMeaningfulScheduleEvent(event: ScheduleEvent) {
+  return /[A-Za-z0-9]/.test(event.eventText);
+}
+
+function displayEventTime(event: ScheduleEvent) {
+  if (!event.time) return null;
+  if (/\bgym\s+\d+\s*(?:am|pm)\b/i.test(event.eventText)) return null;
+  return event.time;
+}
+
+function archivedWeekNames(events: ScheduleEvent[], todayIso: string) {
+  const eventsByWeek = events.reduce<Record<string, ScheduleEvent[]>>((groups, event) => {
+    const week = event.week || 'Unassigned Week';
+    groups[week] = groups[week] || [];
+    groups[week].push(event);
+    return groups;
+  }, {});
+
+  return new Set(
+    Object.entries(eventsByWeek)
+      .filter(([, weekEvents]) => (
+        weekEvents.length > 0
+        && weekEvents.every((event) => Boolean(event.date) && event.date! < todayIso)
+      ))
+      .map(([week]) => week),
+  );
+}
+
 function monthKey(date: string | null) {
   const value = parseIsoDate(date);
   if (!value) return 'undated';
@@ -206,12 +296,8 @@ function sortOptions(values: string[]) {
 export default function SportScheduleScreen({ athleticsDataState }: SportScheduleScreenProps) {
   const liveEvents = athleticsDataState?.data.masterScheduleEvents || [];
   const scheduleEvents = liveEvents.length > 0 ? liveEvents : fallbackScheduleData.events;
-  const seasons = useMemo(() => {
-    const liveSeasons = [...new Set(scheduleEvents.map((event) => event.season))];
-    return liveSeasons.length > 0 ? liveSeasons : fallbackScheduleData.seasons;
-  }, [scheduleEvents]);
   const sourceFile = liveEvents.length > 0 ? 'Live Google Sheets Master Schedule' : fallbackScheduleData.sourceFile;
-  const [activeSeason, setActiveSeason] = useState(seasons[0] || 'Season 1');
+  const activeSeason = LAUNCH_SEASON;
   const [teamFilter, setTeamFilter] = useState(ALL);
   const [typeFilter, setTypeFilter] = useState(ALL);
   const [weekFilter, setWeekFilter] = useState(ALL);
@@ -221,16 +307,12 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const [openFilter, setOpenFilter] = useState<string | null>(null);
   const [scheduleView, setScheduleView] = useState<ScheduleView>('list');
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<SelectedCalendarDay | null>(null);
-
-  useEffect(() => {
-    if (!seasons.includes(activeSeason) && seasons[0]) {
-      setActiveSeason(seasons[0]);
-    }
-  }, [activeSeason, seasons]);
+  const [showArchivedWeeks, setShowArchivedWeeks] = useState(false);
+  const todayIso = localIsoDate();
 
   const seasonEvents = useMemo(() => {
     return scheduleEvents
-      .filter((event) => event.season === activeSeason)
+      .filter((event) => event.season === activeSeason && isMeaningfulScheduleEvent(event))
       .sort((a, b) => {
         const dateCompare = (a.date || '').localeCompare(b.date || '');
         if (dateCompare !== 0) return dateCompare;
@@ -248,6 +330,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       (a, b) => weekNumber(a) - weekNumber(b),
     );
   }, [seasonEvents]);
+  const archivedWeeks = useMemo(
+    () => archivedWeekNames(seasonEvents, todayIso),
+    [seasonEvents, todayIso],
+  );
   const dates = useMemo(() => {
     return [...new Set<string>(seasonEvents.map((event) => event.date).filter(Boolean) as string[])].sort();
   }, [seasonEvents]);
@@ -262,9 +348,11 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const filteredEvents = useMemo(() => {
     const query = search.trim().toLowerCase();
     return seasonEvents.filter((event) => {
+      const eventWeek = event.week || 'Unassigned Week';
+      if (!showArchivedWeeks && weekFilter === ALL && archivedWeeks.has(eventWeek)) return false;
       if (teamFilter !== ALL && event.team !== teamFilter) return false;
       if (typeFilter !== ALL && event.eventType !== typeFilter) return false;
-      if (weekFilter !== ALL && (event.week || 'Unassigned Week') !== weekFilter) return false;
+      if (weekFilter !== ALL && eventWeek !== weekFilter) return false;
       if (dateFilter !== ALL && event.date !== dateFilter) return false;
       if (!query) return true;
 
@@ -274,16 +362,14 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
         .toLowerCase()
         .includes(query);
     });
-  }, [dateFilter, search, seasonEvents, teamFilter, typeFilter, weekFilter]);
+  }, [archivedWeeks, dateFilter, search, seasonEvents, showArchivedWeeks, teamFilter, typeFilter, weekFilter]);
 
   const groupedEvents = useMemo(() => groupEventsByWeek(filteredEvents), [filteredEvents]);
-  const visibleWeeks = Object.keys(groupedEvents).sort((a, b) => weekNumber(a) - weekNumber(b));
-  const seasonEventCounts = useMemo(() => {
-    return scheduleEvents.reduce<Record<string, number>>((counts, event) => {
-      counts[event.season] = (counts[event.season] || 0) + 1;
-      return counts;
-    }, {});
-  }, [scheduleEvents]);
+  const visibleWeeks = Object.keys(groupedEvents).sort((a, b) => {
+    const archiveCompare = Number(archivedWeeks.has(a)) - Number(archivedWeeks.has(b));
+    return archiveCompare || weekNumber(a) - weekNumber(b);
+  });
+  const visibleTeamCount = new Set(filteredEvents.map((event) => event.team)).size;
   const groupedCalendarEvents = useMemo(() => groupEventsByMonth(filteredEvents), [filteredEvents]);
   const visibleMonths = Object.keys(groupedCalendarEvents).sort((a, b) => {
     if (a === 'undated') return 1;
@@ -291,8 +377,6 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     return a.localeCompare(b);
   });
   const hasFilters = teamFilter !== ALL || typeFilter !== ALL || weekFilter !== ALL || dateFilter !== ALL || search.trim() !== '';
-  const activeSeasonIndex = Math.max(seasons.indexOf(activeSeason), 0) + 1;
-  const todayIso = new Date().toISOString().slice(0, 10);
   const nextEvent = seasonEvents.find((event) => event.date && event.date >= todayIso) || seasonEvents.find((event) => event.date);
 
   const clearFilters = () => {
@@ -302,19 +386,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     setDateFilter(ALL);
     setSearch('');
     setOpenFilter(null);
-  };
-
-  const changeSeason = (season: string) => {
-    setActiveSeason(season);
-    setSelectedCalendarDay(null);
-    clearFilters();
-    setCollapsedWeeks({});
+    setShowArchivedWeeks(false);
   };
 
   const toggleWeek = (week: string) => {
     setCollapsedWeeks((current) => ({
       ...current,
-      [week]: !current[week],
+      [week]: !(current[week] ?? week !== visibleWeeks[0]),
     }));
   };
 
@@ -339,13 +417,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
               Master schedule
             </p>
             <p className="rounded-full border border-white/10 bg-white/[0.045] px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-white/60">
-              Season {activeSeasonIndex} of {seasons.length}
+              Season 1 · Launch schedule
             </p>
           </div>
 
           <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(280px,360px)] lg:items-end">
             <div>
-              <h2 className="text-[2.6rem] font-black uppercase leading-[0.9] tracking-[0.12em] text-white sm:text-6xl">
+              <h2 className="text-[2.1rem] font-black uppercase leading-[0.92] tracking-[0.07em] text-white sm:text-6xl sm:tracking-[0.12em]">
                 Schedule
               </h2>
               <p className="mt-4 max-w-2xl text-sm font-bold leading-relaxed text-white/56">
@@ -353,21 +431,21 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
               </p>
             </div>
 
-            <div className="grid grid-cols-3 gap-2">
-              <div className="rounded-2xl border border-white/10 bg-black/24 p-3">
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <div className="col-span-2 rounded-2xl border border-white/10 bg-black/24 p-3 sm:col-span-1">
                 <p className="text-2xl font-black text-[#F06865]">{filteredEvents.length}</p>
                 <p className="mt-1 text-[9px] font-black uppercase tracking-[0.16em] text-white/38">
                   Showing
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/24 p-3">
-                <p className="text-2xl font-black text-white">{teams.length}</p>
+                <p className="text-2xl font-black text-white">{visibleTeamCount}</p>
                 <p className="mt-1 text-[9px] font-black uppercase tracking-[0.16em] text-white/38">
                   Teams
                 </p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-black/24 p-3">
-                <p className="text-2xl font-black text-white">{weeks.length}</p>
+                <p className="text-2xl font-black text-white">{visibleWeeks.length}</p>
                 <p className="mt-1 text-[9px] font-black uppercase tracking-[0.16em] text-white/38">
                   Weeks
                 </p>
@@ -400,34 +478,6 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       </header>
 
       <section className="space-y-3">
-        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-          {seasons.map((season, index) => (
-            <button
-              key={season}
-              type="button"
-              onClick={() => changeSeason(season)}
-              className={`group relative shrink-0 overflow-hidden rounded-2xl border px-4 py-2.5 text-left transition-colors ${
-                activeSeason === season
-                  ? 'border-[#C1121F] bg-[#C1121F] text-white shadow-[0_12px_30px_rgba(193,18,31,0.18)] dark:border-[#B5413F]/40 dark:bg-[#B5413F] dark:text-white'
-                  : 'border-border bg-subcard text-foreground hover:border-[#C1121F]/30 hover:bg-[#5A1C2C]/12 dark:border-border/10 dark:bg-subcard dark:text-foreground/60 dark:hover:bg-[#5A1C2C]/18 dark:hover:text-foreground'
-              }`}
-            >
-              <span className="relative z-10 flex items-center gap-3">
-                <span className="text-xs font-black uppercase tracking-[0.14em]">
-                  {season}
-                </span>
-                <span className={`rounded-lg border px-2 py-0.5 text-[9px] font-black uppercase tracking-[0.1em] ${
-                  activeSeason === season
-                    ? 'border-white bg-white text-[#C1121F] shadow-[0_8px_18px_rgba(0,0,0,0.12)] dark:border-white dark:bg-white dark:text-[#C1121F]'
-                    : 'border-border/10 bg-foreground/[0.045] text-foreground/60 group-hover:border-[#C1121F]/20 group-hover:bg-[#5A1C2C]/18 dark:border-white/10 dark:bg-white/10 dark:text-white/70'
-                }`}>
-                  {seasonEventCounts[season] || 0}
-                </span>
-              </span>
-            </button>
-          ))}
-        </div>
-
         <div className="flex w-full rounded-2xl border border-border/10 bg-subcard p-1 shadow-[0_12px_34px_rgba(15,23,42,0.06)] sm:w-fit">
           {[
             { id: 'list' as const, label: 'List', icon: List },
@@ -534,6 +584,21 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             Clear filters
           </button>
         )}
+
+        {archivedWeeks.size > 0 && weekFilter === ALL && (
+          <button
+            type="button"
+            onClick={() => setShowArchivedWeeks((current) => !current)}
+            className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.16em] transition-colors ${
+              showArchivedWeeks
+                ? 'border-[#B5413F]/30 bg-[#B5413F]/12 text-foreground'
+                : 'border-border/10 bg-subcard text-foreground/55 hover:border-[#B5413F]/25 hover:text-foreground'
+            }`}
+          >
+            <Archive size={14} />
+            {showArchivedWeeks ? 'Hide' : 'Show'} {archivedWeeks.size} archived week{archivedWeeks.size === 1 ? '' : 's'}
+          </button>
+        )}
       </section>
 
       {filteredEvents.length === 0 ? (
@@ -542,7 +607,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             No events match these filters
           </p>
           <p className="mt-2 text-xs text-foreground/40">
-            Clear filters or switch seasons to see more events.
+            Clear the filters or open the archived weeks to see more events.
           </p>
         </div>
       ) : scheduleView === 'calendar' ? (
@@ -602,6 +667,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       {days.map((day, index) => {
                         const hasEvents = Boolean(day && day.events.length > 0);
                         const dateIso = day && month !== 'undated' ? `${month}-${String(day.day).padStart(2, '0')}` : null;
+                        const isToday = dateIso === todayIso;
                         const CellTag = hasEvents ? 'button' : 'div';
 
                         return (
@@ -611,9 +677,11 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                             onClick={hasEvents ? () => setSelectedCalendarDay({ label: formatLongDate(dateIso), events: day.events }) : undefined}
                             className={`min-h-[74px] rounded-2xl border p-2 text-left transition-all ${
                               day
-                                ? hasEvents
-                                  ? 'border-[#C1121F]/25 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:border-[#C1121F]/50 hover:shadow-[0_18px_40px_rgba(193,18,31,0.14)] dark:bg-foreground/[0.025]'
-                                  : 'border-border/10 bg-[#ECEEF2]/70 dark:border-white/10 dark:bg-white/[0.055]'
+                                ? isToday
+                                  ? 'border-[#B5413F]/45 bg-[#B5413F]/10 ring-1 ring-inset ring-[#B5413F]/25 dark:bg-white/[0.075]'
+                                  : hasEvents
+                                    ? 'border-[#C1121F]/25 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:border-[#C1121F]/50 hover:shadow-[0_18px_40px_rgba(193,18,31,0.14)] dark:bg-foreground/[0.025]'
+                                    : 'border-border/10 bg-[#ECEEF2]/70 dark:border-white/10 dark:bg-white/[0.055]'
                                 : 'border-transparent bg-transparent'
                             }`}
                           >
@@ -623,7 +691,11 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                   <span className={`text-xs font-black ${hasEvents ? 'text-[#C1121F]' : 'text-foreground/38'}`}>
                                     {day.day}
                                   </span>
-                                  {hasEvents && (
+                                  {isToday ? (
+                                    <span className="rounded-full bg-[#B5413F] px-1.5 py-0.5 text-[7px] font-black uppercase tracking-[0.08em] text-white">
+                                      Today
+                                    </span>
+                                  ) : hasEvents && (
                                     <span className="rounded-full bg-[#C1121F] px-1.5 py-0.5 text-[8px] font-black text-white shadow-[0_6px_14px_rgba(193,18,31,0.2)]">
                                       {day.events.length}
                                     </span>
@@ -634,7 +706,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                   {day.events.slice(0, 2).map((event) => (
                                     <div
                                       key={event.id}
-                                      className="truncate rounded-lg bg-[#FEE2E2] px-1.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#7F1D1D] dark:bg-[#B5413F]/18 dark:text-[#FCA5A5]"
+                                      className={`truncate rounded-lg border-l-[3px] bg-[#FEE2E2] px-1.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#7F1D1D] dark:bg-white/[0.055] dark:text-white/72 ${teamAccentForEvent(event).rail}`}
                                       title={`${event.team}: ${event.eventText}`}
                                     >
                                       {shortTeamName(event.team)}
@@ -662,14 +734,18 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
         <section className="space-y-4">
           {visibleWeeks.map((week) => {
             const events = groupedEvents[week];
-            const collapsed = collapsedWeeks[week];
+            const collapsed = collapsedWeeks[week] ?? week !== visibleWeeks[0];
+            const archived = archivedWeeks.has(week);
+            const containsToday = events.some((event) => event.date === todayIso);
 
             return (
               <div key={week} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_18px_55px_rgba(0,0,0,0.16)]">
                 <button
                   type="button"
                   onClick={() => toggleWeek(week)}
-                  className="flex w-full items-center justify-between gap-4 border-b border-border/5 bg-[#5A1C2C]/10 px-4 py-4 text-left"
+                  className={`flex w-full items-center justify-between gap-4 border-b border-border/5 px-4 py-4 text-left ${
+                    containsToday ? 'bg-white/[0.065]' : archived ? 'bg-foreground/[0.025]' : 'bg-[#5A1C2C]/10'
+                  }`}
                 >
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#B5413F]">
@@ -680,6 +756,15 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                     </h3>
                   </div>
                   <div className="flex items-center gap-3">
+                    {(containsToday || archived) && (
+                      <span className={`rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${
+                        containsToday
+                          ? 'border-[#B5413F]/30 bg-[#B5413F]/12 text-[#D85A57]'
+                          : 'border-border/10 bg-foreground/[0.035] text-foreground/38'
+                      }`}>
+                        {containsToday ? 'This week' : 'Archived'}
+                      </span>
+                    )}
                     <span className="rounded-full border border-border/10 bg-subcard px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/50">
                       {events.length}
                     </span>
@@ -689,16 +774,36 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
 
                 {!collapsed && (
                   <div className="divide-y divide-border/5">
-                    {events.map((event) => (
-                      <article key={event.id} className="grid gap-4 px-4 py-4 transition-colors hover:bg-foreground/[0.02] md:grid-cols-[112px_minmax(0,1fr)_auto] md:items-center">
+                    {events.map((event) => {
+                      const SportIcon = sportIconForEvent(event);
+                      const teamAccent = teamAccentForEvent(event);
+                      const isToday = event.date === todayIso;
+                      const eventTime = displayEventTime(event);
+
+                      return (
+                      <article
+                        key={event.id}
+                        className={`grid gap-4 border-l-[7px] px-4 py-4 transition-colors md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${teamAccent.rail} ${
+                          isToday
+                            ? 'bg-[#B5413F]/8 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
+                            : 'hover:bg-foreground/[0.025]'
+                        }`}
+                      >
                         <div className="flex items-center gap-3 md:block">
                           <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] md:mb-2">
-                            <CalendarDays size={19} className="text-[#B5413F]" />
+                            <SportIcon size={20} className={teamAccent.icon} />
                           </div>
                           <div>
-                            <p className="text-sm font-black uppercase tracking-wide text-foreground">
-                              {formatDate(event.date)}
-                            </p>
+                            <div className="flex flex-wrap items-center gap-2">
+                              <p className="text-sm font-black uppercase tracking-wide text-foreground">
+                                {formatDate(event.date)}
+                              </p>
+                              {isToday && (
+                                <span className="rounded-full bg-[#B5413F] px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-white">
+                                  Today
+                                </span>
+                              )}
+                            </div>
                             <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35">
                               {event.day || 'Day TBD'}
                             </p>
@@ -720,10 +825,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                           </h4>
 
                           <div className="mt-3 flex flex-wrap gap-3 text-[11px] font-bold uppercase tracking-[0.13em] text-foreground/45">
-                            {event.time && (
+                            {eventTime && (
                               <span className="inline-flex items-center gap-1.5">
                                 <Clock size={13} className="text-[#B5413F]" />
-                                {event.time}
+                                {eventTime}
                               </span>
                             )}
                             {event.location && (
@@ -736,16 +841,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                           </div>
                         </div>
 
-                        <div className="hidden rounded-2xl border border-border/10 bg-foreground/[0.025] px-3 py-2 text-right md:block">
-                          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35">
-                            Raw
-                          </p>
-                          <p className="max-w-[180px] truncate text-xs font-bold text-foreground/55">
-                            {event.raw}
-                          </p>
-                        </div>
                       </article>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
@@ -820,10 +918,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                     </h4>
 
                     <div className="mt-3 grid gap-2 text-[11px] font-bold uppercase tracking-[0.13em] text-foreground/50 sm:grid-cols-2">
-                      {event.time && (
+                      {displayEventTime(event) && (
                         <span className="inline-flex items-center gap-1.5">
                           <Clock size={13} className="text-[#C1121F]" />
-                          {event.time}
+                          {displayEventTime(event)}
                         </span>
                       )}
                       {event.location && (

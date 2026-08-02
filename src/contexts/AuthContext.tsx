@@ -9,11 +9,15 @@ import {
 } from 'react';
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
   signOut,
   type User,
 } from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
 import { doc, getDoc, serverTimestamp, setDoc } from 'firebase/firestore';
 import { firebaseAuth, firebaseConfigComplete, firebaseDb } from '../lib/firebase';
 import LoginModal from '../components/LoginModal';
@@ -27,6 +31,7 @@ interface AuthContextValue {
   openLoginModal: () => void;
   closeLoginModal: () => void;
   createAccountWithPassword: (email: string, password: string) => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
   signInWithPassword: (email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
 }
@@ -42,7 +47,7 @@ async function syncUserProfile(user: User) {
     userRef,
     {
       email: user.email || null,
-      authMode: user.isAnonymous ? 'anonymous' : 'email-password',
+      authMode: user.isAnonymous ? 'anonymous' : (user.providerData[0]?.providerId || 'password'),
       updatedAt: serverTimestamp(),
       ...(!userSnapshot.exists() ? { createdAt: serverTimestamp() } : {}),
     },
@@ -105,6 +110,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoginModalOpen(false);
   }, []);
 
+  const signInWithGoogle = useCallback(async () => {
+    if (!firebaseAuth) {
+      setAuthError('Firebase is not configured for this build.');
+      return;
+    }
+
+    setAuthError(null);
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    try {
+      const credential = await signInWithPopup(firebaseAuth, provider);
+      await syncUserProfile(credential.user);
+      setLoginModalOpen(false);
+    } catch (error) {
+      const shouldUseRedirect = (
+        error instanceof FirebaseError
+        && [
+          'auth/network-request-failed',
+          'auth/popup-blocked',
+          'auth/web-storage-unsupported',
+        ].includes(error.code)
+      );
+
+      if (!shouldUseRedirect) throw error;
+      await signInWithRedirect(firebaseAuth, provider);
+    }
+  }, []);
+
   const signOutUser = useCallback(async () => {
     if (!firebaseAuth) return;
     await signOut(firebaseAuth);
@@ -120,10 +154,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       openLoginModal,
       closeLoginModal,
       createAccountWithPassword,
+      signInWithGoogle,
       signInWithPassword,
       signOutUser,
     }),
-    [authError, closeLoginModal, createAccountWithPassword, loading, loginModalOpen, openLoginModal, signInWithPassword, signOutUser, user],
+    [authError, closeLoginModal, createAccountWithPassword, loading, loginModalOpen, openLoginModal, signInWithGoogle, signInWithPassword, signOutUser, user],
   );
 
   return (

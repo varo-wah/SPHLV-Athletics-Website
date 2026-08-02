@@ -6,8 +6,6 @@ import {
   BasketballIcon,
   VolleyballIcon,
   SoccerIcon,
-  BadmintonIcon,
-  TrackIcon,
 } from './SportIcons';
 
 interface SidebarProps {
@@ -28,8 +26,6 @@ const sports: SportMenuItem[] = [
   { id: 'Basketball', label: 'BASKETBALL', icon: BasketballIcon, status: 'Schedule' },
   { id: 'Volleyball', label: 'VOLLEYBALL', icon: VolleyballIcon, status: 'Schedule' },
   { id: 'Soccer', label: 'SOCCER', icon: SoccerIcon, status: 'Live', featured: true },
-  { id: 'Badminton', label: 'BADMINTON', icon: BadmintonIcon, status: 'Schedule' },
-  { id: 'TrackAndField', label: 'TRACK & FIELD', icon: TrackIcon, status: 'Schedule' },
 ];
 
 const standardTeams: { label: string; division: DivisionTab; gender: GenderTab }[] = [
@@ -39,11 +35,6 @@ const standardTeams: { label: string; division: DivisionTab; gender: GenderTab }
   { label: 'SMA Girls', division: 'SMA', gender: 'Girls' },
 ];
 
-const combinedTeams: { label: string; division: DivisionTab; gender: GenderTab }[] = [
-  { label: 'SMP Combined', division: 'SMP', gender: 'Combined' },
-  { label: 'SMA Combined', division: 'SMA', gender: 'Combined' },
-];
-
 export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps) {
   const [openSport, setOpenSport] = React.useState<SportTab | null>(null);
 
@@ -51,13 +42,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
     setOpenSport((current) => (current === sport ? null : sport));
   };
 
-  const getTeamsForSport = (sport: SportTab) => {
-    if (sport === 'Badminton' || sport === 'TrackAndField') {
-      return combinedTeams;
-    }
-
-    return standardTeams;
-  };
+  const getTeamsForSport = () => standardTeams;
 
   return (
     <AnimatePresence>
@@ -111,7 +96,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
               {sports.map((sport) => {
                 const Icon = sport.icon;
                 const isOpenSport = openSport === sport.id;
-                const teams = getTeamsForSport(sport.id);
+                const teams = getTeamsForSport();
 
                 return (
                   <div

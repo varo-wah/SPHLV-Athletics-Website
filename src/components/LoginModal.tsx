@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { LockKeyhole, Mail, X } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getFirebaseAuthMessage } from '../utils/firebaseAuthErrors';
+import GoogleSignInButton from './GoogleSignInButton';
 
 export default function LoginModal() {
   const {
@@ -61,7 +62,7 @@ export default function LoginModal() {
                 Sign in
               </h2>
               <p className="mt-2 text-sm font-semibold leading-relaxed text-white/70">
-                Use your email and password to save followed sports.
+                Continue with Google or use email to save followed sports and favorite teams.
               </p>
             </div>
             <button
@@ -81,6 +82,16 @@ export default function LoginModal() {
               Firebase env vars are missing in this build.
             </div>
           )}
+
+          <GoogleSignInButton />
+
+          <div className="flex items-center gap-3" aria-hidden="true">
+            <span className="h-px flex-1 bg-border/10" />
+            <span className="text-[9px] font-black uppercase tracking-[0.18em] text-foreground/32">
+              Or use email
+            </span>
+            <span className="h-px flex-1 bg-border/10" />
+          </div>
 
           <label className="block space-y-2">
             <span className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">

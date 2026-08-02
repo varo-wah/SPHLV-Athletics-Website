@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { LockKeyhole, LogOut, Mail, UserRound } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { getFirebaseAuthMessage } from '../utils/firebaseAuthErrors';
+import GoogleSignInButton from '../components/GoogleSignInButton';
 
 export default function LoginScreen() {
   const { authError, createAccountWithPassword, firebaseReady, signInWithPassword, signOutUser, user } = useAuth();
@@ -51,7 +52,7 @@ export default function LoginScreen() {
               Sign in
             </h1>
             <p className="mt-4 max-w-xl text-sm font-semibold leading-relaxed text-foreground/55">
-              Use your email and password to save followed sports. Match alerts and score notifications can be added after follows are stable.
+              Continue with Google or use email to save followed sports and favorite teams. Match alerts and score notifications can be added after follows are stable.
             </p>
           </div>
 
@@ -88,6 +89,16 @@ export default function LoginScreen() {
                     Firebase env vars are missing in this build.
                   </div>
                 )}
+
+                <GoogleSignInButton />
+
+                <div className="flex items-center gap-3" aria-hidden="true">
+                  <span className="h-px flex-1 bg-border/10" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.18em] text-foreground/32">
+                    Or use email
+                  </span>
+                  <span className="h-px flex-1 bg-border/10" />
+                </div>
 
                 <label className="block space-y-2">
                   <span className="text-[10px] font-black uppercase tracking-[0.18em] text-foreground/45">
