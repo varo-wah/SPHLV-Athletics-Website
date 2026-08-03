@@ -177,16 +177,16 @@ function sportIconForEvent(event: ScheduleEvent): ElementType {
 }
 
 const TEAM_ACCENT_STYLES = [
-  { match: 'varsity boys soccer', rail: 'border-l-[#EF4444]', icon: 'text-[#F87171]' },
-  { match: 'varsity girls soccer', rail: 'border-l-[#F472B6]', icon: 'text-[#F9A8D4]' },
-  { match: 'varsity boys volleyball', rail: 'border-l-[#F59E0B]', icon: 'text-[#FBBF24]' },
-  { match: 'varsity girls volleyball', rail: 'border-l-[#A78BFA]', icon: 'text-[#C4B5FD]' },
-  { match: 'smp boys basketball', rail: 'border-l-[#3B82F6]', icon: 'text-[#60A5FA]' },
-  { match: 'smp girls basketball', rail: 'border-l-[#22D3EE]', icon: 'text-[#67E8F9]' },
-  { match: 'js 3-4 mixed basketball', rail: 'border-l-[#84CC16]', icon: 'text-[#A3E635]' },
-  { match: 'js 5-6 boys basketball', rail: 'border-l-[#6366F1]', icon: 'text-[#818CF8]' },
-  { match: 'js 5-6 girls basketball', rail: 'border-l-[#F97316]', icon: 'text-[#FB923C]' },
-  { match: 'swim', rail: 'border-l-[#14B8A6]', icon: 'text-[#5EEAD4]' },
+  { match: 'varsity boys soccer', rail: 'border-l-[#EF4444]', icon: 'text-[#F87171]', badge: 'border-[#EF4444]/35 bg-[#EF4444]/12 text-[#B91C1C] dark:text-[#FCA5A5]' },
+  { match: 'varsity girls soccer', rail: 'border-l-[#F472B6]', icon: 'text-[#F9A8D4]', badge: 'border-[#F472B6]/35 bg-[#F472B6]/12 text-[#BE185D] dark:text-[#F9A8D4]' },
+  { match: 'varsity boys volleyball', rail: 'border-l-[#F59E0B]', icon: 'text-[#FBBF24]', badge: 'border-[#F59E0B]/35 bg-[#F59E0B]/12 text-[#92400E] dark:text-[#FCD34D]' },
+  { match: 'varsity girls volleyball', rail: 'border-l-[#A78BFA]', icon: 'text-[#C4B5FD]', badge: 'border-[#A78BFA]/35 bg-[#A78BFA]/12 text-[#6D28D9] dark:text-[#C4B5FD]' },
+  { match: 'smp boys basketball', rail: 'border-l-[#3B82F6]', icon: 'text-[#60A5FA]', badge: 'border-[#3B82F6]/35 bg-[#3B82F6]/12 text-[#1D4ED8] dark:text-[#93C5FD]' },
+  { match: 'smp girls basketball', rail: 'border-l-[#22D3EE]', icon: 'text-[#67E8F9]', badge: 'border-[#22D3EE]/35 bg-[#22D3EE]/12 text-[#0E7490] dark:text-[#67E8F9]' },
+  { match: 'js 3-4 mixed basketball', rail: 'border-l-[#84CC16]', icon: 'text-[#A3E635]', badge: 'border-[#84CC16]/35 bg-[#84CC16]/12 text-[#3F6212] dark:text-[#BEF264]' },
+  { match: 'js 5-6 boys basketball', rail: 'border-l-[#6366F1]', icon: 'text-[#818CF8]', badge: 'border-[#6366F1]/35 bg-[#6366F1]/12 text-[#4338CA] dark:text-[#A5B4FC]' },
+  { match: 'js 5-6 girls basketball', rail: 'border-l-[#F97316]', icon: 'text-[#FB923C]', badge: 'border-[#F97316]/35 bg-[#F97316]/12 text-[#C2410C] dark:text-[#FDBA74]' },
+  { match: 'swim', rail: 'border-l-[#14B8A6]', icon: 'text-[#5EEAD4]', badge: 'border-[#14B8A6]/35 bg-[#14B8A6]/12 text-[#0F766E] dark:text-[#5EEAD4]' },
 ] as const;
 
 function teamAccentForEvent(event: ScheduleEvent) {
@@ -194,6 +194,7 @@ function teamAccentForEvent(event: ScheduleEvent) {
   return TEAM_ACCENT_STYLES.find((style) => team.includes(style.match)) || {
     rail: 'border-l-[#94A3B8]',
     icon: 'text-[#CBD5E1]',
+    badge: 'border-[#94A3B8]/35 bg-[#94A3B8]/12 text-[#475569] dark:text-[#CBD5E1]',
   };
 }
 
@@ -712,7 +713,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                             <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
                               {event.eventType}
                             </span>
-                            <span className="rounded-full border border-border/10 bg-[#ECEEF2] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 dark:border-white/10 dark:bg-white/10 dark:text-white/60">
+                            <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${teamAccentForEvent(event).badge}`}>
                               {event.team}
                             </span>
                           </div>
@@ -886,7 +887,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                             <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
                               {event.eventType}
                             </span>
-                            <span className="rounded-full border border-border/10 bg-foreground/[0.025] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45">
+                            <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${teamAccent.badge}`}>
                               {event.team}
                             </span>
                           </div>
@@ -979,7 +980,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
                         {event.eventType}
                       </span>
-                      <span className="rounded-full border border-border/10 bg-[#ECEEF2] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/55 dark:border-white/10 dark:bg-white/10 dark:text-white/60">
+                      <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${teamAccentForEvent(event).badge}`}>
                         {event.team}
                       </span>
                     </div>
