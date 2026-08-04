@@ -1,10 +1,17 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users, Search, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays, Users, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
-import { SheetMatch } from '../services/parsers';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
+import {
+  BadmintonIcon,
+  BasketballIcon,
+  SoccerIcon,
+  TrackIcon,
+  VolleyballIcon,
+} from '../components/SportIcons';
+import { findTeam, sportDetails } from '../config/teamCatalog';
 
 interface TeamPageScreenProps {
   sport: SportTab;
@@ -21,6 +28,19 @@ const teamPageSections: { id: TeamPageSection; label: string }[] = [
   { id: 'players', label: 'Players' },
 ];
 
+const sportIcons = {
+  Basketball: BasketballIcon,
+  Volleyball: VolleyballIcon,
+  Soccer: SoccerIcon,
+  Badminton: BadmintonIcon,
+  TrackAndField: TrackIcon,
+};
+
+const approvedSoccerTeamPhotos = [
+  'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241030/Varsity_soccer_boys_teampic_2_dyv7mz.jpg',
+  'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241126/Varsity_boys_soccer_team_pic_resized_i1ezdp.jpg',
+] as const;
+
 export default function TeamPageScreen({
   sport,
   division,
@@ -30,109 +50,38 @@ export default function TeamPageScreen({
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [activeSection, setActiveSection] = useState<TeamPageSection>('games');
 
-  const isCustomBanner = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
-
-  const getCustomBannerUrl = (): string | null => {
-    if (sport === 'Soccer' && division === 'SMA') {
-      if (gender === 'Girls') {
-        return "https://res.cloudinary.com/dpgt445lg/image/upload/v1780443630/ACSC_Girls_football_26_2_bcdvak.png";
-      }
-    }
-    return null;
-  };
-
-  const customBannerUrl = getCustomBannerUrl();
-  const isVarsityBoysSoccer = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
-
-  const defaultCarouselImages = [
-    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', // blank transparent
-    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-    'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7',
-  ];
-
-  const customCarouselImages = [
-    'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241030/Varsity_soccer_boys_teampic_2_dyv7mz.jpg',
-    'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241126/Varsity_boys_soccer_team_pic_resized_i1ezdp.jpg',
-  ];
-
-  const carouselImages = isCustomBanner ? customCarouselImages : defaultCarouselImages;
-  const varsityBoysPlayerImages = [
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780314657/729b06f6-c63a-4d58-bd8a-59dc421c34c9_sgb10l.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780314660/85e9e894-a666-41b1-8a62-cc23c91d5739_hs1d1a.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780314198/bff29ebb-3b20-46c5-b982-61e07cf9e5b1_zy4fdd.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780314197/b8e4ceee-cb88-425a-b4e5-e0534dad7b34_kgvglj.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780314177/c0b46a7a-328d-49c0-bd35-3d2a9f18474b_lidfgc.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313965/87727527-0b43-429d-b6cf-bca8b5e40242_fwt2v3.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313965/52b7153b-d6ec-499f-afb8-66d0a49cdd12_zfobkg.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313965/a73ad134-3a3b-44e5-8e9c-eb3eaa6d3b80_dqjmkh.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313965/c223e878-f9ed-44b1-8a2d-2a030c1ffaf1_czfwvj.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313965/33c86d0b-1408-4a93-9454-6a0340e55d85_zshgwq.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313964/3e92cad7-318a-4420-a4fc-78c2c18431aa_b0xgpz.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313963/4b3e6de7-7081-4085-850d-0d4c90aba1df_d7z0gp.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313963/9c57e7bd-7945-422c-b9a9-0019e35648a0_w0zfpl.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780313962/1b739ec8-9f95-4512-9bfc-4e893388e447_yyhlsv.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286730/aa15e6aa-96ac-46e2-806f-5c377fc0016d_lzievt.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286729/932c02c4-239d-4156-b662-96913a2dda4f_kiblr9.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286729/82c8bc76-dd0c-4292-bcd4-766ed486cc89_cathhd.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286729/87b44f76-93a4-4913-b01b-d185a528194e_w1rsyr.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286729/b3f31b3a-07ec-4d02-97a9-68dfca7f9c73_uhdqzv.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286728/062fed6c-1f9e-4aa4-a066-a605d10eeb89_uv2win.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286727/cef8db89-1d57-46ea-b42e-0993d4d50858_zcywog.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286727/fc0d8979-a00f-4af2-93a7-544f756eda7f_izigrx.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286727/29405bbc-115f-4f62-b52b-e80296f83a9e_u6sono.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286726/c2cddcb4-00e2-4237-8947-e75257c20b4f_iohgtj.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780286725/ec2d0470-a2af-4e6a-9bda-afd82356df72_ldi1hx.webp",
-    "https://res.cloudinary.com/dpgt445lg/image/upload/v1780315354/85f6440e-79b5-4a1b-92d3-7e37513c5e18_l8xtxc.webp"
-  ];
-  const playerImages = isCustomBanner
-    ? varsityBoysPlayerImages
-    : Array.from({ length: 10 }, (_, idx) => `https://i.pravatar.cc/300?u=${idx + sport + gender + 'player'}`);
+  const team = findTeam(sport, division, gender);
+  const sportInfo = sportDetails(sport);
+  const teamName = team?.displayName ?? `${division} ${gender} ${sportInfo.label}`;
+  const divisionLabel = division === 'SMA' ? 'SMA / Varsity' : 'SMP / Middle School';
+  const SportIcon = sportIcons[sport];
+  const teamPhotos = sport === 'Soccer' && division === 'SMA' && gender === 'Boys'
+    ? approvedSoccerTeamPhotos
+    : [];
 
   const goToPreviousPhoto = () => {
-    setCurrentImageIndex((current) => (current - 1 + carouselImages.length) % carouselImages.length);
+    if (teamPhotos.length === 0) return;
+    setCurrentImageIndex((current) => (current - 1 + teamPhotos.length) % teamPhotos.length);
   };
 
   const goToNextPhoto = () => {
-    setCurrentImageIndex((current) => (current + 1) % carouselImages.length);
+    if (teamPhotos.length === 0) return;
+    setCurrentImageIndex((current) => (current + 1) % teamPhotos.length);
   };
 
   useEffect(() => {
+    if (teamPhotos.length < 2) return undefined;
+
     const timer = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % carouselImages.length);
+      setCurrentImageIndex((prev) => (prev + 1) % teamPhotos.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, [carouselImages.length]);
+  }, [teamPhotos.length]);
 
   useEffect(() => {
     setActiveSection('games');
+    setCurrentImageIndex(0);
   }, [sport, division, gender]);
-
-  const sportLabels: Record<SportTab, string> = {
-    Basketball: 'Basketball',
-    Volleyball: 'Volleyball',
-    Soccer: 'Soccer',
-    Badminton: 'Badminton',
-    TrackAndField: 'Track & Field',
-  };
-
-  const getHeroImage = () => {
-    switch (sport) {
-      case 'Basketball':
-        return 'https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80';
-      case 'Soccer':
-        return 'https://images.unsplash.com/photo-1518605368461-1e1296221f8c?auto=format&fit=crop&w=800&q=80';
-      case 'Volleyball':
-        return 'https://images.unsplash.com/photo-1592656094267-764a45160876?auto=format&fit=crop&w=800&q=80';
-      case 'Badminton':
-        return 'https://images.unsplash.com/photo-1626224583764-f87db24ac4ea?auto=format&fit=crop&w=800&q=80';
-      case 'TrackAndField':
-        return 'https://images.unsplash.com/photo-1552674605-15c2145eba11?auto=format&fit=crop&w=800&q=80';
-      default:
-        return 'https://images.unsplash.com/photo-1461896836934-ffe607ba8211?auto=format&fit=crop&w=800&q=80';
-    }
-  };
-
-  const displayDivision = division === 'SMA' ? 'SMA / Varsity' : 'SMP';
 
   const currentStandings = (athleticsDataState?.data?.standings || []).filter((standing) => {
     return (
@@ -142,27 +91,6 @@ export default function TeamPageScreen({
     );
   });
 
-  const currentMatches = (athleticsDataState?.data?.matches || []).filter((match) => {
-    return (
-      match.sportKey === sport &&
-      match.level === division &&
-      match.genderGroup === gender
-    );
-  });
-
-  const upcomingMatches = currentMatches.filter((match) => match.status !== 'Finished');
-  const finishedMatches = currentMatches.filter((match) => match.status === 'Finished');
-  const seasonGames = currentMatches
-    .map((match, index) => {
-      const dateValue = Date.parse(`${match.date || ''}T${match.time || '00:00'}`);
-      return {
-        match,
-        index,
-        dateValue: Number.isNaN(dateValue) ? Number.MAX_SAFE_INTEGER : dateValue,
-      };
-    })
-    .sort((a, b) => a.dateValue - b.dateValue || a.index - b.index)
-    .map(({ match }) => match);
   const standingsRows = currentStandings
     .map((row, idx) => {
       const wins = row.wins ?? 0;
@@ -190,24 +118,6 @@ export default function TeamPageScreen({
     const teamName = entry.row.team.trim().toLowerCase();
     return teamName === 'lv' || teamName.includes('sph lv') || teamName.includes('sphlv');
   }) ?? leader;
-
-  const resultBadgeClass = (result: string) => {
-    if (result === 'W') return 'bg-green-500/15 text-green-400 border-green-500/20';
-    if (result === 'L') return 'bg-red-500/15 text-red-400 border-red-500/20';
-    if (result === 'D') return 'bg-yellow-400/15 text-yellow-300 border-yellow-400/20';
-    return 'bg-[#BFD7EA]/10 text-[#BFD7EA] border-[#BFD7EA]/20';
-  };
-
-  const matchAccentClass = (match: SheetMatch) => {
-    if (match.result === 'W') return 'border-l-green-500';
-    if (match.result === 'L') return 'border-l-red-500';
-    if (match.result === 'D') return 'border-l-yellow-400';
-    return 'border-l-[#BFD7EA]/40';
-  };
-
-  const matchLocationText = (match: SheetMatch) => {
-    return (match.locationType || 'TBD').toUpperCase();
-  };
 
   const SectionHeader = ({
     title,
@@ -261,149 +171,49 @@ export default function TeamPageScreen({
     return parts.map((part) => part[0]).join('').slice(0, 3).toUpperCase();
   };
 
-  const formatGameDate = (value: string) => {
-    if (!value) return 'DATE TBD';
-    const parsed = new Date(`${value}T00:00:00`);
-    if (Number.isNaN(parsed.getTime())) return value.toUpperCase();
+  return (
+    <div className="animate-in fade-in duration-500 pb-8 cursor-default">
+      {/* Shared team hero */}
+      <div className="relative w-full overflow-hidden border-y border-border/10 bg-[#09070a]">
+        <div className="relative flex min-h-[280px] items-end overflow-hidden px-5 pb-7 pt-20 sm:min-h-[330px] sm:px-8 sm:pb-9">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-70"
+            style={{
+              background: `radial-gradient(circle at 18% 24%, ${sportInfo.accent}52, transparent 32%), radial-gradient(circle at 82% 78%, ${sportInfo.accent}30, transparent 30%), linear-gradient(135deg, #09070a 8%, #180d12 58%, #09070a)`,
+            }}
+          />
+          <div className="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full border border-white/[0.07]" />
+          <div className="pointer-events-none absolute -right-5 -top-5 h-48 w-48 rounded-full border border-white/[0.055]" />
+          <div className="pointer-events-none absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
 
-    const weekday = new Intl.DateTimeFormat('en-US', { weekday: 'short' })
-      .format(parsed)
-      .toUpperCase();
-    return `${weekday}, ${parsed.getMonth() + 1}/${parsed.getDate()}`;
-  };
-
-  const renderGameRow = (match: SheetMatch, idx: number) => {
-    const opponent = match.opponent || 'TBD';
-    const finished = match.status === 'Finished';
-    const hasScore = match.scoreFor !== null && match.scoreAgainst !== null;
-    const locationMarker = match.locationType === 'Away' ? '@' : 'VS';
-    const statusLabel = match.status === 'Live' ? 'Live' : 'Scheduled';
-
-    return (
-      <article
-        key={`${match.id}-${idx}`}
-        className={`grid min-h-[78px] grid-cols-[76px_28px_minmax(0,1fr)_auto] items-center gap-2 border-b border-border/10 border-l-[3px] px-3 py-3 last:border-b-0 sm:min-h-[84px] sm:grid-cols-[112px_36px_minmax(0,1fr)_auto] sm:gap-4 sm:px-5 ${matchAccentClass(match)}`}
-      >
-        <div className="min-w-0">
-          <p className="truncate text-xs font-black uppercase tracking-tight text-foreground sm:text-base">
-            {formatGameDate(match.date)}
-          </p>
-          <p className="mt-1 truncate text-[8px] font-black uppercase tracking-[0.13em] text-foreground/32 sm:text-[9px]">
-            {match.tournament}
-          </p>
-        </div>
-
-        <div className="text-center text-xs font-black uppercase text-foreground/48 sm:text-sm">
-          {locationMarker}
-        </div>
-
-        <div className="flex min-w-0 items-center gap-2.5 sm:gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.04] text-[9px] font-black uppercase tracking-wide text-foreground/62 sm:h-11 sm:w-11 sm:text-[10px]">
-            {teamInitials(opponent)}
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-black uppercase tracking-[0.04em] text-foreground sm:text-lg">
-              {opponent}
-            </p>
-            <p className="mt-1 truncate text-[8px] font-black uppercase tracking-[0.12em] text-foreground/32 sm:text-[9px]">
-              {match.venue || matchLocationText(match)}
-            </p>
-          </div>
-        </div>
-
-        {finished ? (
-          <div className="flex shrink-0 items-center justify-end gap-2 sm:gap-3">
-            <span className={`text-base font-black uppercase sm:text-xl ${
-              match.result === 'W'
-                ? 'text-green-400'
-                : match.result === 'L'
-                  ? 'text-red-400'
-                  : 'text-yellow-300'
-            }`}>
-              {match.result || 'F'}
-            </span>
-            <div className="min-w-[48px] text-right">
-              {hasScore ? (
-                <p className="whitespace-nowrap font-mono text-base font-black text-foreground sm:text-xl">
-                  {match.scoreFor}–{match.scoreAgainst}
+          <div className="relative z-10 flex w-full flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <div className="flex min-w-0 items-start gap-4 sm:items-center">
+              <div
+                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl border bg-black/25 shadow-[0_20px_55px_rgba(0,0,0,0.32)] backdrop-blur sm:h-20 sm:w-20"
+                style={{ borderColor: `${sportInfo.accent}55`, color: sportInfo.accent }}
+              >
+                <SportIcon size={36} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/48">
+                  SPH LV Eagles · {divisionLabel}
                 </p>
-              ) : (
-                <p className="font-mono text-base font-black text-foreground/38 sm:text-xl">—</p>
-              )}
+                <h1 className="mt-2 max-w-3xl text-4xl font-black uppercase leading-[0.92] tracking-[-0.035em] text-white sm:text-6xl">
+                  {teamName}
+                </h1>
+              </div>
             </div>
-          </div>
-        ) : (
-          <div className="shrink-0 text-right">
-            <p className="whitespace-nowrap text-sm font-black uppercase text-foreground sm:text-lg">
-              {match.time || 'TBD'}
-            </p>
-            <div className="mt-1 flex justify-end">
-              <span className={`rounded-full border px-2 py-0.5 text-[7px] font-black uppercase tracking-[0.12em] sm:text-[8px] ${
-                match.status === 'Live'
-                  ? 'border-green-500/25 bg-green-500/10 text-green-400'
-                  : resultBadgeClass('')
-              }`}>
-                {statusLabel}
+
+            <div className="flex flex-wrap gap-2" aria-label="Team setup status">
+              <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-[9px] font-black uppercase tracking-[0.16em] text-white/62 backdrop-blur">
+                Schedule pending
+              </span>
+              <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-[9px] font-black uppercase tracking-[0.16em] text-white/62 backdrop-blur">
+                Roster pending
               </span>
             </div>
           </div>
-        )}
-      </article>
-    );
-  };
 
-  return (
-    <div className="animate-in fade-in duration-500 pb-8 cursor-default">
-      {/* Hero Header */}
-      <div className={`relative w-full ${isVarsityBoysSoccer ? '' : 'border-b-[8px] border-[#5A1C2C] border-t-[8px]'}`}>
-        <div className={`${isVarsityBoysSoccer ? 'relative h-[300px] w-full overflow-hidden bg-black sm:h-[340px]' : 'aspect-[21/6] relative w-full overflow-hidden bg-black'}`}>
-          {isVarsityBoysSoccer ? (
-            <section className="varsity-boys-soccer-hero" aria-label="Varsity Boys Soccer">
-              <div className="varsity-boys-soccer-hero__field" aria-hidden="true">
-                <div className="varsity-boys-soccer-hero__circle" />
-                <div className="varsity-boys-soccer-hero__box varsity-boys-soccer-hero__box--left" />
-                <div className="varsity-boys-soccer-hero__box varsity-boys-soccer-hero__box--right" />
-                <div className="varsity-boys-soccer-hero__runner varsity-boys-soccer-hero__runner--one" />
-                <div className="varsity-boys-soccer-hero__runner varsity-boys-soccer-hero__runner--two" />
-              </div>
-
-              <div className="varsity-boys-soccer-hero__content">
-                <div className="varsity-boys-soccer-hero__copy">
-                  <p>SPH LV Eagles</p>
-                  <h1>Varsity Boys Soccer</h1>
-                </div>
-
-                <div className="varsity-boys-soccer-hero__meta" aria-label="Team status">
-                  <span>{currentStandings[0]?.rank ? `Table #${currentStandings[0].rank}` : 'Live Table'}</span>
-                  <span>{upcomingMatches.length} Upcoming</span>
-                </div>
-              </div>
-            </section>
-          ) : customBannerUrl ? (
-            <img 
-              src={customBannerUrl} 
-              alt={`${division} ${gender} ${sportLabels[sport]}`} 
-              className="w-full h-full object-cover"
-            />
-          ) : (
-            <>
-              <img 
-                src={getHeroImage()} 
-                alt={`${division} ${gender} ${sportLabels[sport]}`} 
-                className="w-full h-full object-cover blur-sm opacity-60 mix-blend-multiply"
-              />
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <h2 className="text-4xl md:text-5xl font-black text-center uppercase tracking-tighter" style={{
-                   WebkitTextStroke: '2px rgba(255,255,255,0.8)',
-                   color: '#5A1C2C',
-                   textShadow: '0px 4px 10px rgba(0,0,0,0.5)'
-                }}>
-                  {displayDivision}<br />
-                  {gender} {sportLabels[sport]}
-                </h2>
-              </div>
-            </>
-          )}
           <TeamFavoriteButton
             sport={sport}
             division={division}
@@ -414,7 +224,7 @@ export default function TeamPageScreen({
       </div>
 
       <nav
-        aria-label={`${displayDivision} ${gender} ${sportLabels[sport]} sections`}
+        aria-label={`${teamName} sections`}
         className="pointer-events-none sticky top-16 z-40 px-3 py-3 sm:px-6 lg:px-8"
       >
         <div
@@ -556,7 +366,7 @@ export default function TeamPageScreen({
                     <div className="p-8 text-center text-xs font-medium text-foreground/40 space-y-2">
                       <p className="font-bold text-foreground/60">Standings will appear once uploaded</p>
                       <p>
-                        No standings matches for {sportLabels[sport]} · {displayDivision} · {gender}.
+                        No standings matches for {sportInfo.label} · {divisionLabel} · {gender}.
                       </p>
                     </div>
                   ) : (
@@ -640,37 +450,16 @@ export default function TeamPageScreen({
                   </h2>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <span className="rounded-full border border-border/10 bg-foreground/[0.025] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/48">
-                    {finishedMatches.length} Final
-                  </span>
-                  <span className="rounded-full border border-[#BFD7EA]/15 bg-[#BFD7EA]/8 px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-[#BFD7EA]">
-                    {upcomingMatches.length} Scheduled
-                  </span>
-                </div>
+                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border/10 bg-foreground/[0.025] px-3 py-2 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/48">
+                  <CalendarDays size={13} />
+                  Setup in progress
+                </span>
               </div>
 
-              {athleticsDataState?.loading && seasonGames.length === 0 ? (
-                <div className="animate-pulse rounded-2xl border border-border/10 bg-subcard p-8 text-center">
-                  <p className="text-sm font-black uppercase tracking-widest text-foreground/50">
-                    Loading games from Google Sheets...
-                  </p>
-                </div>
-              ) : seasonGames.length === 0 ? (
-                <EmptyPanel
-                  title={athleticsDataState?.error ? 'Games unavailable' : 'No games yet'}
-                  body={athleticsDataState?.error || 'Scheduled games and completed results will appear together here.'}
-                />
-              ) : (
-                <div className="overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-[0_20px_60px_rgba(0,0,0,0.16)]">
-                  {seasonGames.map((match, idx) => renderGameRow(match, idx))}
-                  {athleticsDataState?.error && (
-                    <div className="border-t border-red-500/15 bg-red-500/5 px-4 py-3 text-[9px] font-black uppercase tracking-[0.14em] text-red-400">
-                      Live sync issue · showing the latest available games
-                    </div>
-                  )}
-                </div>
-              )}
+              <EmptyPanel
+                title="Schedule coming soon"
+                body="Games and completed results will appear here after the team schedule is reviewed and published."
+              />
 
               {sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
                 <a
@@ -832,20 +621,23 @@ export default function TeamPageScreen({
                 2025-26 Squad
               </h3>
             </div>
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/10 bg-subcard px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45">
-              <span>{currentImageIndex + 1}</span>
-              <span className="text-foreground/20">/</span>
-              <span>{carouselImages.length}</span>
-            </div>
+            {teamPhotos.length > 0 && (
+              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/10 bg-subcard px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45">
+                <span>{currentImageIndex + 1}</span>
+                <span className="text-foreground/20">/</span>
+                <span>{teamPhotos.length}</span>
+              </div>
+            )}
           </div>
 
+          {teamPhotos.length > 0 ? (
           <div className="group relative overflow-hidden rounded-[1.75rem] border border-border/10 bg-[#0b080a] shadow-[0_28px_80px_rgba(0,0,0,0.28)]">
             <div className="relative aspect-[16/11] min-h-[260px] sm:aspect-[16/9]">
               <AnimatePresence mode="wait">
                 <motion.img
                   key={currentImageIndex}
-                  src={carouselImages[currentImageIndex]}
-                  alt={`Varsity boys soccer team photo ${currentImageIndex + 1}`}
+                  src={teamPhotos[currentImageIndex]}
+                  alt={`${teamName} team photo ${currentImageIndex + 1}`}
                   initial={{ opacity: 0, scale: 1.02 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.98 }}
@@ -861,7 +653,7 @@ export default function TeamPageScreen({
                     SPH LV Eagles
                   </p>
                   <p className="mt-1 text-xl font-black uppercase tracking-tight text-white sm:text-2xl">
-                    Varsity Boys Soccer
+                    {teamName}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -886,7 +678,7 @@ export default function TeamPageScreen({
             </div>
 
             <div className="flex items-center justify-center gap-2 border-t border-white/[0.06] bg-white/[0.025] px-4 py-3">
-              {carouselImages.map((_, idx) => (
+              {teamPhotos.map((_, idx) => (
                 <button
                   key={idx}
                   type="button"
@@ -899,6 +691,19 @@ export default function TeamPageScreen({
               ))}
             </div>
           </div>
+          ) : (
+            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-border/15 bg-foreground/[0.018] px-6 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-border/10 bg-foreground/[0.035] text-foreground/32">
+                <Users size={28} />
+              </div>
+              <p className="mt-5 text-base font-black uppercase tracking-[0.12em] text-foreground/68">
+                Team photo coming soon
+              </p>
+              <p className="mt-2 max-w-md text-xs font-semibold leading-relaxed text-foreground/38">
+                An approved team photo will be added after the roster and media are confirmed.
+              </p>
+            </div>
+          )}
         </section>
         )}
 
@@ -908,7 +713,7 @@ export default function TeamPageScreen({
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#C1121F] dark:text-[#B5413F]">
-                <Search size={14} />
+                <Users size={14} />
                 Players
               </p>
               <h3 className="mt-1 text-2xl font-black uppercase tracking-[0.08em] text-foreground dark:text-foreground">
@@ -916,49 +721,20 @@ export default function TeamPageScreen({
               </h3>
             </div>
             <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/10 bg-subcard px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45">
-              {playerImages.length} Players
+              Roster pending
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-            {playerImages.map((src, idx) => {
-              const playerNumber = String(idx + 1).padStart(2, '0');
-
-              return (
-                <article
-                  key={src}
-                  className="group overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-[0_16px_45px_rgba(0,0,0,0.16)] transition-all duration-300 hover:-translate-y-1 hover:border-[#B5413F]/35 hover:shadow-[0_24px_60px_rgba(0,0,0,0.26)]"
-                >
-                  <div className="relative aspect-[4/5] overflow-hidden bg-foreground/[0.035]">
-                    <img
-                      src={src}
-                      alt={`Varsity boys soccer player ${idx + 1}`}
-                      className="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0)_44%,rgba(0,0,0,0.78))]" />
-                    <div className="absolute right-3 top-3 flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/35 text-sm font-black text-white backdrop-blur">
-                      {playerNumber}
-                    </div>
-                    <div className="absolute bottom-0 left-0 right-0 p-3">
-                      <p className="text-sm font-black uppercase tracking-tight text-white">
-                        Player {playerNumber}
-                      </p>
-                      <p className="mt-1 text-[9px] font-black uppercase tracking-[0.18em] text-white/52">
-                        Varsity Boys
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between gap-2 px-3 py-3">
-                    <span className="rounded-full border border-border/10 bg-foreground/[0.035] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/42">
-                      Position TBD
-                    </span>
-                    <span className="text-[9px] font-black uppercase tracking-[0.14em] text-[#B5413F]">
-                      SPH LV
-                    </span>
-                  </div>
-                </article>
-              );
-            })}
+          <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-border/15 bg-foreground/[0.018] px-6 text-center">
+            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/30">
+              <Users size={28} />
+            </div>
+            <p className="mt-5 text-base font-black uppercase tracking-[0.12em] text-foreground/68">
+              Roster coming soon
+            </p>
+            <p className="mt-2 max-w-md text-xs font-semibold leading-relaxed text-foreground/38">
+              Player names, jersey numbers, positions, and approved media will appear after the team roster is confirmed.
+            </p>
           </div>
         </section>
         )}

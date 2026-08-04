@@ -15,16 +15,10 @@ import {
   LAUNCH_TEAM_SPORTS,
   isLaunchTeamSelection,
 } from '../config/launchSports';
+import { SPORT_CATALOG, teamsForSport } from '../config/teamCatalog';
 
 interface TeamsScreenProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
-}
-
-interface TeamOption {
-  division: DivisionTab;
-  gender: GenderTab;
-  label: string;
-  note: string;
 }
 
 interface SportDirectory {
@@ -33,58 +27,25 @@ interface SportDirectory {
   season: string;
   status: string;
   icon: React.FC<{ size?: number | string }>;
-  teams: TeamOption[];
+  teams: ReturnType<typeof teamsForSport>;
 }
 
-const teamOptions: TeamOption[] = [
-  { division: 'SMA', gender: 'Boys', label: 'Varsity Boys', note: 'SMA' },
-  { division: 'SMA', gender: 'Girls', label: 'Varsity Girls', note: 'SMA' },
-  { division: 'SMP', gender: 'Boys', label: 'SMP Boys', note: 'Middle School' },
-  { division: 'SMP', gender: 'Girls', label: 'SMP Girls', note: 'Middle School' },
-];
+const sportIcons = {
+  Soccer: SoccerIcon,
+  Volleyball: VolleyballIcon,
+  Basketball: BasketballIcon,
+  Badminton: BadmintonIcon,
+  TrackAndField: TrackIcon,
+};
 
-const allSports: SportDirectory[] = [
-  {
-    id: 'Soccer',
-    label: 'Soccer',
-    season: IS_PROTOTYPE ? 'Season 1 / 3' : LAUNCH_SEASON,
-    status: 'Live sheets',
-    icon: SoccerIcon,
-    teams: teamOptions,
-  },
-  {
-    id: 'Volleyball',
-    label: 'Volleyball',
-    season: IS_PROTOTYPE ? 'Season 1 / 2' : LAUNCH_SEASON,
-    status: 'Schedule only',
-    icon: VolleyballIcon,
-    teams: teamOptions,
-  },
-  {
-    id: 'Basketball',
-    label: 'Basketball',
-    season: IS_PROTOTYPE ? 'Season 1 / 2' : LAUNCH_SEASON,
-    status: 'Schedule only',
-    icon: BasketballIcon,
-    teams: teamOptions,
-  },
-  {
-    id: 'Badminton',
-    label: 'Badminton',
-    season: 'Season 3',
-    status: 'Schedule only',
-    icon: BadmintonIcon,
-    teams: teamOptions,
-  },
-  {
-    id: 'TrackAndField',
-    label: 'Track & Field',
-    season: 'Season 3',
-    status: 'Schedule only',
-    icon: TrackIcon,
-    teams: [{ division: 'SMA', gender: 'Combined', label: 'Varsity Combined', note: 'SMA' }],
-  },
-];
+const allSports: SportDirectory[] = SPORT_CATALOG.map((sport) => ({
+  id: sport.id,
+  label: sport.label,
+  season: IS_PROTOTYPE ? sport.prototypeSeason : LAUNCH_SEASON,
+  status: sport.status,
+  icon: sportIcons[sport.id],
+  teams: teamsForSport(sport.id),
+}));
 
 const sports = allSports
   .filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id))
@@ -112,7 +73,7 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
               Teams
             </h1>
             <p className="mt-3 max-w-xl text-xs font-semibold leading-relaxed text-foreground/45">
-              Choose a program to view team pages, live soccer data, schedules, roster photos, and results.
+              Choose a program to view team pages, standings, schedules, and future roster updates.
             </p>
           </div>
 
@@ -189,7 +150,7 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
                   >
                     <div className="min-w-0">
                       <p className="truncate text-base font-black uppercase tracking-wide text-foreground">
-                        {team.label}
+                        {team.shortName}
                       </p>
                       <p className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35">
                         {team.note}

@@ -1,4 +1,5 @@
 import { DivisionTab, GenderTab, SportTab } from '../types';
+import { SPORT_CATALOG, TEAM_CATALOG, findTeam } from './teamCatalog';
 
 export type ReleaseChannel = 'production' | 'prototype';
 
@@ -11,11 +12,9 @@ export const RELEASE_CHANNEL: ReleaseChannel = requestedReleaseChannel === 'prot
 export const IS_PROTOTYPE = RELEASE_CHANNEL === 'prototype';
 export const LAUNCH_SEASON = 'Season 1';
 
-export const PRODUCTION_TEAM_SPORTS: readonly SportTab[] = [
-  'Soccer',
-  'Volleyball',
-  'Basketball',
-];
+export const PRODUCTION_TEAM_SPORTS: readonly SportTab[] = SPORT_CATALOG
+  .filter((sport) => TEAM_CATALOG.some((team) => team.sport === sport.id && team.production))
+  .map((sport) => sport.id);
 
 export interface LaunchTeamSelection {
   sport: SportTab;
@@ -23,22 +22,11 @@ export interface LaunchTeamSelection {
   gender: GenderTab;
 }
 
-export const PRODUCTION_TEAMS: readonly LaunchTeamSelection[] = [
-  { sport: 'Soccer', division: 'SMA', gender: 'Boys' },
-  { sport: 'Soccer', division: 'SMA', gender: 'Girls' },
-  { sport: 'Volleyball', division: 'SMA', gender: 'Boys' },
-  { sport: 'Volleyball', division: 'SMA', gender: 'Girls' },
-  { sport: 'Basketball', division: 'SMP', gender: 'Boys' },
-  { sport: 'Basketball', division: 'SMP', gender: 'Girls' },
-];
+export const PRODUCTION_TEAMS: readonly LaunchTeamSelection[] = TEAM_CATALOG
+  .filter((team) => team.production)
+  .map(({ sport, division, gender }) => ({ sport, division, gender }));
 
-export const PROTOTYPE_TEAM_SPORTS: readonly SportTab[] = [
-  'Soccer',
-  'Volleyball',
-  'Basketball',
-  'Badminton',
-  'TrackAndField',
-];
+export const PROTOTYPE_TEAM_SPORTS: readonly SportTab[] = SPORT_CATALOG.map((sport) => sport.id);
 
 export const LAUNCH_TEAM_SPORTS: readonly SportTab[] = IS_PROTOTYPE
   ? PROTOTYPE_TEAM_SPORTS
@@ -53,13 +41,12 @@ export function isLaunchTeamSelection(
   division: DivisionTab,
   gender: GenderTab,
 ): boolean {
+  const team = findTeam(sport, division, gender);
+  if (!team) return false;
+
   if (IS_PROTOTYPE) return true;
 
-  return PRODUCTION_TEAMS.some((team) => (
-    team.sport === sport
-    && team.division === division
-    && team.gender === gender
-  ));
+  return team.production;
 }
 
 function scheduleTeamMatchesLaunchSelection(teamName: string): boolean {
