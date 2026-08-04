@@ -41,6 +41,84 @@ const approvedSoccerTeamPhotos = [
   'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241126/Varsity_boys_soccer_team_pic_resized_i1ezdp.jpg',
 ] as const;
 
+function SportBannerPattern({ sport, accent }: { sport: SportTab; accent: string }) {
+  const lineProps = {
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 4,
+    vectorEffect: 'non-scaling-stroke' as const,
+  };
+
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 1200 360"
+      preserveAspectRatio="xMidYMid slice"
+      className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.18]"
+      style={{ color: accent }}
+    >
+      {sport === 'Soccer' && (
+        <g {...lineProps}>
+          <rect x="72" y="38" width="1056" height="284" rx="18" />
+          <path d="M600 38v284" />
+          <circle cx="600" cy="180" r="58" />
+          <circle cx="600" cy="180" r="4" fill="currentColor" stroke="none" />
+          <path d="M72 104h150v152H72M1128 104H978v152h150" />
+          <path d="M72 140h62v80H72M1128 140h-62v80h62" />
+        </g>
+      )}
+
+      {sport === 'Volleyball' && (
+        <g {...lineProps}>
+          <rect x="110" y="48" width="980" height="264" rx="14" />
+          <path d="M600 48v264M415 48v264M785 48v264" />
+          <path d="M582 34v292M618 34v292" strokeWidth="2" />
+          <path d="M582 62h36M582 92h36M582 122h36M582 152h36M582 182h36M582 212h36M582 242h36M582 272h36M582 302h36" strokeWidth="2" />
+          <circle cx="294" cy="180" r="7" fill="currentColor" stroke="none" />
+          <circle cx="906" cy="180" r="7" fill="currentColor" stroke="none" />
+        </g>
+      )}
+
+      {sport === 'Basketball' && (
+        <g {...lineProps}>
+          <rect x="72" y="38" width="1056" height="284" rx="18" />
+          <path d="M600 38v284" />
+          <circle cx="600" cy="180" r="58" />
+          <path d="M72 104h170v152H72M1128 104H958v152h170" />
+          <circle cx="242" cy="180" r="56" />
+          <circle cx="958" cy="180" r="56" />
+          <path d="M124 148v64M1076 148v64" />
+          <path d="M150 180h-26M1050 180h26" />
+          <path d="M72 82c95 18 150 53 150 98S167 260 72 278M1128 82c-95 18-150 53-150 98s55 80 150 98" />
+        </g>
+      )}
+
+      {sport === 'Badminton' && (
+        <g {...lineProps}>
+          <rect x="152" y="38" width="896" height="284" rx="12" />
+          <rect x="152" y="78" width="896" height="204" />
+          <path d="M600 38v284M414 38v284M786 38v284" />
+          <path d="M582 28v304M618 28v304" strokeWidth="2" />
+          <path d="M152 180h896" />
+          <path d="M582 54h36M582 86h36M582 118h36M582 150h36M582 182h36M582 214h36M582 246h36M582 278h36M582 310h36" strokeWidth="2" />
+        </g>
+      )}
+
+      {sport === 'TrackAndField' && (
+        <g {...lineProps}>
+          <rect x="90" y="42" width="1020" height="276" rx="138" />
+          <rect x="132" y="72" width="936" height="216" rx="108" />
+          <rect x="174" y="102" width="852" height="156" rx="78" />
+          <rect x="216" y="132" width="768" height="96" rx="48" />
+          <path d="M600 42v90M600 228v90" />
+          <path d="M570 42v90M570 228v90M630 42v90M630 228v90" strokeWidth="2" />
+          <path d="M106 148h94M1000 212h94" />
+        </g>
+      )}
+    </svg>
+  );
+}
+
 export default function TeamPageScreen({
   sport,
   division,
@@ -174,14 +252,18 @@ export default function TeamPageScreen({
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
       {/* Shared team hero */}
-      <div className="relative w-full overflow-hidden border-y border-border/10 bg-[#09070a]">
+      <div
+        className="relative w-full overflow-hidden border-y bg-[#09070a]"
+        style={{ borderColor: `${sportInfo.accent}38` }}
+      >
         <div className="relative flex min-h-[280px] items-end overflow-hidden px-5 pb-7 pt-20 sm:min-h-[330px] sm:px-8 sm:pb-9">
           <div
             className="pointer-events-none absolute inset-0 opacity-70"
             style={{
-              background: `radial-gradient(circle at 18% 24%, ${sportInfo.accent}52, transparent 32%), radial-gradient(circle at 82% 78%, ${sportInfo.accent}30, transparent 30%), linear-gradient(135deg, #09070a 8%, #180d12 58%, #09070a)`,
+              background: `radial-gradient(circle at 18% 24%, ${sportInfo.accent}52, transparent 32%), radial-gradient(circle at 82% 78%, ${sportInfo.accent}30, transparent 30%), linear-gradient(135deg, #09070a 8%, ${sportInfo.accent}22 58%, #09070a)`,
             }}
           />
+          <SportBannerPattern sport={sport} accent={sportInfo.accent} />
           <div className="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full border border-white/[0.07]" />
           <div className="pointer-events-none absolute -right-5 -top-5 h-48 w-48 rounded-full border border-white/[0.055]" />
           <div className="pointer-events-none absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
