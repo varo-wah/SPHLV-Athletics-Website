@@ -14,6 +14,7 @@ import {
   LAUNCH_TEAM_SPORTS,
   isLaunchTeamSelection,
 } from '../config/launchSports';
+import { SPORT_CATALOG, teamsForSport } from '../config/teamCatalog';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -29,27 +30,23 @@ type SportMenuItem = {
   featured?: boolean;
 };
 
-const allSports: SportMenuItem[] = [
-  { id: 'Soccer', label: 'SOCCER', icon: SoccerIcon, status: 'Live', featured: true },
-  { id: 'Volleyball', label: 'VOLLEYBALL', icon: VolleyballIcon, status: 'Schedule' },
-  { id: 'Basketball', label: 'BASKETBALL', icon: BasketballIcon, status: 'Schedule' },
-  { id: 'Badminton', label: 'BADMINTON', icon: BadmintonIcon, status: 'Schedule' },
-  { id: 'TrackAndField', label: 'TRACK & FIELD', icon: TrackIcon, status: 'Schedule' },
-];
+const sportIcons = {
+  Soccer: SoccerIcon,
+  Volleyball: VolleyballIcon,
+  Basketball: BasketballIcon,
+  Badminton: BadmintonIcon,
+  TrackAndField: TrackIcon,
+};
+
+const allSports: SportMenuItem[] = SPORT_CATALOG.map((sport) => ({
+  id: sport.id,
+  label: sport.label.toUpperCase(),
+  icon: sportIcons[sport.id],
+  status: sport.status,
+  featured: sport.featured,
+}));
 
 const sports = allSports.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
-
-const standardTeams: { label: string; division: DivisionTab; gender: GenderTab }[] = [
-  { label: 'SMP Boys', division: 'SMP', gender: 'Boys' },
-  { label: 'SMP Girls', division: 'SMP', gender: 'Girls' },
-  { label: 'SMA Boys', division: 'SMA', gender: 'Boys' },
-  { label: 'SMA Girls', division: 'SMA', gender: 'Girls' },
-];
-
-const combinedTeams: { label: string; division: DivisionTab; gender: GenderTab }[] = [
-  { label: 'SMP Combined', division: 'SMP', gender: 'Combined' },
-  { label: 'SMA Combined', division: 'SMA', gender: 'Combined' },
-];
 
 export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps) {
   const [openSport, setOpenSport] = React.useState<SportTab | null>(null);
@@ -59,11 +56,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
   };
 
   const getTeamsForSport = (sport: SportTab) => {
-    const availableTeams = sport === 'Badminton' || sport === 'TrackAndField'
-      ? combinedTeams
-      : standardTeams;
-
-    return availableTeams.filter((team) => (
+    return teamsForSport(sport).filter((team) => (
       isLaunchTeamSelection(sport, team.division, team.gender)
     ));
   };
@@ -161,7 +154,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
 
                       <div className="flex shrink-0 items-center gap-2">
                         <span className={`rounded-full border px-2 py-1 text-[8px] font-black uppercase tracking-[0.14em] ${
-                          sport.status === 'Live'
+                          sport.id === 'Soccer'
                             ? 'border-green-400/20 bg-green-400/10 text-green-300'
                             : 'border-white/[0.08] bg-white/[0.035] text-foreground/38'
                         }`}>
@@ -197,7 +190,7 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
                               >
                                 <div>
                                   <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground/72 group-hover:text-foreground">
-                                    {team.label}
+                                    {team.shortName}
                                   </p>
                                   <p className="mt-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/30">
                                     {sport.label}
