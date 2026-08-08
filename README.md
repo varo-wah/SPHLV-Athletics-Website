@@ -41,10 +41,32 @@ Production hides unfinished teams and stale favorites for those teams. Prototype
 ## Verification
 
 ```bash
+npm test
 npm run lint
 npm run build:production
 npm run build:prototype
 ```
+
+## Team Results Sheets
+
+Schedules and upcoming games continue to come only from the full master schedule. Completed results are loaded independently from six team-owned Google Sheets every 60 seconds. Each published `Results` tab must expose exactly these columns:
+
+```text
+Date | Time | Location | Home Team | Home Score | Away Team | Away Score
+```
+
+A completed row is accepted only when the date, both team names, and both non-negative whole-number scores are valid. Exactly one team must be `SPH LV`; time and location are optional. Invalid rows are ignored and repeated team/date/home/away entries use the last valid row.
+
+The six published CSV URLs are configured with:
+
+- `VITE_RESULTS_VARSITY_BOYS_SOCCER_URL`
+- `VITE_RESULTS_VARSITY_GIRLS_SOCCER_URL`
+- `VITE_RESULTS_VARSITY_BOYS_VOLLEYBALL_URL`
+- `VITE_RESULTS_VARSITY_GIRLS_VOLLEYBALL_URL`
+- `VITE_RESULTS_SMP_BOYS_BASKETBALL_URL`
+- `VITE_RESULTS_SMP_GIRLS_BASKETBALL_URL`
+
+See [the administrator handoff](docs/results-sheets-administrator-handoff.md) for the native Sheet links, publication status, and access-risk notes.
 
 ## Deployment
 

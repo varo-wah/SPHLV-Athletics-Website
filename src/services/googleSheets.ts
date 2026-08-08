@@ -2,7 +2,7 @@ import { hasValidSheetUrl } from "../config/sheets";
 
 export type CsvRow = Record<string, string>;
 
-const sheetsProxyBaseUrl = (import.meta.env.VITE_SHEETS_PROXY_BASE_URL ?? "")
+const sheetsProxyBaseUrl = (import.meta.env?.VITE_SHEETS_PROXY_BASE_URL ?? "")
   .replace(/\/+$/, "");
 
 export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
@@ -126,7 +126,14 @@ export function parseCsv(text: string): CsvRow[] {
         normalizedRow.includes("pct")
       );
 
-    if (looksLikeMatchHeader || looksLikeStandingsHeader) {
+    const looksLikeHomeAwayResultsHeader =
+      normalizedRow.includes("date") &&
+      normalizedRow.includes("home team") &&
+      normalizedRow.includes("home score") &&
+      normalizedRow.includes("away team") &&
+      normalizedRow.includes("away score");
+
+    if (looksLikeMatchHeader || looksLikeStandingsHeader || looksLikeHomeAwayResultsHeader) {
       headerIndex = i;
       break;
     }
