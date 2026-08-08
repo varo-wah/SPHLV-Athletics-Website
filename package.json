@@ -15,6 +15,7 @@
     "start": "node server.mjs",
     "clean": "rm -rf dist",
     "lint": "tsc --noEmit",
+    "test": "tsx --test src/services/*.test.ts",
     "deploy:firebase": "npm run build:production && firebase deploy --only hosting,firestore:rules",
     "deploy:firebase:ci": "npx --yes firebase-tools@15.20.0 deploy --only hosting,firestore:rules --project sphlv-athletics --non-interactive",
     "deploy:firebase:full": "npm run build && firebase deploy --only hosting,functions,firestore:rules"

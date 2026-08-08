@@ -1,12 +1,14 @@
 import { Activity, CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
+import { ScheduleEvent } from '../data/scheduleTypes';
 import { SheetMatch } from '../services/parsers';
+import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 import { useAuth } from '../contexts/AuthContext';
 import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { getTeamFavoriteLabel } from '../utils/teamFavorites';
-import { isLaunchTeamSelection } from '../config/launchSports';
+import { isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
 import {
   BadmintonIcon,
   BasketballIcon,
@@ -43,10 +45,10 @@ export default function HomeScreen({
     isLaunchTeamSelection(favorite.sport, favorite.division, favorite.gender)
   ));
 
-  const formatMatchDateTime = (match: SheetMatch | null) => {
-    if (!match) return 'Schedule pending';
+  const formatScheduleDateTime = (event: ScheduleEvent | null) => {
+    if (!event) return 'Schedule pending';
 
-    const parsedDate = match.date ? new Date(`${match.date} ${match.time || '00:00'}`) : null;
+    const parsedDate = event.date ? new Date(`${event.date} ${event.time || '00:00'}`) : null;
 
     if (parsedDate && !Number.isNaN(parsedDate.getTime())) {
       const date = new Intl.DateTimeFormat('en-US', {
@@ -55,11 +57,11 @@ export default function HomeScreen({
         day: 'numeric',
       }).format(parsedDate);
 
-      return `${date}${match.time ? ` @ ${match.time}` : ''}`;
+      return `${date}${event.time ? ` @ ${event.time}` : ''}`;
     }
 
-    if (match.date || match.time) {
-      return `${match.date || 'Date TBD'}${match.time ? ` @ ${match.time}` : ''}`;
+    if (event.date || event.time) {
+      return `${event.date || 'Date TBD'}${event.time ? ` @ ${event.time}` : ''}`;
     }
 
     return 'Date TBD';
@@ -70,16 +72,26 @@ export default function HomeScreen({
     return parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate.getTime() : Number.MAX_SAFE_INTEGER;
   };
 
-  const nextUpcomingMatch = useMemo(() => {
-    const upcomingMatches = (athleticsDataState.data.soccerMatches || [])
-      .filter((match: SheetMatch) => match.status !== 'Finished')
-      .sort((a: SheetMatch, b: SheetMatch) => getMatchTime(a) - getMatchTime(b));
+  const nextUpcomingEvent = useMemo(() => {
+    const now = new Date();
+    const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const eventTime = (event: ScheduleEvent) => {
+      if (!event.date) return Number.MAX_SAFE_INTEGER;
+      const parsed = new Date(`${event.date} ${event.time || '00:00'}`).getTime();
+      return Number.isNaN(parsed) ? Number.MAX_SAFE_INTEGER : parsed;
+    };
 
-    return upcomingMatches[0] || null;
-  }, [athleticsDataState.data.soccerMatches]);
+    return [...(athleticsDataState.data.masterScheduleEvents || [])]
+      .filter((event) => (
+        isCompetitiveScheduleEvent(event) &&
+        Boolean(event.date && event.date >= todayIso) &&
+        isVisibleScheduleEvent(event.season, event.sportKey || null, event.team)
+      ))
+      .sort((a, b) => eventTime(a) - eventTime(b))[0] || null;
+  }, [athleticsDataState.data.masterScheduleEvents]);
 
   const recentFinishedMatch = useMemo(() => {
-    const finishedMatches = (athleticsDataState.data.soccerMatches || [])
+    const finishedMatches = (athleticsDataState.data.matches || [])
       .filter((match: SheetMatch) => {
         return match.status === 'Finished' && match.scoreFor !== null && match.scoreAgainst !== null;
       })
@@ -95,10 +107,10 @@ export default function HomeScreen({
       });
 
     return finishedMatches[0] || null;
-  }, [athleticsDataState.data.soccerMatches]);
+  }, [athleticsDataState.data.matches]);
 
   const recentResultTitle = recentFinishedMatch
-    ? `${recentFinishedMatch.genderGroup === 'Girls' ? 'Girls’' : recentFinishedMatch.genderGroup === 'Boys' ? 'Boys’' : 'SMA'} Soccer ${recentFinishedMatch.result === 'W' ? 'wins against' : recentFinishedMatch.result === 'L' ? 'lost against' : 'drew against'} ${recentFinishedMatch.opponent}`
+    ? `${recentFinishedMatch.level} ${recentFinishedMatch.genderGroup} ${recentFinishedMatch.sport} ${recentFinishedMatch.result === 'W' ? 'wins against' : recentFinishedMatch.result === 'L' ? 'lost against' : 'drew against'} ${recentFinishedMatch.opponent}`
     : 'No recent result yet';
 
   const recentResultScore = recentFinishedMatch && recentFinishedMatch.scoreFor !== null && recentFinishedMatch.scoreAgainst !== null
@@ -117,19 +129,19 @@ export default function HomeScreen({
           : 'text-foreground/40';
 
   const recentResultSubtitle = recentFinishedMatch
-    ? `${recentFinishedMatch.tournament} · ${recentFinishedMatch.date || 'Date TBD'}${recentFinishedMatch.venue ? ` · ${recentFinishedMatch.venue}` : ''}`
-    : 'Finished match results will appear after coaches update the sheet.';
+    ? `${recentFinishedMatch.date || 'Date TBD'}${recentFinishedMatch.time ? ` · ${recentFinishedMatch.time}` : ''}${recentFinishedMatch.venue ? ` · ${recentFinishedMatch.venue}` : ''}`
+    : 'Finished match results will appear after team managers update their sheets.';
 
-  const nextMatchTitle = nextUpcomingMatch
-    ? `${nextUpcomingMatch.level} ${nextUpcomingMatch.genderGroup} Soccer vs ${nextUpcomingMatch.opponent}`
-    : 'No upcoming soccer match';
+  const nextMatchTitle = nextUpcomingEvent?.eventText || 'No upcoming match';
 
   const nextMatchMeta = athleticsDataState.loading
     ? 'Loading live schedule...'
-    : formatMatchDateTime(nextUpcomingMatch);
+    : formatScheduleDateTime(nextUpcomingEvent);
 
   const syncStatus = athleticsDataState.error
     ? `Sync issue: ${athleticsDataState.error}`
+    : athleticsDataState.warning
+      ? athleticsDataState.warning
     : athleticsDataState.refreshing
       ? 'Refreshing Google Sheets...'
       : athleticsDataState.lastUpdated
@@ -150,8 +162,8 @@ export default function HomeScreen({
       eyebrow: 'Next Match',
       title: athleticsDataState.loading ? 'Loading live schedule' : nextMatchTitle,
       meta: nextMatchMeta,
-      detail: nextUpcomingMatch?.venue || 'Venue TBD',
-      stat: nextUpcomingMatch?.tournament || 'Live',
+      detail: nextUpcomingEvent?.location || 'Venue TBD',
+      stat: nextUpcomingEvent?.eventType || 'Schedule',
       icon: CalendarDays,
     },
     result: {

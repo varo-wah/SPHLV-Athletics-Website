@@ -1,5 +1,5 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { CalendarDays, Users, Trophy, ChevronLeft, ChevronRight } from 'lucide-react';
+import { CalendarDays, Users, Trophy, ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -12,6 +12,7 @@ import {
   VolleyballIcon,
 } from '../components/SportIcons';
 import { findTeam, sportDetails } from '../config/teamCatalog';
+import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 
 interface TeamPageScreenProps {
   sport: SportTab;
@@ -40,6 +41,24 @@ const approvedSoccerTeamPhotos = [
   'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241030/Varsity_soccer_boys_teampic_2_dyv7mz.jpg',
   'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241126/Varsity_boys_soccer_team_pic_resized_i1ezdp.jpg',
 ] as const;
+
+function formatGameDate(date: string | null) {
+  if (!date) return 'Date TBD';
+  const [year, month, day] = date.split('-').map(Number);
+  const value = new Date(year, month - 1, day);
+  if (Number.isNaN(value.getTime())) return date;
+  return value.toLocaleDateString('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  });
+}
+
+function gameTimestamp(date: string | null, time?: string | null) {
+  if (!date) return Number.MAX_SAFE_INTEGER;
+  const value = new Date(`${date} ${time || '00:00'}`).getTime();
+  return Number.isNaN(value) ? Number.MAX_SAFE_INTEGER : value;
+}
 
 function SportBannerPattern({ sport, accent }: { sport: SportTab; accent: string }) {
   const lineProps = {
@@ -169,6 +188,28 @@ export default function TeamPageScreen({
     );
   });
 
+  const resultSourceState = team
+    ? athleticsDataState?.data.resultSourceStates.find((source) => source.teamId === team.id)
+    : undefined;
+  const completedResults = (athleticsDataState?.data.matches || [])
+    .filter((match) => (
+      match.sportKey === sport &&
+      match.level === division &&
+      match.genderGroup === gender
+    ))
+    .sort((a, b) => gameTimestamp(b.date, b.time) - gameTimestamp(a.date, a.time));
+  const today = new Date();
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const upcomingEvents = (athleticsDataState?.data.masterScheduleEvents || [])
+    .filter((event) => (
+      isCompetitiveScheduleEvent(event) &&
+      event.sportKey === sport &&
+      event.level === division &&
+      event.genderGroup === gender &&
+      Boolean(event.date && event.date >= todayIso)
+    ))
+    .sort((a, b) => gameTimestamp(a.date, a.time) - gameTimestamp(b.date, b.time));
+
   const standingsRows = currentStandings
     .map((row, idx) => {
       const wins = row.wins ?? 0;
@@ -288,10 +329,10 @@ export default function TeamPageScreen({
 
             <div className="flex flex-wrap gap-2" aria-label="Team setup status">
               <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-[9px] font-black uppercase tracking-[0.16em] text-white/62 backdrop-blur">
-                Schedule pending
+                {upcomingEvents.length} upcoming
               </span>
               <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-[9px] font-black uppercase tracking-[0.16em] text-white/62 backdrop-blur">
-                Roster pending
+                {completedResults.length} results
               </span>
             </div>
           </div>
@@ -534,14 +575,117 @@ export default function TeamPageScreen({
 
                 <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border/10 bg-foreground/[0.025] px-3 py-2 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/48">
                   <CalendarDays size={13} />
-                  Setup in progress
+                  Master schedule + manager results
                 </span>
               </div>
 
-              <EmptyPanel
-                title="Schedule coming soon"
-                body="Games and completed results will appear here after the team schedule is reviewed and published."
-              />
+              {athleticsDataState?.warning && (
+                <div className="rounded-2xl border border-amber-400/20 bg-amber-400/5 px-4 py-3 text-xs font-bold text-amber-700 dark:text-amber-200">
+                  {athleticsDataState.warning}
+                </div>
+              )}
+
+              <div className="grid gap-5 xl:grid-cols-2">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-sm font-black uppercase tracking-[0.18em] text-foreground">
+                      Upcoming
+                    </h3>
+                    <span className="rounded-full border border-border/10 bg-subcard px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/45">
+                      Master schedule
+                    </span>
+                  </div>
+
+                  {athleticsDataState?.loading && upcomingEvents.length === 0 ? (
+                    <EmptyPanel title="Loading schedule" body="Fetching the latest master schedule." />
+                  ) : upcomingEvents.length === 0 ? (
+                    <EmptyPanel title="No upcoming games" body="No future competitive events are listed for this team." />
+                  ) : (
+                    <div className="space-y-3">
+                      {upcomingEvents.map((event) => (
+                        <article key={event.id} className="rounded-2xl border border-border/10 bg-subcard p-4 shadow-sm">
+                          <div className="flex flex-wrap items-center justify-between gap-3">
+                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#B5413F]">
+                              {formatGameDate(event.date)}
+                            </p>
+                            <span className="rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/48">
+                              {event.eventType}
+                            </span>
+                          </div>
+                          <h4 className="mt-2 text-base font-black uppercase leading-tight text-foreground">
+                            {event.eventText}
+                          </h4>
+                          <div className="mt-3 flex flex-wrap gap-3 text-[10px] font-bold uppercase tracking-[0.12em] text-foreground/42">
+                            {event.time && <span className="inline-flex items-center gap-1.5"><Clock size={12} />{event.time}</span>}
+                            {event.location && <span className="inline-flex items-center gap-1.5"><MapPin size={12} />{event.location}</span>}
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <h3 className="text-sm font-black uppercase tracking-[0.18em] text-foreground">
+                      Completed results
+                    </h3>
+                    <span className="rounded-full border border-border/10 bg-subcard px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/45">
+                      Manager sheet
+                    </span>
+                  </div>
+
+                  {!resultSourceState?.configured ? (
+                    <EmptyPanel title="Results sheet awaiting publication" body="This team feed will activate when its published CSV URL is configured." />
+                  ) : resultSourceState.failed && !resultSourceState.fromCache ? (
+                    <EmptyPanel title="Results temporarily unavailable" body="The team sheet could not be loaded and no cached result is available." />
+                  ) : athleticsDataState?.loading && completedResults.length === 0 ? (
+                    <EmptyPanel title="Loading results" body="Fetching completed matches from the team manager sheet." />
+                  ) : completedResults.length === 0 ? (
+                    <EmptyPanel title="No completed results yet" body="A result appears after both scores and the required match fields are entered." />
+                  ) : (
+                    <div className="space-y-3">
+                      {completedResults.map((match) => (
+                        <article key={match.id} className="overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-sm">
+                          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/5 px-4 py-3">
+                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45">
+                              {formatGameDate(match.date)}{match.time ? ` · ${match.time}` : ''}
+                            </p>
+                            <span className={`rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${
+                              match.result === 'W'
+                                ? 'bg-green-500/10 text-green-600 dark:text-green-300'
+                                : match.result === 'L'
+                                  ? 'bg-red-500/10 text-red-600 dark:text-red-300'
+                                  : 'bg-amber-500/10 text-amber-700 dark:text-amber-300'
+                            }`}>
+                              {match.result}
+                            </span>
+                          </div>
+                          <div className="grid grid-cols-[minmax(0,1fr)_52px] border-b border-border/5 px-4 py-3">
+                            <span className="truncate text-sm font-black uppercase text-foreground">{match.homeTeam}</span>
+                            <span className="text-right font-mono text-xl font-black text-foreground">{match.homeScore}</span>
+                          </div>
+                          <div className="grid grid-cols-[minmax(0,1fr)_52px] px-4 py-3">
+                            <span className="truncate text-sm font-black uppercase text-foreground">{match.awayTeam}</span>
+                            <span className="text-right font-mono text-xl font-black text-foreground">{match.awayScore}</span>
+                          </div>
+                          {match.venue && (
+                            <p className="border-t border-border/5 px-4 py-2 text-[9px] font-bold uppercase tracking-[0.14em] text-foreground/35">
+                              {match.venue}
+                            </p>
+                          )}
+                        </article>
+                      ))}
+                    </div>
+                  )}
+
+                  {resultSourceState && (resultSourceState.invalidRowCount > 0 || resultSourceState.duplicateRowCount > 0) && (
+                    <p className="rounded-xl border border-amber-400/20 bg-amber-400/5 px-3 py-2 text-[10px] font-bold text-amber-700 dark:text-amber-200">
+                      {resultSourceState.invalidRowCount} invalid and {resultSourceState.duplicateRowCount} duplicate row(s) were ignored.
+                    </p>
+                  )}
+                </div>
+              </div>
 
               {sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
                 <a
