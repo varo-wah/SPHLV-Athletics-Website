@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState, type ElementType } from 'react';
-import { Archive, CalendarDays, CalendarRange, ChevronDown, ChevronUp, Clock, Filter, List, MapPin, Search, Trophy, Users, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type ElementType } from 'react';
+import { Archive, ArrowDown, CalendarDays, CalendarRange, ChevronDown, ChevronUp, Clock, Filter, List, MapPin, Search, Trophy, Users, X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import scheduleDataJson from '../data/schedule.json';
 import { ScheduleData, ScheduleEvent, ScheduleEventType } from '../data/scheduleTypes';
@@ -325,6 +325,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const [scheduleView, setScheduleView] = useState<ScheduleView>('list');
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<SelectedCalendarDay | null>(null);
   const [showArchivedWeeks, setShowArchivedWeeks] = useState(false);
+  const [pendingEventId, setPendingEventId] = useState<string | null>(null);
+  const [highlightedEventId, setHighlightedEventId] = useState<string | null>(null);
+  const eventRefs = useRef<Record<string, HTMLElement | null>>({});
   const todayIso = localIsoDate();
 
   useEffect(() => {
@@ -412,7 +415,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     return a.localeCompare(b);
   });
   const hasFilters = teamFilter !== ALL || typeFilter !== ALL || weekFilter !== ALL || dateFilter !== ALL || search.trim() !== '';
-  const nextEvent = seasonEvents.find((event) => event.date && event.date >= todayIso) || seasonEvents.find((event) => event.date);
+  const nextEvent = seasonEvents.find((event) => event.date && event.date >= todayIso);
 
   const clearFilters = () => {
     setTeamFilter(ALL);
@@ -437,6 +440,42 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       [week]: !(current[week] ?? week !== visibleWeeks[0]),
     }));
   };
+
+  const jumpToNextEvent = () => {
+    if (!nextEvent) return;
+
+    const eventWeek = nextEvent.week || 'Unassigned Week';
+    setScheduleView('list');
+    clearFilters();
+    setSelectedCalendarDay(null);
+    setCollapsedWeeks((current) => ({ ...current, [eventWeek]: false }));
+    setHighlightedEventId(null);
+    setPendingEventId(nextEvent.id);
+  };
+
+  useEffect(() => {
+    if (!pendingEventId || scheduleView !== 'list') return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const target = eventRefs.current[pendingEventId];
+      if (!target) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
+      target.focus({ preventScroll: true });
+      setHighlightedEventId(pendingEventId);
+      setPendingEventId(null);
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [collapsedWeeks, filteredEvents, pendingEventId, scheduleView]);
+
+  useEffect(() => {
+    if (!highlightedEventId) return;
+
+    const timeout = window.setTimeout(() => setHighlightedEventId(null), 2400);
+    return () => window.clearTimeout(timeout);
+  }, [highlightedEventId]);
 
   const toggleFilter = (id: string) => {
     setOpenFilter((current) => current === id ? null : id);
@@ -496,7 +535,12 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           </div>
 
           {nextEvent && (
-            <div className="mt-5 flex flex-col gap-3 rounded-2xl border border-white/10 bg-black/28 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="button"
+              onClick={jumpToNextEvent}
+              aria-label={`View next listed event: ${nextEvent.eventText}`}
+              className="group mt-5 flex w-full flex-col gap-3 rounded-2xl border border-white/10 bg-black/28 p-4 text-left transition-colors hover:border-[#F06865]/35 hover:bg-black/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F06865] sm:flex-row sm:items-center sm:justify-between"
+            >
               <div className="min-w-0">
                 <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-[#F06865]">
                   <Trophy size={13} />
@@ -506,15 +550,20 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                   {nextEvent.eventText}
                 </p>
               </div>
-              <div className="shrink-0 text-left sm:text-right">
-                <p className="text-sm font-black uppercase tracking-wide text-white">
-                  {formatDate(nextEvent.date)}
-                </p>
-                <p className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/45">
-                  {nextEvent.team}
-                </p>
+              <div className="flex shrink-0 items-center gap-3 text-left sm:text-right">
+                <div>
+                  <p className="text-sm font-black uppercase tracking-wide text-white">
+                    {formatDate(nextEvent.date)}
+                  </p>
+                  <p className="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/45">
+                    {nextEvent.team}
+                  </p>
+                </div>
+                <span className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.055] text-white/55 transition-colors group-hover:border-[#F06865]/30 group-hover:text-[#F06865]">
+                  <ArrowDown size={16} />
+                </span>
               </div>
-            </div>
+            </button>
           )}
         </div>
       </header>
@@ -853,67 +902,72 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       const eventTime = displayEventTime(event);
 
                       return (
-                      <article
-                        key={event.id}
-                        className={`grid gap-4 border-l-[7px] px-4 py-4 transition-colors md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${teamAccent.rail} ${
-                          isToday
-                            ? 'bg-[#B5413F]/8 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
-                            : 'hover:bg-foreground/[0.025]'
-                        }`}
-                      >
-                        <div className="flex items-center gap-3 md:block">
-                          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] md:mb-2">
-                            <SportIcon size={20} className={teamAccent.icon} />
-                          </div>
-                          <div>
-                            <div className="flex flex-wrap items-center gap-2">
-                              <p className="text-sm font-black uppercase tracking-wide text-foreground">
-                                {formatDate(event.date)}
+                        <article
+                          key={event.id}
+                          ref={(node) => {
+                            eventRefs.current[event.id] = node;
+                          }}
+                          tabIndex={-1}
+                          className={`scroll-mt-28 grid gap-4 border-l-[7px] px-4 py-4 outline-none transition-all md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${teamAccent.rail} ${
+                            highlightedEventId === event.id
+                              ? 'bg-[#B5413F]/12 ring-2 ring-inset ring-[#F06865]/60 shadow-[0_0_0_6px_rgba(181,65,63,0.08)]'
+                              : isToday
+                              ? 'bg-[#B5413F]/8 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
+                              : 'hover:bg-foreground/[0.025]'
+                          }`}
+                        >
+                          <div className="flex items-center gap-3 md:block">
+                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] md:mb-2">
+                              <SportIcon size={20} className={teamAccent.icon} />
+                            </div>
+                            <div>
+                              <div className="flex flex-wrap items-center gap-2">
+                                <p className="text-sm font-black uppercase tracking-wide text-foreground">
+                                  {formatDate(event.date)}
+                                </p>
+                                {isToday && (
+                                  <span className="rounded-full bg-[#B5413F] px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-white">
+                                    Today
+                                  </span>
+                                )}
+                              </div>
+                              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35">
+                                {event.day || 'Day TBD'}
                               </p>
-                              {isToday && (
-                                <span className="rounded-full bg-[#B5413F] px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-white">
-                                  Today
+                            </div>
+                          </div>
+
+                          <div className="min-w-0">
+                            <div className="mb-2 flex flex-wrap items-center gap-2">
+                              <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
+                                {event.eventType}
+                              </span>
+                              <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${teamAccent.badge}`}>
+                                {event.team}
+                              </span>
+                            </div>
+
+                            <h4 className="text-lg font-black uppercase leading-tight tracking-tight text-foreground">
+                              {event.eventText}
+                            </h4>
+
+                            <div className="mt-3 flex flex-wrap gap-3 text-[11px] font-bold uppercase tracking-[0.13em] text-foreground/45">
+                              {eventTime && (
+                                <span className="inline-flex items-center gap-1.5">
+                                  <Clock size={13} className="text-[#B5413F]" />
+                                  {eventTime}
                                 </span>
                               )}
+                              {event.location && (
+                                <span className="inline-flex items-center gap-1.5">
+                                  <MapPin size={13} className="text-[#B5413F]" />
+                                  {event.location}
+                                </span>
+                              )}
+                              {event.opponent && <span>Opponent: {event.opponent}</span>}
                             </div>
-                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35">
-                              {event.day || 'Day TBD'}
-                            </p>
                           </div>
-                        </div>
-
-                        <div className="min-w-0">
-                          <div className="mb-2 flex flex-wrap items-center gap-2">
-                            <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
-                              {event.eventType}
-                            </span>
-                            <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${teamAccent.badge}`}>
-                              {event.team}
-                            </span>
-                          </div>
-
-                          <h4 className="text-lg font-black uppercase leading-tight tracking-tight text-foreground">
-                            {event.eventText}
-                          </h4>
-
-                          <div className="mt-3 flex flex-wrap gap-3 text-[11px] font-bold uppercase tracking-[0.13em] text-foreground/45">
-                            {eventTime && (
-                              <span className="inline-flex items-center gap-1.5">
-                                <Clock size={13} className="text-[#B5413F]" />
-                                {eventTime}
-                              </span>
-                            )}
-                            {event.location && (
-                              <span className="inline-flex items-center gap-1.5">
-                                <MapPin size={13} className="text-[#B5413F]" />
-                                {event.location}
-                              </span>
-                            )}
-                            {event.opponent && <span>Opponent: {event.opponent}</span>}
-                          </div>
-                        </div>
-
-                      </article>
+                        </article>
                       );
                     })}
                   </div>

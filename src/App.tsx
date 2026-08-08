@@ -113,6 +113,7 @@ function AthleticsApp() {
         <Sidebar 
           isOpen={isSidebarOpen} 
           onClose={() => setIsSidebarOpen(false)} 
+          onNavigateHome={() => handleTabChange('Home')}
           onSelectTeam={navigateToTeam} 
         />
       </main>

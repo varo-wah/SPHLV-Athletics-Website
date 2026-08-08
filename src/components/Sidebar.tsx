@@ -19,6 +19,7 @@ import { SPORT_CATALOG, teamsForSport } from '../config/teamCatalog';
 interface SidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  onNavigateHome: () => void;
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
 }
 
@@ -48,7 +49,7 @@ const allSports: SportMenuItem[] = SPORT_CATALOG.map((sport) => ({
 
 const sports = allSports.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
 
-export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps) {
+export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam }: SidebarProps) {
   const [openSport, setOpenSport] = React.useState<SportTab | null>(null);
 
   const handleSportToggle = (sport: SportTab) => {
@@ -84,9 +85,17 @@ export default function Sidebar({ isOpen, onClose, onSelectTeam }: SidebarProps)
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_10%,rgba(181,65,63,0.28),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.055),transparent_52%)]" />
               <div className="relative z-10 flex items-start justify-between gap-4">
                 <div className="min-w-0">
-                  <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.055] text-[#F06865] shadow-[0_16px_42px_rgba(0,0,0,0.22)]">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onNavigateHome();
+                      onClose();
+                    }}
+                    aria-label="Go to Home"
+                    className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.055] text-[#F06865] shadow-[0_16px_42px_rgba(0,0,0,0.22)] transition-colors hover:border-[#F06865]/35 hover:bg-[#B5413F]/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F06865]"
+                  >
                     <Shield size={21} />
-                  </div>
+                  </button>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#F06865]">
                     SPH LV Eagles
                   </p>
