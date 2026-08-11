@@ -6,6 +6,12 @@ const ALLOWED_ORIGINS = new Set([
 const ALLOWED_SPREADSHEET_IDS = new Set([
   "2PACX-1vQHaYs7n4UH_LqQPwGlDJzBlO8LQP0VXvX-l4uB-jvj_240jNrtBZmaXohGj5j7rg",
   "2PACX-1vQN3pbSoFSwKAOPx4ifplCAWQP6GYR1Hav_lIiVGI8WUQz7QlVWkx9CxXETFT2Opg",
+  "2PACX-1vQ0jh3cOOnVhd9sg5pncQj13lSfUGwgrMcLlIfpPiQDrQsuPcS47f8wudp2Qw07-PspFB2zhycRizS5",
+  "2PACX-1vTUV3YgK_ldw2OVJBXd0f4-VmYft-ehEUJy_TKTD-ixqp1SNvmMICI2ocBCv6xitW5zK8YE3jYYx7u3",
+  "2PACX-1vQrsC426ef6aL_NfCXxLDsyefD10nr1-O9CIRO7NmJcmDYoLvg2QQiM_eQBGpHmhJiDf10YiK7WC0Ka",
+  "2PACX-1vQjXdbnF2g-pXwAsfi2JNN2xe_j257g5UXupRUVPWNfcKbfABM-Xe9BivT-g-CqlTzxw8BxKi5LfFR_",
+  "2PACX-1vRJIYHg_IjXk6RtIWOnzu_BJIFH_vJwbmtqhKfMdeLG_eXbebGyXmCs1RO3O_7SDFf58ssujGoVYFQO",
+  "2PACX-1vR-VujFtPTda8EIyfCYBx6WcaJmVl6Whxehi7mT-rQacVhyp6FHS0ftzZYi4nY58Q5pnURN447k3VPL",
 ]);
 
 const corsHeaders = (origin: string | null): Record<string, string> => {
