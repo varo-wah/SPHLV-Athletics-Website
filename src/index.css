@@ -24,6 +24,13 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-ring: var(--ring);
+
+  /* SPH LV Athletics brand palette */
+  --color-brand-maroon: #780000;
+  --color-brand-red: #C1121F;
+  --color-brand-cream: #FDF0D5;
+  --color-brand-navy: #003049;
+  --color-brand-sky: #669BBC;
 }
 
 :root {

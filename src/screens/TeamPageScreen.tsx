@@ -726,7 +726,7 @@ export default function TeamPageScreen({
               detail="Semifinals & final"
             />
 
-            <div className="bg-[#5A1C2C] rounded-2xl p-4 border border-[#BFD7EA]/10 shadow-md">
+            <div className="rounded-2xl border border-brand-sky/20 bg-brand-maroon p-4 shadow-md">
               <div className="flex items-center justify-between mb-4">
                 <p className="text-xs font-black uppercase tracking-[0.18em] text-white/60">
                   @BSJ · Final Round
@@ -736,9 +736,9 @@ export default function TeamPageScreen({
                 </p>
               </div>
 
-              <div className="bg-[#061126] rounded-xl p-5 border border-white/5">
+              <div className="rounded-xl border border-brand-sky/15 bg-brand-navy p-5">
                 <div className="text-center mb-5">
-                  <h4 className="text-lg font-black uppercase tracking-[0.18em] text-yellow-300">
+                  <h4 className="text-lg font-black uppercase tracking-[0.18em] text-brand-cream">
                     JAAC Championship
                   </h4>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/50 mt-1">
@@ -748,7 +748,7 @@ export default function TeamPageScreen({
 
                 {/* Final */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center mb-5">
-                  <div className="rounded-lg overflow-hidden border border-white/10 border-l-4 border-l-yellow-400 bg-white/5">
+                  <div className="overflow-hidden rounded-lg border border-white/10 border-l-4 border-l-brand-sky bg-white/5">
                     <div className="grid grid-cols-[1fr_48px] border-b border-white/5">
                       <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white/55">
                         SPH
@@ -762,7 +762,7 @@ export default function TeamPageScreen({
                       <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white">
                         BSJ
                       </div>
-                      <div className="px-3 py-2 text-xs font-black text-right text-yellow-300">
+                      <div className="px-3 py-2 text-right text-xs font-black text-brand-cream">
                         2
                       </div>
                     </div>
