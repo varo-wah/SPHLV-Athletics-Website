@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import { findTeam, sportDetails } from '../config/teamCatalog';
+import { rosterForTeam } from '../data/teamRosters';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 
 interface TeamPageScreenProps {
@@ -57,6 +58,7 @@ export default function TeamPageScreen({
   const team = findTeam(sport, division, gender);
   const sportInfo = sportDetails(sport);
   const teamName = team?.displayName ?? `${division} ${gender} ${sportInfo.label}`;
+  const roster = team ? rosterForTeam(team.id) : undefined;
   const divisionLabel = division === 'SMA' ? 'SMA / Varsity' : 'SMP / Middle School';
   const teamPhotos = sport === 'Soccer' && division === 'SMA' && gender === 'Boys'
     ? approvedSoccerTeamPhotos
@@ -704,7 +706,7 @@ export default function TeamPageScreen({
         )}
 
         {/* Team Photo */}
-        {activeSection === 'players' && (
+        {activeSection === 'players' && teamPhotos.length > 0 && (
         <section className="space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
@@ -725,7 +727,6 @@ export default function TeamPageScreen({
             )}
           </div>
 
-          {teamPhotos.length > 0 ? (
           <div className="group relative overflow-hidden rounded-[1.75rem] border border-border/10 bg-[#0b080a] shadow-[0_28px_80px_rgba(0,0,0,0.28)]">
             <div className="relative aspect-[16/11] min-h-[260px] sm:aspect-[16/9]">
               <AnimatePresence mode="wait">
@@ -786,51 +787,65 @@ export default function TeamPageScreen({
               ))}
             </div>
           </div>
-          ) : (
-            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-border/15 bg-foreground/[0.018] px-6 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-3xl border border-border/10 bg-foreground/[0.035] text-foreground/32">
-                <Users size={28} />
-              </div>
-              <p className="mt-5 text-base font-black uppercase tracking-[0.12em] text-foreground/68">
-                Team photo coming soon
-              </p>
-              <p className="mt-2 max-w-md text-xs font-semibold leading-relaxed text-foreground/38">
-                An approved team photo will be added after the roster and media are confirmed.
-              </p>
-            </div>
-          )}
         </section>
         )}
 
         {/* Player Roster */}
         {activeSection === 'players' && (
-        <section className="space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#C1121F] dark:text-[#B5413F]">
-                <Users size={14} />
-                Players
-              </p>
-              <h3 className="mt-1 text-2xl font-black uppercase tracking-[0.08em] text-foreground dark:text-foreground">
-                2025-26 Roster
-              </h3>
-            </div>
-            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/10 bg-subcard px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45">
-              Roster pending
+        <section className="space-y-4" data-roster-team={team?.id}>
+          <div className="relative overflow-hidden rounded-[1.75rem] border border-[#B5413F]/20 bg-[linear-gradient(135deg,rgba(90,28,44,0.14),rgba(181,65,63,0.04)_60%,transparent)] px-5 py-5 shadow-sm sm:px-6">
+            <div className="pointer-events-none absolute -right-10 -top-14 h-36 w-36 rounded-full border-[28px] border-[#B5413F]/[0.045]" />
+            <div className="relative flex items-end justify-between gap-4">
+              <div>
+                <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#C1121F] dark:text-[#D85A57]">
+                  <Users size={14} />
+                  Official team list
+                </p>
+                <h3 className="mt-2 text-2xl font-black uppercase tracking-[0.08em] text-foreground sm:text-3xl">
+                  Player Roster
+                </h3>
+              </div>
+              <div className="relative flex h-14 min-w-14 shrink-0 flex-col items-center justify-center rounded-2xl border border-[#B5413F]/20 bg-[#5A1C2C] px-3 text-white shadow-[0_12px_30px_rgba(90,28,44,0.24)]">
+                <span className={`${roster ? 'text-xl' : 'text-[10px] uppercase tracking-[0.14em]'} font-black leading-none`}>
+                  {roster?.players.length ?? 'Pending'}
+                </span>
+                {roster && (
+                  <span className="mt-1 text-[8px] font-black uppercase tracking-[0.16em] text-white/55">Players</span>
+                )}
+              </div>
             </div>
           </div>
 
-          <div className="flex min-h-[260px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-border/15 bg-foreground/[0.018] px-6 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/30">
-              <Users size={28} />
+          {roster ? (
+            <ol className="grid gap-2.5 sm:grid-cols-2" aria-label={`${teamName} player roster`}>
+              {roster.players.map((player, index) => (
+                <li
+                  key={player}
+                  data-player-name={player}
+                  className="group flex min-h-16 items-center gap-3 overflow-hidden rounded-2xl border border-border/10 bg-subcard px-3.5 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B5413F]/25 hover:shadow-[0_14px_34px_rgba(90,28,44,0.11)]"
+                >
+                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#B5413F]/15 bg-[#B5413F]/[0.07] font-mono text-[11px] font-black text-[#B5413F] transition-colors group-hover:bg-[#5A1C2C] group-hover:text-white">
+                    {String(index + 1).padStart(2, '0')}
+                  </span>
+                  <span className="min-w-0 text-[13px] font-black uppercase leading-snug tracking-[0.045em] text-foreground sm:text-sm">
+                    {player}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <div className="flex min-h-[230px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-border/15 bg-foreground/[0.018] px-6 text-center">
+              <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] text-foreground/30">
+                <Users size={24} />
+              </div>
+              <p className="mt-4 text-sm font-black uppercase tracking-[0.12em] text-foreground/68">
+                Roster awaiting confirmation
+              </p>
+              <p className="mt-2 max-w-md text-xs font-semibold leading-relaxed text-foreground/38">
+                Player names will appear after the official team list is submitted.
+              </p>
             </div>
-            <p className="mt-5 text-base font-black uppercase tracking-[0.12em] text-foreground/68">
-              Roster coming soon
-            </p>
-            <p className="mt-2 max-w-md text-xs font-semibold leading-relaxed text-foreground/38">
-              Player names, jersey numbers, positions, and approved media will appear after the team roster is confirmed.
-            </p>
-          </div>
+          )}
         </section>
         )}
 
