@@ -1,5 +1,5 @@
-import { Activity, CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { CalendarDays, ChevronRight, MapPin, Plus, Star, Trophy } from 'lucide-react';
+import { useMemo } from 'react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { ScheduleEvent } from '../data/scheduleTypes';
 import { SheetMatch } from '../services/parsers';
@@ -20,7 +20,7 @@ import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
 
 interface HomeScreenProps {
   athleticsDataState: AthleticsDataState;
-  onNavigateToNews?: () => void;
+  onNavigateToSchedule: () => void;
   onNavigateToTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
   onBrowseTeams: () => void;
 }
@@ -35,11 +35,10 @@ const favoriteTeamIcons = {
 
 export default function HomeScreen({
   athleticsDataState,
-  onNavigateToNews,
+  onNavigateToSchedule,
   onNavigateToTeam,
   onBrowseTeams,
 }: HomeScreenProps) {
-  const [activeFeaturePanel, setActiveFeaturePanel] = useState<'match' | 'result' | 'table'>('match');
   const { user } = useAuth();
   const { favoriteTeams, loading: favoritesLoading, error: favoritesError } = useTeamFavorites();
   const visibleFavoriteTeams = favoriteTeams.filter((favorite) => (
@@ -66,11 +65,6 @@ export default function HomeScreen({
     }
 
     return 'Date TBD';
-  };
-
-  const getMatchTime = (match: SheetMatch) => {
-    const parsedDate = match.date ? new Date(`${match.date} ${match.time || '00:00'}`) : null;
-    return parsedDate && !Number.isNaN(parsedDate.getTime()) ? parsedDate.getTime() : Number.MAX_SAFE_INTEGER;
   };
 
   const nextUpcomingEvent = useMemo(() => {
@@ -110,10 +104,6 @@ export default function HomeScreen({
     return finishedMatches[0] || null;
   }, [athleticsDataState.data.matches]);
 
-  const recentResultTitle = recentFinishedMatch
-    ? `${recentFinishedMatch.level} ${recentFinishedMatch.genderGroup} ${recentFinishedMatch.sport} ${recentFinishedMatch.result === 'W' ? 'wins against' : recentFinishedMatch.result === 'L' ? 'lost against' : 'drew against'} ${recentFinishedMatch.opponent}`
-    : 'No recent result yet';
-
   const recentResultScore = recentFinishedMatch && recentFinishedMatch.scoreFor !== null && recentFinishedMatch.scoreAgainst !== null
     ? `${recentFinishedMatch.scoreFor}–${recentFinishedMatch.scoreAgainst}`
     : '—';
@@ -122,16 +112,12 @@ export default function HomeScreen({
 
   const recentResultBadgeClass =
     recentResultBadge === 'W'
-      ? 'text-green-400'
+      ? 'text-green-700 dark:text-green-400'
       : recentResultBadge === 'L'
-        ? 'text-red-400'
+        ? 'text-brand-red dark:text-red-400'
         : recentResultBadge === 'D'
-          ? 'text-yellow-300'
+          ? 'text-amber-700 dark:text-yellow-300'
           : 'text-foreground/40';
-
-  const recentResultSubtitle = recentFinishedMatch
-    ? `${recentFinishedMatch.date || 'Date TBD'}${recentFinishedMatch.time ? ` · ${recentFinishedMatch.time}` : ''}${recentFinishedMatch.venue ? ` · ${recentFinishedMatch.venue}` : ''}`
-    : 'Finished match results will appear after team managers update their sheets.';
 
   const nextMatchTitle = nextUpcomingEvent?.eventText || 'No upcoming match';
 
@@ -139,54 +125,30 @@ export default function HomeScreen({
     ? 'Loading live schedule...'
     : formatScheduleDateTime(nextUpcomingEvent);
 
+  const recentResultTeam = recentFinishedMatch
+    ? `${recentFinishedMatch.level} ${recentFinishedMatch.genderGroup} ${recentFinishedMatch.sport}`
+    : 'Results pending';
+
+  const recentResultOpponent = recentFinishedMatch
+    ? `vs ${recentFinishedMatch.opponent}`
+    : 'No completed games yet';
+
+  const canOpenRecentTeam = Boolean(
+    recentFinishedMatch
+    && isLaunchTeamSelection(
+      recentFinishedMatch.sportKey,
+      recentFinishedMatch.level,
+      recentFinishedMatch.genderGroup,
+    ),
+  );
+
   const syncStatus = athleticsDataState.error
     ? `Sync issue: ${athleticsDataState.error}`
     : athleticsDataState.warning
       ? athleticsDataState.warning
     : athleticsDataState.refreshing
       ? 'Refreshing Google Sheets...'
-      : athleticsDataState.lastUpdated
-        ? `Updated ${athleticsDataState.lastUpdated}`
-        : null;
-
-  const topStanding = useMemo(() => {
-    return [...(athleticsDataState.data.soccerStandings || [])]
-      .sort((a, b) => {
-        const aRank = a.rank ?? Number.MAX_SAFE_INTEGER;
-        const bRank = b.rank ?? Number.MAX_SAFE_INTEGER;
-        return aRank - bRank;
-      })[0] || null;
-  }, [athleticsDataState.data.soccerStandings]);
-
-  const featurePanels = {
-    match: {
-      eyebrow: 'Next Match',
-      title: athleticsDataState.loading ? 'Loading live schedule' : nextMatchTitle,
-      meta: nextMatchMeta,
-      detail: nextUpcomingEvent?.location || 'Venue TBD',
-      stat: nextUpcomingEvent?.eventType || 'Schedule',
-      icon: CalendarDays,
-    },
-    result: {
-      eyebrow: 'Latest Result',
-      title: athleticsDataState.loading ? 'Loading latest result' : recentResultTitle,
-      meta: recentResultSubtitle,
-      detail: recentResultScore,
-      stat: recentResultBadge,
-      icon: Trophy,
-    },
-    table: {
-      eyebrow: 'Table Leader',
-      title: topStanding ? `${topStanding.team} leads ${topStanding.level} ${topStanding.genderGroup}` : 'Standings syncing',
-      meta: topStanding ? `${topStanding.tournament} · ${topStanding.points ?? 0} pts` : 'Soccer standings will appear after sync',
-      detail: topStanding ? `${topStanding.wins ?? 0}W ${topStanding.draws ?? 0}D ${topStanding.losses ?? 0}L` : 'No rows yet',
-      stat: topStanding ? `#${topStanding.rank ?? 1}` : 'Table',
-      icon: Activity,
-    },
-  };
-
-  const activeFeature = featurePanels[activeFeaturePanel];
-  const ActiveFeatureIcon = activeFeature.icon;
+      : null;
 
   return (
     <div className="animate-in fade-in duration-500 pb-8 px-4 space-y-6 mt-4">
@@ -291,61 +253,89 @@ export default function HomeScreen({
         </section>
       )}
 
-      <section className="home-live-card" aria-label="Live athletics summary">
-        <div className="home-live-card__field" aria-hidden="true">
-          <div className="home-live-card__line home-live-card__line--top" />
-          <div className="home-live-card__line home-live-card__line--middle" />
-          <div className="home-live-card__line home-live-card__line--bottom" />
-          <div className="home-live-card__marker home-live-card__marker--one" />
-          <div className="home-live-card__marker home-live-card__marker--two" />
-        </div>
-
-        <div className="home-live-card__header">
-          <span className="home-live-card__sync">
-            <span />
-            Live Sheet Sync
+      <section className="space-y-3" aria-labelledby="at-a-glance-heading">
+        <div className="flex items-end justify-between gap-3 px-1">
+          <div>
+            <p className="text-[9px] font-black uppercase tracking-[0.22em] text-brand-red">
+              Live athletics
+            </p>
+            <h2 id="at-a-glance-heading" className="mt-1 text-xl font-black uppercase tracking-[0.08em] text-foreground">
+              At a Glance
+            </h2>
+          </div>
+          <span className="text-[9px] font-bold uppercase tracking-[0.14em] text-foreground/35">
+            Tap for details
           </span>
-
-          <button type="button" onClick={onNavigateToNews} className="home-live-card__news">
-            <Newspaper size={14} />
-            News
-          </button>
         </div>
 
-        <div className="home-live-card__main">
-          <div className="home-live-card__copy">
-            <p>{activeFeature.eyebrow}</p>
-            <h3>{activeFeature.title}</h3>
-            <span>{activeFeature.meta}</span>
-
-            <div className="home-live-card__detail">
-              <MapPin size={14} />
-              <strong>{activeFeature.detail}</strong>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={onNavigateToSchedule}
+            className="group flex min-h-[168px] min-w-0 flex-col rounded-3xl border border-brand-navy/10 bg-[linear-gradient(145deg,#FFFFFF_0%,rgba(253,240,213,0.88)_70%,rgba(102,155,188,0.16)_100%)] p-4 text-left shadow-[0_16px_42px_rgba(0,48,73,0.10)] transition-transform hover:-translate-y-0.5 dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(0,48,73,0.72),rgba(10,4,5,0.96))]"
+            aria-label="Open schedule for next game details"
+          >
+            <div className="flex w-full items-center justify-between gap-2">
+              <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-brand-sky/18 text-brand-navy dark:text-brand-sky">
+                <CalendarDays size={17} />
+              </span>
+              <ChevronRight size={16} className="text-brand-navy/30 transition-transform group-hover:translate-x-0.5 dark:text-white/30" />
             </div>
-          </div>
+            <p className="mt-4 text-[9px] font-black uppercase tracking-[0.18em] text-brand-navy/55 dark:text-brand-sky/75">
+              Next game
+            </p>
+            <h3 className="mt-1 line-clamp-2 text-sm font-black uppercase leading-tight text-brand-navy dark:text-white">
+              {athleticsDataState.loading ? 'Loading schedule' : nextMatchTitle}
+            </h3>
+            <p className="mt-2 text-[10px] font-bold uppercase tracking-[0.08em] text-foreground/45 dark:text-white/48">
+              {nextMatchMeta}
+            </p>
+            <p className="mt-auto flex min-w-0 items-center gap-1.5 pt-3 text-[9px] font-black uppercase tracking-[0.1em] text-brand-navy/48 dark:text-white/42">
+              <MapPin size={12} className="shrink-0 text-brand-sky" />
+              <span className="truncate">{nextUpcomingEvent?.location || 'Venue TBD'}</span>
+            </p>
+          </button>
 
-          <div className="home-live-card__stat">
-            <ActiveFeatureIcon size={20} />
-            <strong>{activeFeature.stat}</strong>
-          </div>
-        </div>
-
-        <div className="home-live-card__controls" aria-label="Live summary panels">
-          {([
-            ['match', 'Match'],
-            ['result', 'Result'],
-            ['table', 'Table'],
-          ] as const).map(([panel, label]) => (
-            <button
-              key={panel}
-              type="button"
-              onClick={() => setActiveFeaturePanel(panel)}
-              className={activeFeaturePanel === panel ? 'is-active' : ''}
-              aria-pressed={activeFeaturePanel === panel}
-            >
-              {label}
-            </button>
-          ))}
+          <button
+            type="button"
+            disabled={!canOpenRecentTeam}
+            onClick={() => {
+              if (!recentFinishedMatch || !canOpenRecentTeam) return;
+              onNavigateToTeam(
+                recentFinishedMatch.sportKey,
+                recentFinishedMatch.level,
+                recentFinishedMatch.genderGroup,
+              );
+            }}
+            className="group flex min-h-[168px] min-w-0 flex-col rounded-3xl border border-brand-red/12 bg-[linear-gradient(145deg,#FFFFFF_0%,rgba(253,240,213,0.82)_66%,rgba(193,18,31,0.12)_100%)] p-4 text-left shadow-[0_16px_42px_rgba(120,0,0,0.10)] transition-transform hover:-translate-y-0.5 disabled:cursor-default disabled:hover:translate-y-0 dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(120,0,0,0.62),rgba(10,4,5,0.96))]"
+            aria-label={recentFinishedMatch ? `Open ${recentResultTeam}` : 'No latest result available'}
+          >
+            <div className="flex w-full items-center justify-between gap-2">
+              <span className="flex h-9 w-9 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red dark:text-red-300">
+                <Trophy size={17} />
+              </span>
+              <span className={`text-xl font-black uppercase ${recentResultBadgeClass}`}>
+                {recentResultBadge}
+              </span>
+            </div>
+            <p className="mt-4 text-[9px] font-black uppercase tracking-[0.18em] text-brand-red/65 dark:text-red-300/75">
+              Latest result
+            </p>
+            <h3 className="mt-1 line-clamp-2 text-sm font-black uppercase leading-tight text-brand-navy dark:text-white">
+              {athleticsDataState.loading ? 'Loading result' : recentResultTeam}
+            </h3>
+            <p className="mt-1 truncate text-[10px] font-bold uppercase tracking-[0.06em] text-foreground/45 dark:text-white/48">
+              {recentResultOpponent}
+            </p>
+            <div className="mt-auto flex items-end justify-between gap-2 pt-3">
+              <span className="truncate text-[9px] font-black uppercase tracking-[0.08em] text-brand-maroon/45 dark:text-white/42">
+                {recentFinishedMatch?.date || 'Awaiting result'}
+              </span>
+              <strong className="shrink-0 text-xl font-black text-brand-navy dark:text-white">
+                {recentResultScore}
+              </strong>
+            </div>
+          </button>
         </div>
       </section>
 
@@ -359,43 +349,6 @@ export default function HomeScreen({
         </div>
       )}
 
-      {/* Recent Results Header */}
-      <section className="space-y-4 pt-2">
-        <div className="flex items-center gap-3">
-          <Trophy size={22} className="text-[#C1121F] dark:text-[#5A1C2C]" />
-          <h2 className="text-2xl font-black uppercase italic tracking-[0.18em] text-foreground dark:text-foreground">
-            Recent Results
-          </h2>
-        </div>
-
-        <div className="bg-subcard rounded-2xl border border-border/10 overflow-hidden shadow-md">
-          <div className="p-5 flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#B5413F]">
-                Result
-              </p>
-
-              <h3 className="text-lg font-black text-foreground mt-1">
-                {athleticsDataState.loading ? 'Loading latest result...' : recentResultTitle}
-              </h3>
-
-              <p className="text-xs text-foreground/45 mt-1">
-                {athleticsDataState.error ? 'Google Sheets result sync unavailable.' : recentResultSubtitle}
-              </p>
-            </div>
-
-            <div className="text-right">
-              <p className="text-2xl font-black text-foreground">
-                {recentResultScore}
-              </p>
-
-              <p className={`text-xs font-black uppercase tracking-widest ${recentResultBadgeClass}`}>
-                {recentResultBadge}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
     </div>
   );
 }
