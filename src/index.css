@@ -592,18 +592,9 @@ button {
 .hero-banner-img {
   display: block;
   width: 100%;
+  aspect-ratio: 2708 / 868;
   height: auto;
-  min-height: 180px;
   object-fit: cover;
-}
-
-.hero-image-overlay {
-  position: absolute;
-  inset: 0;
-  background:
-    linear-gradient(to top, rgba(0, 0, 0, 0.68), transparent 46%),
-    linear-gradient(to right, rgba(0, 0, 0, 0.32), transparent 42%);
-  pointer-events: none;
 }
 
 @media (max-width: 560px) {
@@ -656,10 +647,6 @@ button {
 
   .hero-image-card {
     border-radius: 16px;
-  }
-
-  .hero-banner-img {
-    min-height: 118px;
   }
 
 }

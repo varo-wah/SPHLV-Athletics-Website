@@ -16,6 +16,7 @@ import {
   TrackIcon,
   VolleyballIcon,
 } from '../components/SportIcons';
+import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
 
 interface HomeScreenProps {
   athleticsDataState: AthleticsDataState;
@@ -191,11 +192,10 @@ export default function HomeScreen({
     <div className="animate-in fade-in duration-500 pb-8 px-4 space-y-6 mt-4">
       <div className="hero-image-card">
         <img
-          src="https://res.cloudinary.com/dpgt445lg/image/upload/v1780443630/ACSC_Girls_football_26_2_bcdvak.png"
-          alt="LV Athletics Banner"
+          src={eagleAppHomeBanner}
+          alt="Eagle App — SPH-LV Athletics"
           className="hero-banner-img"
         />
-        <div className="hero-image-overlay" />
       </div>
 
       {user && (
