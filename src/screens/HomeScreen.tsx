@@ -1,4 +1,4 @@
-import { CalendarDays, ChevronRight, MapPin, Plus, Star, Trophy } from 'lucide-react';
+import { CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
 import { useMemo } from 'react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { ScheduleEvent } from '../data/scheduleTypes';
@@ -20,6 +20,7 @@ import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
 
 interface HomeScreenProps {
   athleticsDataState: AthleticsDataState;
+  onNavigateToNews: () => void;
   onNavigateToSchedule: () => void;
   onNavigateToTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
   onBrowseTeams: () => void;
@@ -35,6 +36,7 @@ const favoriteTeamIcons = {
 
 export default function HomeScreen({
   athleticsDataState,
+  onNavigateToNews,
   onNavigateToSchedule,
   onNavigateToTeam,
   onBrowseTeams,
@@ -338,6 +340,29 @@ export default function HomeScreen({
           </button>
         </div>
       </section>
+
+      <button
+        type="button"
+        onClick={onNavigateToNews}
+        className="group flex w-full items-center gap-4 overflow-hidden rounded-3xl border border-brand-red/12 bg-[linear-gradient(120deg,#FFFFFF_0%,rgba(253,240,213,0.88)_58%,rgba(193,18,31,0.10)_100%)] p-4 text-left shadow-[0_14px_38px_rgba(120,0,0,0.08)] transition-transform hover:-translate-y-0.5 hover:border-brand-red/25 dark:border-white/10 dark:bg-[linear-gradient(120deg,rgba(120,0,0,0.54),rgba(10,4,5,0.96))]"
+        aria-label="View athletics news"
+      >
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red dark:bg-white/8 dark:text-red-300">
+          <Newspaper size={19} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-[9px] font-black uppercase tracking-[0.2em] text-brand-red/65 dark:text-red-300/75">
+            Eagles updates
+          </span>
+          <span className="mt-1 block text-sm font-black uppercase tracking-[0.08em] text-brand-navy dark:text-white">
+            View news here
+          </span>
+          <span className="mt-1 block truncate text-[10px] font-semibold text-foreground/42 dark:text-white/42">
+            Announcements and game stories as they are published.
+          </span>
+        </span>
+        <ChevronRight size={18} className="shrink-0 text-brand-maroon/30 transition-transform group-hover:translate-x-0.5 group-hover:text-brand-red dark:text-white/30" />
+      </button>
 
       {syncStatus && (
         <div className={`rounded-xl border px-4 py-3 text-[11px] font-bold uppercase tracking-[0.18em] ${
