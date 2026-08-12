@@ -4,13 +4,6 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
-import {
-  BadmintonIcon,
-  BasketballIcon,
-  SoccerIcon,
-  TrackIcon,
-  VolleyballIcon,
-} from '../components/SportIcons';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 
@@ -28,14 +21,6 @@ const teamPageSections: { id: TeamPageSection; label: string }[] = [
   { id: 'standings', label: 'Standings' },
   { id: 'players', label: 'Players' },
 ];
-
-const sportIcons = {
-  Basketball: BasketballIcon,
-  Volleyball: VolleyballIcon,
-  Soccer: SoccerIcon,
-  Badminton: BadmintonIcon,
-  TrackAndField: TrackIcon,
-};
 
 const approvedSoccerTeamPhotos = [
   'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241030/Varsity_soccer_boys_teampic_2_dyv7mz.jpg',
@@ -60,84 +45,6 @@ function gameTimestamp(date: string | null, time?: string | null) {
   return Number.isNaN(value) ? Number.MAX_SAFE_INTEGER : value;
 }
 
-function SportBannerPattern({ sport, accent }: { sport: SportTab; accent: string }) {
-  const lineProps = {
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 4,
-    vectorEffect: 'non-scaling-stroke' as const,
-  };
-
-  return (
-    <svg
-      aria-hidden="true"
-      viewBox="0 0 1200 360"
-      preserveAspectRatio="xMidYMid slice"
-      className="pointer-events-none absolute inset-0 h-full w-full opacity-[0.18]"
-      style={{ color: accent }}
-    >
-      {sport === 'Soccer' && (
-        <g {...lineProps}>
-          <rect x="72" y="38" width="1056" height="284" rx="18" />
-          <path d="M600 38v284" />
-          <circle cx="600" cy="180" r="58" />
-          <circle cx="600" cy="180" r="4" fill="currentColor" stroke="none" />
-          <path d="M72 104h150v152H72M1128 104H978v152h150" />
-          <path d="M72 140h62v80H72M1128 140h-62v80h62" />
-        </g>
-      )}
-
-      {sport === 'Volleyball' && (
-        <g {...lineProps}>
-          <rect x="110" y="48" width="980" height="264" rx="14" />
-          <path d="M600 48v264M415 48v264M785 48v264" />
-          <path d="M582 34v292M618 34v292" strokeWidth="2" />
-          <path d="M582 62h36M582 92h36M582 122h36M582 152h36M582 182h36M582 212h36M582 242h36M582 272h36M582 302h36" strokeWidth="2" />
-          <circle cx="294" cy="180" r="7" fill="currentColor" stroke="none" />
-          <circle cx="906" cy="180" r="7" fill="currentColor" stroke="none" />
-        </g>
-      )}
-
-      {sport === 'Basketball' && (
-        <g {...lineProps}>
-          <rect x="72" y="38" width="1056" height="284" rx="18" />
-          <path d="M600 38v284" />
-          <circle cx="600" cy="180" r="58" />
-          <path d="M72 104h170v152H72M1128 104H958v152h170" />
-          <circle cx="242" cy="180" r="56" />
-          <circle cx="958" cy="180" r="56" />
-          <path d="M124 148v64M1076 148v64" />
-          <path d="M150 180h-26M1050 180h26" />
-          <path d="M72 82c95 18 150 53 150 98S167 260 72 278M1128 82c-95 18-150 53-150 98s55 80 150 98" />
-        </g>
-      )}
-
-      {sport === 'Badminton' && (
-        <g {...lineProps}>
-          <rect x="152" y="38" width="896" height="284" rx="12" />
-          <rect x="152" y="78" width="896" height="204" />
-          <path d="M600 38v284M414 38v284M786 38v284" />
-          <path d="M582 28v304M618 28v304" strokeWidth="2" />
-          <path d="M152 180h896" />
-          <path d="M582 54h36M582 86h36M582 118h36M582 150h36M582 182h36M582 214h36M582 246h36M582 278h36M582 310h36" strokeWidth="2" />
-        </g>
-      )}
-
-      {sport === 'TrackAndField' && (
-        <g {...lineProps}>
-          <rect x="90" y="42" width="1020" height="276" rx="138" />
-          <rect x="132" y="72" width="936" height="216" rx="108" />
-          <rect x="174" y="102" width="852" height="156" rx="78" />
-          <rect x="216" y="132" width="768" height="96" rx="48" />
-          <path d="M600 42v90M600 228v90" />
-          <path d="M570 42v90M570 228v90M630 42v90M630 228v90" strokeWidth="2" />
-          <path d="M106 148h94M1000 212h94" />
-        </g>
-      )}
-    </svg>
-  );
-}
-
 export default function TeamPageScreen({
   sport,
   division,
@@ -151,7 +58,6 @@ export default function TeamPageScreen({
   const sportInfo = sportDetails(sport);
   const teamName = team?.displayName ?? `${division} ${gender} ${sportInfo.label}`;
   const divisionLabel = division === 'SMA' ? 'SMA / Varsity' : 'SMP / Middle School';
-  const SportIcon = sportIcons[sport];
   const teamPhotos = sport === 'Soccer' && division === 'SMA' && gender === 'Boys'
     ? approvedSoccerTeamPhotos
     : [];
@@ -292,59 +198,22 @@ export default function TeamPageScreen({
 
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
-      {/* Shared team hero */}
-      <div
-        className="relative w-full overflow-hidden border-y bg-[#09070a]"
-        style={{ borderColor: `${sportInfo.accent}38` }}
-      >
-        <div className="relative flex min-h-[280px] items-end overflow-hidden px-5 pb-7 pt-20 sm:min-h-[330px] sm:px-8 sm:pb-9">
-          <div
-            className="pointer-events-none absolute inset-0 opacity-70"
-            style={{
-              background: `radial-gradient(circle at 18% 24%, ${sportInfo.accent}52, transparent 32%), radial-gradient(circle at 82% 78%, ${sportInfo.accent}30, transparent 30%), linear-gradient(135deg, #09070a 8%, ${sportInfo.accent}22 58%, #09070a)`,
-            }}
-          />
-          <SportBannerPattern sport={sport} accent={sportInfo.accent} />
-          <div className="pointer-events-none absolute -right-16 -top-20 h-72 w-72 rounded-full border border-white/[0.07]" />
-          <div className="pointer-events-none absolute -right-5 -top-5 h-48 w-48 rounded-full border border-white/[0.055]" />
-          <div className="pointer-events-none absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-transparent via-white/15 to-transparent" />
-
-          <div className="relative z-10 flex w-full flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex min-w-0 items-start gap-4 sm:items-center">
-              <div
-                className="flex h-16 w-16 shrink-0 items-center justify-center rounded-3xl border bg-black/25 shadow-[0_20px_55px_rgba(0,0,0,0.32)] backdrop-blur sm:h-20 sm:w-20"
-                style={{ borderColor: `${sportInfo.accent}55`, color: sportInfo.accent }}
-              >
-                <SportIcon size={36} />
-              </div>
-              <div className="min-w-0">
-                <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/48">
-                  SPH LV Eagles · {divisionLabel}
-                </p>
-                <h1 className="mt-2 max-w-3xl text-4xl font-black uppercase leading-[0.92] tracking-[-0.035em] text-white sm:text-6xl">
-                  {teamName}
-                </h1>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2" aria-label="Team setup status">
-              <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-[9px] font-black uppercase tracking-[0.16em] text-white/62 backdrop-blur">
-                {upcomingEvents.length} upcoming
-              </span>
-              <span className="rounded-full border border-white/10 bg-black/25 px-3 py-2 text-[9px] font-black uppercase tracking-[0.16em] text-white/62 backdrop-blur">
-                {completedResults.length} results
-              </span>
-            </div>
-          </div>
-
-          <TeamFavoriteButton
-            sport={sport}
-            division={division}
-            gender={gender}
-            className="absolute right-4 top-4 z-20"
-          />
+      <header className="flex items-start justify-between gap-4 border-b border-border/10 px-4 py-5 sm:px-6 lg:px-8">
+        <div className="min-w-0">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B5413F]">
+            {divisionLabel}
+          </p>
+          <h1 className="mt-1 text-3xl font-black uppercase leading-tight tracking-[-0.025em] text-foreground sm:text-4xl">
+            {teamName}
+          </h1>
         </div>
-      </div>
+        <TeamFavoriteButton
+          sport={sport}
+          division={division}
+          gender={gender}
+          className="shrink-0"
+        />
+      </header>
 
       <nav
         aria-label={`${teamName} sections`}
