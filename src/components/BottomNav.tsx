@@ -26,13 +26,13 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
             <button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
-              className="relative flex flex-col items-center justify-center w-full h-full"
+              className="group relative flex h-full w-full flex-col items-center justify-center outline-none"
             >
               <div
-                className={`relative h-10 w-14 rounded-2xl flex items-center justify-center transition-all ${
+                className={`relative flex h-10 w-14 items-center justify-center rounded-2xl transition-all group-focus-visible:ring-2 group-focus-visible:ring-brand-sky group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-header ${
                   isActive
-                    ? 'bg-[#C1121F] text-white shadow-[0_10px_24px_rgba(193,18,31,0.2)] dark:bg-[#5A1C2C] dark:text-[#ffffff]'
-                    : 'text-[#6B7280] hover:text-[#C1121F] dark:text-foreground/50 dark:hover:text-foreground/70'
+                    ? 'bg-brand-sky text-brand-navy shadow-[0_10px_24px_rgba(102,155,188,0.24)]'
+                    : 'text-[#6B7280] hover:text-brand-sky dark:text-foreground/50 dark:hover:text-brand-sky'
                 }`}
               >
                 <Icon size={22} strokeWidth={isActive ? 2.4 : 2} />
@@ -40,7 +40,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
 
               <span
                 className={`mt-1 text-[10px] sm:text-[11px] font-bold tracking-wider ${
-                  isActive ? 'text-[#C1121F] dark:text-foreground' : 'text-[#6B7280] dark:text-foreground/50'
+                  isActive ? 'text-brand-sky' : 'text-[#6B7280] dark:text-foreground/50'
                 }`}
               >
                 {tab.label}
