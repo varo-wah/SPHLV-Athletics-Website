@@ -1,6 +1,6 @@
 import { LogOut, Moon, Sun, UserRound } from 'lucide-react';
-import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
 import { IS_PROTOTYPE } from '../config/launchSports';
 
 interface TopBarProps {
@@ -9,16 +9,9 @@ interface TopBarProps {
 }
 
 export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
-  const [isDark, setIsDark] = useState(true);
   const { loading, signOutUser, user } = useAuth();
-
-  useEffect(() => {
-    if (isDark) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDark]);
+  const { theme, toggleTheme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
     <div className="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border/70 dark:border-border/5">
@@ -47,9 +40,11 @@ export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
         <button
-          onClick={() => setIsDark(!isDark)}
+          type="button"
+          onClick={toggleTheme}
           className="text-[#7F1D1D] hover:text-[#C1121F] flex items-center justify-center dark:text-foreground dark:hover:text-foreground/80"
-          aria-label="Toggle color theme"
+          aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+          aria-pressed={isDark}
         >
           {isDark ? <Sun size={20} /> : <Moon size={20} />}
         </button>

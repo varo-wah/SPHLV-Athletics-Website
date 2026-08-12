@@ -12,6 +12,7 @@ import StandingsScreen from './screens/StandingsScreen';
 import LoginScreen from './screens/LoginScreen';
 import { useAthleticsData } from './hooks/useAthleticsData';
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { SportFollowsProvider } from './contexts/SportFollowsContext';
 import { TeamFavoritesProvider } from './contexts/TeamFavoritesContext';
 import { isLaunchTeamSelection } from './config/launchSports';
@@ -19,11 +20,13 @@ import { isLaunchTeamSelection } from './config/launchSports';
 export default function App() {
   return (
     <AuthProvider>
-      <SportFollowsProvider>
-        <TeamFavoritesProvider>
-          <AthleticsApp />
-        </TeamFavoritesProvider>
-      </SportFollowsProvider>
+      <ThemeProvider>
+        <SportFollowsProvider>
+          <TeamFavoritesProvider>
+            <AthleticsApp />
+          </TeamFavoritesProvider>
+        </SportFollowsProvider>
+      </ThemeProvider>
     </AuthProvider>
   );
 }

@@ -35,23 +35,23 @@
 
 :root {
   color-scheme: light;
-  --card: #f8f8fa;
-  --subcard: #f7f7f9;
-  --subcard-hover: #fee2e2;
-  --canvas: #f5f5f7;
-  --header: #fbfbfd;
+  --card: #fffaf2;
+  --subcard: #fff7e8;
+  --subcard-hover: #fdf0d5;
+  --canvas: #ffffff;
+  --header: #ffffff;
   --overlay: rgba(255,255,255,0.78);
   --foreground: #1f2937;
-  --background: #f5f5f7;
-  --border: #e5e7eb;
-  --shadow: rgba(15, 23, 42, 0.08);
+  --background: #ffffff;
+  --border: rgba(120, 0, 0, 0.12);
+  --shadow: rgba(120, 0, 0, 0.10);
   --primary: #b91c1c;
   --primary-foreground: #ffffff;
-  --secondary: #f3f4f6;
+  --secondary: #fdf0d5;
   --secondary-foreground: #7f1d1d;
-  --muted: #f3f4f6;
+  --muted: #fff7e8;
   --muted-foreground: #6b7280;
-  --accent: #fee2e2;
+  --accent: #fdf0d5;
   --accent-foreground: #7f1d1d;
   --ring: #c1121f;
 }
@@ -130,9 +130,9 @@ button {
 
 .bg-ucl-gradient {
   background:
-    radial-gradient(circle at 10% 0%, rgba(193, 18, 31, 0.12), transparent 30%),
-    radial-gradient(circle at 90% 8%, rgba(127, 29, 29, 0.08), transparent 28%),
-    linear-gradient(180deg, #ffffff 0%, #f5f5f7 42%, #eeeeef 100%);
+    radial-gradient(circle at 8% 0%, rgba(193, 18, 31, 0.15), transparent 31%),
+    radial-gradient(circle at 94% 14%, rgba(120, 0, 0, 0.10), transparent 28%),
+    linear-gradient(180deg, #ffffff 0%, #fffaf2 48%, #fdf0d5 100%);
 }
 
 .dark .bg-ucl-gradient {
@@ -155,24 +155,24 @@ button {
 }
 
 :root:not(.dark) .bg-header\/90 {
-  background-color: rgba(251, 251, 253, 0.9);
+  background-color: rgba(255, 255, 255, 0.92);
 }
 
 :root:not(.dark) .border-border\/5 {
-  border-color: #e5e7eb;
+  border-color: rgba(120, 0, 0, 0.12);
 }
 
 :root:not(.dark) main.bg-canvas\/20 {
   background:
-    radial-gradient(circle at 18% 0%, rgba(193, 18, 31, 0.05), transparent 30%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.66), rgba(245, 245, 247, 0.9));
-  border-color: rgba(229, 231, 235, 0.86);
+    radial-gradient(circle at 18% 0%, rgba(193, 18, 31, 0.08), transparent 31%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(253, 240, 213, 0.62));
+  border-color: rgba(120, 0, 0, 0.10);
 }
 
 :root:not(.dark) .sph-app-shell {
   --foreground: #1f2937;
   --muted-foreground: #6b7280;
-  --border: #e5e7eb;
+  --border: rgba(120, 0, 0, 0.12);
   color: #1f2937;
 }
 
@@ -184,11 +184,12 @@ button {
 :root:not(.dark) .sph-app-shell .bg-subcard\/80 {
   --foreground: #1f2937;
   --muted-foreground: #6b7280;
-  --border: #e5e7eb;
-  background-color: #f8f8fa;
+  --border: rgba(120, 0, 0, 0.12);
+  background-color: #fffaf2;
+  background-image: linear-gradient(145deg, #ffffff 0%, #fffaf2 64%, rgba(193, 18, 31, 0.055) 100%);
   color: #1f2937;
-  border-color: #e5e7eb;
-  box-shadow: 0 18px 48px rgba(15, 23, 42, 0.07);
+  border-color: rgba(120, 0, 0, 0.12);
+  box-shadow: 0 18px 48px rgba(120, 0, 0, 0.08);
 }
 
 :root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.025\],
@@ -196,9 +197,10 @@ button {
 :root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.03\],
 :root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.035\],
 :root:not(.dark) .sph-app-shell .bg-foreground\/\[0\.04\] {
-  background-color: #eceef2;
+  background-color: #fdf0d5;
+  background-image: linear-gradient(135deg, rgba(253, 240, 213, 0.92), rgba(193, 18, 31, 0.07));
   color: #1f2937;
-  border-color: #d8dce3;
+  border-color: rgba(120, 0, 0, 0.12);
 }
 
 :root:not(.dark) input[class*="bg-subcard"],
