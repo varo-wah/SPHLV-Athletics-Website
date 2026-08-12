@@ -82,7 +82,7 @@ function AthleticsApp() {
         {activeTab === 'Home' && (
           <HomeScreen
             athleticsDataState={athleticsDataState}
-            onNavigateToNews={() => handleTabChange('News')}
+            onNavigateToSchedule={() => handleTabChange('Schedule')}
             onNavigateToTeam={navigateToTeam}
             onBrowseTeams={() => handleTabChange('Teams')}
           />
