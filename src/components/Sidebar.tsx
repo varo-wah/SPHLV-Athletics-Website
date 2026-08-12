@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ArrowUpRight, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import {
@@ -31,13 +31,22 @@ const sportIcons = {
   TrackAndField: TrackIcon,
 };
 
-const teamNames: Record<string, string> = {
-  'Soccer-SMA-Boys': "Varsity Boys' Soccer",
-  'Soccer-SMA-Girls': "Varsity Girls' Soccer",
-  'Volleyball-SMA-Boys': "Varsity Boys' Volleyball",
-  'Volleyball-SMA-Girls': "Varsity Girls' Volleyball",
-  'Basketball-SMP-Boys': "SMP Boys' Basketball",
-  'Basketball-SMP-Girls': "SMP Girls' Basketball",
+const teamMenuCodes: Record<string, string> = {
+  'Soccer-SMP-Boys': 'SMPBS',
+  'Soccer-SMP-Girls': 'SMPGS',
+  'Soccer-SMA-Boys': 'VBS',
+  'Soccer-SMA-Girls': 'VGS',
+  'Volleyball-SMP-Boys': 'SMPBV',
+  'Volleyball-SMP-Girls': 'SMPGV',
+  'Volleyball-SMA-Boys': 'VBV',
+  'Volleyball-SMA-Girls': 'VGV',
+  'Basketball-SMP-Boys': 'SMPBB',
+  'Basketball-SMP-Girls': 'SMPGB',
+  'Basketball-SMA-Boys': 'VBB',
+  'Basketball-SMA-Girls': 'VGB',
+  'Badminton-SMP-Combined': 'SMPBD',
+  'Badminton-SMA-Combined': 'VBD',
+  'TrackAndField-SMA-Combined': 'VTF',
 };
 
 const sports = SPORT_CATALOG.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
@@ -137,22 +146,23 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                     <div className="grid grid-cols-2 gap-2">
                       {sport.teams.map((team) => {
                         const key = `${sport.id}-${team.division}-${team.gender}`;
-                        const name = teamNames[key] ?? team.displayName;
+                        const menuCode = teamMenuCodes[key] ?? team.shortName;
 
                         return (
                           <button
                             key={key}
                             type="button"
+                            aria-label={team.displayName}
+                            title={team.displayName}
                             onClick={() => {
                               onSelectTeam(sport.id, team.division, team.gender);
                               onClose();
                             }}
-                            className="group flex min-h-[54px] items-center justify-between gap-1.5 rounded-xl border border-brand-maroon/10 bg-brand-cream/38 px-2.5 py-2 text-left transition-colors hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:hover:border-[#B5413F]/30 dark:hover:bg-[#B5413F]/12"
+                            className="group flex min-h-[54px] items-center justify-center rounded-xl border border-brand-maroon/10 bg-brand-cream/38 px-2.5 py-2 text-center transition-colors hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:hover:border-[#B5413F]/30 dark:hover:bg-[#B5413F]/12"
                           >
-                            <span className="text-[9px] font-black uppercase leading-snug tracking-[0.035em] text-brand-navy/72 group-hover:text-brand-navy dark:text-foreground/74 dark:group-hover:text-foreground">
-                              {name}
+                            <span className="text-sm font-black uppercase tracking-[0.12em] text-brand-navy/80 group-hover:text-brand-navy dark:text-foreground/80 dark:group-hover:text-foreground">
+                              {menuCode}
                             </span>
-                            <ArrowUpRight size={12} className="shrink-0 text-brand-maroon/30 group-hover:text-brand-red dark:text-foreground/25 dark:group-hover:text-[#F06865]" aria-hidden="true" />
                           </button>
                         );
                       })}
