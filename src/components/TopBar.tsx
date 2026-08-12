@@ -1,4 +1,4 @@
-import { LogOut, Menu, Moon, Sun, UserRound } from 'lucide-react';
+import { LogOut, Moon, Sun, UserRound } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { IS_PROTOTYPE } from '../config/launchSports';
@@ -22,18 +22,22 @@ export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
 
   return (
     <div className="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border/70 dark:border-border/5">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center">
         <button
           type="button"
           aria-label="Open teams menu"
-          className="text-[#7F1D1D] hover:text-[#C1121F] dark:text-foreground dark:hover:text-foreground/80"
+          className="flex h-10 w-14 items-center justify-center overflow-hidden rounded-xl border border-[#C1121F]/15 bg-white transition-colors hover:border-[#C1121F]/35 dark:border-white/10 dark:bg-white/90"
           onClick={onOpenMenu}
         >
-          <Menu size={24} />
+          <img
+            src="https://res.cloudinary.com/dpgt445lg/image/upload/v1775384563/image_13_obe33c.png"
+            alt=""
+            className="h-9 w-12 object-contain"
+            aria-hidden="true"
+          />
         </button>
-        <span className="text-[#1F2937] font-bold tracking-wider text-sm dark:text-foreground">ATHLETICS DEPT</span>
         {IS_PROTOTYPE && (
-          <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[8px] font-black uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
+          <span className="ml-3 rounded-full border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[8px] font-black uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
             Prototype
           </span>
         )}
