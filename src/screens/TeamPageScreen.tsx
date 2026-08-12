@@ -16,6 +16,7 @@ interface TeamPageScreenProps {
 }
 
 type TeamPageSection = 'games' | 'standings' | 'players';
+type GamesView = 'upcoming' | 'results';
 
 const teamPageSections: { id: TeamPageSection; label: string }[] = [
   { id: 'games', label: 'Games' },
@@ -54,6 +55,7 @@ export default function TeamPageScreen({
 }: TeamPageScreenProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [activeSection, setActiveSection] = useState<TeamPageSection>('games');
+  const [gamesView, setGamesView] = useState<GamesView>('upcoming');
 
   const team = findTeam(sport, division, gender);
   const sportInfo = sportDetails(sport);
@@ -85,6 +87,7 @@ export default function TeamPageScreen({
 
   useEffect(() => {
     setActiveSection('games');
+    setGamesView('upcoming');
     setCurrentImageIndex(0);
   }, [sport, division, gender]);
 
@@ -238,9 +241,9 @@ export default function TeamPageScreen({
                 aria-selected={isActive}
                 aria-controls="team-section-panel"
                 onClick={() => setActiveSection(section.id)}
-                className={`relative min-w-fit rounded-[1.05rem] px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-200 sm:px-6 sm:text-[11px] ${
+                className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-200 sm:px-6 sm:text-[11px] ${
                   isActive
-                    ? 'bg-foreground/[0.10] text-foreground shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_8px_24px_rgba(0,0,0,0.14)]'
+                    ? 'border-brand-sky bg-brand-sky text-brand-navy shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_8px_24px_rgba(102,155,188,0.22)]'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
@@ -450,13 +453,48 @@ export default function TeamPageScreen({
                 </span>
               </div>
 
+              <div
+                role="group"
+                aria-label="Choose upcoming games or completed results"
+                className="grid grid-cols-2 gap-1 rounded-2xl border border-border/10 bg-subcard/70 p-1.5 shadow-sm sm:w-fit sm:min-w-[320px]"
+              >
+                {([
+                  { id: 'upcoming' as const, label: 'Upcoming', count: upcomingEvents.length },
+                  { id: 'results' as const, label: 'Results', count: completedResults.length },
+                ]).map((view) => {
+                  const isActive = gamesView === view.id;
+
+                  return (
+                    <button
+                      key={view.id}
+                      type="button"
+                      aria-pressed={isActive}
+                      onClick={() => setGamesView(view.id)}
+                      className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-200 ${
+                        isActive
+                          ? 'bg-brand-sky text-brand-navy shadow-[0_8px_20px_rgba(102,155,188,0.24)]'
+                          : 'text-foreground/45 hover:bg-foreground/[0.04] hover:text-foreground/75'
+                      }`}
+                    >
+                      <span>{view.label}</span>
+                      <span className={`rounded-full px-2 py-0.5 font-mono text-[9px] ${
+                        isActive ? 'bg-brand-navy/10 text-brand-navy' : 'bg-foreground/[0.05] text-foreground/38'
+                      }`}>
+                        {view.count}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
               {athleticsDataState?.warning && (
                 <div className="rounded-2xl border border-amber-400/20 bg-amber-400/5 px-4 py-3 text-xs font-bold text-amber-700 dark:text-amber-200">
                   {athleticsDataState.warning}
                 </div>
               )}
 
-              <div className="grid gap-5 xl:grid-cols-2">
+              <div className="grid gap-5">
+                {gamesView === 'upcoming' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-sm font-black uppercase tracking-[0.18em] text-foreground">
@@ -495,7 +533,9 @@ export default function TeamPageScreen({
                     </div>
                   )}
                 </div>
+                )}
 
+                {gamesView === 'results' && (
                 <div className="space-y-3">
                   <div className="flex items-center justify-between gap-3">
                     <h3 className="text-sm font-black uppercase tracking-[0.18em] text-foreground">
@@ -556,6 +596,7 @@ export default function TeamPageScreen({
                     </p>
                   )}
                 </div>
+                )}
               </div>
 
               {sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
