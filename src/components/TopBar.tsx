@@ -22,7 +22,7 @@ export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
 
   return (
     <div className="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border/70 dark:border-border/5">
-      <div className="flex items-center">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           type="button"
           aria-label="Open teams menu"
@@ -36,8 +36,11 @@ export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
             aria-hidden="true"
           />
         </button>
+        <span className="truncate text-xs font-black uppercase tracking-[0.14em] text-[#1F2937] dark:text-foreground sm:text-sm">
+          LV Eagle App
+        </span>
         {IS_PROTOTYPE && (
-          <span className="ml-3 rounded-full border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[8px] font-black uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
+          <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[8px] font-black uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
             Prototype
           </span>
         )}

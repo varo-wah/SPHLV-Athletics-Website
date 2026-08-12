@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { X, ChevronDown, ChevronUp, ChevronRight, Shield, Sparkles } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import { SportTab, GenderTab, DivisionTab } from '../types';
+import { ArrowUpRight, X } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
+import { DivisionTab, GenderTab, SportTab } from '../types';
 import {
   BasketballIcon,
   VolleyballIcon,
@@ -23,14 +23,6 @@ interface SidebarProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
 }
 
-type SportMenuItem = {
-  id: SportTab;
-  label: string;
-  icon: React.FC<{ size?: number; className?: string }>;
-  status: string;
-  featured?: boolean;
-};
-
 const sportIcons = {
   Soccer: SoccerIcon,
   Volleyball: VolleyballIcon,
@@ -39,28 +31,25 @@ const sportIcons = {
   TrackAndField: TrackIcon,
 };
 
-const allSports: SportMenuItem[] = SPORT_CATALOG.map((sport) => ({
-  id: sport.id,
-  label: sport.label.toUpperCase(),
-  icon: sportIcons[sport.id],
-  status: sport.status,
-  featured: sport.featured,
-}));
+const teamNames: Record<string, string> = {
+  'Soccer-SMA-Boys': "Varsity Boys' Soccer",
+  'Soccer-SMA-Girls': "Varsity Girls' Soccer",
+  'Volleyball-SMA-Boys': "Varsity Boys' Volleyball",
+  'Volleyball-SMA-Girls': "Varsity Girls' Volleyball",
+  'Basketball-SMP-Boys': "SMP Boys' Basketball",
+  'Basketball-SMP-Girls': "SMP Girls' Basketball",
+};
 
-const sports = allSports.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
+const sports = SPORT_CATALOG.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
 
 export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam }: SidebarProps) {
-  const [openSport, setOpenSport] = React.useState<SportTab | null>(null);
-
-  const handleSportToggle = (sport: SportTab) => {
-    setOpenSport((current) => (current === sport ? null : sport));
-  };
-
-  const getTeamsForSport = (sport: SportTab) => {
-    return teamsForSport(sport).filter((team) => (
-      isLaunchTeamSelection(sport, team.division, team.gender)
-    ));
-  };
+  const teamGroups = React.useMemo(() => sports.map((sport) => ({
+    ...sport,
+    Icon: sportIcons[sport.id],
+    teams: teamsForSport(sport.id).filter((team) => (
+      isLaunchTeamSelection(sport.id, team.division, team.gender)
+    )),
+  })), []);
 
   return (
     <AnimatePresence>
@@ -71,163 +60,114 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/65 backdrop-blur-sm"
           />
 
-          <motion.div
+          <motion.aside
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed bottom-0 left-0 top-0 z-50 flex w-[21rem] max-w-[88vw] flex-col overflow-hidden border-r border-[#B5413F]/20 bg-[#13090d] shadow-[24px_0_90px_rgba(0,0,0,0.5)]"
+            transition={{ type: 'spring', damping: 27, stiffness: 220 }}
+            aria-label="Teams menu"
+            className="fixed bottom-0 left-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-[#B5413F]/20 bg-[#10070a] shadow-[24px_0_90px_rgba(0,0,0,0.58)]"
           >
-            <div className="relative overflow-hidden border-b border-white/[0.06] p-5">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_10%,rgba(181,65,63,0.28),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.055),transparent_52%)]" />
-              <div className="relative z-10 flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onNavigateHome();
-                      onClose();
-                    }}
-                    aria-label="Go to Home"
-                    className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.055] text-[#F06865] shadow-[0_16px_42px_rgba(0,0,0,0.22)] transition-colors hover:border-[#F06865]/35 hover:bg-[#B5413F]/16 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F06865]"
-                  >
-                    <Shield size={21} />
-                  </button>
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#F06865]">
-                    SPH LV Eagles
-                  </p>
-                  <h2 className="mt-1 text-2xl font-black uppercase leading-none tracking-[0.1em] text-foreground">
-                    Athletic Teams
-                  </h2>
-                  <p className="mt-2 text-xs font-bold leading-relaxed text-foreground/45">
-                    Select a sport and division.
-                  </p>
-                </div>
+            <div className="relative border-b border-white/[0.065] px-4 py-3.5">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(181,65,63,0.24),transparent_44%)]" />
+              <div className="relative flex items-center justify-between gap-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onNavigateHome();
+                    onClose();
+                  }}
+                  className="flex min-w-0 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F06865]"
+                  aria-label="Go to Home"
+                >
+                  <span className="flex h-11 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white shadow-[0_12px_34px_rgba(0,0,0,0.26)]">
+                    <img
+                      src="https://res.cloudinary.com/dpgt445lg/image/upload/v1775384563/image_13_obe33c.png"
+                      alt=""
+                      className="h-10 w-12 object-contain"
+                      aria-hidden="true"
+                    />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-sm font-black uppercase tracking-[0.13em] text-foreground">
+                      LV Eagle App
+                    </span>
+                    <span className="mt-0.5 block text-[9px] font-black uppercase tracking-[0.18em] text-[#F06865]">
+                      Choose your team
+                    </span>
+                  </span>
+                </button>
 
                 <button
                   type="button"
                   onClick={onClose}
                   aria-label="Close teams menu"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-black/20 text-foreground/55 transition-colors hover:bg-white hover:text-black"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.035] text-foreground/55 transition-colors hover:bg-white hover:text-black"
                 >
                   <X size={18} />
                 </button>
               </div>
             </div>
 
-            <div className="flex-1 space-y-2 overflow-y-auto px-4 py-4">
-              {sports.map((sport) => {
-                const Icon = sport.icon;
-                const isOpenSport = openSport === sport.id;
-                const teams = getTeamsForSport(sport.id);
+            <div className="flex-1 space-y-3 overflow-y-auto px-3.5 py-3.5">
+              {teamGroups.map((sport, index) => {
+                const Icon = sport.Icon;
 
                 return (
-                  <div
+                  <section
                     key={sport.id}
-                    className={`overflow-hidden rounded-2xl border transition-colors ${
-                      isOpenSport
-                        ? 'border-[#B5413F]/28 bg-[#5A1C2C]/18'
-                        : 'border-white/[0.055] bg-white/[0.025] hover:border-white/10 hover:bg-white/[0.04]'
-                    }`}
+                    aria-labelledby={`menu-${sport.id}`}
+                    className="overflow-hidden rounded-2xl border border-white/[0.065] bg-white/[0.025] p-3 shadow-[0_14px_38px_rgba(0,0,0,0.18)]"
                   >
-                    <button
-                      type="button"
-                      onClick={() => handleSportToggle(sport.id)}
-                      className="flex w-full items-center justify-between gap-3 px-3.5 py-3.5 text-left transition-colors"
-                    >
-                      <div className="flex min-w-0 items-center gap-3">
-                        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${
-                          isOpenSport
-                            ? 'border-[#B5413F]/25 bg-[#B5413F]/16 text-[#F06865]'
-                            : 'border-white/[0.075] bg-black/18 text-foreground/55'
-                        }`}>
-                          <Icon size={20} />
-                        </div>
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="truncate text-sm font-black uppercase tracking-[0.14em] text-foreground">
-                              {sport.label}
-                            </span>
-                            {sport.featured && (
-                              <Sparkles size={12} className="shrink-0 text-[#F06865]" />
-                            )}
-                          </div>
-                          <span className="mt-1 block text-[9px] font-black uppercase tracking-[0.17em] text-foreground/36">
-                            {teams.length} teams
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex shrink-0 items-center gap-2">
-                        <span className={`rounded-full border px-2 py-1 text-[8px] font-black uppercase tracking-[0.14em] ${
-                          sport.id === 'Soccer'
-                            ? 'border-green-400/20 bg-green-400/10 text-green-300'
-                            : 'border-white/[0.08] bg-white/[0.035] text-foreground/38'
-                        }`}>
-                          {sport.status}
+                    <div className="mb-2.5 flex items-center justify-between gap-3">
+                      <h2 id={`menu-${sport.id}`} className="flex min-w-0 items-center gap-2.5 text-xs font-black uppercase tracking-[0.13em] text-foreground">
+                        <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#B5413F]/25 bg-[#B5413F]/14 text-[#F06865]" aria-hidden="true">
+                          <Icon size={18} />
                         </span>
-                        {isOpenSport ? (
-                          <ChevronUp size={17} className="text-foreground/45" />
-                        ) : (
-                          <ChevronDown size={17} className="text-foreground/45" />
-                        )}
-                      </div>
-                    </button>
+                        {sport.label}
+                      </h2>
+                      <span className="text-[8px] font-black uppercase tracking-[0.18em] text-foreground/28">
+                        0{index + 1}
+                      </span>
+                    </div>
 
-                    <AnimatePresence>
-                      {isOpenSport && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: 0.2 }}
-                          className="overflow-hidden border-t border-white/[0.055] bg-black/16 px-3 pb-3"
-                        >
-                          <div className="grid grid-cols-1 gap-2 pt-3">
-                            {teams.map((team) => (
-                              <button
-                                key={`${sport.id}-${team.division}-${team.gender}`}
-                                type="button"
-                                onClick={() => {
-                                  onSelectTeam(sport.id, team.division, team.gender);
-                                  onClose();
-                                }}
-                                className="group flex w-full items-center justify-between rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-3 text-left transition-colors hover:border-[#B5413F]/25 hover:bg-[#B5413F]/12"
-                              >
-                                <div>
-                                  <p className="text-xs font-black uppercase tracking-[0.18em] text-foreground/72 group-hover:text-foreground">
-                                    {team.shortName}
-                                  </p>
-                                  <p className="mt-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/30">
-                                    {sport.label}
-                                  </p>
-                                </div>
-                                <ChevronRight size={15} className="text-foreground/28 transition-transform group-hover:translate-x-0.5 group-hover:text-[#F06865]" />
-                              </button>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {sport.teams.map((team) => {
+                        const key = `${sport.id}-${team.division}-${team.gender}`;
+                        const name = teamNames[key] ?? team.displayName;
+
+                        return (
+                          <button
+                            key={key}
+                            type="button"
+                            onClick={() => {
+                              onSelectTeam(sport.id, team.division, team.gender);
+                              onClose();
+                            }}
+                            className="group flex min-h-[54px] items-center justify-between gap-1.5 rounded-xl border border-white/[0.065] bg-black/18 px-2.5 py-2 text-left transition-colors hover:border-[#B5413F]/30 hover:bg-[#B5413F]/12"
+                          >
+                            <span className="text-[9px] font-black uppercase leading-snug tracking-[0.035em] text-foreground/74 group-hover:text-foreground">
+                              {name}
+                            </span>
+                            <ArrowUpRight size={12} className="shrink-0 text-foreground/25 group-hover:text-[#F06865]" aria-hidden="true" />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
                 );
               })}
             </div>
 
-            <div className="border-t border-white/[0.06] bg-black/16 p-4">
-              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/50">
-                  Athletics Department
-                </p>
-                <p className="mt-1 text-xs font-bold text-foreground/34">
-                  {IS_PROTOTYPE ? 'Prototype catalog · shared account data' : 'Season 1 · 6 launch teams'}
-                </p>
+            {IS_PROTOTYPE && (
+              <div className="border-t border-white/[0.06] px-4 py-2.5 text-center text-[8px] font-black uppercase tracking-[0.18em] text-amber-300/65">
+                Prototype catalog
               </div>
-            </div>
-          </motion.div>
+            )}
+          </motion.aside>
         </>
       )}
     </AnimatePresence>
