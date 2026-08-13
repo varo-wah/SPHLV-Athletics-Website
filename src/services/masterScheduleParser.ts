@@ -52,12 +52,13 @@ export function parseMasterScheduleSeason(season: string, matrix: string[][]): S
     }
 
     headers.forEach(({ columnIndex, team }) => {
-      const text = clean(row[columnIndex]);
+      const sourceText = clean(row[columnIndex]);
 
-      if (!text || !/[A-Za-z0-9]/.test(text)) {
+      if (!sourceText || !/[A-Za-z0-9]/.test(sourceText)) {
         return;
       }
 
+      const text = correctedScheduleText(team, parsedDate, sourceText);
       const identity = identityForTeam(team);
       const eventType = detectEventType(text, team);
 
@@ -77,12 +78,20 @@ export function parseMasterScheduleSeason(season: string, matrix: string[][]): S
         location: detectLocation(text),
         opponent: detectOpponent(text),
         time: detectTime(text),
-        raw: text,
+        raw: sourceText,
       });
     });
   }
 
   return events;
+}
+
+function correctedScheduleText(team: string, date: string, text: string): string {
+  const isIncorrectSmpBoysFixture = team.toLowerCase() === 'smp boys basketball'
+    && date === '2026-08-22'
+    && text.replace(/\s+/g, '').toLowerCase() === 'gjs/acs@lv';
+
+  return isIncorrectSmpBoysFixture ? 'GJS @ LV' : text;
 }
 
 export function isCompetitiveScheduleEvent(event: ScheduleEvent): boolean {

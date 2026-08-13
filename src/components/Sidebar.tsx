@@ -3,13 +3,6 @@ import { X } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import {
-  BasketballIcon,
-  VolleyballIcon,
-  SoccerIcon,
-  BadmintonIcon,
-  TrackIcon,
-} from './SportIcons';
-import {
   IS_PROTOTYPE,
   LAUNCH_TEAM_SPORTS,
   isLaunchTeamSelection,
@@ -23,12 +16,12 @@ interface SidebarProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
 }
 
-const sportIcons = {
-  Soccer: SoccerIcon,
-  Volleyball: VolleyballIcon,
-  Basketball: BasketballIcon,
-  Badminton: BadmintonIcon,
-  TrackAndField: TrackIcon,
+const sportBallGlyphs: Record<SportTab, string> = {
+  Soccer: '⚽',
+  Volleyball: '🏐',
+  Basketball: '🏀',
+  Badminton: '🏸',
+  TrackAndField: '🏃',
 };
 
 const teamMenuCodes: Record<string, string> = {
@@ -54,7 +47,7 @@ const sports = SPORT_CATALOG.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport
 export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam }: SidebarProps) {
   const teamGroups = React.useMemo(() => sports.map((sport) => ({
     ...sport,
-    Icon: sportIcons[sport.id],
+    ballGlyph: sportBallGlyphs[sport.id],
     teams: teamsForSport(sport.id).filter((team) => (
       isLaunchTeamSelection(sport.id, team.division, team.gender)
     )),
@@ -123,8 +116,6 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
 
             <div className="team-overlay-scroll flex-1 space-y-3 overflow-y-auto px-3.5 py-3.5">
               {teamGroups.map((sport, index) => {
-                const Icon = sport.Icon;
-
                 return (
                   <section
                     key={sport.id}
@@ -134,7 +125,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                     <div className="mb-2.5 flex items-center justify-between gap-3">
                       <h2 id={`menu-${sport.id}`} className="flex min-w-0 items-center gap-2.5 text-xs font-black uppercase tracking-[0.13em] text-brand-navy dark:text-foreground">
                         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-brand-red/20 bg-brand-red/10 text-brand-red dark:border-[#B5413F]/25 dark:bg-[#B5413F]/14 dark:text-[#F06865]" aria-hidden="true">
-                          <Icon size={18} />
+                          <span className="text-[18px] leading-none">{sport.ballGlyph}</span>
                         </span>
                         {sport.label}
                       </h2>
@@ -158,7 +149,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                               onSelectTeam(sport.id, team.division, team.gender);
                               onClose();
                             }}
-                            className="group flex min-h-[54px] items-center justify-center rounded-xl border border-brand-maroon/10 bg-brand-cream/38 px-2.5 py-2 text-center transition-colors hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:hover:border-[#B5413F]/30 dark:hover:bg-[#B5413F]/12"
+                            className="group flex min-h-11 items-center justify-center rounded-xl border border-brand-maroon/10 bg-brand-cream/38 px-2.5 py-2 text-center transition-colors hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:hover:border-[#B5413F]/30 dark:hover:bg-[#B5413F]/12"
                           >
                             <span className="text-sm font-black uppercase tracking-[0.12em] text-brand-navy/80 group-hover:text-brand-navy dark:text-foreground/80 dark:group-hover:text-foreground">
                               {menuCode}

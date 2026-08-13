@@ -31,6 +31,25 @@ const approvedSoccerTeamPhotos = [
 
 const varsityBoysSoccerPreseasonTeams = ['LV', 'BSJ', 'GJS', 'ACS'] as const;
 
+const varsityBoysSoccerTournamentResults = [
+  {
+    name: 'SPH Cup',
+    placement: 'Pending',
+    detail: 'Final placement will be posted after the tournament.',
+  },
+  {
+    name: 'JAAC',
+    placement: 'Runner-up',
+    detail: 'Final · SPH 0–2 BSJ',
+  },
+  {
+    name: 'ACSC',
+    placement: 'Pending',
+    detail: 'Final placement has not been posted.',
+    href: 'https://acscconference.com/boys-soccer/',
+  },
+] as const;
+
 function formatGameDate(date: string | null) {
   if (!date) return 'Date TBD';
   const [year, month, day] = date.split('-').map(Number);
@@ -628,149 +647,57 @@ export default function TeamPageScreen({
                 )}
               </div>
 
-              {sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
-                <a
-                  href="https://acscconference.com/boys-soccer/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group relative flex w-full items-center justify-between overflow-hidden rounded-2xl border border-border/10 bg-subcard/70 px-4 py-3 text-white shadow-[0_14px_38px_rgba(0,0,0,0.16)] transition-colors hover:border-[#B5413F]/30 hover:bg-subcard"
-                >
-                  <div className="absolute inset-y-0 left-0 w-1 bg-[#B5413F]" />
-
-                  <div className="relative z-10 flex items-center gap-3">
-                    <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#B5413F]/20 bg-[#B5413F]/10">
-                      <Trophy size={19} className="text-[#B5413F] transition-transform group-hover:scale-110" />
-                    </div>
-
-                    <div className="flex min-w-0 flex-col items-start gap-1 leading-none">
-                      <span className="text-[9px] font-black uppercase tracking-[0.22em] text-foreground/40">
-                        Postseason
-                      </span>
-                      <span className="truncate text-sm font-black tracking-tight text-foreground sm:text-base">
-                        Open ACSC Results
-                      </span>
-                    </div>
-                  </div>
-
-                  <ChevronRight size={20} className="relative z-10 text-foreground/45 transition-transform group-hover:translate-x-1 group-hover:text-[#B5413F]" />
-                </a>
-              )}
             </section>
           )}
         </div>
 
-        {/* JAAC Bracket */}
+        {/* TOURNAMENT RESULTS */}
         {activeSection === 'standings' && sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
-          <section className="space-y-4 mt-10">
+          <section className="mt-8 space-y-4">
             <SectionHeader
-              title="JAAC Bracket"
-              detail="Semifinals & final"
+              title="Tournament Results"
+              detail="Final placement"
             />
 
-            <div className="rounded-2xl border border-brand-sky/20 bg-brand-maroon p-4 shadow-md">
-              <div className="flex items-center justify-between mb-4">
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-white/60">
-                  @BSJ · Final Round
-                </p>
-                <p className="text-xs font-black uppercase tracking-[0.18em] text-white/60">
-                  2025
-                </p>
-              </div>
-
-              <div className="rounded-xl border border-brand-sky/15 bg-brand-navy p-5">
-                <div className="text-center mb-5">
-                  <h4 className="text-lg font-black uppercase tracking-[0.18em] text-brand-cream">
-                    JAAC Championship
-                  </h4>
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/50 mt-1">
-                    Playoffs
-                  </p>
-                </div>
-
-                {/* Final */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-center mb-5">
-                  <div className="overflow-hidden rounded-lg border border-white/10 border-l-4 border-l-brand-sky bg-white/5">
-                    <div className="grid grid-cols-[1fr_48px] border-b border-white/5">
-                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white/55">
-                        SPH
-                      </div>
-                      <div className="px-3 py-2 text-xs font-black text-right text-white/55">
-                        0
-                      </div>
+            <div className="grid gap-3 md:grid-cols-3">
+              {varsityBoysSoccerTournamentResults.map((result) => {
+                const content = (
+                  <>
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-sky/18 text-brand-navy dark:text-brand-sky">
+                        <Trophy size={17} />
+                      </span>
+                      {'href' in result && <ChevronRight size={17} className="text-foreground/30" />}
                     </div>
-
-                    <div className="grid grid-cols-[1fr_48px] bg-white/10">
-                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white">
-                        BSJ
-                      </div>
-                      <div className="px-3 py-2 text-right text-xs font-black text-brand-cream">
-                        2
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg bg-white/5 border border-white/10 min-h-[72px] flex items-center justify-center">
-                    <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/45">
-                      Final
+                    <p className="mt-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-red">
+                      {result.name}
                     </p>
-                  </div>
-                </div>
+                    <p className="mt-1 text-xl font-black uppercase tracking-tight text-foreground">
+                      {result.placement}
+                    </p>
+                    <p className="mt-2 text-xs font-semibold leading-relaxed text-foreground/48">
+                      {result.detail}
+                    </p>
+                  </>
+                );
 
-                {/* Semifinals */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div className="rounded-lg bg-white/5 border border-white/10 overflow-hidden">
-                    <div className="px-3 py-2 border-b border-white/5">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-                        Semifinals 1
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-[1fr_48px] bg-white/10">
-                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white">
-                        SPH
-                      </div>
-                      <div className="px-3 py-2 text-xs font-black text-right text-white">
-                        3
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-[1fr_48px] border-t border-white/5">
-                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white/55">
-                        JIS
-                      </div>
-                      <div className="px-3 py-2 text-xs font-black text-right text-white/55">
-                        1
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="rounded-lg bg-white/5 border border-white/10 overflow-hidden">
-                    <div className="px-3 py-2 border-b border-white/5">
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40">
-                        Semifinals 2
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-[1fr_48px] bg-white/10">
-                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white">
-                        BSJ
-                      </div>
-                      <div className="px-3 py-2 text-xs font-black text-right text-white">
-                        2
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-[1fr_48px] border-t border-white/5">
-                      <div className="px-3 py-2 text-xs font-black uppercase tracking-widest text-white/55">
-                        ACS
-                      </div>
-                      <div className="px-3 py-2 text-xs font-black text-right text-white/55">
-                        0
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+                return 'href' in result ? (
+                  <a
+                    key={result.name}
+                    href={result.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-2xl border border-border/10 bg-subcard p-4 shadow-sm transition-colors hover:border-brand-sky/40"
+                    aria-label={`Open ${result.name} results`}
+                  >
+                    {content}
+                  </a>
+                ) : (
+                  <article key={result.name} className="rounded-2xl border border-border/10 bg-subcard p-4 shadow-sm">
+                    {content}
+                  </article>
+                );
+              })}
             </div>
           </section>
         )}
