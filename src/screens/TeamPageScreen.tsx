@@ -1,5 +1,5 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { CalendarDays, Users, Trophy, ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react';
+import { Users, Trophy, ChevronLeft, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -28,6 +28,8 @@ const approvedSoccerTeamPhotos = [
   'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241030/Varsity_soccer_boys_teampic_2_dyv7mz.jpg',
   'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241126/Varsity_boys_soccer_team_pic_resized_i1ezdp.jpg',
 ] as const;
+
+const varsityBoysSoccerPreseasonTeams = ['LV', 'BSJ', 'GJS', 'ACS'] as const;
 
 function formatGameDate(date: string | null) {
   if (!date) return 'Date TBD';
@@ -98,6 +100,28 @@ export default function TeamPageScreen({
       standing.genderGroup === gender
     );
   });
+  const isPreseasonStandings = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
+  const standingsForDisplay = isPreseasonStandings
+    ? varsityBoysSoccerPreseasonTeams.map((club, index) => ({
+        id: `preseason-soccer-sma-boys-${club.toLowerCase()}`,
+        pageId: 'preseason-soccer-sma-boys',
+        sport: 'Soccer' as const,
+        sportKey: 'Soccer' as const,
+        level: 'SMA' as const,
+        genderGroup: 'Boys' as const,
+        tournament: 'Season' as const,
+        rank: 1,
+        team: club,
+        wins: 0,
+        draws: 0,
+        losses: 0,
+        points: 0,
+        forValue: 0,
+        againstValue: 0,
+        difference: 0,
+        notes: index === 0 ? 'Preseason table' : '',
+      }))
+    : currentStandings;
 
   const resultSourceState = team
     ? athleticsDataState?.data.resultSourceStates.find((source) => source.teamId === team.id)
@@ -121,7 +145,7 @@ export default function TeamPageScreen({
     ))
     .sort((a, b) => gameTimestamp(a.date, a.time) - gameTimestamp(b.date, b.time));
 
-  const standingsRows = currentStandings
+  const standingsRows = standingsForDisplay
     .map((row, idx) => {
       const wins = row.wins ?? 0;
       const draws = row.draws ?? 0;
@@ -140,9 +164,18 @@ export default function TeamPageScreen({
       if (b.diff !== a.diff) return b.diff - a.diff;
       if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
       if (b.wins !== a.wins) return b.wins - a.wins;
+      if (isPreseasonStandings) return a.idx - b.idx;
       return a.row.team.localeCompare(b.row.team);
     })
-    .map((entry, idx) => ({ ...entry, rank: idx + 1 }));
+    .map((entry, idx) => ({ ...entry, rank: isPreseasonStandings ? 1 : idx + 1 }));
+  const allTeamsTied = standingsRows.length > 1 && standingsRows.every((entry) => (
+    entry.pts === standingsRows[0].pts
+    && entry.gp === standingsRows[0].gp
+    && entry.wins === standingsRows[0].wins
+    && entry.draws === standingsRows[0].draws
+    && entry.losses === standingsRows[0].losses
+    && entry.diff === standingsRows[0].diff
+  ));
   const leader = standingsRows[0];
   const lvStanding = standingsRows.find((entry) => {
     const teamName = entry.row.team.trim().toLowerCase();
@@ -268,14 +301,14 @@ export default function TeamPageScreen({
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
-                    Live table
+                    {isPreseasonStandings ? 'Preseason table' : 'Live table'}
                   </p>
                   <h2 className="mt-2 text-3xl font-black uppercase tracking-[0.16em] text-foreground leading-tight sm:text-4xl">
                     League<br />Standings
                   </h2>
                 </div>
 
-            <div className="flex flex-wrap items-center gap-3">
+            {!isPreseasonStandings && <div className="flex flex-wrap items-center gap-3">
               {(athleticsDataState?.loading || athleticsDataState?.refreshing) && (
                 <span className="rounded-full border border-[#B5413F]/20 bg-[#B5413F]/10 px-3 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-[#B5413F] animate-pulse">
                   Syncing
@@ -295,22 +328,22 @@ export default function TeamPageScreen({
               >
                 Refresh
               </button>
-            </div>
+            </div>}
           </div>
 
           {lvStanding && (
             <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
               <div className="rounded-2xl border border-[#B5413F]/20 bg-gradient-to-r from-[#5A1C2C]/35 via-[#5A1C2C]/14 to-transparent p-4">
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#B5413F]">
-                  LV status
+                  {allTeamsTied ? 'Preseason status' : 'LV status'}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
                   <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-[0_12px_30px_rgba(181,65,63,0.28)]">
-                    #{lvStanding.rank}
+                    {allTeamsTied ? `T${lvStanding.rank}` : `#${lvStanding.rank}`}
                   </div>
                   <div className="min-w-0">
                     <p className="truncate text-2xl font-black uppercase tracking-tight text-foreground">
-                      {lvStanding.rank === 1 ? 'LV leads the table' : `LV is #${lvStanding.rank}`}
+                      {allTeamsTied ? 'All teams tied' : lvStanding.rank === 1 ? 'LV leads the table' : `LV is #${lvStanding.rank}`}
                     </p>
                     <p className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">
                       {lvStanding.wins}W · {lvStanding.draws}D · {lvStanding.losses}L
@@ -351,11 +384,11 @@ export default function TeamPageScreen({
                </div>
 
                <div className="flex flex-col">
-                  {athleticsDataState?.loading && currentStandings.length === 0 ? (
+                  {athleticsDataState?.loading && standingsForDisplay.length === 0 ? (
                     <div className="p-6 text-center text-xs font-medium text-foreground/40 animate-pulse">
                       Fetching live standings from Google Sheets...
                     </div>
-                  ) : athleticsDataState?.error ? (
+                  ) : athleticsDataState?.error && standingsForDisplay.length === 0 ? (
                     <div className="p-6 text-center text-xs font-semibold text-red-500 bg-red-500/5">
                       Failed to load. {athleticsDataState.error}
                     </div>
@@ -372,17 +405,17 @@ export default function TeamPageScreen({
                         <div
                           key={`${row.id || idx}-${idx}`}
                           className={`relative grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/5 px-4 py-4 transition-colors hover:bg-foreground/[0.025] sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] ${
-                            idx === 0 ? 'bg-[#B5413F]/[0.055]' : ''
+                            idx === 0 && !allTeamsTied ? 'bg-[#B5413F]/[0.055]' : ''
                           }`}
                         >
-                          {idx === 0 && <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-[#B5413F]" />}
+                          {idx === 0 && !allTeamsTied && <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-[#B5413F]" />}
                           <div className="flex items-center">
                             <span className={`flex h-9 w-9 items-center justify-center rounded-2xl border text-xs font-black ${
-                              idx === 0
+                              idx === 0 && !allTeamsTied
                                 ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-[0_10px_24px_rgba(181,65,63,0.26)]'
                                 : 'border-border/10 bg-foreground/[0.035] text-foreground/55'
                             }`}>
-                              {rank}
+                              {allTeamsTied ? `T${rank}` : rank}
                             </span>
                           </div>
 
@@ -427,8 +460,8 @@ export default function TeamPageScreen({
                </div>
 
                <div className="flex flex-col gap-2 bg-foreground/[0.025] px-5 py-4 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35 sm:flex-row sm:items-center sm:justify-between">
-                  <span>Google Sheets Synced</span>
-                  <span>{standingsRows.length} Teams · Live Data</span>
+                  <span>{isPreseasonStandings ? 'Preseason table' : 'Google Sheets Synced'}</span>
+                  <span>{standingsRows.length} Teams · {isPreseasonStandings ? 'All tied 0–0' : 'Live Data'}</span>
                </div>
             </div>
           </section>
@@ -447,10 +480,6 @@ export default function TeamPageScreen({
                   </h2>
                 </div>
 
-                <span className="inline-flex w-fit items-center gap-2 rounded-full border border-border/10 bg-foreground/[0.025] px-3 py-2 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/48">
-                  <CalendarDays size={13} />
-                  Master schedule + manager results
-                </span>
               </div>
 
               <div
