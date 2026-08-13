@@ -260,7 +260,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const [selectedSeason, setSelectedSeason] = useState(LAUNCH_SEASON);
   const activeSeason = IS_PROTOTYPE ? selectedSeason : LAUNCH_SEASON;
   const [teamFilter, setTeamFilter] = useState<ScheduleTeamFilter>(ALL);
-  const [scheduleScope, setScheduleScope] = useState<'games' | 'all'>('games');
+  const [scheduleScope, setScheduleScope] = useState<'games' | 'practices'>('games');
   const [collapsedWeeks, setCollapsedWeeks] = useState<Record<string, boolean>>({});
   const [scheduleView, setScheduleView] = useState<ScheduleView>('list');
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<SelectedCalendarDay | null>(null);
@@ -409,11 +409,12 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           <div className="flex gap-5" aria-label="Filter schedule by event type">
             {([
               { id: 'games', label: 'Games' },
-              { id: 'all', label: 'All' },
+              { id: 'practices', label: 'Practices' },
             ] as const).map((scope) => (
               <button
                 key={scope.id}
                 type="button"
+                title={scope.id === 'practices' ? 'Show games and practices' : 'Show games only'}
                 aria-pressed={scheduleScope === scope.id}
                 onClick={() => setScheduleScope(scope.id)}
                 className={`relative pb-2 text-xs font-black uppercase tracking-[0.12em] transition-colors ${
