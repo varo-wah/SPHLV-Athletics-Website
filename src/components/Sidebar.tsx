@@ -44,7 +44,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 27, stiffness: 220 }}
             aria-label="Teams menu"
-            className="fixed bottom-0 left-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-brand-maroon/15 bg-[linear-gradient(160deg,#FFFFFF_0%,#FFF9EE_58%,rgba(193,18,31,0.10)_100%)] shadow-[24px_0_90px_rgba(120,0,0,0.20)] dark:border-[#B5413F]/20 dark:bg-none dark:bg-[#10070a] dark:shadow-[24px_0_90px_rgba(0,0,0,0.58)]"
+            className="fixed bottom-0 left-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-brand-maroon/15 bg-[linear-gradient(160deg,#FFFFFF_0%,#F8FAFC_62%,rgba(193,18,31,0.08)_100%)] shadow-[24px_0_90px_rgba(120,0,0,0.20)] dark:border-[#B5413F]/20 dark:bg-none dark:bg-[#10070a] dark:shadow-[24px_0_90px_rgba(0,0,0,0.58)]"
           >
             <div className="relative border-b border-brand-maroon/10 px-4 py-3.5 dark:border-white/[0.065]">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(193,18,31,0.14),transparent_46%)] dark:bg-[radial-gradient(circle_at_12%_0%,rgba(181,65,63,0.24),transparent_44%)]" />
@@ -80,7 +80,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                   type="button"
                   onClick={onClose}
                   aria-label="Close teams menu"
-                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-brand-maroon/10 bg-brand-cream/55 text-brand-navy/55 transition-colors hover:border-brand-red/25 hover:bg-white hover:text-brand-red dark:border-white/10 dark:bg-white/[0.035] dark:text-foreground/55 dark:hover:bg-white dark:hover:text-black"
+                  className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-brand-maroon/10 bg-muted text-brand-navy/55 transition-colors hover:border-brand-red/25 hover:bg-white hover:text-brand-red dark:border-white/10 dark:bg-white/[0.035] dark:text-foreground/55 dark:hover:bg-white dark:hover:text-black"
                 >
                   <X size={18} />
                 </button>
@@ -120,7 +120,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                               onSelectTeam(sport.id, team.division, team.gender);
                               onClose();
                             }}
-                            className="group flex min-h-11 items-center justify-center rounded-xl border border-brand-maroon/10 bg-brand-cream/38 px-2.5 py-2 text-center transition-colors hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:hover:border-[#B5413F]/30 dark:hover:bg-[#B5413F]/12"
+                            className="group flex min-h-11 items-center justify-center rounded-xl border border-brand-maroon/10 bg-muted/70 px-2.5 py-2 text-center transition-colors hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:hover:border-[#B5413F]/30 dark:hover:bg-[#B5413F]/12"
                           >
                             <span className="text-sm font-black uppercase tracking-[0.12em] text-brand-navy/80 group-hover:text-brand-navy dark:text-foreground/80 dark:group-hover:text-foreground">
                               {team.menuCode}

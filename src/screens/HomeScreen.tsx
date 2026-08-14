@@ -274,7 +274,7 @@ export default function HomeScreen({
           <button
             type="button"
             onClick={onNavigateToSchedule}
-            className="group flex min-h-[168px] min-w-0 flex-col rounded-3xl border border-brand-navy/10 bg-[linear-gradient(145deg,#FFFFFF_0%,rgba(253,240,213,0.88)_70%,rgba(102,155,188,0.16)_100%)] p-4 text-left shadow-[0_16px_42px_rgba(0,48,73,0.10)] transition-transform hover:-translate-y-0.5 dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(0,48,73,0.72),rgba(10,4,5,0.96))]"
+            className="group flex min-h-[168px] min-w-0 flex-col rounded-3xl border border-brand-navy/10 bg-[linear-gradient(145deg,#FFFFFF_0%,rgba(248,250,252,0.94)_70%,rgba(102,155,188,0.16)_100%)] p-4 text-left shadow-[0_16px_42px_rgba(0,48,73,0.10)] transition-transform hover:-translate-y-0.5 dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(0,48,73,0.72),rgba(10,4,5,0.96))]"
             aria-label="Open schedule for next game details"
           >
             <div className="flex w-full items-center justify-between gap-2">
@@ -309,7 +309,7 @@ export default function HomeScreen({
                 recentFinishedMatch.genderGroup,
               );
             }}
-            className="group flex min-h-[168px] min-w-0 flex-col rounded-3xl border border-brand-red/12 bg-[linear-gradient(145deg,#FFFFFF_0%,rgba(253,240,213,0.82)_66%,rgba(193,18,31,0.12)_100%)] p-4 text-left shadow-[0_16px_42px_rgba(120,0,0,0.10)] transition-transform hover:-translate-y-0.5 disabled:cursor-default disabled:hover:translate-y-0 dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(120,0,0,0.62),rgba(10,4,5,0.96))]"
+            className="group flex min-h-[168px] min-w-0 flex-col rounded-3xl border border-brand-red/12 bg-[linear-gradient(145deg,#FFFFFF_0%,rgba(248,250,252,0.94)_66%,rgba(193,18,31,0.11)_100%)] p-4 text-left shadow-[0_16px_42px_rgba(120,0,0,0.10)] transition-transform hover:-translate-y-0.5 disabled:cursor-default disabled:hover:translate-y-0 dark:border-white/10 dark:bg-[linear-gradient(145deg,rgba(120,0,0,0.62),rgba(10,4,5,0.96))]"
             aria-label={recentFinishedMatch ? `Open ${recentResultTeam}` : 'No latest result available'}
           >
             <div className="flex w-full items-center justify-between gap-2">
@@ -344,7 +344,7 @@ export default function HomeScreen({
       <button
         type="button"
         onClick={onNavigateToNews}
-        className="group flex w-full items-center gap-4 overflow-hidden rounded-3xl border border-brand-red/12 bg-[linear-gradient(120deg,#FFFFFF_0%,rgba(253,240,213,0.88)_58%,rgba(193,18,31,0.10)_100%)] p-4 text-left shadow-[0_14px_38px_rgba(120,0,0,0.08)] transition-transform hover:-translate-y-0.5 hover:border-brand-red/25 dark:border-white/10 dark:bg-[linear-gradient(120deg,rgba(120,0,0,0.54),rgba(10,4,5,0.96))]"
+        className="group flex w-full items-center gap-4 overflow-hidden rounded-3xl border border-brand-red/12 bg-[linear-gradient(120deg,#FFFFFF_0%,rgba(248,250,252,0.94)_58%,rgba(193,18,31,0.09)_100%)] p-4 text-left shadow-[0_14px_38px_rgba(120,0,0,0.08)] transition-transform hover:-translate-y-0.5 hover:border-brand-red/25 dark:border-white/10 dark:bg-[linear-gradient(120deg,rgba(120,0,0,0.54),rgba(10,4,5,0.96))]"
         aria-label="View athletics news"
       >
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red dark:bg-white/8 dark:text-red-300">
