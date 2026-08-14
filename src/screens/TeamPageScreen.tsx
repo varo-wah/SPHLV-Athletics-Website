@@ -316,14 +316,14 @@ export default function TeamPageScreen({
           {/* STANDINGS COLUMN */}
           {activeSection === 'standings' && (
           <section className="space-y-4">
-            <div className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/40 p-4 shadow-[0_24px_70px_rgba(0,0,0,0.16)]">
+            <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/90 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-border/10 dark:bg-subcard/40 dark:shadow-[0_24px_70px_rgba(0,0,0,0.16)]">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
                     {isPreseasonStandings ? 'Preseason table' : 'Live table'}
                   </p>
                   <h2 className="mt-2 text-3xl font-black uppercase tracking-[0.16em] text-foreground leading-tight sm:text-4xl">
-                    League<br />Standings
+                    Regular Season<br />Standings
                   </h2>
                 </div>
 
@@ -352,7 +352,7 @@ export default function TeamPageScreen({
 
           {lvStanding && (
             <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
-              <div className="rounded-2xl border border-[#B5413F]/20 bg-gradient-to-r from-[#5A1C2C]/35 via-[#5A1C2C]/14 to-transparent p-4">
+              <div className="rounded-2xl border border-brand-maroon/12 border-l-4 border-l-brand-red bg-[#F4F4F3] p-4 dark:border-[#B5413F]/20 dark:border-l-[#B5413F] dark:bg-white/[0.045]">
                 <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#B5413F]">
                   {allTeamsTied ? 'Preseason status' : 'LV status'}
                 </p>
@@ -372,15 +372,15 @@ export default function TeamPageScreen({
               </div>
 
               <div className="grid grid-cols-3 gap-2 sm:min-w-[230px]">
-                <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
+                <div className="rounded-2xl border border-brand-maroon/10 bg-[#F4F4F3] p-3 text-center dark:border-border/10 dark:bg-foreground/[0.035]">
                   <p className="text-2xl font-black text-[#B5413F]">{lvStanding.pts}</p>
                   <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">Pts</p>
                 </div>
-                <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
+                <div className="rounded-2xl border border-brand-maroon/10 bg-[#F4F4F3] p-3 text-center dark:border-border/10 dark:bg-foreground/[0.035]">
                   <p className="text-2xl font-black text-foreground">{lvStanding.gp}</p>
                   <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">GP</p>
                 </div>
-                <div className="rounded-2xl border border-border/10 bg-foreground/[0.025] p-3 text-center">
+                <div className="rounded-2xl border border-brand-maroon/10 bg-[#F4F4F3] p-3 text-center dark:border-border/10 dark:bg-foreground/[0.035]">
                   <p className="text-2xl font-black text-foreground">
                     {lvStanding.diff !== null && lvStanding.diff > 0 ? `+${lvStanding.diff}` : lvStanding.diff ?? '-'}
                   </p>
@@ -391,8 +391,8 @@ export default function TeamPageScreen({
           )}
         </div>
 
-            <div className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
-               <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-[#5A1C2C]/10 bg-[#5A1C2C]/10 px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-[#B5413F] sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px]">
+            <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
+               <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-brand-maroon/10 bg-[#F1F2F3] px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-maroon sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] dark:border-[#5A1C2C]/10 dark:bg-[#5A1C2C]/10 dark:text-[#D85A57]">
                   <div>Rank</div>
                   <div>Club</div>
                   <div className="text-center">GP</div>
@@ -424,7 +424,7 @@ export default function TeamPageScreen({
                         <div
                           key={`${row.id || idx}-${idx}`}
                           className={`relative grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/5 px-4 py-4 transition-colors hover:bg-foreground/[0.025] sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] ${
-                            idx === 0 && !allTeamsTied ? 'bg-[#B5413F]/[0.055]' : ''
+                            idx === 0 && !allTeamsTied ? 'bg-[#FFF4F4] dark:bg-[#B5413F]/[0.055]' : ''
                           }`}
                         >
                           {idx === 0 && !allTeamsTied && <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-[#B5413F]" />}
@@ -478,7 +478,7 @@ export default function TeamPageScreen({
                   )}
                </div>
 
-               <div className="flex flex-col gap-2 bg-foreground/[0.025] px-5 py-4 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35 sm:flex-row sm:items-center sm:justify-between">
+               <div className="flex flex-col gap-2 border-t border-brand-maroon/5 bg-[#F4F4F3] px-5 py-4 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 sm:flex-row sm:items-center sm:justify-between dark:border-border/5 dark:bg-foreground/[0.025] dark:text-foreground/35">
                   <span>{isPreseasonStandings ? 'Preseason table' : 'Google Sheets Synced'}</span>
                   <span>{standingsRows.length} Teams · {isPreseasonStandings ? 'All tied 0–0' : 'Live Data'}</span>
                </div>
@@ -654,31 +654,42 @@ export default function TeamPageScreen({
         {/* TOURNAMENT RESULTS */}
         {activeSection === 'standings' && sport === 'Soccer' && division === 'SMA' && gender === 'Boys' && (
           <section className="mt-8 space-y-4">
-            <SectionHeader
-              title="Tournament Results"
-              detail="Final placement"
-            />
+            <div className="border-b border-brand-maroon/10 pb-3 dark:border-border/10">
+              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-red">
+                Cup · JAAC · ACSC
+              </p>
+              <h3 className="mt-1 text-xl font-black uppercase tracking-[0.08em] text-foreground sm:text-2xl">
+                Tournament Results
+              </h3>
+              <p className="mt-1 text-xs font-semibold text-foreground/45">
+                Final placement and championship result only.
+              </p>
+            </div>
 
             <div className="grid gap-3 md:grid-cols-3">
               {varsityBoysSoccerTournamentResults.map((result) => {
                 const content = (
-                  <>
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-sky/18 text-brand-navy dark:text-brand-sky">
-                        <Trophy size={17} />
-                      </span>
-                      {'href' in result && <ChevronRight size={17} className="text-foreground/30" />}
+                  <div className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-sky/18 text-brand-navy dark:text-brand-sky">
+                      <Trophy size={17} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brand-red">
+                            {result.name}
+                          </p>
+                          <p className="mt-0.5 text-lg font-black uppercase tracking-tight text-foreground">
+                            {result.placement}
+                          </p>
+                        </div>
+                        {'href' in result && <ChevronRight size={16} className="mt-1 shrink-0 text-foreground/30" />}
+                      </div>
+                      <p className="mt-1 text-[11px] font-semibold leading-relaxed text-foreground/48">
+                        {result.detail}
+                      </p>
                     </div>
-                    <p className="mt-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-red">
-                      {result.name}
-                    </p>
-                    <p className="mt-1 text-xl font-black uppercase tracking-tight text-foreground">
-                      {result.placement}
-                    </p>
-                    <p className="mt-2 text-xs font-semibold leading-relaxed text-foreground/48">
-                      {result.detail}
-                    </p>
-                  </>
+                  </div>
                 );
 
                 return 'href' in result ? (
@@ -687,13 +698,13 @@ export default function TeamPageScreen({
                     href={result.href}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="rounded-2xl border border-border/10 bg-subcard p-4 shadow-sm transition-colors hover:border-brand-sky/40"
+                    className="rounded-2xl border border-brand-maroon/10 bg-white/80 p-4 shadow-sm transition-colors hover:border-brand-sky/40 dark:border-border/10 dark:bg-subcard"
                     aria-label={`Open ${result.name} results`}
                   >
                     {content}
                   </a>
                 ) : (
-                  <article key={result.name} className="rounded-2xl border border-border/10 bg-subcard p-4 shadow-sm">
+                  <article key={result.name} className="rounded-2xl border border-brand-maroon/10 bg-white/80 p-4 shadow-sm dark:border-border/10 dark:bg-subcard">
                     {content}
                   </article>
                 );

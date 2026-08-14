@@ -82,9 +82,9 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
                     key={team.id}
                     type="button"
                     onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
-                    className={`group flex min-h-[64px] items-center justify-between gap-2 rounded-2xl border border-white/[0.075] bg-black/15 px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 sm:min-h-[70px] sm:px-4 ${group.buttonStyle}`}
+                    className={`group flex min-h-[64px] items-center justify-between gap-2 rounded-2xl border border-white/[0.075] bg-black/15 px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 sm:min-h-[70px] sm:px-4 [container-type:inline-size] ${group.buttonStyle}`}
                   >
-                    <span className="text-[11px] font-black uppercase leading-snug tracking-[0.045em] text-foreground sm:text-sm">
+                    <span className="text-[clamp(1.2rem,10cqi,2rem)] font-black uppercase leading-none tracking-[clamp(0.04em,0.8cqi,0.12em)] text-foreground">
                       {team.menuCode}
                     </span>
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/[0.075] bg-white/[0.045] text-foreground/42 transition-colors group-hover:bg-white/10 group-hover:text-foreground" aria-hidden="true">
