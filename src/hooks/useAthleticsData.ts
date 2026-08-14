@@ -5,8 +5,14 @@ import {
   SHEET_URLS,
   hasValidSheetUrl,
 } from "../config/sheets";
-import { CsvRow, fetchCsvMatrix, fetchCsvRows } from "../services/googleSheets";
+import {
+  CsvRow,
+  fetchCsvMatrix,
+  fetchCsvRows,
+  parseCsvMatrix,
+} from "../services/googleSheets";
 import { ScheduleEvent } from "../data/scheduleTypes";
+import seasonOneMasterScheduleCsv from "../data/master-schedule-season-1.csv?raw";
 import { parseMasterScheduleSeason } from "../services/masterScheduleParser";
 import {
   Standing,
@@ -141,6 +147,14 @@ export function useAthleticsData(): AthleticsDataState {
 
       const masterScheduleResultsPromise = Promise.all(
         MASTER_SCHEDULE_URLS.map(async (sheet) => {
+          if (sheet.season === "Season 1") {
+            return {
+              season: sheet.season,
+              matrix: parseCsvMatrix(seasonOneMasterScheduleCsv),
+              failed: false,
+            };
+          }
+
           try {
             return {
               season: sheet.season,
