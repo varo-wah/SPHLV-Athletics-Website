@@ -555,7 +555,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       {monthLabel(month)}
                     </h3>
                   </div>
-                  <span className="w-fit rounded-full border border-brand-maroon/10 bg-brand-cream px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/55 dark:border-white/10 dark:bg-white/10 dark:text-white/60">
+                  <span className="w-fit rounded-full border border-brand-maroon/10 bg-muted px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/55 dark:border-white/10 dark:bg-white/10 dark:text-white/60">
                     {monthEvents.length} events
                   </span>
                 </div>
@@ -611,7 +611,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                   ? 'border-[#B5413F]/45 bg-[#B5413F]/10 ring-1 ring-inset ring-[#B5413F]/25 dark:bg-white/[0.075]'
                                   : hasEvents
                                     ? 'border-[#C1121F]/25 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:border-[#C1121F]/50 hover:shadow-[0_18px_40px_rgba(193,18,31,0.14)] dark:bg-foreground/[0.025]'
-                                    : 'border-brand-maroon/10 bg-brand-cream/70 dark:border-white/10 dark:bg-white/[0.055]'
+                                    : 'border-brand-maroon/10 bg-muted/70 dark:border-white/10 dark:bg-white/[0.055]'
                                 : 'border-transparent bg-transparent'
                             }`}
                           >
@@ -830,7 +830,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 {selectedCalendarDay.events.map((event, index) => (
                   <motion.article
                     key={event.id}
-                    className="rounded-2xl border border-brand-maroon/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#FFF9EE_70%,rgba(193,18,31,0.055)_100%)] p-4 shadow-[0_14px_36px_rgba(120,0,0,0.08)] dark:bg-none dark:bg-foreground/[0.025]"
+                    className="rounded-2xl border border-brand-maroon/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F8FAFC_72%,rgba(193,18,31,0.045)_100%)] p-4 shadow-[0_14px_36px_rgba(120,0,0,0.08)] dark:bg-none dark:bg-foreground/[0.025]"
                     initial={{ opacity: 0, y: 18, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ delay: index * 0.045, type: 'spring', stiffness: 420, damping: 34 }}
@@ -868,7 +868,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                     </div>
 
                     {event.raw && (
-                      <p className="mt-3 rounded-xl border border-brand-maroon/10 bg-brand-cream px-3 py-2 text-xs font-bold text-foreground/55 dark:border-white/10 dark:bg-white/[0.07] dark:text-white/60">
+                      <p className="mt-3 rounded-xl border border-brand-maroon/10 bg-muted px-3 py-2 text-xs font-bold text-foreground/55 dark:border-white/10 dark:bg-white/[0.07] dark:text-white/60">
                         {event.raw}
                       </p>
                     )}
