@@ -1,10 +1,12 @@
 import { ScheduleEvent } from '../data/scheduleTypes';
 
-export type ScheduleTeamFilter = 'All' | 'VBS' | 'VGS' | 'SMPBB' | 'SMPGB';
+export type ScheduleTeamFilter = 'All' | 'VBS' | 'VGS' | 'VBV' | 'VGV' | 'SMPBB' | 'SMPGB';
 
 const TEAM_FILTER_NAMES: Record<Exclude<ScheduleTeamFilter, 'All'>, string> = {
   VBS: 'Varsity Boys Soccer',
   VGS: 'Varsity Girls Soccer',
+  VBV: 'Varsity Boys Volleyball',
+  VGV: 'Varsity Girls Volleyball',
   SMPBB: 'SMP Boys Basketball',
   SMPGB: 'SMP Girls Basketball',
 };

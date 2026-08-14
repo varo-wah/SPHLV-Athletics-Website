@@ -60,6 +60,8 @@ test('removes a middle gender marker from a shared game description', () => {
 
   assert.equal(rows.length, 1);
   assert.equal(rows[0].eventText, 'LV @ KV');
+  assert.equal(eventMatchesTeamFilter(rows[0], 'VBV'), true);
+  assert.equal(eventMatchesTeamFilter(rows[0], 'VGV'), true);
 });
 
 test('keeps separate rows when venue, time, or opponent differs', () => {
