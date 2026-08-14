@@ -16,38 +16,11 @@ interface SidebarProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
 }
 
-const sportBallGlyphs: Record<SportTab, string> = {
-  Soccer: '⚽',
-  Volleyball: '🏐',
-  Basketball: '🏀',
-  Badminton: '🏸',
-  TrackAndField: '🏃',
-};
-
-const teamMenuCodes: Record<string, string> = {
-  'Soccer-SMP-Boys': 'SMPBS',
-  'Soccer-SMP-Girls': 'SMPGS',
-  'Soccer-SMA-Boys': 'VBS',
-  'Soccer-SMA-Girls': 'VGS',
-  'Volleyball-SMP-Boys': 'SMPBV',
-  'Volleyball-SMP-Girls': 'SMPGV',
-  'Volleyball-SMA-Boys': 'VBV',
-  'Volleyball-SMA-Girls': 'VGV',
-  'Basketball-SMP-Boys': 'SMPBB',
-  'Basketball-SMP-Girls': 'SMPGB',
-  'Basketball-SMA-Boys': 'VBB',
-  'Basketball-SMA-Girls': 'VGB',
-  'Badminton-SMP-Combined': 'SMPBD',
-  'Badminton-SMA-Combined': 'VBD',
-  'TrackAndField-SMA-Combined': 'VTF',
-};
-
 const sports = SPORT_CATALOG.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
 
 export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam }: SidebarProps) {
   const teamGroups = React.useMemo(() => sports.map((sport) => ({
     ...sport,
-    ballGlyph: sportBallGlyphs[sport.id],
     teams: teamsForSport(sport.id).filter((team) => (
       isLaunchTeamSelection(sport.id, team.division, team.gender)
     )),
@@ -137,8 +110,6 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                     <div className="grid grid-cols-2 gap-2">
                       {sport.teams.map((team) => {
                         const key = `${sport.id}-${team.division}-${team.gender}`;
-                        const menuCode = teamMenuCodes[key] ?? team.shortName;
-
                         return (
                           <button
                             key={key}
@@ -152,7 +123,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                             className="group flex min-h-11 items-center justify-center rounded-xl border border-brand-maroon/10 bg-brand-cream/38 px-2.5 py-2 text-center transition-colors hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:hover:border-[#B5413F]/30 dark:hover:bg-[#B5413F]/12"
                           >
                             <span className="text-sm font-black uppercase tracking-[0.12em] text-brand-navy/80 group-hover:text-brand-navy dark:text-foreground/80 dark:group-hover:text-foreground">
-                              {menuCode}
+                              {team.menuCode}
                             </span>
                           </button>
                         );
