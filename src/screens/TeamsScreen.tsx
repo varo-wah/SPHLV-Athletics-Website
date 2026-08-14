@@ -52,6 +52,36 @@ const sportGroups = SPORT_CATALOG
   }))
   .filter((group) => group.teams.length > 0);
 
+const teamButtonVisuals: Record<string, {
+  buttonStyle: string;
+  arrowStyle: string;
+}> = {
+  VBS: {
+    buttonStyle: 'border-[#EF4444]/35 bg-[#EF4444]/10 hover:border-[#EF4444]/60 hover:bg-[#EF4444]/18 focus-visible:ring-[#EF4444]/45',
+    arrowStyle: 'border-[#EF4444]/25 bg-[#EF4444]/12 text-[#B91C1C] group-hover:bg-[#EF4444]/22 dark:text-[#FCA5A5]',
+  },
+  VGS: {
+    buttonStyle: 'border-[#F472B6]/35 bg-[#F472B6]/10 hover:border-[#F472B6]/60 hover:bg-[#F472B6]/18 focus-visible:ring-[#F472B6]/45',
+    arrowStyle: 'border-[#F472B6]/25 bg-[#F472B6]/12 text-[#BE185D] group-hover:bg-[#F472B6]/22 dark:text-[#F9A8D4]',
+  },
+  VBV: {
+    buttonStyle: 'border-[#F59E0B]/35 bg-[#F59E0B]/10 hover:border-[#F59E0B]/60 hover:bg-[#F59E0B]/18 focus-visible:ring-[#F59E0B]/45',
+    arrowStyle: 'border-[#F59E0B]/25 bg-[#F59E0B]/12 text-[#92400E] group-hover:bg-[#F59E0B]/22 dark:text-[#FCD34D]',
+  },
+  VGV: {
+    buttonStyle: 'border-[#A78BFA]/35 bg-[#A78BFA]/10 hover:border-[#A78BFA]/60 hover:bg-[#A78BFA]/18 focus-visible:ring-[#A78BFA]/45',
+    arrowStyle: 'border-[#A78BFA]/25 bg-[#A78BFA]/12 text-[#6D28D9] group-hover:bg-[#A78BFA]/22 dark:text-[#C4B5FD]',
+  },
+  SMPBB: {
+    buttonStyle: 'border-[#3B82F6]/35 bg-[#3B82F6]/10 hover:border-[#3B82F6]/60 hover:bg-[#3B82F6]/18 focus-visible:ring-[#3B82F6]/45',
+    arrowStyle: 'border-[#3B82F6]/25 bg-[#3B82F6]/12 text-[#1D4ED8] group-hover:bg-[#3B82F6]/22 dark:text-[#93C5FD]',
+  },
+  SMPGB: {
+    buttonStyle: 'border-[#22D3EE]/35 bg-[#22D3EE]/10 hover:border-[#22D3EE]/60 hover:bg-[#22D3EE]/18 focus-visible:ring-[#22D3EE]/45',
+    arrowStyle: 'border-[#22D3EE]/25 bg-[#22D3EE]/12 text-[#0E7490] group-hover:bg-[#22D3EE]/22 dark:text-[#67E8F9]',
+  },
+};
+
 export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 mx-auto min-h-screen w-full max-w-3xl px-4 pb-24 pt-3 duration-500 sm:px-6 sm:pt-5">
@@ -77,21 +107,25 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
               </div>
 
               <div className="relative grid grid-cols-2 gap-2.5">
-                {group.teams.map((team) => (
-                  <button
-                    key={team.id}
-                    type="button"
-                    onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
-                    className={`group flex min-h-[64px] items-center justify-between gap-2 rounded-2xl border border-white/[0.075] bg-black/15 px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 sm:min-h-[70px] sm:px-4 [container-type:inline-size] ${group.buttonStyle}`}
-                  >
-                    <span className="text-[clamp(1.2rem,10cqi,2rem)] font-black uppercase leading-none tracking-[clamp(0.04em,0.8cqi,0.12em)] text-foreground">
-                      {team.menuCode}
-                    </span>
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/[0.075] bg-white/[0.045] text-foreground/42 transition-colors group-hover:bg-white/10 group-hover:text-foreground" aria-hidden="true">
-                      <ArrowUpRight size={13} />
-                    </span>
-                  </button>
-                ))}
+                {group.teams.map((team) => {
+                  const teamVisual = teamButtonVisuals[team.menuCode];
+
+                  return (
+                    <button
+                      key={team.id}
+                      type="button"
+                      onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
+                      className={`group flex min-h-[64px] items-center justify-between gap-2 rounded-2xl border px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-h-[70px] sm:px-4 [container-type:inline-size] ${teamVisual?.buttonStyle || `border-white/[0.075] bg-black/15 ${group.buttonStyle}`}`}
+                    >
+                      <span className="text-[clamp(1.2rem,10cqi,2rem)] font-black uppercase leading-none tracking-[clamp(0.04em,0.8cqi,0.12em)] text-foreground">
+                        {team.menuCode}
+                      </span>
+                      <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors ${teamVisual?.arrowStyle || 'border-white/[0.075] bg-white/[0.045] text-foreground/42 group-hover:bg-white/10 group-hover:text-foreground'}`} aria-hidden="true">
+                        <ArrowUpRight size={13} />
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </article>
           );
