@@ -1,12 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
 import { DivisionTab, GenderTab, SportTab } from '../types';
-import {
-  BadmintonIcon,
-  BasketballIcon,
-  SoccerIcon,
-  TrackIcon,
-  VolleyballIcon,
-} from '../components/SportIcons';
 import { IS_PROTOTYPE } from '../config/launchSports';
 import { SPORT_CATALOG, TEAM_CATALOG } from '../config/teamCatalog';
 
@@ -15,37 +8,31 @@ interface TeamsScreenProps {
 }
 
 const sportVisuals: Record<SportTab, {
-  Icon: typeof SoccerIcon;
   accent: string;
   iconStyle: string;
   buttonStyle: string;
 }> = {
   Soccer: {
-    Icon: SoccerIcon,
     accent: 'border-[#D85A57]/30 bg-[linear-gradient(135deg,rgba(181,65,63,0.18),rgba(181,65,63,0.035)_58%,transparent)]',
     iconStyle: 'border-[#D85A57]/30 bg-[#B5413F]/18 text-[#F06865]',
     buttonStyle: 'hover:border-[#D85A57]/40 hover:bg-[#B5413F]/14',
   },
   Volleyball: {
-    Icon: VolleyballIcon,
     accent: 'border-[#669BBC]/25 bg-[linear-gradient(135deg,rgba(102,155,188,0.15),rgba(102,155,188,0.025)_58%,transparent)]',
     iconStyle: 'border-[#669BBC]/30 bg-[#669BBC]/14 text-[#8FC1DD]',
     buttonStyle: 'hover:border-[#669BBC]/40 hover:bg-[#669BBC]/12',
   },
   Basketball: {
-    Icon: BasketballIcon,
     accent: 'border-[#F4C95D]/25 bg-[linear-gradient(135deg,rgba(244,201,93,0.12),rgba(244,201,93,0.02)_58%,transparent)]',
     iconStyle: 'border-[#F4C95D]/30 bg-[#F4C95D]/12 text-[#F4C95D]',
     buttonStyle: 'hover:border-[#F4C95D]/35 hover:bg-[#F4C95D]/10',
   },
   Badminton: {
-    Icon: BadmintonIcon,
     accent: 'border-emerald-400/25 bg-[linear-gradient(135deg,rgba(52,211,153,0.12),rgba(52,211,153,0.02)_58%,transparent)]',
     iconStyle: 'border-emerald-400/30 bg-emerald-400/12 text-emerald-300',
     buttonStyle: 'hover:border-emerald-400/35 hover:bg-emerald-400/10',
   },
   TrackAndField: {
-    Icon: TrackIcon,
     accent: 'border-violet-400/25 bg-[linear-gradient(135deg,rgba(167,139,250,0.12),rgba(167,139,250,0.02)_58%,transparent)]',
     iconStyle: 'border-violet-400/30 bg-violet-400/12 text-violet-300',
     buttonStyle: 'hover:border-violet-400/35 hover:bg-violet-400/10',
@@ -56,6 +43,7 @@ const sportGroups = SPORT_CATALOG
   .map((sport) => ({
     sport: sport.id,
     label: sport.label,
+    ballGlyph: sport.ballGlyph,
     ...sportVisuals[sport.id],
     teams: TEAM_CATALOG.filter((team) => (
       team.sport === sport.id
@@ -69,8 +57,6 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
     <div className="animate-in fade-in slide-in-from-bottom-4 mx-auto min-h-screen w-full max-w-3xl px-4 pb-24 pt-3 duration-500 sm:px-6 sm:pt-5">
       <section aria-label="Teams" className="space-y-3">
         {sportGroups.map((group, groupIndex) => {
-          const Icon = group.Icon;
-
           return (
             <article
               key={group.sport}
@@ -81,7 +67,7 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
               <div className="relative mb-3 flex items-center justify-between gap-3">
                 <h2 className="flex min-w-0 items-center gap-3 text-base font-black uppercase tracking-[0.08em] text-foreground sm:text-lg">
                   <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-[0_10px_25px_rgba(0,0,0,0.16)] ${group.iconStyle}`} aria-hidden="true">
-                    <Icon size={23} />
+                    <span className="text-[22px] leading-none" aria-hidden="true">{group.ballGlyph}</span>
                   </span>
                   {group.label}
                 </h2>
@@ -99,7 +85,7 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
                     className={`group flex min-h-[64px] items-center justify-between gap-2 rounded-2xl border border-white/[0.075] bg-black/15 px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 sm:min-h-[70px] sm:px-4 ${group.buttonStyle}`}
                   >
                     <span className="text-[11px] font-black uppercase leading-snug tracking-[0.045em] text-foreground sm:text-sm">
-                      {team.displayName}
+                      {team.menuCode}
                     </span>
                     <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/[0.075] bg-white/[0.045] text-foreground/42 transition-colors group-hover:bg-white/10 group-hover:text-foreground" aria-hidden="true">
                       <ArrowUpRight size={13} />
