@@ -262,26 +262,35 @@ export default function TeamPageScreen({
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
       <header
-        className="relative flex items-start justify-between gap-4 border border-border/10 mx-4 sm:mx-6 lg:mx-8 rounded-2xl px-4 py-20 sm:px-6 lg:px-8 bg-cover bg-center bg-no-repeat shadow-[0_20px_60px_rgba(0,0,0,0.24)]"
-        style={headerBanner ? { backgroundImage: `url(${headerBanner})` } : {}}
+        className="relative flex flex-col justify-between gap-2 border border-border/10 mx-4 sm:mx-6 lg:mx-8 rounded-2xl px-3 py-4 sm:px-6 sm:py-8 lg:px-8 lg:py-10 overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.24)]"
+        style={{ aspectRatio: '3.368 / 1' }}
       >
-        {/* Dark overlay for text visibility */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-black/50" />
+        {headerBanner && (
+          <img
+            src={headerBanner}
+            alt={teamName}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        )}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80" />
+        
+        <div className="flex justify-end z-10">
+          <TeamFavoriteButton
+            sport={sport}
+            division={division}
+            gender={gender}
+            className="shrink-0 relative z-10"
+          />
+        </div>
         
         <div className="relative min-w-0 z-10">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">
+          <p className="text-[7px] sm:text-[9px] lg:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/90 line-clamp-1">
             {divisionLabel}
           </p>
-          <h1 className="mt-1 text-3xl font-black uppercase leading-tight tracking-[-0.025em] text-white sm:text-4xl">
+          <h1 className="mt-0.5 text-sm sm:text-xl lg:text-3xl font-black uppercase leading-tight tracking-[-0.02em] sm:tracking-[-0.025em] text-white line-clamp-2">
             {teamName}
           </h1>
         </div>
-        <TeamFavoriteButton
-          sport={sport}
-          division={division}
-          gender={gender}
-          className="shrink-0 relative z-10"
-        />
       </header>
 
       <nav
