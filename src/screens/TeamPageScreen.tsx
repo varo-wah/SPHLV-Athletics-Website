@@ -7,6 +7,12 @@ import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import { rosterForTeam } from '../data/teamRosters';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
+import smpBoysBasketballBanner from '../assets/smpboysbasketball.png';
+import smpGirlsBasketballBanner from '../assets/smpgirlsbasketball.png';
+import varsityBoysSoccerBanner from '../assets/varsityboyssoccer.png';
+import varsityBoysVolleyballBanner from '../assets/varsityboysvolleyball.png';
+import varsityGirlsSoccerBanner from '../assets/varsitygirlssoccer.png';
+import varsityGirlsVolleyballBanner from '../assets/varsitygirlsvolleyball.png';
 
 interface TeamPageScreenProps {
   sport: SportTab;
@@ -24,10 +30,7 @@ const teamPageSections: { id: TeamPageSection; label: string }[] = [
   { id: 'players', label: 'Players' },
 ];
 
-const approvedSoccerTeamPhotos = [
-  'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241030/Varsity_soccer_boys_teampic_2_dyv7mz.jpg',
-  'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241126/Varsity_boys_soccer_team_pic_resized_i1ezdp.jpg',
-] as const;
+
 
 const varsityBoysSoccerPreseasonTeams = ['LV', 'BSJ', 'GJS', 'ACS'] as const;
 
@@ -83,28 +86,31 @@ export default function TeamPageScreen({
   const teamName = team?.displayName ?? `${division} ${gender} ${sportInfo.label}`;
   const roster = team ? rosterForTeam(team.id) : undefined;
   const divisionLabel = division === 'SMA' ? 'SMA / Varsity' : 'SMP / Middle School';
-  const teamPhotos = sport === 'Soccer' && division === 'SMA' && gender === 'Boys'
-    ? approvedSoccerTeamPhotos
-    : [];
-
-  const goToPreviousPhoto = () => {
-    if (teamPhotos.length === 0) return;
-    setCurrentImageIndex((current) => (current - 1 + teamPhotos.length) % teamPhotos.length);
+  
+  const getBannerForTeam = () => {
+    if (sport === 'Basketball' && division === 'SMP' && gender === 'Boys') {
+      return smpBoysBasketballBanner;
+    }
+    if (sport === 'Basketball' && division === 'SMP' && gender === 'Girls') {
+      return smpGirlsBasketballBanner;
+    }
+    if (sport === 'Soccer' && division === 'SMA' && gender === 'Boys') {
+      return varsityBoysSoccerBanner;
+    }
+    if (sport === 'Volleyball' && division === 'SMA' && gender === 'Boys') {
+      return varsityBoysVolleyballBanner;
+    }
+    if (sport === 'Soccer' && division === 'SMA' && gender === 'Girls') {
+      return varsityGirlsSoccerBanner;
+    }
+    if (sport === 'Volleyball' && division === 'SMA' && gender === 'Girls') {
+      return varsityGirlsVolleyballBanner;
+    }
+    return '';
   };
-
-  const goToNextPhoto = () => {
-    if (teamPhotos.length === 0) return;
-    setCurrentImageIndex((current) => (current + 1) % teamPhotos.length);
-  };
-
-  useEffect(() => {
-    if (teamPhotos.length < 2) return undefined;
-
-    const timer = setInterval(() => {
-      setCurrentImageIndex((prev) => (prev + 1) % teamPhotos.length);
-    }, 4000);
-    return () => clearInterval(timer);
-  }, [teamPhotos.length]);
+  
+  const headerBanner = getBannerForTeam();
+  const teamPhotos = [];
 
   useEffect(() => {
     setActiveSection('games');
@@ -255,12 +261,18 @@ export default function TeamPageScreen({
 
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
-      <header className="flex items-start justify-between gap-4 border-b border-border/10 px-4 py-5 sm:px-6 lg:px-8">
-        <div className="min-w-0">
-          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B5413F]">
+      <header
+        className="relative flex items-start justify-between gap-4 border border-border/10 mx-4 sm:mx-6 lg:mx-8 rounded-2xl px-4 py-20 sm:px-6 lg:px-8 bg-cover bg-center bg-no-repeat shadow-[0_20px_60px_rgba(0,0,0,0.24)]"
+        style={headerBanner ? { backgroundImage: `url(${headerBanner})` } : {}}
+      >
+        {/* Dark overlay for text visibility */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-black/50" />
+        
+        <div className="relative min-w-0 z-10">
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">
             {divisionLabel}
           </p>
-          <h1 className="mt-1 text-3xl font-black uppercase leading-tight tracking-[-0.025em] text-foreground sm:text-4xl">
+          <h1 className="mt-1 text-3xl font-black uppercase leading-tight tracking-[-0.025em] text-white sm:text-4xl">
             {teamName}
           </h1>
         </div>
@@ -268,7 +280,7 @@ export default function TeamPageScreen({
           sport={sport}
           division={division}
           gender={gender}
-          className="shrink-0"
+          className="shrink-0 relative z-10"
         />
       </header>
 
@@ -711,91 +723,6 @@ export default function TeamPageScreen({
               })}
             </div>
           </section>
-        )}
-
-        {/* Team Photo */}
-        {activeSection === 'players' && teamPhotos.length > 0 && (
-        <section className="space-y-4">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-            <div>
-              <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#C1121F] dark:text-[#B5413F]">
-                <Users size={14} />
-                Team Photo
-              </p>
-              <h3 className="mt-1 text-2xl font-black uppercase tracking-[0.08em] text-foreground dark:text-foreground">
-                2025-26 Squad
-              </h3>
-            </div>
-            {teamPhotos.length > 0 && (
-              <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border/10 bg-subcard px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45">
-                <span>{currentImageIndex + 1}</span>
-                <span className="text-foreground/20">/</span>
-                <span>{teamPhotos.length}</span>
-              </div>
-            )}
-          </div>
-
-          <div className="group relative overflow-hidden rounded-[1.75rem] border border-border/10 bg-[#0b080a] shadow-[0_28px_80px_rgba(0,0,0,0.28)]">
-            <div className="relative aspect-[16/11] min-h-[260px] sm:aspect-[16/9]">
-              <AnimatePresence mode="wait">
-                <motion.img
-                  key={currentImageIndex}
-                  src={teamPhotos[currentImageIndex]}
-                  alt={`${teamName} team photo ${currentImageIndex + 1}`}
-                  initial={{ opacity: 0, scale: 1.02 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.98 }}
-                  transition={{ duration: 0.45, ease: "easeInOut" }}
-                  className="absolute inset-0 h-full w-full object-contain object-center"
-                />
-              </AnimatePresence>
-
-              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.04)_45%,rgba(0,0,0,0.72))]" />
-              <div className="absolute bottom-0 left-0 right-0 flex flex-col gap-3 p-4 sm:flex-row sm:items-end sm:justify-between sm:p-5">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.2em] text-white/50">
-                    SPH LV Eagles
-                  </p>
-                  <p className="mt-1 text-xl font-black uppercase tracking-tight text-white sm:text-2xl">
-                    {teamName}
-                  </p>
-                </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={goToPreviousPhoto}
-                    aria-label="Previous team photo"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur transition-colors hover:bg-white hover:text-black"
-                  >
-                    <ChevronLeft size={18} />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={goToNextPhoto}
-                    aria-label="Next team photo"
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-black/35 text-white backdrop-blur transition-colors hover:bg-white hover:text-black"
-                  >
-                    <ChevronRight size={18} />
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 border-t border-white/[0.06] bg-white/[0.025] px-4 py-3">
-              {teamPhotos.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setCurrentImageIndex(idx)}
-                  aria-label={`Show team photo ${idx + 1}`}
-                  className={`h-1.5 rounded-full transition-all duration-300 ${
-                    idx === currentImageIndex ? 'w-9 bg-[#F06865]' : 'w-2.5 bg-white/22 hover:bg-white/45'
-                  }`}
-                />
-              ))}
-            </div>
-          </div>
-        </section>
         )}
 
         {/* Player Roster */}

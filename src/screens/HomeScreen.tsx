@@ -16,7 +16,7 @@ import {
   TrackIcon,
   VolleyballIcon,
 } from '../components/SportIcons';
-import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
+import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 
 interface HomeScreenProps {
   athleticsDataState: AthleticsDataState;
