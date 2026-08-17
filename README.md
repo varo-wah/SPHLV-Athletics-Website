@@ -76,7 +76,7 @@ The prototype is not deployed to a second hosting provider. Contributors check o
 
 The public Google Sheets are synchronized during the production build instead of being fetched through a runtime proxy. Run `npm run sync:sheets` to validate every configured public CSV and write `public/data/sheets-cache.json`. The browser reads that same-origin cache from Firebase Hosting.
 
-The production workflow refreshes the cache on every `main` release and checks for online Sheet changes every 15 minutes. Scheduled runs deploy only when the published data changed. This keeps synchronization on the Firebase Spark plan and removes the Netlify and Cloud Functions dependency.
+The production workflow refreshes the cache on every `main` release and checks for online Sheet changes every 5 minutes. Scheduled runs deploy only when the published data changed. This keeps synchronization on the Firebase Spark plan and removes the Netlify and Cloud Functions dependency.
 
 ### Firebase Hosting
 
