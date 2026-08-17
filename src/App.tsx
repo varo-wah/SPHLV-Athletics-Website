@@ -37,11 +37,21 @@ function AthleticsApp() {
   const [activeGender, setActiveGender] = useState<GenderTab>('Boys');
   const [activeDivision, setActiveDivision] = useState<DivisionTab>('SMA');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [newsArticleId, setNewsArticleId] = useState<string | null>(null);
 
   const athleticsDataState = useAthleticsData();
 
   const handleTabChange = (tab: AppTab) => {
+    if (tab === 'News') {
+      setNewsArticleId(null);
+    }
     setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToNews = (articleId?: string) => {
+    setNewsArticleId(articleId || null);
+    setActiveTab('News');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -76,8 +86,7 @@ function AthleticsApp() {
         {activeTab === 'Home' && (
           <HomeScreen
             athleticsDataState={athleticsDataState}
-            onNavigateToNews={() => handleTabChange('News')}
-            onNavigateToSchedule={() => handleTabChange('Schedule')}
+            onNavigateToNews={navigateToNews}
             onNavigateToTeam={navigateToTeam}
             onBrowseTeams={() => handleTabChange('Teams')}
           />
@@ -105,7 +114,7 @@ function AthleticsApp() {
         {activeTab === 'Standings' && (
           <StandingsScreen athleticsDataState={athleticsDataState} />
         )}
-        {activeTab === 'News' && <NewsScreen />}
+        {activeTab === 'News' && <NewsScreen initialArticleId={newsArticleId} />}
         {activeTab === 'Login' && <LoginScreen />}
         
         <Sidebar 

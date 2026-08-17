@@ -9,9 +9,9 @@ function scrollToPageTop() {
   window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
 }
 
-export default function NewsScreen() {
+export default function NewsScreen({ initialArticleId = null }: { initialArticleId?: string | null }) {
   const articles = useMemo(() => visibleNewsArticles(IS_PROTOTYPE), []);
-  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(null);
+  const [selectedArticleId, setSelectedArticleId] = useState<string | null>(initialArticleId);
   const selectedArticle = articles.find((article) => article.id === selectedArticleId) || null;
 
   const openArticle = (article: NewsArticle) => {
