@@ -51,7 +51,7 @@ export default function TeamSelectionModal({ sport, onSelect, onClose }: TeamSel
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-        className="relative w-full max-w-sm bg-card rounded-2xl overflow-hidden border border-[#5A1C2C]/30 shadow-2xl"
+        className="relative w-full max-w-sm bg-card rounded-2xl overflow-hidden border border-[#5A1C2C]/30 shadow-[0_10px_24px_rgba(0,0,0,0.22)]"
       >
         <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-transparent via-[#5A1C2C] to-transparent" />
         

@@ -50,7 +50,7 @@ export default function LoginModal() {
 
   return (
     <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/45 px-3 pb-24 pt-10 backdrop-blur-sm sm:items-center sm:pb-10">
-      <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_30px_90px_rgba(0,0,0,0.32)]">
+      <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_10px_24px_rgba(0,0,0,0.24)]">
         <div className="relative overflow-hidden bg-[#C1121F] px-5 py-5 text-white dark:bg-[#5A1C2C]">
           <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-white/12" />
           <div className="relative z-10 flex items-start justify-between gap-4">

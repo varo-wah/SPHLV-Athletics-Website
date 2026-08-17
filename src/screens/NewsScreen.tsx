@@ -38,7 +38,7 @@ export default function NewsScreen() {
           Back to News
         </button>
 
-        <div className="overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_24px_70px_rgba(0,0,0,0.2)]">
+        <div className="overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_5px_14px_rgba(0,0,0,0.12)]">
           <div className="relative h-64 overflow-hidden sm:h-96">
             <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
             <img
@@ -116,7 +116,7 @@ export default function NewsScreen() {
       </div>
 
       {articles.length === 0 ? (
-        <section className="rounded-[2rem] border border-border/10 bg-subcard px-6 py-14 text-center shadow-[0_20px_60px_rgba(0,0,0,0.14)]">
+        <section className="rounded-[2rem] border border-border/10 bg-subcard px-6 py-14 text-center shadow-[0_4px_12px_rgba(0,0,0,0.09)]">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] text-[#B5413F]">
             <Newspaper size={25} />
           </div>

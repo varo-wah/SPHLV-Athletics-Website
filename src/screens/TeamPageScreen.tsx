@@ -279,7 +279,7 @@ export default function TeamPageScreen({
         <div
           role="tablist"
           aria-label="Team page sections"
-          className="pointer-events-auto mx-auto grid w-full max-w-[22rem] grid-cols-3 gap-1 rounded-2xl border border-border/10 bg-canvas/80 p-1 shadow-[0_14px_42px_rgba(0,0,0,0.18)] backdrop-blur-2xl saturate-150 supports-[backdrop-filter]:bg-canvas/65"
+          className="pointer-events-auto mx-auto grid w-full max-w-[22rem] grid-cols-3 gap-1 rounded-2xl border border-border/10 bg-canvas/80 p-1 shadow-[0_4px_12px_rgba(0,0,0,0.11)] backdrop-blur-2xl saturate-150 supports-[backdrop-filter]:bg-canvas/65"
         >
           {teamPageSections.map((section) => {
             const isActive = activeSection === section.id;
@@ -318,7 +318,7 @@ export default function TeamPageScreen({
           {/* STANDINGS COLUMN */}
           {activeSection === 'standings' && (
           <section className="space-y-4">
-            <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/90 p-4 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-border/10 dark:bg-subcard/40 dark:shadow-[0_24px_70px_rgba(0,0,0,0.16)]">
+            <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/90 p-4 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard/40 dark:shadow-[0_4px_12px_rgba(0,0,0,0.14)]">
               <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
@@ -393,7 +393,7 @@ export default function TeamPageScreen({
           )}
         </div>
 
-            <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_20px_60px_rgba(15,23,42,0.08)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_24px_70px_rgba(0,0,0,0.18)]">
+            <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
                <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-brand-maroon/10 bg-[#F1F2F3] px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-maroon sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] dark:border-[#5A1C2C]/10 dark:bg-[#5A1C2C]/10 dark:text-[#D85A57]">
                   <div>Rank</div>
                   <div>Club</div>
@@ -727,7 +727,7 @@ export default function TeamPageScreen({
             )}
           </div>
 
-          <div className="group relative overflow-hidden rounded-[1.75rem] border border-border/10 bg-[#0b080a] shadow-[0_28px_80px_rgba(0,0,0,0.28)]">
+          <div className="group relative overflow-hidden rounded-[1.75rem] border border-border/10 bg-[#0b080a] shadow-[0_7px_18px_rgba(0,0,0,0.22)]">
             <div className="relative aspect-[16/11] min-h-[260px] sm:aspect-[16/9]">
               <AnimatePresence mode="wait">
                 <motion.img
@@ -822,7 +822,7 @@ export default function TeamPageScreen({
                 <li
                   key={player}
                   data-player-name={player}
-                  className="group flex min-h-16 items-center gap-3 overflow-hidden rounded-2xl border border-border/10 bg-subcard px-3.5 py-3 shadow-[0_8px_24px_rgba(0,0,0,0.05)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B5413F]/25 hover:shadow-[0_14px_34px_rgba(90,28,44,0.11)]"
+                  className="group flex min-h-16 items-center gap-3 overflow-hidden rounded-2xl border border-border/10 bg-subcard px-3.5 py-3 shadow-[0_3px_9px_rgba(0,0,0,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B5413F]/25 hover:shadow-[0_5px_14px_rgba(90,28,44,0.09)]"
                 >
                   <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#B5413F]/15 bg-[#B5413F]/[0.07] font-mono text-[11px] font-black text-[#B5413F] transition-colors group-hover:bg-[#5A1C2C] group-hover:text-white">
                     {String(index + 1).padStart(2, '0')}

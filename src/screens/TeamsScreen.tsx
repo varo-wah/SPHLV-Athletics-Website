@@ -90,13 +90,13 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
           return (
             <article
               key={group.sport}
-              className={`relative overflow-hidden rounded-[1.35rem] border p-3.5 shadow-[0_18px_48px_rgba(0,0,0,0.16)] sm:p-4 ${group.accent}`}
+              className={`relative overflow-hidden rounded-[1.35rem] border p-3.5 shadow-[0_4px_12px_rgba(0,0,0,0.10)] sm:p-4 ${group.accent}`}
             >
               <div className="pointer-events-none absolute -right-8 -top-12 h-32 w-32 rounded-full bg-white/[0.025] blur-2xl" />
 
               <div className="relative mb-3 flex items-center justify-between gap-3">
                 <h2 className="flex min-w-0 items-center gap-3 text-base font-black uppercase tracking-[0.08em] text-foreground sm:text-lg">
-                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-[0_10px_25px_rgba(0,0,0,0.16)] ${group.iconStyle}`} aria-hidden="true">
+                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-[0_2px_7px_rgba(0,0,0,0.10)] ${group.iconStyle}`} aria-hidden="true">
                     <span className="text-[22px] leading-none" aria-hidden="true">{group.ballGlyph}</span>
                   </span>
                   {group.label}

@@ -545,7 +545,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             const days = buildMonthDays(month, monthEvents);
 
             return (
-              <div key={month} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_18px_55px_rgba(15,23,42,0.08)]">
+              <div key={month} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_4px_12px_rgba(15,23,42,0.06)]">
                 <div className="flex flex-col gap-3 border-b border-border/10 bg-[#C1121F]/8 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#C1121F]">
@@ -610,7 +610,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                 ? isToday
                                   ? 'border-[#B5413F]/45 bg-[#B5413F]/10 ring-1 ring-inset ring-[#B5413F]/25 dark:bg-white/[0.075]'
                                   : hasEvents
-                                    ? 'border-[#C1121F]/25 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:border-[#C1121F]/50 hover:shadow-[0_18px_40px_rgba(193,18,31,0.14)] dark:bg-foreground/[0.025]'
+                                    ? 'border-[#C1121F]/25 bg-white shadow-[0_3px_10px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:border-[#C1121F]/50 hover:shadow-[0_5px_14px_rgba(193,18,31,0.11)] dark:bg-foreground/[0.025]'
                                     : 'border-brand-maroon/10 bg-muted/70 dark:border-white/10 dark:bg-white/[0.055]'
                                 : 'border-transparent bg-transparent'
                             }`}
@@ -670,7 +670,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             const containsToday = events.some((event) => event.date === todayIso);
 
             return (
-              <div key={week} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_18px_55px_rgba(0,0,0,0.16)]">
+              <div key={week} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_4px_12px_rgba(0,0,0,0.10)]">
                 <button
                   type="button"
                   onClick={() => toggleWeek(week)}
@@ -793,7 +793,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             onClick={() => setSelectedCalendarDay(null)}
           >
             <motion.div
-              className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_30px_90px_rgba(0,0,0,0.28)]"
+              className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_10px_24px_rgba(0,0,0,0.22)]"
               initial={{ opacity: 0, y: 42, scale: 0.94, rotateX: 8 }}
               animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
               exit={{ opacity: 0, y: 34, scale: 0.96 }}
@@ -830,7 +830,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 {selectedCalendarDay.events.map((event, index) => (
                   <motion.article
                     key={event.id}
-                    className="rounded-2xl border border-brand-maroon/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F8FAFC_72%,rgba(193,18,31,0.045)_100%)] p-4 shadow-[0_14px_36px_rgba(120,0,0,0.08)] dark:bg-none dark:bg-foreground/[0.025]"
+                    className="rounded-2xl border border-brand-maroon/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F8FAFC_72%,rgba(193,18,31,0.045)_100%)] p-4 shadow-[0_3px_10px_rgba(120,0,0,0.06)] dark:bg-none dark:bg-foreground/[0.025]"
                     initial={{ opacity: 0, y: 18, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ delay: index * 0.045, type: 'spring', stiffness: 420, damping: 34 }}

@@ -17,7 +17,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
 
   return (
     <nav className="pointer-events-none fixed bottom-0 left-0 right-0 z-50">
-      <div className="sph-bottom-nav-shell pointer-events-auto mx-auto flex h-20 w-full items-center justify-around border-x border-t border-border/80 bg-header/95 px-2 pb-safe shadow-[0_-18px_55px_rgba(0,0,0,0.16)] backdrop-blur-2xl dark:border-border/10">
+      <div className="sph-bottom-nav-shell pointer-events-auto mx-auto flex h-20 w-full items-center justify-around border-x border-t border-border/80 bg-header/95 px-2 pb-safe shadow-[0_-4px_14px_rgba(0,0,0,0.12)] backdrop-blur-2xl dark:border-border/10">
         {tabs.map((tab) => {
           const Icon = tab.icon;
           const isActive = tab.id === activeTab;
