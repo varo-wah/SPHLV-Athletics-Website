@@ -10,6 +10,7 @@
     "build": "vite build",
     "build:production": "VITE_RELEASE_CHANNEL=production vite build",
     "build:prototype": "VITE_RELEASE_CHANNEL=prototype vite build",
+    "sync:sheets": "node scripts/sync-sheets-cache.mjs",
     "parse:schedule": "python3 scripts/parse_schedule.py",
     "preview": "npm run build && node server.mjs",
     "start": "node server.mjs",
@@ -17,8 +18,7 @@
     "lint": "tsc --noEmit",
     "test": "tsx --test src/services/*.test.ts",
     "deploy:firebase": "npm run build:production && firebase deploy --only hosting,firestore:rules",
-    "deploy:firebase:ci": "npx --yes firebase-tools@15.20.0 deploy --only hosting,firestore:rules --project sphlv-athletics --non-interactive",
-    "deploy:firebase:full": "npm run build && firebase deploy --only hosting,functions,firestore:rules"
+    "deploy:firebase:ci": "npx --yes firebase-tools@15.20.0 deploy --only hosting,firestore:rules --project sphlv-athletics --non-interactive"
   },
   "dependencies": {
     "@google/genai": "^1.29.0",
