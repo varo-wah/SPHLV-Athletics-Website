@@ -35,6 +35,7 @@
 
 :root {
   color-scheme: light;
+  --app-shell-max-width: 60rem;
   --card: #ffffff;
   --subcard: #f8fafc;
   --subcard-hover: #f1f5f9;
@@ -91,11 +92,24 @@ body,
 
 body {
   margin: 0;
-  background-color: var(--canvas);
+  background-color: #000000;
   color: var(--foreground);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.sph-app-shell,
+.sph-bottom-nav-shell {
+  max-width: var(--app-shell-max-width);
+}
+
+.sph-app-shell {
+  box-shadow: 0 0 90px rgba(0, 0, 0, 0.58);
+}
+
+.sph-sidebar-shell {
+  left: max(0px, calc((100vw - var(--app-shell-max-width)) / 2));
 }
 
 img {
