@@ -9,13 +9,6 @@ import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { getTeamFavoriteLabel } from '../utils/teamFavorites';
 import { isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
-import {
-  BadmintonIcon,
-  BasketballIcon,
-  SoccerIcon,
-  TrackIcon,
-  VolleyballIcon,
-} from '../components/SportIcons';
 import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
 
 interface HomeScreenProps {
@@ -26,12 +19,12 @@ interface HomeScreenProps {
   onBrowseTeams: () => void;
 }
 
-const favoriteTeamIcons = {
-  Basketball: BasketballIcon,
-  Volleyball: VolleyballIcon,
-  Soccer: SoccerIcon,
-  Badminton: BadmintonIcon,
-  TrackAndField: TrackIcon,
+const favoriteTeamEmojis: Record<SportTab, string> = {
+  Basketball: '🏀',
+  Volleyball: '🏐',
+  Soccer: '⚽',
+  Badminton: '🏸',
+  TrackAndField: '🏃',
 };
 
 export default function HomeScreen({
@@ -193,7 +186,7 @@ export default function HomeScreen({
           ) : visibleFavoriteTeams.length > 0 ? (
             <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {visibleFavoriteTeams.map((favorite) => {
-                const Icon = favoriteTeamIcons[favorite.sport];
+                const sportEmoji = favoriteTeamEmojis[favorite.sport];
                 const label = getTeamFavoriteLabel(favorite);
 
                 return (
@@ -204,8 +197,10 @@ export default function HomeScreen({
                     className="group flex min-h-[72px] items-center justify-between gap-3 rounded-2xl border border-border/10 bg-foreground/[0.025] px-3.5 py-3 text-left transition-all hover:-translate-y-0.5 hover:border-[#B5413F]/30 hover:bg-[#B5413F]/10"
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors group-hover:border-[#B5413F]/25 group-hover:text-[#D85A57]">
-                        <Icon size={19} />
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.035] transition-colors group-hover:border-[#B5413F]/25">
+                        <span aria-hidden="true" className="text-xl leading-none">
+                          {sportEmoji}
+                        </span>
                       </div>
                       <div className="min-w-0">
                         <p className="truncate text-sm font-black uppercase tracking-[0.07em] text-foreground">
