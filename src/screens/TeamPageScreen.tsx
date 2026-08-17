@@ -255,8 +255,8 @@ export default function TeamPageScreen({
 
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
-      <header className="flex items-center justify-between gap-3 border-b border-border/10 px-4 py-5 sm:gap-4 sm:px-6 lg:px-8">
-        <div className="min-w-0 flex-1">
+      <header className="relative border-b border-border/10 px-4 py-5 sm:px-6 lg:px-8">
+        <div className="min-w-0 pr-14">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B5413F]">
             {divisionLabel}
           </p>
@@ -268,7 +268,7 @@ export default function TeamPageScreen({
           sport={sport}
           division={division}
           gender={gender}
-          className="shrink-0"
+          className="absolute right-4 top-5 sm:right-6 lg:right-8"
         />
       </header>
 
@@ -409,10 +409,6 @@ export default function TeamPageScreen({
                     <div className="p-6 text-center text-xs font-medium text-foreground/40 animate-pulse">
                       Fetching live standings from Google Sheets...
                     </div>
-                  ) : athleticsDataState?.error && standingsForDisplay.length === 0 ? (
-                    <div className="p-6 text-center text-xs font-semibold text-red-500 bg-red-500/5">
-                      Failed to load. {athleticsDataState.error}
-                    </div>
                   ) : standingsRows.length === 0 ? (
                     <div className="p-8 text-center text-xs font-medium text-foreground/40 space-y-2">
                       <p className="font-bold text-foreground/60">Standings will appear once uploaded</p>
@@ -536,12 +532,6 @@ export default function TeamPageScreen({
                   );
                 })}
               </div>
-
-              {athleticsDataState?.warning && (
-                <div className="rounded-2xl border border-amber-400/20 bg-amber-400/5 px-4 py-3 text-xs font-bold text-amber-700 dark:text-amber-200">
-                  {athleticsDataState.warning}
-                </div>
-              )}
 
               <div className="grid gap-5">
                 {gamesView === 'upcoming' && (

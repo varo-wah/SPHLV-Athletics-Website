@@ -73,12 +73,6 @@ function AthleticsApp() {
           </div>
         )}
 
-        {athleticsDataState.error && (
-          <div style={{ padding: 10, textAlign: "center", color: "#D32642", fontSize: 12 }}>
-            Google Sheets sync error: {athleticsDataState.error}
-          </div>
-        )}
-
         {activeTab === 'Home' && (
           <HomeScreen
             athleticsDataState={athleticsDataState}
