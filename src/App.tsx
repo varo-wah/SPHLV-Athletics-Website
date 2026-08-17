@@ -61,7 +61,7 @@ function AthleticsApp() {
 
   return (
     <div className="min-h-screen bg-black pb-24 font-sans">
-      <main className="sph-app-shell relative mx-auto min-h-screen w-full border-x border-border/[0.02] bg-ucl-gradient shadow-2xl">
+      <main className="sph-app-shell relative mx-auto min-h-screen w-full border-x border-border/[0.02] bg-ucl-gradient">
         <TopBar
           onOpenMenu={() => setIsSidebarOpen(true)}
           onOpenLogin={() => handleTabChange('Login')}
