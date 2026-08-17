@@ -76,6 +76,29 @@ export default function NewsScreen() {
               {selectedArticle.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
+
+              {selectedArticle.sections?.map((section) => (
+                <section key={section.heading} className="space-y-4 pt-3">
+                  <h3 className="text-xl font-black leading-tight tracking-wide text-foreground sm:text-2xl">
+                    {section.heading}
+                  </h3>
+
+                  {section.paragraphs?.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+
+                  {section.highlights && (
+                    <ul className="space-y-3 pl-5 marker:text-[#B5413F]">
+                      {section.highlights.map((highlight) => (
+                        <li key={highlight.label} className="pl-1">
+                          <strong className="font-black text-foreground/78">{highlight.label}:</strong>{' '}
+                          {highlight.text}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+              ))}
             </div>
           </div>
         </div>
