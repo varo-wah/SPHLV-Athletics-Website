@@ -144,14 +144,6 @@ export default function HomeScreen({
     ),
   );
 
-  const syncStatus = athleticsDataState.error
-    ? `Sync issue: ${athleticsDataState.error}`
-    : athleticsDataState.warning
-      ? athleticsDataState.warning
-    : athleticsDataState.refreshing
-      ? 'Refreshing Google Sheets...'
-      : null;
-
   return (
     <div className="animate-in fade-in duration-500 pb-8 px-4 space-y-6 mt-4">
       <div className="hero-image-card">
@@ -363,16 +355,6 @@ export default function HomeScreen({
         </span>
         <ChevronRight size={18} className="shrink-0 text-brand-maroon/30 transition-transform group-hover:translate-x-0.5 group-hover:text-brand-red dark:text-white/30" />
       </button>
-
-      {syncStatus && (
-        <div className={`rounded-xl border px-4 py-3 text-[11px] font-bold uppercase tracking-[0.18em] ${
-          athleticsDataState.error
-            ? 'border-red-500/20 bg-red-500/5 text-red-400'
-            : 'border-border/10 bg-subcard text-foreground/45'
-        }`}>
-          {syncStatus}
-        </div>
-      )}
 
     </div>
   );

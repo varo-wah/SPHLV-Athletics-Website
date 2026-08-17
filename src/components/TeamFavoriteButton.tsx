@@ -38,16 +38,16 @@ export default function TeamFavoriteButton({
             ? 'Remove this team from favorites'
             : 'Add this team to favorites'
       }
-      className={`inline-flex h-11 w-11 items-center justify-center rounded-full border p-0 shadow-[0_12px_32px_rgba(0,0,0,0.24)] backdrop-blur-xl transition-all hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-65 ${
+      className={`inline-flex h-10 w-10 items-center justify-center rounded-full border p-0 shadow-[0_8px_22px_rgba(0,0,0,0.18)] backdrop-blur-xl transition-all hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-65 ${
         favorite
           ? 'border-[#F4C95D]/35 bg-[#F4C95D] text-[#251600]'
           : 'border-white/12 bg-black/45 text-white/72 hover:border-[#F4C95D]/35 hover:bg-[#F4C95D]/12 hover:text-[#F4C95D]'
       } ${className}`}
     >
       {updating ? (
-        <LoaderCircle size={18} className="animate-spin" />
+        <LoaderCircle size={17} className="animate-spin" />
       ) : (
-        <Star size={18} fill={favorite ? 'currentColor' : 'none'} />
+        <Star size={19} fill={favorite ? 'currentColor' : 'none'} />
       )}
     </button>
   );
