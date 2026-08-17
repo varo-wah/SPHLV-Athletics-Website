@@ -255,12 +255,12 @@ export default function TeamPageScreen({
 
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
-      <header className="flex items-start justify-between gap-4 border-b border-border/10 px-4 py-5 sm:px-6 lg:px-8">
-        <div className="min-w-0">
+      <header className="flex items-center justify-between gap-3 border-b border-border/10 px-4 py-5 sm:gap-4 sm:px-6 lg:px-8">
+        <div className="min-w-0 flex-1">
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B5413F]">
             {divisionLabel}
           </p>
-          <h1 className="mt-1 text-3xl font-black uppercase leading-tight tracking-[-0.025em] text-foreground sm:text-4xl">
+          <h1 className="mt-1 whitespace-nowrap text-[clamp(1.1rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.04em] text-foreground sm:text-4xl">
             {teamName}
           </h1>
         </div>
@@ -274,12 +274,12 @@ export default function TeamPageScreen({
 
       <nav
         aria-label={`${teamName} sections`}
-        className="pointer-events-none sticky top-16 z-40 px-3 py-3 sm:px-6 lg:px-8"
+        className="pointer-events-none sticky top-16 z-40 px-4 py-2.5 sm:px-6 lg:px-8"
       >
         <div
           role="tablist"
           aria-label="Team page sections"
-          className="pointer-events-auto mx-auto flex w-fit max-w-full gap-1 overflow-x-auto rounded-[1.4rem] border border-border/10 bg-canvas/80 p-1.5 shadow-[0_18px_55px_rgba(0,0,0,0.24)] backdrop-blur-2xl saturate-150 [scrollbar-width:none] supports-[backdrop-filter]:bg-canvas/65 [&::-webkit-scrollbar]:hidden"
+          className="pointer-events-auto mx-auto grid w-full max-w-[22rem] grid-cols-3 gap-1 rounded-2xl border border-border/10 bg-canvas/80 p-1 shadow-[0_14px_42px_rgba(0,0,0,0.18)] backdrop-blur-2xl saturate-150 supports-[backdrop-filter]:bg-canvas/65"
         >
           {teamPageSections.map((section) => {
             const isActive = activeSection === section.id;
@@ -293,13 +293,15 @@ export default function TeamPageScreen({
                 aria-selected={isActive}
                 aria-controls="team-section-panel"
                 onClick={() => setActiveSection(section.id)}
-                className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-200 sm:px-6 sm:text-[11px] ${
+                className={`relative min-w-0 rounded-xl border border-transparent px-2.5 py-2 transition-all duration-200 ${
                   isActive
-                    ? 'border-brand-sky bg-brand-sky text-brand-navy shadow-[inset_0_1px_0_rgba(255,255,255,0.24),0_8px_24px_rgba(102,155,188,0.22)]'
+                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_22px_rgba(120,0,0,0.24)]'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
-                {section.label}
+                <span className="block truncate text-[9px] font-black uppercase tracking-[0.11em] sm:text-[10px]">
+                  {section.label}
+                </span>
               </button>
             );
           })}
@@ -504,7 +506,7 @@ export default function TeamPageScreen({
               <div
                 role="group"
                 aria-label="Choose upcoming games or completed results"
-                className="grid grid-cols-2 gap-1 rounded-2xl border border-border/10 bg-subcard/70 p-1.5 shadow-sm sm:w-fit sm:min-w-[320px]"
+                className="mx-auto grid w-full max-w-[22rem] grid-cols-2 gap-1 rounded-2xl border border-border/10 bg-subcard/70 p-1 shadow-sm sm:mx-0"
               >
                 {([
                   { id: 'upcoming' as const, label: 'Upcoming', count: upcomingEvents.length },
@@ -518,15 +520,15 @@ export default function TeamPageScreen({
                       type="button"
                       aria-pressed={isActive}
                       onClick={() => setGamesView(view.id)}
-                      className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-200 ${
+                      className={`flex items-center justify-center gap-2 rounded-xl border border-transparent px-3 py-2 transition-all duration-200 ${
                         isActive
-                          ? 'bg-brand-sky text-brand-navy shadow-[0_8px_20px_rgba(102,155,188,0.24)]'
+                          ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_8px_20px_rgba(120,0,0,0.24)]'
                           : 'text-foreground/45 hover:bg-foreground/[0.04] hover:text-foreground/75'
                       }`}
                     >
-                      <span>{view.label}</span>
-                      <span className={`rounded-full px-2 py-0.5 font-mono text-[9px] ${
-                        isActive ? 'bg-brand-navy/10 text-brand-navy' : 'bg-foreground/[0.05] text-foreground/38'
+                      <span className="text-[9px] font-black uppercase tracking-[0.12em] sm:text-[10px]">{view.label}</span>
+                      <span className={`rounded-full px-2 py-0.5 font-mono text-[9px] font-black ${
+                        isActive ? 'bg-white/18 text-white' : 'bg-foreground/[0.05] text-foreground/38'
                       }`}>
                         {view.count}
                       </span>
