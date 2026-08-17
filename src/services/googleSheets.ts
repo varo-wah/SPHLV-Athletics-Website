@@ -2,8 +2,21 @@ import { hasValidSheetUrl } from "../config/sheets";
 
 export type CsvRow = Record<string, string>;
 
-const sheetsProxyBaseUrl = (import.meta.env?.VITE_SHEETS_PROXY_BASE_URL ?? "")
-  .replace(/\/+$/, "");
+interface SheetCacheEntry {
+  label: string;
+  csv: string;
+}
+
+export interface SheetCachePayload {
+  version: 1;
+  generatedAt: string;
+  sources: Record<string, SheetCacheEntry>;
+}
+
+const SHEET_CACHE_PATH = "/data/sheets-cache.json";
+const SHEET_CACHE_TTL_MS = 45_000;
+let cachedPayload: { loadedAt: number; payload: SheetCachePayload } | null = null;
+let cacheRequest: Promise<SheetCachePayload> | null = null;
 
 export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
   if (!hasValidSheetUrl(url)) {
@@ -24,17 +37,70 @@ export async function fetchCsvMatrix(url: string): Promise<string[][]> {
 }
 
 async function fetchCsvText(url: string): Promise<string> {
-  const proxyUrl = `${sheetsProxyBaseUrl}/api/sheets?url=${encodeURIComponent(url)}`;
+  const cache = await loadSheetCache();
+  const entry = cache.sources[url];
 
-  const response = await fetch(proxyUrl, {
-    method: "GET",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch CSV: ${response.status}`);
+  if (!entry) {
+    throw new Error("Published sheet is missing from the deployed cache");
   }
 
-  return response.text();
+  return entry.csv;
+}
+
+export function parseSheetCachePayload(value: unknown): SheetCachePayload {
+  if (!value || typeof value !== "object") {
+    throw new Error("Invalid Sheets cache payload");
+  }
+
+  const candidate = value as Partial<SheetCachePayload>;
+  if (
+    candidate.version !== 1 ||
+    typeof candidate.generatedAt !== "string" ||
+    !candidate.sources ||
+    typeof candidate.sources !== "object"
+  ) {
+    throw new Error("Invalid Sheets cache payload");
+  }
+
+  for (const entry of Object.values(candidate.sources)) {
+    if (
+      !entry ||
+      typeof entry !== "object" ||
+      typeof entry.label !== "string" ||
+      typeof entry.csv !== "string"
+    ) {
+      throw new Error("Invalid Sheets cache entry");
+    }
+  }
+
+  return candidate as SheetCachePayload;
+}
+
+async function loadSheetCache(): Promise<SheetCachePayload> {
+  const now = Date.now();
+  if (cachedPayload && now - cachedPayload.loadedAt < SHEET_CACHE_TTL_MS) {
+    return cachedPayload.payload;
+  }
+
+  if (cacheRequest) return cacheRequest;
+
+  cacheRequest = (async () => {
+    const response = await fetch(SHEET_CACHE_PATH, { cache: "no-store" });
+
+    if (!response.ok) {
+      throw new Error(`Failed to load deployed Sheets cache: ${response.status}`);
+    }
+
+    const payload = parseSheetCachePayload(await response.json());
+    cachedPayload = { loadedAt: Date.now(), payload };
+    return payload;
+  })();
+
+  try {
+    return await cacheRequest;
+  } finally {
+    cacheRequest = null;
+  }
 }
 
 export function parseCsvMatrix(text: string): string[][] {

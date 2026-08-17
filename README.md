@@ -70,17 +70,20 @@ See [the administrator handoff](docs/results-sheets-administrator-handoff.md) fo
 
 ## Deployment
 
-The prototype is not deployed to a second hosting provider. Contributors check out the `prototype` branch and run `npm run dev:prototype`. Firebase production builds may set `VITE_SHEETS_PROXY_BASE_URL` to the existing sheets proxy origin when Firebase Functions are unavailable on the current plan.
+The prototype is not deployed to a second hosting provider. Contributors check out the `prototype` branch and run `npm run dev:prototype`.
+
+### Free Google Sheets synchronization
+
+The public Google Sheets are synchronized during the production build instead of being fetched through a runtime proxy. Run `npm run sync:sheets` to validate every configured public CSV and write `public/data/sheets-cache.json`. The browser reads that same-origin cache from Firebase Hosting.
+
+The production workflow refreshes the cache on every `main` release and checks for online Sheet changes every 15 minutes. Scheduled runs deploy only when the published data changed. This keeps synchronization on the Firebase Spark plan and removes the Netlify and Cloud Functions dependency.
 
 ### Firebase Hosting
-
-Firebase Hosting also publishes `dist`, but it must route `/api/sheets` to the Firebase Function in `functions/index.js`. Without that function, Google Sheets sync will fail on Firebase the same way it failed on Netlify before the Netlify Function existed.
 
 One-time setup:
 
 ```bash
 npm install
-cd functions && npm install && cd ..
 firebase login
 firebase use --add
 ```
@@ -101,15 +104,8 @@ Merges to `main` are verified and deployed by `.github/workflows/deploy-producti
 - `VITE_FIREBASE_MESSAGING_SENDER_ID`
 - `VITE_FIREBASE_APP_ID`
 - `VITE_FIREBASE_MEASUREMENT_ID`
-- `VITE_SHEETS_PROXY_BASE_URL`
 
 Feature work is reviewed on `prototype`. A tested release is promoted from `prototype` to `main`; production hotfixes from `main` must be merged back into `prototype`.
-
-Deploy Hosting, Firestore rules, and Firebase Functions after upgrading to Blaze:
-
-```bash
-npm run deploy:firebase:full
-```
 
 Required Firebase project setup:
 
