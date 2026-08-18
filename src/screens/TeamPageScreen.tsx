@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
+import CompactResultCard from '../components/CompactResultCard';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import { rosterForTeam } from '../data/teamRosters';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
@@ -597,35 +598,7 @@ export default function TeamPageScreen({
                   ) : (
                     <div className="space-y-3">
                       {completedResults.map((match) => (
-                        <article key={match.id} className="overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-sm">
-                          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/5 px-4 py-3">
-                            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45">
-                              {formatGameDate(match.date)}{match.time ? ` · ${match.time}` : ''}
-                            </p>
-                            <span className={`rounded-full px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${
-                              match.result === 'W'
-                                ? 'bg-green-500/10 text-green-600 dark:text-green-300'
-                                : match.result === 'L'
-                                  ? 'bg-red-500/10 text-red-600 dark:text-red-300'
-                                  : 'bg-amber-500/10 text-amber-700 dark:text-amber-300'
-                            }`}>
-                              {match.result}
-                            </span>
-                          </div>
-                          <div className="grid grid-cols-[minmax(0,1fr)_52px] border-b border-border/5 px-4 py-3">
-                            <span className="truncate text-sm font-black uppercase text-foreground">{match.homeTeam}</span>
-                            <span className="text-right font-mono text-xl font-black text-foreground">{match.homeScore}</span>
-                          </div>
-                          <div className="grid grid-cols-[minmax(0,1fr)_52px] px-4 py-3">
-                            <span className="truncate text-sm font-black uppercase text-foreground">{match.awayTeam}</span>
-                            <span className="text-right font-mono text-xl font-black text-foreground">{match.awayScore}</span>
-                          </div>
-                          {match.venue && (
-                            <p className="border-t border-border/5 px-4 py-2 text-[9px] font-bold uppercase tracking-[0.14em] text-foreground/35">
-                              {match.venue}
-                            </p>
-                          )}
-                        </article>
+                        <CompactResultCard key={match.id} match={match} formatDate={formatGameDate} />
                       ))}
                     </div>
                   )}
