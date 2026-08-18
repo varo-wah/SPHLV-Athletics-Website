@@ -441,17 +441,21 @@ export default function TeamPageScreen({
                     </div>
                   ) : (
                     standingsRows.map(({ row, idx, wins, draws, losses, gp, pts, rank, diff }) => {
+                      const normalizedTeamName = row.team.trim().toLowerCase();
+                      const isLvTeamRow = normalizedTeamName === 'lv' || normalizedTeamName.includes('sph lv') || normalizedTeamName.includes('sphlv');
+                      const isHighlightedLeader = (isLvTeamRow || (idx === 0 && !allTeamsTied));
+
                       return (
                         <div
                           key={`${row.id || idx}-${idx}`}
                           className={`relative grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/5 px-4 py-4 transition-colors hover:bg-foreground/[0.025] sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] ${
-                            idx === 0 && !allTeamsTied ? 'bg-[#FFF4F4] dark:bg-[#B5413F]/[0.055]' : ''
+                            isHighlightedLeader ? 'border border-[#B5413F]/40 bg-[#FFF4F4] shadow-[inset_0_0_0_1px_rgba(181,65,63,0.12)] dark:border-[#B5413F]/40 dark:bg-[#B5413F]/[0.055]' : ''
                           }`}
                         >
-                          {idx === 0 && !allTeamsTied && <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-[#B5413F]" />}
+                          {isHighlightedLeader && <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-[#B5413F]" />}
                           <div className="flex items-center">
                             <span className={`flex h-9 w-9 items-center justify-center rounded-2xl border text-xs font-black ${
-                              idx === 0 && !allTeamsTied
+                              isHighlightedLeader
                                 ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-[0_10px_24px_rgba(181,65,63,0.26)]'
                                 : 'border-border/10 bg-foreground/[0.035] text-foreground/55'
                             }`}>
@@ -525,7 +529,7 @@ export default function TeamPageScreen({
               <div
                 role="group"
                 aria-label="Choose upcoming games or completed results"
-                className="grid grid-cols-2 gap-1 rounded-2xl border border-border/10 bg-subcard/70 p-1.5 shadow-sm sm:w-fit sm:min-w-[320px]"
+                className="flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-border/10 bg-subcard/70 p-1.5 shadow-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
               >
                 {([
                   { id: 'upcoming' as const, label: 'Upcoming', count: upcomingEvents.length },
@@ -539,14 +543,14 @@ export default function TeamPageScreen({
                       type="button"
                       aria-pressed={isActive}
                       onClick={() => setGamesView(view.id)}
-                      className={`flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.14em] transition-all duration-200 ${
+                      className={`flex min-w-fit shrink-0 items-center justify-center gap-2 rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] whitespace-nowrap transition-all duration-200 sm:px-4 ${
                         isActive
                           ? 'bg-brand-sky text-brand-navy shadow-[0_8px_20px_rgba(102,155,188,0.24)]'
                           : 'text-foreground/45 hover:bg-foreground/[0.04] hover:text-foreground/75'
                       }`}
                     >
                       <span>{view.label}</span>
-                      <span className={`rounded-full px-2 py-0.5 font-mono text-[9px] ${
+                      <span className={`shrink-0 rounded-full px-1.5 py-0.5 font-mono text-[8px] leading-none sm:px-2 ${
                         isActive ? 'bg-brand-navy/10 text-brand-navy' : 'bg-foreground/[0.05] text-foreground/38'
                       }`}>
                         {view.count}
