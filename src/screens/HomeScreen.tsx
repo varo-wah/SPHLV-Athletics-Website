@@ -1,13 +1,17 @@
 import { CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
+import CompactResultCard from '../components/CompactResultCard';
+import TeamLogo from '../components/TeamLogo';
 import { IS_PROTOTYPE, isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
+import { TEAM_CATALOG } from '../config/teamCatalog';
 import { useAuth } from '../contexts/AuthContext';
 import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
 import { visibleNewsArticles } from '../data/news';
 import { ScheduleEvent } from '../data/scheduleTypes';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { SheetMatch } from '../services/parsers';
+import { consolidateSharedScheduleEvents } from '../services/schedulePresentation';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { buildFavoriteTeamSummaries } from '../utils/homePersonalization';
 import { getTeamFavoriteLabel } from '../utils/teamFavorites';
@@ -62,12 +66,56 @@ function resultClass(match: SheetMatch | null) {
   return 'text-foreground/35';
 }
 
+function compactDate(date: string | null) {
+  if (!date) return 'TBD';
+  const [year, month, day] = date.split('-').map(Number);
+  const parsed = new Date(year, month - 1, day);
+  if (Number.isNaN(parsed.getTime())) return date;
+  return parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+function compactTeamCode(event: ScheduleEvent) {
+  const catalogTeam = TEAM_CATALOG.find((team) => (
+    team.sport === event.sportKey
+    && team.division === event.level
+    && team.gender === event.genderGroup
+  ));
+  if (catalogTeam) return catalogTeam.menuCode;
+
+  const division = event.level === 'SMA' ? 'V' : event.level === 'SMP' ? 'SMP' : '';
+  const genders = /boys\s*&\s*girls/i.test(event.team)
+    ? ['B', 'G']
+    : [event.genderGroup === 'Boys' ? 'B' : event.genderGroup === 'Girls' ? 'G' : ''];
+  const sport = event.sportKey === 'Soccer' ? 'S' : event.sportKey === 'Volleyball' ? 'V' : event.sportKey === 'Basketball' ? 'B' : '';
+  const codes = genders.map((gender) => `${division}${gender}${sport}`).filter(Boolean);
+  return codes.join('/') || event.team;
+}
+
+function compactOpponentName(event: ScheduleEvent) {
+  const withoutMetadata = event.eventText
+    .replace(/\b\d{1,2}:\d{2}\b/gi, '')
+    .replace(/\b(?:gym|field|court)\s*\d*\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (event.eventType === 'Home Game') {
+    return withoutMetadata.replace(/\s*@\s*(?:sph[-\s]?lv|lv)\b.*$/i, '').trim() || event.opponent || event.team;
+  }
+
+  if (event.eventType === 'Away Game') {
+    return withoutMetadata.replace(/^\s*(?:sph[-\s]?lv|lv)\s*@\s*/i, '').trim() || event.opponent || event.team;
+  }
+
+  return event.opponent || withoutMetadata || event.team;
+}
+
 export default function HomeScreen({
   athleticsDataState,
   onNavigateToNews,
   onNavigateToTeam,
   onBrowseTeams,
 }: HomeScreenProps) {
+  const [gameFeedView, setGameFeedView] = useState<'upcoming' | 'results'>('upcoming');
   const { user } = useAuth();
   const { favoriteTeams, loading: favoritesLoading, error: favoritesError } = useTeamFavorites();
   const visibleFavoriteTeams = useMemo(
@@ -99,6 +147,40 @@ export default function HomeScreen({
       })[0] || null
   ), []);
 
+  const latestResults = useMemo(() => (
+    [...(athleticsDataState.data.matches || [])]
+      .filter((match) => (
+        match.status === 'Finished'
+        && match.homeScore !== null
+        && match.awayScore !== null
+      ))
+      .sort((a, b) => {
+        const aTime = new Date(`${a.date} ${a.time || '00:00'}`).getTime();
+        const bTime = new Date(`${b.date} ${b.time || '00:00'}`).getTime();
+        return bTime - aTime;
+      })
+      .slice(0, 4)
+  ), [athleticsDataState.data.matches]);
+
+  const nextGames = useMemo(() => {
+    const now = new Date();
+    const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    const visibleEvents = (athleticsDataState.data.masterScheduleEvents || []).filter((event) => (
+      isVisibleScheduleEvent(event.season, event.sportKey || null, event.team)
+      && event.date
+      && event.date >= todayIso
+      && ['Home Game', 'Away Game', 'Tournament'].includes(event.eventType)
+    ));
+
+    return consolidateSharedScheduleEvents(visibleEvents)
+      .sort((a, b) => {
+        const aTime = new Date(`${a.date} ${a.time || '00:00'}`).getTime();
+        const bTime = new Date(`${b.date} ${b.time || '00:00'}`).getTime();
+        return aTime - bTime;
+      })
+      .slice(0, 4);
+  }, [athleticsDataState.data.masterScheduleEvents]);
+
   const hasFavoriteTeams = Boolean(user && favoriteTeamSummaries.length > 0);
 
   return (
@@ -110,6 +192,71 @@ export default function HomeScreen({
           className="hero-banner-img"
         />
       </div>
+
+      <section aria-labelledby="home-game-center-heading" className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]">
+        <div className="flex items-center justify-between gap-3 border-b border-border/6 px-4 py-3">
+          <div>
+            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-red">Quick glance</p>
+            <h2 id="home-game-center-heading" className="mt-0.5 text-base font-black uppercase tracking-[0.08em] text-foreground">Game Center</h2>
+          </div>
+          <span className="text-[8px] font-black uppercase tracking-[0.14em] text-foreground/35">Four per view</span>
+        </div>
+
+        <div className="grid grid-cols-2 gap-1 border-b border-border/6 bg-foreground/[0.02] p-1.5">
+          {([
+            { id: 'upcoming' as const, label: 'Next 4', count: nextGames.length },
+            { id: 'results' as const, label: 'Last 4', count: latestResults.length },
+          ]).map((view) => {
+            const active = gameFeedView === view.id;
+            return (
+              <button
+                key={view.id}
+                type="button"
+                onClick={() => setGameFeedView(view.id)}
+                aria-pressed={active}
+                className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-[9px] font-black uppercase tracking-[0.13em] transition-colors ${
+                  active ? 'bg-brand-maroon text-white' : 'text-foreground/42 hover:bg-foreground/[0.04]'
+                }`}
+              >
+                {view.label}
+                <span className={`rounded-full px-1.5 py-0.5 font-mono text-[8px] ${active ? 'bg-white/18' : 'bg-foreground/[0.05]'}`}>{view.count}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="space-y-1.5 p-2">
+          {gameFeedView === 'results' && latestResults.map((match) => (
+            <CompactResultCard key={match.id} match={match} formatDate={compactDate} dense />
+          ))}
+
+          {gameFeedView === 'upcoming' && nextGames.map((event) => (
+            <article key={event.id} className="grid min-h-[58px] grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-2xl border border-border/8 bg-foreground/[0.02] px-3 py-2">
+              <TeamLogo name={compactOpponentName(event)} className="h-8 w-8" />
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="shrink-0 text-[8px] font-black uppercase tracking-[0.12em] text-brand-red">{compactTeamCode(event)}</span>
+                  <span className="truncate text-xs font-black uppercase text-foreground">{compactOpponentName(event)}</span>
+                </div>
+                <p className="mt-1 truncate text-[8px] font-bold uppercase tracking-[0.08em] text-foreground/38">
+                  {event.eventType}{event.location ? ` · ${event.location}` : ''}
+                </p>
+              </div>
+              <div className="shrink-0 text-right">
+                <p className="text-[9px] font-black uppercase text-foreground/60">{compactDate(event.date)}</p>
+                <p className="mt-1 font-mono text-[9px] font-bold text-foreground/38">{event.time || 'TBD'}</p>
+              </div>
+            </article>
+          ))}
+
+          {gameFeedView === 'results' && latestResults.length === 0 && (
+            <p className="px-3 py-5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/38">No completed results available</p>
+          )}
+          {gameFeedView === 'upcoming' && nextGames.length === 0 && (
+            <p className="px-3 py-5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/38">No upcoming games listed</p>
+          )}
+        </div>
+      </section>
 
       {user && favoritesLoading ? (
         <section
