@@ -263,7 +263,7 @@ export default function HomeScreen({
                 <span className="mt-3 block max-w-3xl text-xl font-black uppercase leading-tight tracking-wide text-white sm:text-2xl">{latestNewsArticle.title}</span>
                 <span className="mt-2 line-clamp-2 max-w-3xl text-sm font-semibold leading-relaxed text-white/68">{latestNewsArticle.excerpt}</span>
                 <span className="mt-4 inline-flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-white">
-                  Read latest story
+                  View news here
                   <ChevronRight size={15} className="transition-transform group-hover:translate-x-0.5" />
                 </span>
               </span>
@@ -286,6 +286,48 @@ export default function HomeScreen({
           {favoritesError && (
             <p className="px-1 text-[10px] font-bold uppercase tracking-[0.12em] text-red-400">{favoritesError}</p>
           )}
+        </section>
+      )}
+
+      {hasFavoriteTeams && (
+        <section aria-labelledby="home-news-widget-heading" className="space-y-3">
+          <div className="px-1">
+            <p className="text-[9px] font-black uppercase tracking-[0.22em] text-brand-red">Eagles updates</p>
+            <h2 id="home-news-widget-heading" className="mt-1 text-xl font-black uppercase tracking-[0.08em] text-foreground">Latest News</h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => onNavigateToNews(latestNewsArticle?.id)}
+            className="group flex w-full items-center gap-4 overflow-hidden rounded-3xl border border-brand-red/12 bg-subcard p-3 text-left shadow-[0_3px_10px_rgba(120,0,0,0.06)] transition-all hover:-translate-y-0.5 hover:border-brand-red/25 sm:p-4"
+            aria-label={latestNewsArticle ? `View news: ${latestNewsArticle.title}` : 'View Eagles Athletics news'}
+          >
+            {latestNewsArticle ? (
+              <img
+                src={latestNewsArticle.image}
+                alt=""
+                className="h-20 w-20 shrink-0 rounded-2xl object-cover sm:h-24 sm:w-28"
+              />
+            ) : (
+              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red">
+                <Newspaper size={20} />
+              </span>
+            )}
+
+            <span className="min-w-0 flex-1">
+              <span className="flex flex-wrap items-center gap-2 text-[8px] font-black uppercase tracking-[0.15em] text-foreground/42">
+                <span className="text-brand-red">{latestNewsArticle?.category || 'Eagles Athletics'}</span>
+                {latestNewsArticle?.dateLabel && <span>{latestNewsArticle.dateLabel}</span>}
+              </span>
+              <span className="mt-1.5 line-clamp-2 block text-sm font-black uppercase leading-tight tracking-[0.05em] text-foreground sm:text-base">
+                {latestNewsArticle?.title || 'News publishing soon'}
+              </span>
+              <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#5A1C2C] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-white">
+                View news here
+                <ChevronRight size={13} className="transition-transform group-hover:translate-x-0.5" />
+              </span>
+            </span>
+          </button>
         </section>
       )}
     </div>
