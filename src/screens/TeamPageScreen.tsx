@@ -6,9 +6,7 @@ import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
 import { findTeam, sportDetails } from '../config/teamCatalog';
-import { jaacOpponentSchoolsForEvent, jaacSchoolByCode, JaacSchool } from '../data/jaacSchools';
 import { rosterForTeam } from '../data/teamRosters';
-import { ScheduleEvent } from '../data/scheduleTypes';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 
 interface TeamPageScreenProps {
@@ -69,55 +67,6 @@ function gameTimestamp(date: string | null, time?: string | null) {
   if (!date) return Number.MAX_SAFE_INTEGER;
   const value = new Date(`${date} ${time || '00:00'}`).getTime();
   return Number.isNaN(value) ? Number.MAX_SAFE_INTEGER : value;
-}
-
-function SchoolIdentity({ school }: { school: JaacSchool }) {
-  return (
-    <div className="flex min-w-0 items-center gap-2.5">
-      <img
-        src={school.logo}
-        alt={`${school.name} logo`}
-        className="h-11 w-11 shrink-0 rounded-full border border-border/10 bg-white object-cover shadow-sm"
-      />
-      <div className="min-w-0">
-        <p className="truncate text-sm font-black uppercase text-foreground">{school.code}</p>
-        <p className="truncate text-[9px] font-bold uppercase tracking-[0.08em] text-foreground/40">
-          {school.mascot}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-function JaacMatchup({ event }: { event: ScheduleEvent }) {
-  const opponents = jaacOpponentSchoolsForEvent(event.opponent, event.eventText, event.raw);
-  if (opponents.length === 0) return null;
-
-  const lippoVillage = jaacSchoolByCode('LV');
-  const isAway = event.eventType === 'Away Game';
-  const leftSchools = isAway ? opponents : [lippoVillage];
-  const rightSchools = isAway ? [lippoVillage] : opponents;
-
-  return (
-    <div className="mt-3 rounded-xl border border-border/10 bg-foreground/[0.025] px-3 py-2.5">
-      <p className="mb-2 text-[8px] font-black uppercase tracking-[0.16em] text-foreground/35">
-        Matchup
-      </p>
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
-        <div className="space-y-2">
-          {leftSchools.map((school) => (
-            <div key={school.code}><SchoolIdentity school={school} /></div>
-          ))}
-        </div>
-        <span className="text-[10px] font-black uppercase tracking-[0.14em] text-foreground/30">vs</span>
-        <div className="space-y-2">
-          {rightSchools.map((school) => (
-            <div key={school.code}><SchoolIdentity school={school} /></div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
 }
 
 export default function TeamPageScreen({
@@ -616,7 +565,6 @@ export default function TeamPageScreen({
                           <h4 className="mt-2 text-base font-black uppercase leading-tight text-foreground">
                             {event.eventText}
                           </h4>
-                          <JaacMatchup event={event} />
                           <div className="mt-3 flex flex-wrap gap-3 text-[10px] font-bold uppercase tracking-[0.12em] text-foreground/42">
                             {event.time && <span className="inline-flex items-center gap-1.5"><Clock size={12} />{event.time}</span>}
                             {event.location && <span className="inline-flex items-center gap-1.5"><MapPin size={12} />{event.location}</span>}

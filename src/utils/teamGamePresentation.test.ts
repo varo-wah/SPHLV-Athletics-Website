@@ -17,12 +17,14 @@ const match: SheetMatch = {
   set1For: null, set1Against: null, set2For: null, set2Against: null, set3For: null, set3Against: null,
 };
 
-test('formats SPH consistently and resolves known school logos', () => {
+test('formats SPH consistently and resolves supplied result logos', () => {
   assert.equal(formatTeamName('SPH LV'), 'SPH-LV');
   assert.equal(formatTeamName('LV'), 'SPH-LV');
-  assert.ok(teamLogoForName('SPH-LV'));
-  assert.ok(teamLogoForName('BSJ'));
-  assert.equal(teamLogoForName('KV'), null);
+  assert.equal(teamLogoForName('SPH-LV')?.includes('lv.jpeg'), true);
+  assert.equal(teamLogoForName('KV')?.includes('kv.jpeg'), true);
+  assert.equal(teamLogoForName('BSJ')?.includes('bsj.jpeg'), true);
+  assert.equal(teamLogoForName('STL')?.includes('ssl.jpeg'), true);
+  assert.equal(teamLogoForName('SMK 31'), null);
 });
 
 test('presents the away team first and the home team second with an @ prefix', () => {
