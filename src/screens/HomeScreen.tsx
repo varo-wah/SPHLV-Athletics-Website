@@ -60,7 +60,7 @@ function formatResultScore(match: SheetMatch | null) {
 }
 
 function resultClass(match: SheetMatch | null) {
-  if (match?.result === 'W') return 'text-green-700 dark:text-green-400';
+  if (match?.result === 'W') return 'text-brand-sky';
   if (match?.result === 'L') return 'text-brand-red dark:text-red-400';
   if (match?.result === 'D') return 'text-amber-700 dark:text-yellow-300';
   return 'text-foreground/35';
@@ -115,7 +115,7 @@ export default function HomeScreen({
   onNavigateToTeam,
   onBrowseTeams,
 }: HomeScreenProps) {
-  const [gameFeedView, setGameFeedView] = useState<'upcoming' | 'results'>('upcoming');
+  const [gameFeedView, setGameFeedView] = useState<'upcoming' | 'results'>('results');
   const { user } = useAuth();
   const { favoriteTeams, loading: favoritesLoading, error: favoritesError } = useTeamFavorites();
   const visibleFavoriteTeams = useMemo(
@@ -193,19 +193,11 @@ export default function HomeScreen({
         />
       </div>
 
-      <section aria-labelledby="home-game-center-heading" className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]">
-        <div className="flex items-center justify-between gap-3 border-b border-border/6 px-4 py-3">
-          <div>
-            <p className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-red">Quick glance</p>
-            <h2 id="home-game-center-heading" className="mt-0.5 text-base font-black uppercase tracking-[0.08em] text-foreground">Game Center</h2>
-          </div>
-          <span className="text-[8px] font-black uppercase tracking-[0.14em] text-foreground/35">Four per view</span>
-        </div>
-
-        <div className="grid grid-cols-2 gap-1 border-b border-border/6 bg-foreground/[0.02] p-1.5">
+      <section aria-label="Games" className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]">
+        <div className="grid grid-cols-2 gap-1 border-b border-border/6 bg-foreground/[0.02] p-1">
           {([
-            { id: 'upcoming' as const, label: 'Next 4', count: nextGames.length },
-            { id: 'results' as const, label: 'Last 4', count: latestResults.length },
+            { id: 'results' as const, label: 'Past' },
+            { id: 'upcoming' as const, label: 'Upcoming' },
           ]).map((view) => {
             const active = gameFeedView === view.id;
             return (
@@ -214,12 +206,11 @@ export default function HomeScreen({
                 type="button"
                 onClick={() => setGameFeedView(view.id)}
                 aria-pressed={active}
-                className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-[9px] font-black uppercase tracking-[0.13em] transition-colors ${
+                className={`flex items-center justify-center rounded-lg px-2 py-1.5 text-[8px] font-black uppercase tracking-[0.12em] transition-colors ${
                   active ? 'bg-brand-maroon text-white' : 'text-foreground/42 hover:bg-foreground/[0.04]'
                 }`}
               >
                 {view.label}
-                <span className={`rounded-full px-1.5 py-0.5 font-mono text-[8px] ${active ? 'bg-white/18' : 'bg-foreground/[0.05]'}`}>{view.count}</span>
               </button>
             );
           })}
