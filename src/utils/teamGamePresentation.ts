@@ -1,16 +1,5 @@
-import { TEAM_ASSETS } from '../data';
+import { jaacSchoolForName } from '../data/jaacSchools';
 import { SheetMatch } from '../services/parsers';
-
-const TEAM_LOGO_ALIASES: Array<{ pattern: RegExp; logo: string }> = [
-  { pattern: /^(?:lv|sph|sphlv|sekolahpelitaharapan)$/, logo: TEAM_ASSETS.sph },
-  { pattern: /^(?:gjs|globaljayaschool)$/, logo: TEAM_ASSETS.icsbk },
-  { pattern: /^(?:jis|jakartainterculturalschool)$/, logo: TEAM_ASSETS.icshk },
-  { pattern: /^(?:bsj|britishschooljakarta)$/, logo: TEAM_ASSETS.fa },
-  { pattern: /^acs$/, logo: TEAM_ASSETS.yiss },
-  { pattern: /^acg$/, logo: TEAM_ASSETS.gis },
-  { pattern: /^(?:stl|santalaurensia)$/, logo: TEAM_ASSETS.dalat },
-  { pattern: /^ais$/, logo: TEAM_ASSETS.mac },
-];
 
 function normalizedTeamKey(value: string) {
   return value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -24,9 +13,7 @@ export function formatTeamName(value: string) {
 }
 
 export function teamLogoForName(value: string | null | undefined) {
-  if (!value) return null;
-  const normalized = normalizedTeamKey(value);
-  return TEAM_LOGO_ALIASES.find(({ pattern }) => pattern.test(normalized))?.logo || null;
+  return jaacSchoolForName(value)?.logo ?? null;
 }
 
 export function resultOutcomeLabel(result: SheetMatch['result']) {
