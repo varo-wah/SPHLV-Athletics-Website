@@ -13,7 +13,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
   const teams = presentResultTeams(match);
   const outcome = resultOutcomeLabel(match.result);
   const outcomeClasses = match.result === 'W'
-    ? 'text-green-700 dark:text-green-300'
+    ? 'text-brand-sky'
     : match.result === 'L'
       ? 'text-brand-red dark:text-red-300'
       : 'text-amber-700 dark:text-amber-300';
