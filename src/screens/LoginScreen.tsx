@@ -42,7 +42,7 @@ export default function LoginScreen() {
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen px-4 pb-24 pt-5 sm:px-6 lg:px-8">
       <section className="relative overflow-hidden rounded-[2rem] border border-border/10 bg-subcard p-5 shadow-[0_5px_14px_rgba(0,0,0,0.10)] sm:p-7">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(193,18,31,0.16),transparent_34%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(181,65,63,0.18),transparent_34%)]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,0,0.07),transparent_34%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_34%)]" />
         <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
           <div>
             <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#C1121F] dark:text-[#D85A57]">
