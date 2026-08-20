@@ -21,8 +21,8 @@ const fallbackScheduleData = scheduleDataJson as ScheduleData;
 
 const EVENT_TYPE_STYLES: Record<ScheduleEventType, string> = {
   Practice: 'border-[#7F1D1D]/25 bg-muted text-[#7F1D1D] dark:border-[#BFD7EA]/20 dark:bg-muted dark:text-[#BFD7EA]',
-  'Home Game': 'border-[#C1121F] bg-[#C1121F] text-white dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400',
-  'Away Game': 'border-[#7F1D1D] bg-[#7F1D1D] text-white dark:border-yellow-400/20 dark:bg-yellow-400/10 dark:text-yellow-300',
+  'Home Game': 'border-brand-maroon bg-brand-maroon text-white dark:border-brand-maroon dark:bg-brand-maroon dark:text-white',
+  'Away Game': 'border-[#6B7280] bg-[#6B7280] text-white dark:border-[#6B7280] dark:bg-[#6B7280] dark:text-white',
   Tournament: 'border-[#991B1B] bg-[#991B1B] text-white dark:border-[#B5413F]/25 dark:bg-[#B5413F]/12 dark:text-[#D85A57]',
   Holiday: 'border-brand-maroon/15 bg-brand-cream text-[#1F2937] dark:border-purple-400/20 dark:bg-purple-400/10 dark:text-purple-300',
   Other: 'border-border/10 bg-foreground/[0.035] text-foreground/55',
@@ -450,13 +450,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 title={option.title}
                 aria-pressed={active}
                 onClick={() => setTeamFilter(option.id)}
-                className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-[11px] font-black uppercase tracking-[0.08em] transition-colors ${
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.07em] transition-colors ${
                   active
                     ? option.activeClassName
                     : `${option.inactiveClassName} hover:-translate-y-0.5 hover:brightness-95 dark:hover:brightness-110`
                 }`}
               >
-                <span aria-hidden="true" className="text-base leading-none">{option.emoji}</span>
+                <span aria-hidden="true" className="text-sm leading-none">{option.emoji}</span>
                 {option.label}
               </button>
             );
@@ -475,14 +475,14 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 title={scope.id === 'practices' ? 'Show games and practices' : 'Show games only'}
                 aria-pressed={scheduleScope === scope.id}
                 onClick={() => setScheduleScope(scope.id)}
-                className={`relative pb-2 text-xs font-black uppercase tracking-[0.12em] transition-colors ${
+                className={`relative pb-1.5 text-[10px] font-black uppercase tracking-[0.1em] transition-colors ${
                   scheduleScope === scope.id
                     ? 'text-brand-sky after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:rounded-full after:bg-brand-sky'
                     : 'text-foreground/45 hover:text-foreground/70'
                 }`}
               >
                 <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true" className="text-sm leading-none">{scope.emoji}</span>
+                  <span aria-hidden="true" className="text-xs leading-none">{scope.emoji}</span>
                   {scope.label}
                 </span>
               </button>
@@ -517,13 +517,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           <button
             type="button"
             onClick={() => setShowArchivedWeeks((current) => !current)}
-            className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.16em] transition-colors ${
+            className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.12em] transition-colors ${
               showArchivedWeeks
-                ? 'border-brand-sky/35 bg-brand-sky/12 text-brand-sky'
-                : 'border-border/10 bg-subcard text-foreground/55 hover:border-brand-sky/30 hover:text-foreground'
+                ? 'border-[#9CA3AF]/35 bg-[#9CA3AF]/12 text-[#6B7280]'
+                : 'border-[#9CA3AF]/25 bg-[#9CA3AF]/8 text-[#6B7280] hover:border-[#6B7280]/35 hover:text-[#4B5563]'
             }`}
           >
-            <span aria-hidden="true" className="text-sm leading-none">🗃️</span>
+            <span aria-hidden="true" className="text-xs leading-none">🗃️</span>
             {showArchivedWeeks ? 'Hide' : 'Show'} {archivedWeeks.size} archived week{archivedWeeks.size === 1 ? '' : 's'}
           </button>
         )}
@@ -690,7 +690,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                     {(containsToday || archived) && (
                       <span className={`rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${
                         containsToday
-                          ? 'border-[#B5413F]/30 bg-[#B5413F]/12 text-[#D85A57]'
+                          ? 'border-brand-sky/35 bg-brand-sky text-brand-navy'
                           : 'border-border/10 bg-foreground/[0.035] text-foreground/38'
                       }`}>
                         {containsToday ? 'This week' : 'Archived'}

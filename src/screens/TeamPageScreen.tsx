@@ -30,7 +30,7 @@ const approvedSoccerTeamPhotos = [
   'https://res.cloudinary.com/dpgt445lg/image/upload/v1780241126/Varsity_boys_soccer_team_pic_resized_i1ezdp.jpg',
 ] as const;
 
-const varsityBoysSoccerPreseasonTeams = ['LV', 'BSJ', 'GJS', 'ACS'] as const;
+const preseasonStandingsTeams = ['LV', 'BSJ', 'GJS', 'ACS'] as const;
 
 const varsityBoysSoccerTournamentResults = [
   {
@@ -113,35 +113,26 @@ export default function TeamPageScreen({
     setCurrentImageIndex(0);
   }, [sport, division, gender]);
 
-  const currentStandings = (athleticsDataState?.data?.standings || []).filter((standing) => {
-    return (
-      standing.sportKey === sport &&
-      standing.level === division &&
-      standing.genderGroup === gender
-    );
-  });
-  const isPreseasonStandings = sport === 'Soccer' && division === 'SMA' && gender === 'Boys';
-  const standingsForDisplay = isPreseasonStandings
-    ? varsityBoysSoccerPreseasonTeams.map((club, index) => ({
-        id: `preseason-soccer-sma-boys-${club.toLowerCase()}`,
-        pageId: 'preseason-soccer-sma-boys',
-        sport: 'Soccer' as const,
-        sportKey: 'Soccer' as const,
-        level: 'SMA' as const,
-        genderGroup: 'Boys' as const,
-        tournament: 'Season' as const,
-        rank: 1,
-        team: club,
-        wins: 0,
-        draws: 0,
-        losses: 0,
-        points: 0,
-        forValue: 0,
-        againstValue: 0,
-        difference: 0,
-        notes: index === 0 ? 'Preseason table' : '',
-      }))
-    : currentStandings;
+  const isPreseasonStandings = true;
+  const standingsForDisplay = preseasonStandingsTeams.map((club, index) => ({
+    id: `preseason-${sport}-${division}-${gender}-${club}`.toLowerCase(),
+    pageId: `preseason-${sport}-${division}-${gender}`.toLowerCase(),
+    sport,
+    sportKey: sport,
+    level: division,
+    genderGroup: gender,
+    tournament: 'Season' as const,
+    rank: 1,
+    team: club,
+    wins: 0,
+    draws: 0,
+    losses: 0,
+    points: 0,
+    forValue: 0,
+    againstValue: 0,
+    difference: 0,
+    notes: index === 0 ? 'Preseason table' : '',
+  }));
 
   const resultSourceState = team
     ? athleticsDataState?.data.resultSourceStates.find((source) => source.teamId === team.id)
