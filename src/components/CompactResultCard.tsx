@@ -25,9 +25,9 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
           {teams.map((team) => (
             <div
               key={`${match.id}-${team.home ? 'home' : 'away'}`}
-              className={`grid grid-cols-[28px_28px_minmax(0,1fr)] items-center gap-2 px-3 ${dense ? 'h-[43px]' : 'h-[51px]'}`}
+              className={`grid grid-cols-[28px_auto_minmax(0,1fr)] items-center gap-2 px-3 ${dense ? 'h-[43px]' : 'h-[51px]'}`}
             >
-              <TeamLogo name={team.name} className="h-7 w-7" />
+              <TeamLogo name={team.sourceName} className="h-7 w-7" />
               <span className="font-mono text-base font-black tabular-nums text-foreground">
                 {team.score ?? '—'}
               </span>

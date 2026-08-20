@@ -5,6 +5,7 @@ import {
   formatTeamName,
   presentResultTeams,
   resultOutcomeLabel,
+  sphResultTeamLabel,
   teamLogoForName,
 } from './teamGamePresentation';
 
@@ -27,11 +28,28 @@ test('formats SPH consistently and resolves supplied result logos', () => {
   assert.equal(teamLogoForName('SMK 31'), null);
 });
 
-test('presents the away team first and the home team second with an @ prefix', () => {
+test('presents the away team first and labels SPH by sport and team', () => {
   const [away, home] = presentResultTeams(match);
   assert.deepEqual(
-    [away.name, away.score, away.winner, home.name, home.score, home.winner],
-    ['SPH-LV', 2, true, '@ KV', 0, false],
+    [away.name, away.sourceName, away.score, away.winner, home.name, home.score, home.winner],
+    ['⚽️ V Boys', 'SPH LV', 2, true, '@ KV', 0, false],
+  );
+});
+
+test('uses the requested SMP basketball label and preserves a home marker', () => {
+  const basketballMatch = {
+    ...match,
+    sport: 'Basketball' as const,
+    sportKey: 'Basketball' as const,
+    level: 'SMP' as const,
+    homeTeam: 'SPH LV',
+    awayTeam: 'SMK 31',
+  };
+
+  assert.equal(sphResultTeamLabel(basketballMatch), '🏀 SMP Boys');
+  assert.deepEqual(
+    presentResultTeams(basketballMatch).map(({ name }) => name),
+    ['SMK 31', '@ 🏀 SMP Boys'],
   );
 });
 
