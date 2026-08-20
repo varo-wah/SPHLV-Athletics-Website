@@ -395,7 +395,7 @@ export default function TeamPageScreen({
         </div>
 
             <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
-               <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-brand-maroon/10 bg-[#F1F2F3] px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-maroon sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] dark:border-[#5A1C2C]/10 dark:bg-[#5A1C2C]/10 dark:text-[#D85A57]">
+               <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/10 bg-[#F1F2F3] px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-maroon sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]">
                   <div>Rank</div>
                   <div>Club</div>
                   <div className="text-center">GP</div>
@@ -423,7 +423,7 @@ export default function TeamPageScreen({
                         <div
                           key={`${row.id || idx}-${idx}`}
                           className={`relative grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/5 px-4 py-4 transition-colors hover:bg-foreground/[0.025] sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] ${
-                            idx === 0 && !allTeamsTied ? 'bg-[#FFF4F4] dark:bg-[#B5413F]/[0.055]' : ''
+                            idx === 0 && !allTeamsTied ? 'bg-muted/70 dark:bg-white/[0.055]' : ''
                           }`}
                         >
                           {idx === 0 && !allTeamsTied && <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-[#B5413F]" />}
@@ -766,7 +766,7 @@ export default function TeamPageScreen({
         {/* Player Roster */}
         {activeSection === 'players' && (
         <section className="space-y-4" data-roster-team={team?.id}>
-          <div className="relative overflow-hidden rounded-[1.75rem] border border-[#B5413F]/20 bg-[linear-gradient(135deg,rgba(90,28,44,0.14),rgba(181,65,63,0.04)_60%,transparent)] px-5 py-5 shadow-sm sm:px-6">
+          <div className="relative overflow-hidden rounded-[1.75rem] border border-border/10 bg-subcard px-5 py-5 shadow-sm sm:px-6">
             <div className="pointer-events-none absolute -right-10 -top-14 h-36 w-36 rounded-full border-[28px] border-[#B5413F]/[0.045]" />
             <div className="relative flex items-end justify-between gap-4">
               <div>

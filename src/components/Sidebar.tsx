@@ -44,10 +44,10 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 27, stiffness: 220 }}
             aria-label="Teams menu"
-            className="sph-sidebar-shell fixed bottom-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-brand-maroon/15 bg-[linear-gradient(160deg,#FFFFFF_0%,#F8FAFC_62%,rgba(193,18,31,0.08)_100%)] shadow-[12px_0_24px_rgba(120,0,0,0.14)] dark:border-[#B5413F]/20 dark:bg-none dark:bg-[#10070a] dark:shadow-[12px_0_24px_rgba(0,0,0,0.38)]"
+            className="sph-sidebar-shell fixed bottom-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-black/10 bg-[linear-gradient(160deg,#FFFFFF_0%,#F4F4F4_100%)] shadow-[12px_0_24px_rgba(0,0,0,0.14)] dark:border-white/10 dark:bg-none dark:bg-[#111111] dark:shadow-[12px_0_24px_rgba(0,0,0,0.38)]"
           >
             <div className="relative border-b border-brand-maroon/10 px-4 py-3.5 dark:border-white/[0.065]">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(193,18,31,0.14),transparent_46%)] dark:bg-[radial-gradient(circle_at_12%_0%,rgba(181,65,63,0.24),transparent_44%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(0,0,0,0.055),transparent_46%)] dark:bg-[radial-gradient(circle_at_12%_0%,rgba(255,255,255,0.055),transparent_44%)]" />
               <div className="relative flex items-center justify-between gap-4">
                 <button
                   type="button"
