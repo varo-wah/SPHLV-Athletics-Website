@@ -2,7 +2,6 @@ import { CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } fro
 import { useMemo, useState } from 'react';
 import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
 import CompactResultCard from '../components/CompactResultCard';
-import TeamLogo from '../components/TeamLogo';
 import { IS_PROTOTYPE, isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
 import { TEAM_CATALOG } from '../config/teamCatalog';
 import { useAuth } from '../contexts/AuthContext';
@@ -80,7 +79,7 @@ function compactTeamCode(event: ScheduleEvent) {
     && team.division === event.level
     && team.gender === event.genderGroup
   ));
-  if (catalogTeam) return catalogTeam.menuCode;
+  if (catalogTeam) return catalogTeam.menuCode.replace(/^SMP([BG])B$/, 'SMP-$1B');
 
   const division = event.level === 'SMA' ? 'V' : event.level === 'SMP' ? 'SMP' : '';
   const genders = /boys\s*&\s*girls/i.test(event.team)
@@ -88,7 +87,25 @@ function compactTeamCode(event: ScheduleEvent) {
     : [event.genderGroup === 'Boys' ? 'B' : event.genderGroup === 'Girls' ? 'G' : ''];
   const sport = event.sportKey === 'Soccer' ? 'S' : event.sportKey === 'Volleyball' ? 'V' : event.sportKey === 'Basketball' ? 'B' : '';
   const codes = genders.map((gender) => `${division}${gender}${sport}`).filter(Boolean);
-  return codes.join('/') || event.team;
+  return (codes.join('/') || event.team).replace(/^SMP([BG])B$/, 'SMP-$1B');
+}
+
+function compactTeamCodeColor(code: string) {
+  if (/G/.test(code)) return 'text-brand-maroon';
+  if (/B/.test(code)) return 'text-brand-sky';
+  return 'text-foreground/60';
+}
+
+function compactGameMeta(event: ScheduleEvent) {
+  const rawVenue = event.eventType === 'Away Game'
+    ? event.location || event.opponent
+    : event.location || 'LV';
+  const venue = (rawVenue || 'LV')
+    .replace(/^@\s*/, '')
+    .replace(/^SPH[-\s]?LV$/i, 'LV')
+    .trim();
+
+  return `@${venue} ${compactDate(event.date)} ${event.time || 'TBD'}`;
 }
 
 function compactOpponentName(event: ScheduleEvent) {
@@ -222,20 +239,25 @@ export default function HomeScreen({
           ))}
 
           {gameFeedView === 'upcoming' && nextGames.map((event) => (
-            <article key={event.id} className="grid min-h-[58px] grid-cols-[32px_minmax(0,1fr)_auto] items-center gap-2.5 rounded-2xl border border-border/8 bg-foreground/[0.02] px-3 py-2">
-              <TeamLogo name={compactOpponentName(event)} className="h-8 w-8" />
+            <article key={event.id} className="grid min-h-[58px] grid-cols-[32px_minmax(0,1fr)] items-center gap-2.5 rounded-2xl border border-border/8 bg-foreground/[0.02] px-3 py-2">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground/[0.035] text-lg" aria-hidden="true">
+                {favoriteTeamEmojis[event.sportKey || 'Soccer']}
+              </span>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <span className="shrink-0 text-[8px] font-black uppercase tracking-[0.12em] text-brand-red">{compactTeamCode(event)}</span>
+                  <span className="flex shrink-0 text-[9px] font-black uppercase tracking-[0.12em]">
+                    {compactTeamCode(event).split('/').map((code, index) => (
+                      <span key={code} className={compactTeamCodeColor(code)}>
+                        {index > 0 && <span className="text-foreground/35">/</span>}
+                        {code}
+                      </span>
+                    ))}
+                  </span>
                   <span className="truncate text-xs font-black uppercase text-foreground">{compactOpponentName(event)}</span>
                 </div>
                 <p className="mt-1 truncate text-[8px] font-bold uppercase tracking-[0.08em] text-foreground/38">
-                  {event.eventType}{event.location ? ` · ${event.location}` : ''}
+                  {compactGameMeta(event)}
                 </p>
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="text-[9px] font-black uppercase text-foreground/60">{compactDate(event.date)}</p>
-                <p className="mt-1 font-mono text-[9px] font-bold text-foreground/38">{event.time || 'TBD'}</p>
               </div>
             </article>
           ))}
