@@ -84,3 +84,34 @@ test("source metadata isolates otherwise identical team result rows", () => {
   assert.equal(boys.teamId, "soccer-sma-boys");
   assert.equal(girls.teamId, "soccer-sma-girls");
 });
+
+test("parses optional match type, set scores, stat leaders, and highlights", () => {
+  const parsed = parseResultRows([
+    {
+      Date: "20-Aug-2026",
+      Time: "3:30 PM",
+      Location: "SPH LV",
+      "Home Team": "SPH LV",
+      "Home Score": "4",
+      "Away Team": "Parung Panjang",
+      "Away Score": "1",
+      "Match Type": "Friendly",
+      "Set Scores": "Set 1: 25–21\nSet 2: 25–15",
+      "Stat Leaders": "Sam: 7 service aces\nEvie: 2 blocks",
+      Highlights: "Trisha served the Set 3 winner.\nSam closed Set 5 with 3 aces.",
+    },
+  ], {
+    ...soccerSource,
+    id: "varsity-girls-volleyball-results",
+    teamId: "volleyball-sma-girls",
+    displayName: "Varsity Girls Volleyball",
+    sport: "Volleyball",
+    sportKey: "Volleyball",
+    genderGroup: "Girls",
+  });
+
+  assert.equal(parsed.matches[0].matchType, "Friendly");
+  assert.deepEqual(parsed.matches[0].setScores, ["Set 1: 25–21", "Set 2: 25–15"]);
+  assert.deepEqual(parsed.matches[0].statLeaders, ["Sam: 7 service aces", "Evie: 2 blocks"]);
+  assert.equal(parsed.matches[0].highlights?.length, 2);
+});

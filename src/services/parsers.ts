@@ -67,6 +67,10 @@ export interface SheetMatch {
   scoreFor: number | null;
   scoreAgainst: number | null;
   notes: string;
+  matchType?: string;
+  setScores?: string[];
+  statLeaders?: string[];
+  highlights?: string[];
 
   set1For: number | null;
   set1Against: number | null;
@@ -74,6 +78,13 @@ export interface SheetMatch {
   set2Against: number | null;
   set3For: number | null;
   set3Against: number | null;
+}
+
+function lines(value: string): string[] {
+  return value
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
 }
 
 export interface ResultSourceMetadata {
@@ -387,6 +398,10 @@ export function parseResultRows(
       scoreFor,
       scoreAgainst,
       notes: "",
+      matchType: get(row, "Match Type", "Game Type"),
+      setScores: lines(get(row, "Set Scores", "Sets")),
+      statLeaders: lines(get(row, "Stat Leaders", "Statistics", "Stats")),
+      highlights: lines(get(row, "Highlights", "Notable Moments")),
       set1For: null,
       set1Against: null,
       set2For: null,
@@ -563,6 +578,10 @@ export function parseMatches(rows: CsvRow[], fallbackSport: SheetSport): SheetMa
         scoreFor,
         scoreAgainst,
         notes: get(row, "Notes"),
+        matchType: get(row, "Match Type", "Game Type"),
+        setScores: lines(get(row, "Set Scores", "Sets")),
+        statLeaders: lines(get(row, "Stat Leaders", "Statistics", "Stats")),
+        highlights: lines(get(row, "Highlights", "Notable Moments")),
 
         set1For: num(get(row, "Set 1 For", "Set1 For")),
         set1Against: num(get(row, "Set 1 Against", "Set1 Against")),

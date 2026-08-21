@@ -1,4 +1,4 @@
-import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
+import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 
 export type NewsPublicationChannel = 'published' | 'prototype';
 
