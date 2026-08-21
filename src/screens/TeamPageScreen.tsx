@@ -252,7 +252,7 @@ export default function TeamPageScreen({
           <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[#B5413F]">
             {divisionLabel}
           </p>
-          <h1 className="mt-1 whitespace-nowrap text-[clamp(1.1rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.04em] text-foreground sm:text-4xl">
+          <h1 className="mt-1 whitespace-nowrap text-[clamp(1rem,4.5vw,1.75rem)] font-black uppercase leading-tight tracking-[-0.035em] text-foreground sm:text-3xl">
             {teamName}
           </h1>
         </div>
@@ -287,7 +287,7 @@ export default function TeamPageScreen({
                 onClick={() => setActiveSection(section.id)}
                 className={`relative min-w-0 rounded-xl border border-transparent px-2.5 py-2 transition-all duration-200 ${
                   isActive
-                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_22px_rgba(120,0,0,0.24)]'
+                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_3px_8px_rgba(15,23,42,0.14)]'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
@@ -316,8 +316,8 @@ export default function TeamPageScreen({
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
                     {isPreseasonStandings ? 'Preseason table' : 'Live table'}
                   </p>
-                  <h2 className="mt-2 text-3xl font-black uppercase tracking-[0.16em] text-foreground leading-tight sm:text-4xl">
-                    Regular Season<br />Standings
+                  <h2 className="mt-1.5 max-w-[18rem] text-xl font-black uppercase leading-tight tracking-[0.08em] text-foreground sm:text-2xl">
+                    Regular Season Standings
                   </h2>
                 </div>
 
@@ -351,11 +351,11 @@ export default function TeamPageScreen({
                   {allTeamsTied ? 'Preseason status' : 'LV status'}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-[0_12px_30px_rgba(181,65,63,0.28)]">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-[0_3px_8px_rgba(15,23,42,0.14)]">
                     {allTeamsTied ? `T${lvStanding.rank}` : `#${lvStanding.rank}`}
                   </div>
                   <div className="min-w-0">
-                    <p className="truncate text-2xl font-black uppercase tracking-tight text-foreground">
+                    <p className="truncate text-lg font-black uppercase tracking-tight text-foreground sm:text-xl">
                       {allTeamsTied ? 'All teams tied' : lvStanding.rank === 1 ? 'LV leads the table' : `LV is #${lvStanding.rank}`}
                     </p>
                     <p className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">
@@ -421,7 +421,7 @@ export default function TeamPageScreen({
                           <div className="flex items-center">
                             <span className={`flex h-9 w-9 items-center justify-center rounded-2xl border text-xs font-black ${
                               idx === 0 && !allTeamsTied
-                                ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-[0_10px_24px_rgba(181,65,63,0.26)]'
+                                ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-[0_3px_8px_rgba(15,23,42,0.14)]'
                                 : 'border-border/10 bg-foreground/[0.035] text-foreground/55'
                             }`}>
                               {allTeamsTied ? `T${rank}` : rank}
@@ -510,7 +510,7 @@ export default function TeamPageScreen({
                       onClick={() => setGamesView(view.id)}
                       className={`flex items-center justify-center gap-2 rounded-xl border border-transparent px-3 py-2 transition-all duration-200 ${
                         isActive
-                          ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_8px_20px_rgba(120,0,0,0.24)]'
+                          ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_3px_8px_rgba(15,23,42,0.14)]'
                           : 'text-foreground/45 hover:bg-foreground/[0.04] hover:text-foreground/75'
                       }`}
                     >
