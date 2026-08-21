@@ -120,7 +120,10 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] text-[#B5413F]">
             <Newspaper size={25} />
           </div>
-          <h3 className="mt-5 text-xl font-black uppercase tracking-[0.12em] text-foreground">
+          <h2 className="mt-5 text-3xl font-black uppercase tracking-[0.12em] text-foreground">
+            Coming Soon
+          </h2>
+          <h3 className="mt-3 text-sm font-medium uppercase tracking-[0.08em] text-foreground/60">
             No news published yet
           </h3>
           <p className="mx-auto mt-3 max-w-md text-sm font-medium leading-relaxed text-foreground/48">
