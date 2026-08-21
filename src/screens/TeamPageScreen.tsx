@@ -31,6 +31,7 @@ const approvedSoccerTeamPhotos = [
 ] as const;
 
 const preseasonStandingsTeams = ['LV', 'BSJ', 'GJS', 'ACS'] as const;
+const compactNeutralShadow = { boxShadow: '0 2px 6px rgba(15, 23, 42, 0.16)' } as const;
 
 const varsityBoysSoccerTournamentResults = [
   {
@@ -285,9 +286,10 @@ export default function TeamPageScreen({
                 aria-selected={isActive}
                 aria-controls="team-section-panel"
                 onClick={() => setActiveSection(section.id)}
+                style={isActive ? compactNeutralShadow : undefined}
                 className={`relative min-w-0 rounded-xl border border-transparent px-2.5 py-2 transition-all duration-200 ${
                   isActive
-                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-sm'
+                    ? 'border-brand-maroon bg-brand-maroon text-white'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
@@ -351,7 +353,7 @@ export default function TeamPageScreen({
                   {allTeamsTied ? 'Preseason status' : 'LV status'}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-sm">
+                  <div style={compactNeutralShadow} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white">
                     {allTeamsTied ? `T${lvStanding.rank}` : `#${lvStanding.rank}`}
                   </div>
                   <div className="min-w-0">
@@ -419,9 +421,9 @@ export default function TeamPageScreen({
                         >
                           {idx === 0 && !allTeamsTied && <div className="absolute left-0 top-3 bottom-3 w-1 rounded-r-full bg-[#B5413F]" />}
                           <div className="flex items-center">
-                            <span className={`flex h-9 w-9 items-center justify-center rounded-2xl border text-xs font-black ${
+                            <span style={idx === 0 && !allTeamsTied ? compactNeutralShadow : undefined} className={`flex h-9 w-9 items-center justify-center rounded-2xl border text-xs font-black ${
                               idx === 0 && !allTeamsTied
-                                ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-sm'
+                                ? 'border-[#B5413F]/30 bg-[#B5413F] text-white'
                                 : 'border-border/10 bg-foreground/[0.035] text-foreground/55'
                             }`}>
                               {allTeamsTied ? `T${rank}` : rank}
@@ -508,9 +510,10 @@ export default function TeamPageScreen({
                       type="button"
                       aria-pressed={isActive}
                       onClick={() => setGamesView(view.id)}
+                      style={isActive ? compactNeutralShadow : undefined}
                       className={`flex items-center justify-center gap-2 rounded-xl border border-transparent px-3 py-2 transition-all duration-200 ${
                         isActive
-                          ? 'border-brand-maroon bg-brand-maroon text-white shadow-sm'
+                          ? 'border-brand-maroon bg-brand-maroon text-white'
                           : 'text-foreground/45 hover:bg-foreground/[0.04] hover:text-foreground/75'
                       }`}
                     >
