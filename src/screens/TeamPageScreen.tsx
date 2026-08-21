@@ -287,7 +287,7 @@ export default function TeamPageScreen({
                 onClick={() => setActiveSection(section.id)}
                 className={`relative min-w-0 rounded-xl border border-transparent px-2.5 py-2 transition-all duration-200 ${
                   isActive
-                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_3px_8px_rgba(15,23,42,0.14)]'
+                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-sm'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
@@ -351,7 +351,7 @@ export default function TeamPageScreen({
                   {allTeamsTied ? 'Preseason status' : 'LV status'}
                 </p>
                 <div className="mt-2 flex items-center gap-3">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-[0_3px_8px_rgba(15,23,42,0.14)]">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-sm">
                     {allTeamsTied ? `T${lvStanding.rank}` : `#${lvStanding.rank}`}
                   </div>
                   <div className="min-w-0">
@@ -421,7 +421,7 @@ export default function TeamPageScreen({
                           <div className="flex items-center">
                             <span className={`flex h-9 w-9 items-center justify-center rounded-2xl border text-xs font-black ${
                               idx === 0 && !allTeamsTied
-                                ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-[0_3px_8px_rgba(15,23,42,0.14)]'
+                                ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-sm'
                                 : 'border-border/10 bg-foreground/[0.035] text-foreground/55'
                             }`}>
                               {allTeamsTied ? `T${rank}` : rank}
@@ -510,7 +510,7 @@ export default function TeamPageScreen({
                       onClick={() => setGamesView(view.id)}
                       className={`flex items-center justify-center gap-2 rounded-xl border border-transparent px-3 py-2 transition-all duration-200 ${
                         isActive
-                          ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_3px_8px_rgba(15,23,42,0.14)]'
+                          ? 'border-brand-maroon bg-brand-maroon text-white shadow-sm'
                           : 'text-foreground/45 hover:bg-foreground/[0.04] hover:text-foreground/75'
                       }`}
                     >
