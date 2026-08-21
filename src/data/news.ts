@@ -1,4 +1,17 @@
+import eagleAppHomeBanner from '../assets/eagle-app-home-banner.jpg';
+
 export type NewsPublicationChannel = 'published' | 'prototype';
+
+export interface NewsArticleHighlight {
+  label: string;
+  text: string;
+}
+
+export interface NewsArticleSection {
+  heading: string;
+  paragraphs?: readonly string[];
+  highlights?: readonly NewsArticleHighlight[];
+}
 
 export interface NewsArticle {
   id: string;
@@ -10,10 +23,88 @@ export interface NewsArticle {
   image: string;
   imageAlt: string;
   body: readonly [string, ...string[]];
+  sections?: readonly NewsArticleSection[];
   publicationChannel: NewsPublicationChannel;
 }
 
-const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [];
+const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
+  {
+    id: '2025-26-sports-banquet-athletes-of-the-year',
+    title: 'Top Seniors Honored at Annual Sports Banquet',
+    publishedAt: '2026-08-17',
+    dateLabel: 'AUGUST 17, 2026',
+    category: 'ATHLETE SPOTLIGHT',
+    excerpt: 'Seniors Nathan Mann and Shermaine Lim have been named the Grade 10–12 Male and Female Athletes of the Year after exceptional final seasons for the Eagles.',
+    image: eagleAppHomeBanner,
+    imageAlt: 'SPH Lippo Village Athletics Eagle banner',
+    body: [
+      'LIPPO VILLAGE — As the 2025–26 sports season comes to a close, the SPH Lippo Village community gathered for the annual Sports Awards Banquet to celebrate our finest athletes. In a night filled with school spirit, seniors Nathan Mann and Shermaine Lim stood out from the crowd, officially taking home the prestigious Grade 10–12 Male and Female Athlete of the Year awards.',
+      'Proving they are just as dedicated in the classroom as they are on the court, both Nathan and Shermaine also received the Scholar Athlete Award. Balancing intense ACSC and JAAC training schedules with high academic standards, these two have truly defined what it means to be a student-athlete.',
+    ],
+    sections: [
+      {
+        heading: 'Nathan Mann: An Absolute Force on the Court and Field',
+        paragraphs: [
+          'Winning Grade 10–12 Male Athlete of the Year for the second straight year, Nathan has left a huge legacy at SPH. Whether he was spiking, dunking, or breaking throwing records, he dominated everywhere he played:',
+        ],
+        highlights: [
+          {
+            label: 'Varsity Volleyball',
+            text: 'Nathan led the Eagles to back-to-back JAAC championships and was named team MVP. At ACSC, he made the All-Conference Team and took home the award for ACSC Best Hitter.',
+          },
+          {
+            label: 'Varsity Basketball',
+            text: 'After working countless hours in the weight room before the season started, he led the boys to a JAAC Championship and an ACSC second-place finish in Taiwan. He was named team MVP, made the All-Conference Team, and swept the international awards as ACSC Best Defender and ACSC Best Rebounder.',
+          },
+          {
+            label: 'Track & Field',
+            text: 'Nathan won the ACSC Gold Medal in Shot Put and broke the school record.',
+          },
+          {
+            label: 'ACSC Legacy',
+            text: 'SPH has won nine individual ACSC awards across the last three years, and Nathan holds five of them. He also wrapped up his high school sports career with 3-Year Participation Awards in both Volleyball and Basketball.',
+          },
+        ],
+      },
+      {
+        heading: 'Shermaine Lim: SPH’s Five-Sport Standout',
+        paragraphs: [
+          'Most of us can barely handle balancing one sport with homework, but Shermaine competed across five different sports this year:',
+        ],
+        highlights: [
+          {
+            label: 'Varsity Badminton',
+            text: 'Shermaine was named Most Valuable Player. She was locked in on every point, including a remarkable reflex save in which she returned an opponent’s smash over the net.',
+          },
+          {
+            label: 'Varsity Volleyball',
+            text: 'She brought infectious energy to every practice and match, earning the Most Inspirational Player award while helping the team reach its highest ACSC finish yet.',
+          },
+          {
+            label: 'Varsity Basketball & Soccer',
+            text: 'Shermaine played significant minutes at ACSC Basketball to help the team earn fourth place. She also played for ACSC Soccer, helping the squad finish higher than last year and take home the tournament Sportsmanship Award.',
+          },
+          {
+            label: 'Track & Field',
+            text: 'She trained and ran for the track team during the regular season as well.',
+          },
+          {
+            label: 'True Dedication',
+            text: 'By the end of Grade 12, Shermaine earned 3-Year Participation Awards in four separate sports: Volleyball, Basketball, Soccer, and Badminton.',
+          },
+        ],
+      },
+      {
+        heading: 'Leaving a Legacy',
+        paragraphs: [
+          'Both Nathan and Shermaine have set the bar high for what it means to be an SPH Eagle. From dominating conference games to working hard in class and cheering on their teammates, they have shown what dedication and great sportsmanship look like. SPH Athletics will miss them next year.',
+          'As they move on to their next chapters, both athletes have exciting plans ahead. Nathan is headed to college in Canada, where he will redshirt for the basketball team. Meanwhile, Shermaine is interning with our PE and Athletics Department, where she will help out and serve as an assistant coach for the girls’ soccer team before heading to Australia for college.',
+        ],
+      },
+    ],
+    publicationChannel: 'published',
+  },
+];
 
 const PROTOTYPE_NEWS_ARTICLES: readonly NewsArticle[] = import.meta.env.VITE_RELEASE_CHANNEL === 'prototype' ? [
   {

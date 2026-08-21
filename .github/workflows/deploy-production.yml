@@ -5,6 +5,8 @@ on:
     branches:
       - main
   workflow_dispatch:
+  schedule:
+    - cron: "*/5 * * * *"
 
 permissions:
   contents: read
@@ -26,7 +28,6 @@ jobs:
       VITE_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.VITE_FIREBASE_MESSAGING_SENDER_ID }}
       VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
       VITE_FIREBASE_MEASUREMENT_ID: ${{ secrets.VITE_FIREBASE_MEASUREMENT_ID }}
-      VITE_SHEETS_PROXY_BASE_URL: ${{ secrets.VITE_SHEETS_PROXY_BASE_URL }}
     steps:
       - name: Check out main
         uses: actions/checkout@v4
@@ -40,19 +41,34 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Refresh published Google Sheets cache
+        id: sheets
+        env:
+          DEPLOYED_CACHE_URL: https://sphlv-athletics.web.app/data/sheets-cache.json
+        run: npm run sync:sheets
+
       - name: Type-check
+        if: github.event_name != 'schedule' || steps.sheets.outputs.changed == 'true'
         run: npm run lint
 
+      - name: Test
+        if: github.event_name != 'schedule' || steps.sheets.outputs.changed == 'true'
+        run: npm test
+
       - name: Verify prototype build
+        if: github.event_name != 'schedule' || steps.sheets.outputs.changed == 'true'
         run: npm run build:prototype
 
       - name: Build restricted production release
+        if: github.event_name != 'schedule' || steps.sheets.outputs.changed == 'true'
         run: npm run build:production
 
       - name: Authenticate to Google Cloud
+        if: github.event_name != 'schedule' || steps.sheets.outputs.changed == 'true'
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_SPHLV_ATHLETICS }}
 
       - name: Deploy Firebase Hosting and Firestore rules
+        if: github.event_name != 'schedule' || steps.sheets.outputs.changed == 'true'
         run: npm run deploy:firebase:ci

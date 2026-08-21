@@ -6,7 +6,7 @@ interface StandingsScreenProps {
 }
 
 export default function StandingsScreen({ athleticsDataState }: StandingsScreenProps) {
-  const { data, loading, error } = athleticsDataState;
+  const { data, loading } = athleticsDataState;
   const [levelFilter, setLevelFilter] = useState<"All" | "SMP" | "SMA">("All");
   const [genderFilter, setGenderFilter] = useState<"All" | "Boys" | "Girls" | "Combined">("All");
 
@@ -70,18 +70,7 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
         </div>
       )}
 
-      {error && (
-        <div className="bg-subcard rounded-2xl p-6 border border-red-500/20 text-center">
-          <p className="text-sm font-bold uppercase tracking-widest text-red-400">
-            Google Sheets sync error
-          </p>
-          <p className="text-xs text-foreground/40 mt-2">
-            {error}
-          </p>
-        </div>
-      )}
-
-      {!loading && !error && standings.length === 0 && (
+      {!loading && standings.length === 0 && (
         <div className="bg-subcard rounded-2xl p-8 border border-border/10 text-center">
           <p className="text-sm font-black uppercase tracking-widest text-foreground/70">
             No soccer standings for this filter yet
@@ -92,7 +81,7 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
         </div>
       )}
 
-      {!loading && !error && standings.length > 0 && (
+      {!loading && standings.length > 0 && (
         <div className="bg-subcard rounded-2xl border border-border/10 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">

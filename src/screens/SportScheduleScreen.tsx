@@ -20,9 +20,9 @@ import {
 const fallbackScheduleData = scheduleDataJson as ScheduleData;
 
 const EVENT_TYPE_STYLES: Record<ScheduleEventType, string> = {
-  Practice: 'border-[#7F1D1D]/15 bg-[#FEE2E2] text-[#7F1D1D] dark:border-[#BFD7EA]/20 dark:bg-[#BFD7EA]/10 dark:text-[#BFD7EA]',
-  'Home Game': 'border-[#C1121F] bg-[#C1121F] text-white dark:border-green-500/20 dark:bg-green-500/10 dark:text-green-400',
-  'Away Game': 'border-[#7F1D1D] bg-[#7F1D1D] text-white dark:border-yellow-400/20 dark:bg-yellow-400/10 dark:text-yellow-300',
+  Practice: 'border-[#7F1D1D]/25 bg-muted text-[#7F1D1D] dark:border-[#BFD7EA]/20 dark:bg-muted dark:text-[#BFD7EA]',
+  'Home Game': 'border-brand-maroon bg-brand-maroon text-white dark:border-brand-maroon dark:bg-brand-maroon dark:text-white',
+  'Away Game': 'border-[#6B7280] bg-[#6B7280] text-white dark:border-[#6B7280] dark:bg-[#6B7280] dark:text-white',
   Tournament: 'border-[#991B1B] bg-[#991B1B] text-white dark:border-[#B5413F]/25 dark:bg-[#B5413F]/12 dark:text-[#D85A57]',
   Holiday: 'border-brand-maroon/15 bg-brand-cream text-[#1F2937] dark:border-purple-400/20 dark:bg-purple-400/10 dark:text-purple-300',
   Other: 'border-border/10 bg-foreground/[0.035] text-foreground/55',
@@ -51,7 +51,7 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
     title: 'All teams',
     emoji: '🏆',
     activeClassName: 'border-brand-sky bg-brand-sky text-brand-navy shadow-[0_8px_20px_rgba(102,155,188,0.24)]',
-    inactiveClassName: 'border-brand-sky/30 bg-brand-sky/10 text-brand-navy dark:text-brand-sky',
+    inactiveClassName: 'border-brand-sky/30 bg-muted text-brand-navy dark:text-brand-sky',
   },
   {
     id: 'VBS',
@@ -59,7 +59,7 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
     title: 'Varsity Boys Soccer',
     emoji: '⚽',
     activeClassName: 'border-[#EF4444] bg-[#EF4444] text-white shadow-[0_8px_20px_rgba(239,68,68,0.26)]',
-    inactiveClassName: 'border-[#EF4444]/35 bg-[#EF4444]/10 text-[#B91C1C] dark:text-[#FCA5A5]',
+    inactiveClassName: 'border-[#EF4444]/35 bg-muted text-[#B91C1C] dark:text-[#FCA5A5]',
   },
   {
     id: 'VGS',
@@ -67,7 +67,7 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
     title: 'Varsity Girls Soccer',
     emoji: '⚽',
     activeClassName: 'border-[#F472B6] bg-[#F472B6] text-white shadow-[0_8px_20px_rgba(244,114,182,0.26)]',
-    inactiveClassName: 'border-[#F472B6]/35 bg-[#F472B6]/10 text-[#BE185D] dark:text-[#F9A8D4]',
+    inactiveClassName: 'border-[#F472B6]/35 bg-muted text-[#BE185D] dark:text-[#F9A8D4]',
   },
   {
     id: 'VBV',
@@ -75,7 +75,7 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
     title: 'Varsity Boys Volleyball',
     emoji: '🏐',
     activeClassName: 'border-[#F59E0B] bg-[#F59E0B] text-white shadow-[0_8px_20px_rgba(245,158,11,0.26)]',
-    inactiveClassName: 'border-[#F59E0B]/35 bg-[#F59E0B]/10 text-[#92400E] dark:text-[#FCD34D]',
+    inactiveClassName: 'border-[#F59E0B]/35 bg-muted text-[#92400E] dark:text-[#FCD34D]',
   },
   {
     id: 'VGV',
@@ -83,7 +83,7 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
     title: 'Varsity Girls Volleyball',
     emoji: '🏐',
     activeClassName: 'border-[#A78BFA] bg-[#A78BFA] text-white shadow-[0_8px_20px_rgba(167,139,250,0.26)]',
-    inactiveClassName: 'border-[#A78BFA]/35 bg-[#A78BFA]/10 text-[#6D28D9] dark:text-[#C4B5FD]',
+    inactiveClassName: 'border-[#A78BFA]/35 bg-muted text-[#6D28D9] dark:text-[#C4B5FD]',
   },
   {
     id: 'SMPBB',
@@ -91,7 +91,7 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
     title: 'SMP Boys Basketball',
     emoji: '🏀',
     activeClassName: 'border-[#3B82F6] bg-[#3B82F6] text-white shadow-[0_8px_20px_rgba(59,130,246,0.26)]',
-    inactiveClassName: 'border-[#3B82F6]/35 bg-[#3B82F6]/10 text-[#1D4ED8] dark:text-[#93C5FD]',
+    inactiveClassName: 'border-[#3B82F6]/35 bg-muted text-[#1D4ED8] dark:text-[#93C5FD]',
   },
   {
     id: 'SMPGB',
@@ -99,7 +99,7 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
     title: 'SMP Girls Basketball',
     emoji: '🏀',
     activeClassName: 'border-[#22D3EE] bg-[#22D3EE] text-brand-navy shadow-[0_8px_20px_rgba(34,211,238,0.26)]',
-    inactiveClassName: 'border-[#22D3EE]/35 bg-[#22D3EE]/10 text-[#0E7490] dark:text-[#67E8F9]',
+    inactiveClassName: 'border-[#22D3EE]/35 bg-muted text-[#0E7490] dark:text-[#67E8F9]',
   },
 ];
 
@@ -186,16 +186,16 @@ function sportEmojiForEvent(event: ScheduleEvent) {
 }
 
 const TEAM_ACCENT_STYLES = [
-  { match: 'varsity boys soccer', rail: 'border-l-[#EF4444]', badge: 'border-[#EF4444]/35 bg-[#EF4444]/12 text-[#B91C1C] dark:text-[#FCA5A5]' },
-  { match: 'varsity girls soccer', rail: 'border-l-[#F472B6]', badge: 'border-[#F472B6]/35 bg-[#F472B6]/12 text-[#BE185D] dark:text-[#F9A8D4]' },
-  { match: 'varsity boys volleyball', rail: 'border-l-[#F59E0B]', badge: 'border-[#F59E0B]/35 bg-[#F59E0B]/12 text-[#92400E] dark:text-[#FCD34D]' },
-  { match: 'varsity girls volleyball', rail: 'border-l-[#A78BFA]', badge: 'border-[#A78BFA]/35 bg-[#A78BFA]/12 text-[#6D28D9] dark:text-[#C4B5FD]' },
-  { match: 'smp boys basketball', rail: 'border-l-[#3B82F6]', badge: 'border-[#3B82F6]/35 bg-[#3B82F6]/12 text-[#1D4ED8] dark:text-[#93C5FD]' },
-  { match: 'smp girls basketball', rail: 'border-l-[#22D3EE]', badge: 'border-[#22D3EE]/35 bg-[#22D3EE]/12 text-[#0E7490] dark:text-[#67E8F9]' },
-  { match: 'js 3-4 mixed basketball', rail: 'border-l-[#84CC16]', badge: 'border-[#84CC16]/35 bg-[#84CC16]/12 text-[#3F6212] dark:text-[#BEF264]' },
-  { match: 'js 5-6 boys basketball', rail: 'border-l-[#6366F1]', badge: 'border-[#6366F1]/35 bg-[#6366F1]/12 text-[#4338CA] dark:text-[#A5B4FC]' },
-  { match: 'js 5-6 girls basketball', rail: 'border-l-[#F97316]', badge: 'border-[#F97316]/35 bg-[#F97316]/12 text-[#C2410C] dark:text-[#FDBA74]' },
-  { match: 'swim', rail: 'border-l-[#14B8A6]', badge: 'border-[#14B8A6]/35 bg-[#14B8A6]/12 text-[#0F766E] dark:text-[#5EEAD4]' },
+  { match: 'varsity boys soccer', rail: 'border-l-[#EF4444]', badge: 'border-[#EF4444]/35 bg-muted text-[#B91C1C] dark:text-[#FCA5A5]' },
+  { match: 'varsity girls soccer', rail: 'border-l-[#F472B6]', badge: 'border-[#F472B6]/35 bg-muted text-[#BE185D] dark:text-[#F9A8D4]' },
+  { match: 'varsity boys volleyball', rail: 'border-l-[#F59E0B]', badge: 'border-[#F59E0B]/35 bg-muted text-[#92400E] dark:text-[#FCD34D]' },
+  { match: 'varsity girls volleyball', rail: 'border-l-[#A78BFA]', badge: 'border-[#A78BFA]/35 bg-muted text-[#6D28D9] dark:text-[#C4B5FD]' },
+  { match: 'smp boys basketball', rail: 'border-l-[#3B82F6]', badge: 'border-[#3B82F6]/35 bg-muted text-[#1D4ED8] dark:text-[#93C5FD]' },
+  { match: 'smp girls basketball', rail: 'border-l-[#22D3EE]', badge: 'border-[#22D3EE]/35 bg-muted text-[#0E7490] dark:text-[#67E8F9]' },
+  { match: 'js 3-4 mixed basketball', rail: 'border-l-[#84CC16]', badge: 'border-[#84CC16]/35 bg-muted text-[#3F6212] dark:text-[#BEF264]' },
+  { match: 'js 5-6 boys basketball', rail: 'border-l-[#6366F1]', badge: 'border-[#6366F1]/35 bg-muted text-[#4338CA] dark:text-[#A5B4FC]' },
+  { match: 'js 5-6 girls basketball', rail: 'border-l-[#F97316]', badge: 'border-[#F97316]/35 bg-muted text-[#C2410C] dark:text-[#FDBA74]' },
+  { match: 'swim', rail: 'border-l-[#14B8A6]', badge: 'border-[#14B8A6]/35 bg-muted text-[#0F766E] dark:text-[#5EEAD4]' },
 ] as const;
 
 function teamAccentForEvent(event: ScheduleEvent) {
@@ -203,12 +203,12 @@ function teamAccentForEvent(event: ScheduleEvent) {
   if (team.includes('boys & girls')) {
     return {
       rail: 'border-l-brand-sky',
-      badge: 'border-brand-sky/35 bg-brand-sky/12 text-brand-navy dark:text-brand-sky',
+      badge: 'border-brand-sky/35 bg-muted text-brand-navy dark:text-brand-sky',
     };
   }
   return TEAM_ACCENT_STYLES.find((style) => team.includes(style.match)) || {
     rail: 'border-l-[#94A3B8]',
-    badge: 'border-[#94A3B8]/35 bg-[#94A3B8]/12 text-[#475569] dark:text-[#CBD5E1]',
+    badge: 'border-[#94A3B8]/35 bg-muted text-[#475569] dark:text-[#CBD5E1]',
   };
 }
 
@@ -450,13 +450,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 title={option.title}
                 aria-pressed={active}
                 onClick={() => setTeamFilter(option.id)}
-                className={`flex shrink-0 items-center gap-2 rounded-full border px-3.5 py-2 text-[11px] font-black uppercase tracking-[0.08em] transition-colors ${
+                className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.07em] transition-colors ${
                   active
                     ? option.activeClassName
                     : `${option.inactiveClassName} hover:-translate-y-0.5 hover:brightness-95 dark:hover:brightness-110`
                 }`}
               >
-                <span aria-hidden="true" className="text-base leading-none">{option.emoji}</span>
+                <span aria-hidden="true" className="text-sm leading-none">{option.emoji}</span>
                 {option.label}
               </button>
             );
@@ -475,14 +475,14 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 title={scope.id === 'practices' ? 'Show games and practices' : 'Show games only'}
                 aria-pressed={scheduleScope === scope.id}
                 onClick={() => setScheduleScope(scope.id)}
-                className={`relative pb-2 text-xs font-black uppercase tracking-[0.12em] transition-colors ${
+                className={`relative pb-1.5 text-[10px] font-black uppercase tracking-[0.1em] transition-colors ${
                   scheduleScope === scope.id
                     ? 'text-brand-sky after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:rounded-full after:bg-brand-sky'
                     : 'text-foreground/45 hover:text-foreground/70'
                 }`}
               >
                 <span className="inline-flex items-center gap-1.5">
-                  <span aria-hidden="true" className="text-sm leading-none">{scope.emoji}</span>
+                  <span aria-hidden="true" className="text-xs leading-none">{scope.emoji}</span>
                   {scope.label}
                 </span>
               </button>
@@ -517,13 +517,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           <button
             type="button"
             onClick={() => setShowArchivedWeeks((current) => !current)}
-            className={`inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.16em] transition-colors ${
+            className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.12em] transition-colors ${
               showArchivedWeeks
-                ? 'border-brand-sky/35 bg-brand-sky/12 text-brand-sky'
-                : 'border-border/10 bg-subcard text-foreground/55 hover:border-brand-sky/30 hover:text-foreground'
+                ? 'border-[#9CA3AF]/35 bg-[#9CA3AF]/12 text-[#6B7280]'
+                : 'border-[#9CA3AF]/25 bg-[#9CA3AF]/8 text-[#6B7280] hover:border-[#6B7280]/35 hover:text-[#4B5563]'
             }`}
           >
-            <span aria-hidden="true" className="text-sm leading-none">🗃️</span>
+            <span aria-hidden="true" className="text-xs leading-none">🗃️</span>
             {showArchivedWeeks ? 'Hide' : 'Show'} {archivedWeeks.size} archived week{archivedWeeks.size === 1 ? '' : 's'}
           </button>
         )}
@@ -545,8 +545,8 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             const days = buildMonthDays(month, monthEvents);
 
             return (
-              <div key={month} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_18px_55px_rgba(15,23,42,0.08)]">
-                <div className="flex flex-col gap-3 border-b border-border/10 bg-[#C1121F]/8 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
+              <div key={month} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_4px_12px_rgba(15,23,42,0.06)]">
+                <div className="flex flex-col gap-3 border-b border-border/10 bg-muted/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#C1121F]">
                       {activeSeason}
@@ -610,7 +610,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                 ? isToday
                                   ? 'border-[#B5413F]/45 bg-[#B5413F]/10 ring-1 ring-inset ring-[#B5413F]/25 dark:bg-white/[0.075]'
                                   : hasEvents
-                                    ? 'border-[#C1121F]/25 bg-white shadow-[0_10px_30px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 hover:border-[#C1121F]/50 hover:shadow-[0_18px_40px_rgba(193,18,31,0.14)] dark:bg-foreground/[0.025]'
+                                    ? 'border-[#C1121F]/25 bg-white shadow-[0_3px_10px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:border-[#C1121F]/50 hover:shadow-[0_5px_14px_rgba(193,18,31,0.11)] dark:bg-foreground/[0.025]'
                                     : 'border-brand-maroon/10 bg-muted/70 dark:border-white/10 dark:bg-white/[0.055]'
                                 : 'border-transparent bg-transparent'
                             }`}
@@ -636,7 +636,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                   {day.events.slice(0, 2).map((event) => (
                                     <div
                                       key={event.id}
-                                      className={`truncate rounded-lg border-l-[3px] bg-[#FEE2E2] px-1.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#7F1D1D] dark:bg-white/[0.055] dark:text-white/72 ${teamAccentForEvent(event).rail}`}
+                                      className={`truncate rounded-lg border-l-[3px] bg-muted px-1.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#7F1D1D] dark:bg-white/[0.055] dark:text-white/72 ${teamAccentForEvent(event).rail}`}
                                       title={`${event.team}: ${event.eventText}`}
                                     >
                                       <span aria-hidden="true" className="mr-1">{sportEmojiForEvent(event)}</span>
@@ -670,12 +670,12 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             const containsToday = events.some((event) => event.date === todayIso);
 
             return (
-              <div key={week} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_18px_55px_rgba(0,0,0,0.16)]">
+              <div key={week} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_4px_12px_rgba(0,0,0,0.10)]">
                 <button
                   type="button"
                   onClick={() => toggleWeek(week)}
                   className={`flex w-full items-center justify-between gap-4 border-b border-border/5 px-4 py-4 text-left ${
-                    containsToday ? 'bg-white/[0.065]' : archived ? 'bg-foreground/[0.025]' : 'bg-[#5A1C2C]/10'
+                    containsToday ? 'bg-white/[0.065]' : archived ? 'bg-foreground/[0.025]' : 'bg-muted/70'
                   }`}
                 >
                   <div>
@@ -690,7 +690,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                     {(containsToday || archived) && (
                       <span className={`rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${
                         containsToday
-                          ? 'border-[#B5413F]/30 bg-[#B5413F]/12 text-[#D85A57]'
+                          ? 'border-brand-sky/35 bg-brand-sky text-brand-navy'
                           : 'border-border/10 bg-foreground/[0.035] text-foreground/38'
                       }`}>
                         {containsToday ? 'This week' : 'Archived'}
@@ -715,7 +715,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                           key={event.id}
                           className={`grid gap-4 border-l-[7px] px-4 py-4 transition-all md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${teamAccent.rail} ${
                             isToday
-                              ? 'bg-[#B5413F]/8 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
+                              ? 'bg-muted/70 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
                               : 'hover:bg-foreground/[0.025]'
                           }`}
                         >
@@ -793,7 +793,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             onClick={() => setSelectedCalendarDay(null)}
           >
             <motion.div
-              className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_30px_90px_rgba(0,0,0,0.28)]"
+              className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_10px_24px_rgba(0,0,0,0.22)]"
               initial={{ opacity: 0, y: 42, scale: 0.94, rotateX: 8 }}
               animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
               exit={{ opacity: 0, y: 34, scale: 0.96 }}
@@ -830,7 +830,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 {selectedCalendarDay.events.map((event, index) => (
                   <motion.article
                     key={event.id}
-                    className="rounded-2xl border border-brand-maroon/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F8FAFC_72%,rgba(193,18,31,0.045)_100%)] p-4 shadow-[0_14px_36px_rgba(120,0,0,0.08)] dark:bg-none dark:bg-foreground/[0.025]"
+                    className="rounded-2xl border border-border/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F1F1F1_100%)] p-4 shadow-[0_3px_10px_rgba(0,0,0,0.06)] dark:bg-none dark:bg-foreground/[0.025]"
                     initial={{ opacity: 0, y: 18, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ delay: index * 0.045, type: 'spring', stiffness: 420, damping: 34 }}

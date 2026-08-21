@@ -44,10 +44,10 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             exit={{ x: '-100%' }}
             transition={{ type: 'spring', damping: 27, stiffness: 220 }}
             aria-label="Teams menu"
-            className="fixed bottom-0 left-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-brand-maroon/15 bg-[linear-gradient(160deg,#FFFFFF_0%,#F8FAFC_62%,rgba(193,18,31,0.08)_100%)] shadow-[24px_0_90px_rgba(120,0,0,0.20)] dark:border-[#B5413F]/20 dark:bg-none dark:bg-[#10070a] dark:shadow-[24px_0_90px_rgba(0,0,0,0.58)]"
+            className="sph-sidebar-shell fixed bottom-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-black/10 bg-[linear-gradient(160deg,#FFFFFF_0%,#F4F4F4_100%)] shadow-[12px_0_24px_rgba(0,0,0,0.14)] dark:border-white/10 dark:bg-none dark:bg-[#111111] dark:shadow-[12px_0_24px_rgba(0,0,0,0.38)]"
           >
             <div className="relative border-b border-brand-maroon/10 px-4 py-3.5 dark:border-white/[0.065]">
-              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(193,18,31,0.14),transparent_46%)] dark:bg-[radial-gradient(circle_at_12%_0%,rgba(181,65,63,0.24),transparent_44%)]" />
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(0,0,0,0.055),transparent_46%)] dark:bg-[radial-gradient(circle_at_12%_0%,rgba(255,255,255,0.055),transparent_44%)]" />
               <div className="relative flex items-center justify-between gap-4">
                 <button
                   type="button"
@@ -58,7 +58,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                   className="flex min-w-0 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F06865]"
                   aria-label="Go to Home"
                 >
-                  <span className="flex h-11 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-brand-maroon/10 bg-white shadow-[0_12px_34px_rgba(120,0,0,0.14)] dark:border-white/10 dark:shadow-[0_12px_34px_rgba(0,0,0,0.26)]">
+                  <span className="flex h-11 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-brand-maroon/10 bg-white shadow-[0_3px_10px_rgba(120,0,0,0.10)] dark:border-white/10 dark:shadow-[0_3px_10px_rgba(0,0,0,0.22)]">
                     <img
                       src="https://res.cloudinary.com/dpgt445lg/image/upload/v1775384563/image_13_obe33c.png"
                       alt=""
@@ -93,7 +93,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                   <section
                     key={sport.id}
                     aria-labelledby={`menu-${sport.id}`}
-                    className="overflow-hidden rounded-2xl border border-brand-maroon/10 bg-white/72 p-3 shadow-[0_14px_38px_rgba(120,0,0,0.08)] dark:border-white/[0.065] dark:bg-white/[0.025] dark:shadow-[0_14px_38px_rgba(0,0,0,0.18)]"
+                    className="overflow-hidden rounded-2xl border border-brand-maroon/10 bg-white/72 p-3 shadow-[0_3px_10px_rgba(120,0,0,0.06)] dark:border-white/[0.065] dark:bg-white/[0.025] dark:shadow-[0_3px_10px_rgba(0,0,0,0.16)]"
                   >
                     <div className="mb-2.5 flex items-center justify-between gap-3">
                       <h2 id={`menu-${sport.id}`} className="flex min-w-0 items-center gap-2.5 text-xs font-black uppercase tracking-[0.13em] text-brand-navy dark:text-foreground">

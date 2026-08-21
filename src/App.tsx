@@ -37,11 +37,21 @@ function AthleticsApp() {
   const [activeGender, setActiveGender] = useState<GenderTab>('Boys');
   const [activeDivision, setActiveDivision] = useState<DivisionTab>('SMA');
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [newsArticleId, setNewsArticleId] = useState<string | null>(null);
 
   const athleticsDataState = useAthleticsData();
 
   const handleTabChange = (tab: AppTab) => {
+    if (tab === 'News') {
+      setNewsArticleId(null);
+    }
     setActiveTab(tab);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const navigateToNews = (articleId?: string) => {
+    setNewsArticleId(articleId || null);
+    setActiveTab('News');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -60,8 +70,8 @@ function AthleticsApp() {
   };
 
   return (
-    <div className="min-h-screen bg-ucl-gradient pb-24 font-sans">
-      <main className="sph-app-shell w-full max-w-[1600px] mx-auto relative min-h-screen border-x border-border/[0.02] shadow-2xl bg-canvas/20">
+    <div className="min-h-screen bg-black pb-24 font-sans">
+      <main className="sph-app-shell relative mx-auto min-h-screen w-full border-x border-border/[0.02] bg-ucl-gradient">
         <TopBar
           onOpenMenu={() => setIsSidebarOpen(true)}
           onOpenLogin={() => handleTabChange('Login')}
@@ -73,17 +83,10 @@ function AthleticsApp() {
           </div>
         )}
 
-        {athleticsDataState.error && (
-          <div style={{ padding: 10, textAlign: "center", color: "#D32642", fontSize: 12 }}>
-            Google Sheets sync error: {athleticsDataState.error}
-          </div>
-        )}
-
         {activeTab === 'Home' && (
           <HomeScreen
             athleticsDataState={athleticsDataState}
-            onNavigateToNews={() => handleTabChange('News')}
-            onNavigateToSchedule={() => handleTabChange('Schedule')}
+            onNavigateToNews={navigateToNews}
             onNavigateToTeam={navigateToTeam}
             onBrowseTeams={() => handleTabChange('Teams')}
           />
@@ -111,7 +114,7 @@ function AthleticsApp() {
         {activeTab === 'Standings' && (
           <StandingsScreen athleticsDataState={athleticsDataState} />
         )}
-        {activeTab === 'News' && <NewsScreen />}
+        {activeTab === 'News' && <NewsScreen initialArticleId={newsArticleId} />}
         {activeTab === 'Login' && <LoginScreen />}
         
         <Sidebar 
