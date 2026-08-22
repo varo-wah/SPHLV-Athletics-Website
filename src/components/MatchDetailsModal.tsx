@@ -10,6 +10,14 @@ interface MatchDetailsModalProps {
   onClose: () => void;
 }
 
+const SPORT_EMOJIS: Record<SheetMatch['sportKey'], string> = {
+  Soccer: '⚽',
+  Volleyball: '🏐',
+  Basketball: '🏀',
+  Badminton: '🏸',
+  TrackAndField: '🏃',
+};
+
 function DetailList({ items }: { items: string[] }) {
   return (
     <ul className="space-y-2">
@@ -54,7 +62,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-border/8 bg-card/95 px-5 py-4 backdrop-blur-xl">
           <div>
             <p className="text-[9px] font-black uppercase tracking-[0.2em] text-brand-maroon">
-              🏐 {match.matchType || 'Match'} details
+              {SPORT_EMOJIS[match.sportKey]} {match.matchType || 'Match'} details
             </p>
             <h2 id={`match-details-${match.id}`} className="mt-1 text-xl font-black uppercase tracking-[0.04em] text-foreground">
               SPH LV vs {match.opponent}
