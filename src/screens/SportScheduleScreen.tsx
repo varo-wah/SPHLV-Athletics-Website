@@ -11,6 +11,13 @@ import {
   isVisibleScheduleEvent,
 } from '../config/launchSports';
 import {
+  ALL_TEAMS_VISUAL_THEME,
+  FALLBACK_TEAM_VISUAL_THEME,
+  teamAccentProperties,
+  teamVisualThemeForCode,
+  teamVisualThemesForName,
+} from '../config/teamVisualThemes';
+import {
   consolidateSharedScheduleEvents,
   eventMatchesTeamFilter,
   isGameScheduleEvent,
@@ -42,64 +49,48 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
   label: string;
   title: string;
   emoji: string;
-  activeClassName: string;
-  inactiveClassName: string;
 }> = [
   {
     id: 'All',
     label: 'All',
     title: 'All teams',
     emoji: '🏆',
-    activeClassName: 'border-brand-sky bg-brand-sky text-brand-navy shadow-[0_8px_20px_rgba(102,155,188,0.24)]',
-    inactiveClassName: 'border-brand-sky/30 bg-muted text-brand-navy dark:text-brand-sky',
   },
   {
     id: 'VBS',
     label: 'VBS',
     title: 'Varsity Boys Soccer',
     emoji: '⚽',
-    activeClassName: 'border-[#EF4444] bg-[#EF4444] text-white shadow-[0_8px_20px_rgba(239,68,68,0.26)]',
-    inactiveClassName: 'border-[#EF4444]/35 bg-muted text-[#B91C1C] dark:text-[#FCA5A5]',
   },
   {
     id: 'VGS',
     label: 'VGS',
     title: 'Varsity Girls Soccer',
     emoji: '⚽',
-    activeClassName: 'border-[#F472B6] bg-[#F472B6] text-white shadow-[0_8px_20px_rgba(244,114,182,0.26)]',
-    inactiveClassName: 'border-[#F472B6]/35 bg-muted text-[#BE185D] dark:text-[#F9A8D4]',
   },
   {
     id: 'VBV',
     label: 'VBV',
     title: 'Varsity Boys Volleyball',
     emoji: '🏐',
-    activeClassName: 'border-[#F59E0B] bg-[#F59E0B] text-white shadow-[0_8px_20px_rgba(245,158,11,0.26)]',
-    inactiveClassName: 'border-[#F59E0B]/35 bg-muted text-[#92400E] dark:text-[#FCD34D]',
   },
   {
     id: 'VGV',
     label: 'VGV',
     title: 'Varsity Girls Volleyball',
     emoji: '🏐',
-    activeClassName: 'border-[#A78BFA] bg-[#A78BFA] text-white shadow-[0_8px_20px_rgba(167,139,250,0.26)]',
-    inactiveClassName: 'border-[#A78BFA]/35 bg-muted text-[#6D28D9] dark:text-[#C4B5FD]',
   },
   {
     id: 'SMPBB',
     label: 'SMPBB',
     title: 'SMP Boys Basketball',
     emoji: '🏀',
-    activeClassName: 'border-[#3B82F6] bg-[#3B82F6] text-white shadow-[0_8px_20px_rgba(59,130,246,0.26)]',
-    inactiveClassName: 'border-[#3B82F6]/35 bg-muted text-[#1D4ED8] dark:text-[#93C5FD]',
   },
   {
     id: 'SMPGB',
     label: 'SMPGB',
     title: 'SMP Girls Basketball',
     emoji: '🏀',
-    activeClassName: 'border-[#22D3EE] bg-[#22D3EE] text-brand-navy shadow-[0_8px_20px_rgba(34,211,238,0.26)]',
-    inactiveClassName: 'border-[#22D3EE]/35 bg-muted text-[#0E7490] dark:text-[#67E8F9]',
   },
 ];
 
@@ -185,30 +176,14 @@ function sportEmojiForEvent(event: ScheduleEvent) {
   }
 }
 
-const TEAM_ACCENT_STYLES = [
-  { match: 'varsity boys soccer', rail: 'border-l-[#EF4444]', badge: 'border-[#EF4444]/35 bg-muted text-[#B91C1C] dark:text-[#FCA5A5]' },
-  { match: 'varsity girls soccer', rail: 'border-l-[#F472B6]', badge: 'border-[#F472B6]/35 bg-muted text-[#BE185D] dark:text-[#F9A8D4]' },
-  { match: 'varsity boys volleyball', rail: 'border-l-[#F59E0B]', badge: 'border-[#F59E0B]/35 bg-muted text-[#92400E] dark:text-[#FCD34D]' },
-  { match: 'varsity girls volleyball', rail: 'border-l-[#A78BFA]', badge: 'border-[#A78BFA]/35 bg-muted text-[#6D28D9] dark:text-[#C4B5FD]' },
-  { match: 'smp boys basketball', rail: 'border-l-[#3B82F6]', badge: 'border-[#3B82F6]/35 bg-muted text-[#1D4ED8] dark:text-[#93C5FD]' },
-  { match: 'smp girls basketball', rail: 'border-l-[#22D3EE]', badge: 'border-[#22D3EE]/35 bg-muted text-[#0E7490] dark:text-[#67E8F9]' },
-  { match: 'js 3-4 mixed basketball', rail: 'border-l-[#84CC16]', badge: 'border-[#84CC16]/35 bg-muted text-[#3F6212] dark:text-[#BEF264]' },
-  { match: 'js 5-6 boys basketball', rail: 'border-l-[#6366F1]', badge: 'border-[#6366F1]/35 bg-muted text-[#4338CA] dark:text-[#A5B4FC]' },
-  { match: 'js 5-6 girls basketball', rail: 'border-l-[#F97316]', badge: 'border-[#F97316]/35 bg-muted text-[#C2410C] dark:text-[#FDBA74]' },
-  { match: 'swim', rail: 'border-l-[#14B8A6]', badge: 'border-[#14B8A6]/35 bg-muted text-[#0F766E] dark:text-[#5EEAD4]' },
-] as const;
-
 function teamAccentForEvent(event: ScheduleEvent) {
-  const team = event.team.toLowerCase();
-  if (team.includes('boys & girls')) {
-    return {
-      rail: 'border-l-brand-sky',
-      badge: 'border-brand-sky/35 bg-muted text-brand-navy dark:text-brand-sky',
-    };
-  }
-  return TEAM_ACCENT_STYLES.find((style) => team.includes(style.match)) || {
-    rail: 'border-l-[#94A3B8]',
-    badge: 'border-[#94A3B8]/35 bg-muted text-[#475569] dark:text-[#CBD5E1]',
+  const themes = teamVisualThemesForName(event.team);
+  const primary = themes[0] ?? FALLBACK_TEAM_VISUAL_THEME;
+  const secondary = themes[1] ?? primary;
+
+  return {
+    combined: themes.length > 1,
+    style: teamAccentProperties(primary, secondary),
   };
 }
 
@@ -461,6 +436,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 no-scrollbar" aria-label="Filter schedule by team">
           {TEAM_FILTER_OPTIONS.map((option) => {
             const active = teamFilter === option.id;
+            const optionTheme = option.id === ALL
+              ? ALL_TEAMS_VISUAL_THEME
+              : teamVisualThemeForCode(option.id);
             return (
               <button
                 key={option.id}
@@ -468,10 +446,11 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 title={option.title}
                 aria-pressed={active}
                 onClick={() => setTeamFilter(option.id)}
+                style={teamAccentProperties(optionTheme)}
                 className={`flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.07em] transition-colors ${
                   active
-                    ? option.activeClassName
-                    : `${option.inactiveClassName} hover:-translate-y-0.5 hover:brightness-95 dark:hover:brightness-110`
+                    ? 'team-accent-active'
+                    : 'team-accent-outline hover:-translate-y-0.5'
                 }`}
               >
                 <span aria-hidden="true" className="text-sm leading-none">{option.emoji}</span>
@@ -580,28 +559,40 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
 
                 {month === 'undated' ? (
                   <div className="divide-y divide-border/10">
-                    {monthEvents.map((event) => (
-                      <article key={event.id} className="grid gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                        <div className="min-w-0">
-                          <div className="mb-2 flex flex-wrap items-center gap-2">
-                            <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
-                              <span aria-hidden="true" className="mr-1.5">{EVENT_TYPE_EMOJIS[event.eventType]}</span>
-                              {event.eventType}
-                            </span>
-                            <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${teamAccentForEvent(event).badge}`}>
-                              <span aria-hidden="true" className="mr-1.5">{sportEmojiForEvent(event)}</span>
-                              {event.team}
-                            </span>
+                    {monthEvents.map((event) => {
+                      const teamAccent = teamAccentForEvent(event);
+                      return (
+                        <article
+                          key={event.id}
+                          style={teamAccent.style}
+                          data-combined={teamAccent.combined}
+                          className="team-accent-rail grid gap-3 px-4 py-4 pl-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                        >
+                          <div className="min-w-0">
+                            <div className="mb-2 flex flex-wrap items-center gap-2">
+                              <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
+                                <span aria-hidden="true" className="mr-1.5">{EVENT_TYPE_EMOJIS[event.eventType]}</span>
+                                {event.eventType}
+                              </span>
+                              <span
+                                style={teamAccent.style}
+                                data-combined={teamAccent.combined}
+                                className="team-accent-outline team-accent-split-marker rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em]"
+                              >
+                                <span aria-hidden="true" className="mr-1.5">{sportEmojiForEvent(event)}</span>
+                                {event.team}
+                              </span>
+                            </div>
+                            <h4 className="text-base font-black uppercase tracking-tight text-foreground">
+                              {event.eventText}
+                            </h4>
                           </div>
-                          <h4 className="text-base font-black uppercase tracking-tight text-foreground">
-                            {event.eventText}
-                          </h4>
-                        </div>
-                        <p className="text-xs font-bold uppercase tracking-[0.14em] text-foreground/45">
-                          {event.raw}
-                        </p>
-                      </article>
-                    ))}
+                          <p className="text-xs font-bold uppercase tracking-[0.14em] text-foreground/45">
+                            {event.raw}
+                          </p>
+                        </article>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="p-3 sm:p-4">
@@ -651,16 +642,21 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                 </div>
 
                                 <div className="mt-2 space-y-1">
-                                  {day.events.slice(0, 2).map((event) => (
-                                    <div
-                                      key={event.id}
-                                      className={`truncate rounded-lg border-l-[3px] bg-muted px-1.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-[#7F1D1D] dark:bg-white/[0.055] dark:text-white/72 ${teamAccentForEvent(event).rail}`}
-                                      title={`${event.team}: ${event.eventText}`}
-                                    >
-                                      <span aria-hidden="true" className="mr-1">{sportEmojiForEvent(event)}</span>
-                                      {shortTeamName(event.team)}
-                                    </div>
-                                  ))}
+                                  {day.events.slice(0, 2).map((event) => {
+                                    const teamAccent = teamAccentForEvent(event);
+                                    return (
+                                      <div
+                                        key={event.id}
+                                        style={teamAccent.style}
+                                        data-combined={teamAccent.combined}
+                                        className="team-accent-rail team-accent-text truncate rounded-lg bg-muted px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] dark:bg-white/[0.055]"
+                                        title={`${event.team}: ${event.eventText}`}
+                                      >
+                                        <span aria-hidden="true" className="mr-1">{sportEmojiForEvent(event)}</span>
+                                        {shortTeamName(event.team)}
+                                      </div>
+                                    );
+                                  })}
                                   {day.events.length > 2 && (
                                     <p className="text-[9px] font-black uppercase tracking-[0.08em] text-foreground/40">
                                       +{day.events.length - 2} more
@@ -728,11 +724,14 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       const eventTime = displayEventTime(event);
                       const eventTypeLabel = event.eventType.replace(/\s+Game$/i, '');
                       const eventTitle = displayEventOpponent(event);
+                      const teamAccent = teamAccentForEvent(event);
 
                       return (
                         <article
                           key={event.id}
-                          className={`grid gap-3 px-4 py-3 transition-colors md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${
+                          style={teamAccent.style}
+                          data-combined={teamAccent.combined}
+                          className={`team-accent-rail grid gap-3 px-5 py-3 transition-colors md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${
                             isToday
                               ? 'bg-muted/70 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
                               : eventIndex % 2 === 0
@@ -768,7 +767,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                               </span>
                             </div>
 
-                            <p className="truncate text-[9px] font-black uppercase tracking-[0.15em] text-foreground/42">
+                            <p className="team-accent-text truncate text-[9px] font-black uppercase tracking-[0.15em]">
                               {event.team}
                             </p>
                             <h4 className="mt-1 text-base font-black uppercase leading-tight tracking-tight text-foreground">
@@ -830,20 +829,28 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
               </div>
 
               <div className="max-h-[62vh] space-y-3 overflow-y-auto p-4">
-                {selectedCalendarDay.events.map((event, index) => (
-                  <motion.article
-                    key={event.id}
-                    className="rounded-2xl border border-border/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F1F1F1_100%)] p-4 shadow-[0_3px_10px_rgba(0,0,0,0.06)] dark:bg-none dark:bg-foreground/[0.025]"
-                    initial={{ opacity: 0, y: 18, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    transition={{ delay: index * 0.045, type: 'spring', stiffness: 420, damping: 34 }}
-                  >
+                {selectedCalendarDay.events.map((event, index) => {
+                  const teamAccent = teamAccentForEvent(event);
+                  return (
+                    <motion.article
+                      key={event.id}
+                      style={teamAccent.style}
+                      data-combined={teamAccent.combined}
+                      className="team-accent-rail rounded-2xl border border-border/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F1F1F1_100%)] p-4 pl-5 shadow-[0_3px_10px_rgba(0,0,0,0.06)] dark:bg-none dark:bg-foreground/[0.025]"
+                      initial={{ opacity: 0, y: 18, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ delay: index * 0.045, type: 'spring', stiffness: 420, damping: 34 }}
+                    >
                     <div className="mb-3 flex flex-wrap items-center gap-2">
                       <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
                         <span aria-hidden="true" className="mr-1.5">{EVENT_TYPE_EMOJIS[event.eventType]}</span>
                         {event.eventType}
                       </span>
-                      <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${teamAccentForEvent(event).badge}`}>
+                      <span
+                        style={teamAccent.style}
+                        data-combined={teamAccent.combined}
+                        className="team-accent-outline team-accent-split-marker rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em]"
+                      >
                         <span aria-hidden="true" className="mr-1.5">{sportEmojiForEvent(event)}</span>
                         {event.team}
                       </span>
@@ -875,8 +882,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                         {event.raw}
                       </p>
                     )}
-                  </motion.article>
-                ))}
+                    </motion.article>
+                  );
+                })}
               </div>
             </motion.div>
           </motion.div>

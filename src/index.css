@@ -301,6 +301,100 @@ button {
   object-fit: contain;
 }
 
+.team-accent-active {
+  border-color: var(--team-accent) !important;
+  background-color: var(--team-accent) !important;
+  color: var(--team-on-accent) !important;
+  box-shadow: 0 7px 18px var(--team-accent-shadow);
+}
+
+.team-accent-outline {
+  border-color: var(--team-accent-border);
+  background-color: var(--team-accent-soft);
+  color: var(--team-accent);
+}
+
+.team-accent-text {
+  color: var(--team-accent);
+}
+
+.team-accent-chip {
+  border-color: var(--team-accent-border);
+  background-color: var(--team-accent-soft);
+  color: var(--team-accent);
+}
+
+.team-accent-outline:hover,
+.team-accent-outline:focus-visible {
+  border-color: var(--team-accent);
+  box-shadow: 0 0 0 2px var(--team-accent-soft);
+}
+
+.team-accent-favorite {
+  border-color: var(--team-accent-border);
+  background: var(--team-accent-soft);
+  color: var(--team-accent);
+}
+
+.team-accent-favorite:hover,
+.team-accent-favorite:focus-visible {
+  border-color: var(--team-accent);
+  box-shadow: 0 0 0 3px var(--team-accent-soft);
+}
+
+.team-accent-rail {
+  position: relative;
+}
+
+.team-accent-rail::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--team-accent);
+  content: '';
+}
+
+.team-accent-rail[data-combined='true']::before {
+  background: linear-gradient(
+    to bottom,
+    var(--team-accent) 0 50%,
+    var(--team-accent-secondary) 50% 100%
+  );
+}
+
+.team-accent-split-marker {
+  position: relative;
+  overflow: hidden;
+}
+
+.team-accent-split-marker[data-combined='true']::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 3px;
+  background: linear-gradient(
+    to right,
+    var(--team-accent) 0 50%,
+    var(--team-accent-secondary) 50% 100%
+  );
+  content: '';
+}
+
+.dark .team-accent-outline,
+.dark .team-accent-text,
+.dark .team-accent-chip,
+.dark .team-accent-favorite {
+  color: var(--team-accent-bright);
+}
+
+.dark .team-accent-rail[data-combined='true']::before {
+  background: linear-gradient(
+    to bottom,
+    var(--team-accent-bright) 0 50%,
+    var(--team-accent-secondary-bright) 50% 100%
+  );
+}
+
 @media (max-width: 560px) {
   .hero-image-card {
     border-radius: 16px;
