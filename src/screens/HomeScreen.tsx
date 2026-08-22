@@ -1,5 +1,5 @@
 import { CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import CompactResultCard from '../components/CompactResultCard';
 import { IS_PROTOTYPE, isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
@@ -187,6 +187,7 @@ export default function HomeScreen({
 }: HomeScreenProps) {
   const [gameFeedView, setGameFeedView] =
     useState<'upcoming' | 'results'>('results');
+  const [heroSlide, setHeroSlide] = useState(0);
 
   const { user } = useAuth();
 
@@ -316,14 +317,56 @@ export default function HomeScreen({
     user && favoriteTeamSummaries.length > 0,
   );
 
+  useEffect(() => {
+    if (!latestNewsArticle) return undefined;
+
+    const interval = window.setInterval(() => {
+      setHeroSlide((current) => (current + 1) % 2);
+    }, 2000);
+
+    return () => window.clearInterval(interval);
+  }, [latestNewsArticle]);
+
   return (
     <div className="animate-in fade-in duration-500 mt-4 space-y-6 px-4 pb-8">
-      <div className="hero-image-card">
-        <img
-          src={eagleAppHomeBanner}
-          alt="Eagle App — SPH-LV Athletics"
-          className="hero-banner-img"
-        />
+      <div className="hero-image-card" aria-roledescription="carousel" aria-label="Featured athletics updates">
+        <div
+          className="flex h-full transition-transform duration-500 ease-out motion-reduce:transition-none"
+          style={{ transform: `translateX(-${heroSlide * 50}%)`, width: '200%' }}
+        >
+          <div className="h-full w-1/2 shrink-0">
+            <img
+              src={eagleAppHomeBanner}
+              alt="Eagle App — SPH-LV Athletics"
+              className="hero-banner-img"
+            />
+          </div>
+
+          {latestNewsArticle && (
+            <button
+              type="button"
+              onClick={() => onNavigateToNews(latestNewsArticle.id)}
+              className="relative h-full w-1/2 shrink-0 overflow-hidden text-left"
+              aria-label={`Read latest news: ${latestNewsArticle.title}`}
+            >
+              <img src={latestNewsArticle.image} alt="" className="hero-banner-img scale-105 object-cover" />
+              <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/52 to-black/16" />
+              <span className="absolute inset-y-0 left-0 flex max-w-[78%] flex-col justify-center px-5 text-white">
+                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-sky">Latest news</span>
+                <span className="mt-1 line-clamp-2 text-sm font-black uppercase leading-tight tracking-[0.02em]">{latestNewsArticle.title}</span>
+                <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.12em] text-white/70">Read story ›</span>
+              </span>
+            </button>
+          )}
+        </div>
+
+        {latestNewsArticle && (
+          <div className="absolute bottom-2 right-3 flex gap-1" aria-hidden="true">
+            {[0, 1].map((slide) => (
+              <span key={slide} className={`h-1 rounded-full transition-all ${heroSlide === slide ? 'w-4 bg-white' : 'w-1 bg-white/45'}`} />
+            ))}
+          </div>
+        )}
       </div>
 
       <section
@@ -343,7 +386,7 @@ export default function HomeScreen({
                 type="button"
                 onClick={() => setGameFeedView(view.id)}
                 aria-pressed={active}
-                className={`flex items-center justify-center rounded-lg px-2 py-1.5 text-[8px] font-black uppercase tracking-[0.12em] transition-colors ${
+                className={`flex items-center justify-center rounded-lg px-2 py-1.5 text-[7px] font-black uppercase tracking-[0.12em] transition-colors ${
                   active
                     ? 'bg-brand-maroon text-white'
                     : 'text-foreground/42 hover:bg-foreground/[0.04]'
@@ -399,7 +442,7 @@ export default function HomeScreen({
                         ))}
                     </span>
 
-                    <span className="truncate text-xs font-black uppercase text-foreground">
+                    <span className="truncate text-[13px] font-black uppercase text-foreground">
                       {compactOpponentName(event)}
                     </span>
                   </div>
