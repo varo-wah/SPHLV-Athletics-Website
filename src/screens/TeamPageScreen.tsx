@@ -5,6 +5,10 @@ import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
 import { findTeam, sportDetails } from '../config/teamCatalog';
+import {
+  teamAccentProperties,
+  teamVisualThemeForCode,
+} from '../config/teamVisualThemes';
 import { rosterForTeam } from '../data/teamRosters';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 import smpBoysBasketballBanner from '../assets/smpboysbasketball.png';
@@ -88,6 +92,7 @@ export default function TeamPageScreen({
 
   const teamName =
     team?.displayName ?? `${division} ${gender} ${sportInfo.label}`;
+  const teamTheme = teamVisualThemeForCode(team?.menuCode);
 
   const roster = team ? rosterForTeam(team.id) : undefined;
 
@@ -337,36 +342,40 @@ export default function TeamPageScreen({
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
       <header
-        className="relative mx-4 flex flex-col justify-between gap-2 overflow-hidden rounded-2xl border border-border/10 px-3 py-4 shadow-[0_20px_60px_rgba(0,0,0,0.24)] sm:mx-6 sm:px-6 sm:py-8 lg:mx-8 lg:px-8 lg:py-10"
-        style={{ aspectRatio: '3.368 / 1' }}
+        className="mx-4 sm:mx-6 lg:mx-8"
+        style={teamAccentProperties(teamTheme)}
       >
         {headerBanner && (
-          <img
-            src={headerBanner}
-            alt={teamName}
-            className="absolute inset-0 h-full w-full object-cover"
-          />
+          <div
+            className="relative overflow-hidden rounded-2xl border border-border/10 bg-black shadow-[0_4px_12px_rgba(0,0,0,0.14)]"
+            style={{ aspectRatio: '3.368 / 1' }}
+          >
+            <img
+              src={headerBanner}
+              alt={teamName}
+              className="absolute inset-0 h-full w-full object-cover"
+            />
+          </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-b from-black/20 to-black/80" />
+        <div className="mt-3 flex items-start justify-between gap-4 px-1">
+          <div className="min-w-0">
+            <p className="team-accent-text text-[9px] font-black uppercase tracking-[0.18em] sm:text-[10px] sm:tracking-[0.2em]">
+              {divisionLabel}
+            </p>
 
-        <div className="z-10 flex justify-end">
+            <h1 className="mt-1 text-[clamp(1.15rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.035em] text-foreground sm:text-3xl">
+              {teamName}
+            </h1>
+          </div>
+
           <TeamFavoriteButton
             sport={sport}
             division={division}
             gender={gender}
-            className="relative z-10 shrink-0"
+            theme={teamTheme}
+            className="shrink-0"
           />
-        </div>
-
-        <div className="relative z-10 min-w-0">
-          <p className="line-clamp-1 text-[7px] font-black uppercase tracking-[0.15em] text-white/90 sm:text-[9px] sm:tracking-[0.2em] lg:text-[10px]">
-            {divisionLabel}
-          </p>
-
-          <h1 className="mt-0.5 line-clamp-2 text-sm font-black uppercase leading-tight tracking-[-0.02em] text-white sm:text-xl sm:tracking-[-0.025em] lg:text-3xl">
-            {teamName}
-          </h1>
         </div>
       </header>
 
@@ -378,6 +387,7 @@ export default function TeamPageScreen({
           role="tablist"
           aria-label="Team page sections"
           className="pointer-events-auto mx-auto flex w-fit max-w-full gap-1 overflow-x-auto rounded-[1.4rem] border border-border/10 bg-canvas/80 p-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.11)] backdrop-blur-2xl saturate-150 [scrollbar-width:none] supports-[backdrop-filter]:bg-canvas/65 [&::-webkit-scrollbar]:hidden"
+          style={teamAccentProperties(teamTheme)}
         >
           {teamPageSections.map((section) => {
             const isActive =
@@ -396,7 +406,7 @@ export default function TeamPageScreen({
                 }
                 className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.11em] transition-all duration-200 sm:px-6 ${
                   isActive
-                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_2px_6px_rgba(15,23,42,0.16)]'
+                    ? 'team-accent-active'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
