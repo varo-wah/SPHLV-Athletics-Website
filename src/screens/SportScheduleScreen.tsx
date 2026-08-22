@@ -222,6 +222,24 @@ function displayEventTime(event: ScheduleEvent) {
   return event.time;
 }
 
+function displayEventOpponent(event: ScheduleEvent) {
+  const withoutMetadata = event.eventText
+    .replace(/\b\d{1,2}:\d{2}\b/gi, '')
+    .replace(/\b(?:gym|field|court)\s*\d*\b/gi, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const opponent = event.eventType === 'Home Game'
+    ? withoutMetadata.replace(/\s*@\s*(?:sph[-\s]?lv|lv)\b.*$/i, '').trim()
+    : event.eventType === 'Away Game'
+      ? withoutMetadata.replace(/^\s*(?:sph[-\s]?lv|lv)\s*@\s*/i, '').trim()
+      : event.opponent || withoutMetadata;
+
+  return (opponent || event.opponent || event.team)
+    .replace(/^\d+\s+(?=[A-Za-z])/, '')
+    .trim();
+}
+
 function archivedWeekNames(events: ScheduleEvent[], todayIso: string) {
   const eventsByWeek = events.reduce<Record<string, ScheduleEvent[]>>((groups, event) => {
     const week = event.week || 'Unassigned Week';
@@ -705,23 +723,26 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
 
                 {!collapsed && (
                   <div className="divide-y divide-border/5">
-                    {events.map((event) => {
-                      const teamAccent = teamAccentForEvent(event);
+                    {events.map((event, eventIndex) => {
                       const isToday = event.date === todayIso;
                       const eventTime = displayEventTime(event);
+                      const eventTypeLabel = event.eventType.replace(/\s+Game$/i, '');
+                      const eventTitle = displayEventOpponent(event);
 
                       return (
                         <article
                           key={event.id}
-                          className={`grid gap-4 border-l-[7px] px-4 py-4 transition-all md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${teamAccent.rail} ${
+                          className={`grid gap-3 px-4 py-3 transition-colors md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${
                             isToday
                               ? 'bg-muted/70 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
-                              : 'hover:bg-foreground/[0.025]'
+                              : eventIndex % 2 === 0
+                                ? 'bg-white/90 hover:bg-white dark:bg-foreground/[0.02] dark:hover:bg-foreground/[0.04]'
+                                : 'bg-[#F4F4F3] hover:bg-[#EEEEEC] dark:bg-foreground/[0.045] dark:hover:bg-foreground/[0.065]'
                           }`}
                         >
                           <div className="flex items-center gap-3 md:block">
-                            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] md:mb-2">
-                              <span aria-hidden="true" className="text-2xl leading-none">{sportEmojiForEvent(event)}</span>
+                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-foreground/[0.035] md:mb-2">
+                              <span aria-hidden="true" className="text-[26px] leading-none">{sportEmojiForEvent(event)}</span>
                             </div>
                             <div>
                               <div className="flex flex-wrap items-center gap-2">
@@ -734,43 +755,25 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                   </span>
                                 )}
                               </div>
-                              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-foreground/35">
-                                {event.day || 'Day TBD'}
+                              <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/38">
+                                {[eventTime, event.location].filter(Boolean).join(' · ') || 'Time and location TBD'}
                               </p>
                             </div>
                           </div>
 
-                          <div className="min-w-0">
-                            <div className="mb-2 flex flex-wrap items-center gap-2">
+                          <div className="relative min-w-0 pr-16">
+                            <div className="absolute right-0 top-0">
                               <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
-                                <span aria-hidden="true" className="mr-1.5">{EVENT_TYPE_EMOJIS[event.eventType]}</span>
-                                {event.eventType}
-                              </span>
-                              <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${teamAccent.badge}`}>
-                                <span aria-hidden="true" className="mr-1.5">{sportEmojiForEvent(event)}</span>
-                                {event.team}
+                                {eventTypeLabel}
                               </span>
                             </div>
 
-                            <h4 className="text-lg font-black uppercase leading-tight tracking-tight text-foreground">
-                              {event.eventText}
+                            <p className="truncate text-[9px] font-black uppercase tracking-[0.15em] text-foreground/42">
+                              {event.team}
+                            </p>
+                            <h4 className="mt-1 text-base font-black uppercase leading-tight tracking-tight text-foreground">
+                              {eventTitle}
                             </h4>
-
-                            <div className="mt-3 flex flex-wrap gap-3 text-[11px] font-bold uppercase tracking-[0.13em] text-foreground/45">
-                              {eventTime && (
-                                <span className="inline-flex items-center gap-1.5">
-                                  <span aria-hidden="true">🕒</span>
-                                  {eventTime}
-                                </span>
-                              )}
-                              {event.location && (
-                                <span className="inline-flex items-center gap-1.5">
-                                  <span aria-hidden="true">📍</span>
-                                  {event.location}
-                                </span>
-                              )}
-                              {event.opponent && <span>🤝 Opponent: {event.opponent}</span>}
-                            </div>
                           </div>
                         </article>
                       );

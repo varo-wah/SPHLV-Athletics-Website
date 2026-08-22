@@ -11,20 +11,24 @@ export default function TeamLogo({ name, className = 'h-8 w-8' }: TeamLogoProps)
   const logo = teamLogoForName(name);
 
   if (!logo || failed) {
+    const fallbackInitial = name?.trim().charAt(0).toUpperCase() || '';
+
     return (
       <span
         aria-hidden="true"
-        className={`${className} block shrink-0 rounded-full border border-slate-300/70 bg-slate-300 dark:border-slate-600 dark:bg-slate-600`}
-      />
+        className={`${className} flex shrink-0 items-center justify-center rounded-full bg-foreground/[0.06] text-[0.7em] font-black uppercase text-foreground/45`}
+      >
+        {fallbackInitial}
+      </span>
     );
   }
 
   return (
-    <span className={`${className} flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-border/10 bg-white p-1`}>
+    <span className={`${className} flex shrink-0 items-center justify-center overflow-hidden rounded-full`}>
       <img
         src={logo}
         alt={`${name} logo`}
-        className="h-full w-full object-contain"
+        className="h-full w-full scale-[1.08] rounded-full object-cover"
         referrerPolicy="no-referrer"
         onError={() => setFailed(true)}
       />

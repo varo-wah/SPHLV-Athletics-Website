@@ -29,18 +29,18 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
 
   const card = (
     <article className={`overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-[0_2px_7px_rgba(0,0,0,0.06)] ${hasDetails ? 'transition-all group-hover:border-brand-maroon/30 group-hover:shadow-[0_7px_18px_rgba(120,0,0,0.10)]' : ''}`}>
-      <div className={`grid grid-cols-[minmax(0,1fr)_58px] items-stretch ${dense ? 'min-h-[86px]' : 'min-h-[102px]'}`}>
+      <div className={`grid grid-cols-[minmax(0,1fr)_58px] items-stretch ${dense ? 'min-h-[78px]' : 'min-h-[94px]'}`}>
         <div className="divide-y divide-border/6">
           {teams.map((team) => (
             <div
               key={`${match.id}-${team.home ? 'home' : 'away'}`}
-              className={`grid grid-cols-[28px_auto_minmax(0,1fr)] items-center gap-2 px-3 ${dense ? 'h-[43px]' : 'h-[51px]'}`}
+              className={`grid grid-cols-[32px_auto_minmax(0,1fr)] items-center gap-2 px-3 ${dense ? 'h-[39px]' : 'h-[47px]'}`}
             >
-              <TeamLogo name={team.sourceName} className="h-7 w-7" />
+              <TeamLogo name={team.sourceName} className="h-8 w-8" />
               <span className="font-mono text-base font-black tabular-nums text-foreground">
                 {team.score ?? '—'}
               </span>
-              <span className={`flex min-w-0 items-center gap-1.5 truncate text-xs font-black uppercase tracking-[0.04em] ${team.winner ? 'text-foreground' : 'text-foreground/58'}`}>
+              <span className={`flex min-w-0 items-center gap-1.5 truncate text-[13px] font-black uppercase tracking-[0.04em] ${team.winner ? 'text-foreground' : 'text-foreground/58'}`}>
                 <span className="truncate">{team.name}</span>
                 {team.winner && <span aria-label="Winner" className="shrink-0 text-[11px] text-brand-maroon">◀</span>}
               </span>

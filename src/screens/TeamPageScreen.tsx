@@ -396,7 +396,7 @@ export default function TeamPageScreen({
                 }
                 className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.11em] transition-all duration-200 sm:px-6 ${
                   isActive
-                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_8px_22px_rgba(120,0,0,0.24)]'
+                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-sm'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
@@ -425,7 +425,7 @@ export default function TeamPageScreen({
                         : 'Live table'}
                     </p>
 
-                    <h2 className="mt-2 text-3xl font-black uppercase leading-tight tracking-[0.16em] text-foreground sm:text-4xl">
+                    <h2 className="mt-2 text-2xl font-black uppercase leading-tight tracking-[0.12em] text-foreground sm:text-3xl">
                       Regular Season
                       <br />
                       Standings
@@ -471,14 +471,14 @@ export default function TeamPageScreen({
                       </p>
 
                       <div className="mt-2 flex items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-[0_12px_30px_rgba(181,65,63,0.28)]">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-sm">
                           {allTeamsTied
                             ? `T${lvStanding.rank}`
                             : `#${lvStanding.rank}`}
                         </div>
 
                         <div className="min-w-0">
-                          <p className="truncate text-2xl font-black uppercase tracking-tight text-foreground">
+                          <p className="truncate text-lg font-black uppercase tracking-tight text-foreground sm:text-xl">
                             {allTeamsTied
                               ? 'All teams tied'
                               : lvStanding.rank === 1

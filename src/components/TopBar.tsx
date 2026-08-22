@@ -1,14 +1,26 @@
-import { LogOut, Moon, Sun, UserRound } from 'lucide-react';
+import { Images, Instagram, LogOut, Moon, Sheet, Sun, UserRound, Youtube } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { IS_PROTOTYPE } from '../config/launchSports';
 
 interface TopBarProps {
+  isHome?: boolean;
   onOpenMenu: () => void;
   onOpenLogin: () => void;
 }
 
-export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
+const HOME_LINKS = [
+  { label: 'Instagram', href: 'https://www.instagram.com/sphlippovillage/', icon: Instagram },
+  { label: 'YouTube', href: 'https://www.youtube.com/@SPH-LV-Athletics', icon: Youtube },
+  { label: 'Photos link pending', href: null, icon: Images },
+  {
+    label: 'Official schedule spreadsheet',
+    href: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN3pbSoFSwKAOPx4ifplCAWQP6GYR1Hav_lIiVGI8WUQz7QlVWkx9CxXETFT2Opg/pubhtml',
+    icon: Sheet,
+  },
+] as const;
+
+export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopBarProps) {
   const { loading, signOutUser, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
@@ -29,9 +41,36 @@ export default function TopBar({ onOpenLogin, onOpenMenu }: TopBarProps) {
             aria-hidden="true"
           />
         </button>
-        <span className="truncate text-xs font-black uppercase tracking-[0.14em] text-[#1F2937] dark:text-foreground sm:text-sm">
-          LV Eagle App
-        </span>
+        {isHome ? (
+          <nav aria-label="Athletics links" className="flex items-center gap-1.5">
+            {HOME_LINKS.map(({ href, icon: Icon, label }) => href ? (
+              <a
+                key={label}
+                href={href}
+                target="_blank"
+                rel="noreferrer"
+                aria-label={label}
+                title={label}
+                className="flex h-7 w-7 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:text-brand-maroon"
+              >
+                <Icon size={13} aria-hidden="true" />
+              </a>
+            ) : (
+              <span
+                key={label}
+                aria-label={label}
+                title={label}
+                className="flex h-7 w-7 cursor-not-allowed items-center justify-center rounded-full border border-border/8 bg-foreground/[0.02] text-foreground/20"
+              >
+                <Icon size={13} aria-hidden="true" />
+              </span>
+            ))}
+          </nav>
+        ) : (
+          <span className="truncate text-xs font-black uppercase tracking-[0.14em] text-[#1F2937] dark:text-foreground sm:text-sm">
+            LV Eagle App
+          </span>
+        )}
         {IS_PROTOTYPE && (
           <span className="rounded-full border border-amber-400/25 bg-amber-400/10 px-2 py-1 text-[8px] font-black uppercase tracking-[0.16em] text-amber-700 dark:text-amber-300">
             Prototype
