@@ -396,7 +396,7 @@ export default function TeamPageScreen({
                 }
                 className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.11em] transition-all duration-200 sm:px-6 ${
                   isActive
-                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-sm'
+                    ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_2px_6px_rgba(15,23,42,0.16)]'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
@@ -425,7 +425,7 @@ export default function TeamPageScreen({
                         : 'Live table'}
                     </p>
 
-                    <h2 className="mt-2 text-2xl font-black uppercase leading-tight tracking-[0.12em] text-foreground sm:text-3xl">
+                    <h2 className="mt-2 text-xl font-black uppercase leading-tight tracking-[0.12em] text-foreground sm:text-3xl">
                       Regular Season
                       <br />
                       Standings
@@ -471,7 +471,7 @@ export default function TeamPageScreen({
                       </p>
 
                       <div className="mt-2 flex items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-sm">
+                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-[0_2px_6px_rgba(15,23,42,0.16)]">
                           {allTeamsTied
                             ? `T${lvStanding.rank}`
                             : `#${lvStanding.rank}`}
