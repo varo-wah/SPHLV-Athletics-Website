@@ -3,6 +3,46 @@ export interface TeamRoster {
   players: readonly string[];
 }
 
+export const SMP_BOYS_BASKETBALL_SQUADS = {
+  A: [
+    'Coby Gondokusumo',
+    'Danson Wijaya',
+    'Denzel Lityo',
+    'Edvardo Fernanda',
+    'Jacob Chandra',
+    'Rainer Ong',
+    'Matthew Wikarta',
+    'Shane Hidayat',
+    'Ashton Setiawan',
+    'Kenzo Teoh',
+  ],
+  B: [
+    'Ferdinand Wilhanton',
+    'Keenan Nusantara',
+    'Mason Radjimin',
+    'Steven Marcelino',
+    'Caleb Yile',
+    'Judah Edward',
+    'Alvaro Tan',
+    'Jaeden Go',
+    'Nathan Holmgrem',
+    'Aslan Wongso',
+    'James Tan',
+  ],
+  C: [
+    'Ethan V',
+    'Lucas Leung For Sang',
+    'Wilson Gunawan',
+    'Oswald Wahyu',
+    'Joshua Karwelo',
+    'Woojin Shin',
+    'Jayden Adidarma',
+    'Owen Young',
+    'Jazael',
+    'Daniel T',
+  ],
+} as const;
+
 export const TEAM_ROSTERS = [
   {
     teamId: 'soccer-sma-boys',
@@ -100,6 +140,10 @@ export const TEAM_ROSTERS = [
       'Samantha Prijanto',
       'Evangeline Jun',
     ],
+  },
+  {
+    teamId: 'basketball-smp-boys',
+    players: SMP_BOYS_BASKETBALL_SQUADS.A,
   },
   {
     teamId: 'basketball-smp-girls',

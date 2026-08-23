@@ -29,6 +29,36 @@ export interface NewsArticle {
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
   {
+    id: '2026-soccer-players-of-the-week-troy-biantoro-sherny-lim',
+    title: 'Soccer Players of the Week: Troy Biantoro and Sherny Lim',
+    publishedAt: '2026-08-23',
+    dateLabel: 'AUGUST 23, 2026',
+    category: 'PLAYER OF THE WEEK',
+    excerpt: 'Troy Mihardja Biantoro and Sherny Lim opened the SMA Soccer season with performances defined by hard work, attacking impact, and commitment to their teammates.',
+    image: eagleAppHomeBanner,
+    imageAlt: 'SPH Lippo Village Athletics Eagle banner',
+    body: [
+      'SPH Lippo Village Athletics recognizes Grade 11 student Troy Mihardja Biantoro and sophomore Sherny Lim as this week’s Soccer Players of the Week following the Eagles’ friendly matches against SMK 31.',
+    ],
+    sections: [
+      {
+        heading: 'Troy Mihardja Biantoro, Grade 11',
+        paragraphs: [
+          'This will be Troy’s third year on the SMA Soccer team, and each year he has grown in different areas. This week, he delivered a strong performance on the wing and in midfield. Although he did not score or record an assist, he did everything the coaches asked of him.',
+          'Troy worked hard throughout training, asked questions about how to improve, and then implemented that feedback during the friendly match against SMK 31.',
+        ],
+      },
+      {
+        heading: 'Sherny Lim, Sophomore',
+        paragraphs: [
+          'Sherny started the season strongly, scoring four goals and recording two assists in her first game against SMK 31. Playing on the wing, she used her speed to stretch the defense. Her love of dance and natural agility helped her dribble past defenders with confident ball control as she drove toward goal.',
+          'She also consistently looked to involve her teammates in the offense, including Grace, a strong new player for SPH Lippo Village.',
+        ],
+      },
+    ],
+    publicationChannel: 'published',
+  },
+  {
     id: '2025-26-sports-banquet-athletes-of-the-year',
     title: 'Top Seniors Honored at Annual Sports Banquet',
     publishedAt: '2026-08-17',
