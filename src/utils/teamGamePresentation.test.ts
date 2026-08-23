@@ -21,7 +21,7 @@ const match: SheetMatch = {
 test('formats SPH consistently and resolves supplied result logos', () => {
   assert.equal(formatTeamName('SPH LV'), 'SPH-LV');
   assert.equal(formatTeamName('LV'), 'SPH-LV');
-  assert.equal(teamLogoForName('SPH-LV')?.includes('lv.jpeg'), true);
+  assert.equal(teamLogoForName('SPH-LV')?.includes('lv-circle.png'), true);
   assert.equal(teamLogoForName('KV')?.includes('kv.jpeg'), true);
   assert.equal(teamLogoForName('BSJ')?.includes('bsj.jpeg'), true);
   assert.equal(teamLogoForName('STL')?.includes('ssl.jpeg'), true);
