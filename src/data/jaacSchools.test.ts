@@ -8,7 +8,7 @@ test('matches KV from scheduled LV fixtures and keeps LV as the home identity', 
     ['KV'],
   );
   assert.equal(jaacSchoolByCode('LV').name, 'SPH Lippo Village');
-  assert.equal(jaacSchoolByCode('LV').logo.includes('lv.jpeg'), true);
+  assert.equal(jaacSchoolByCode('LV').logo.includes('lv-circle.png'), true);
 });
 
 test('resolves result-team aliases without guessing unknown schools', () => {
