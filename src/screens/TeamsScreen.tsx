@@ -1,4 +1,5 @@
 import { ArrowUpRight } from 'lucide-react';
+import { motion, useReducedMotion } from 'motion/react';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { IS_PROTOTYPE } from '../config/launchSports';
 import { SPORT_CATALOG, TEAM_CATALOG } from '../config/teamCatalog';
@@ -6,6 +7,7 @@ import {
   teamAccentProperties,
   teamVisualThemeForCode,
 } from '../config/teamVisualThemes';
+import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, staggerDelay } from '../config/motion';
 
 interface TeamsScreenProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
@@ -57,13 +59,18 @@ const sportGroups = SPORT_CATALOG
   .filter((group) => group.teams.length > 0);
 
 export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
+  const reduceMotion = useReducedMotion();
+
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 mx-auto min-h-screen w-full max-w-3xl px-4 pb-24 pt-3 duration-500 sm:px-6 sm:pt-5">
       <section aria-label="Teams" className="space-y-3">
         {sportGroups.map((group, groupIndex) => {
           return (
-            <article
+            <motion.article
               key={group.sport}
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ ...QUICK_TRANSITION, delay: staggerDelay(groupIndex) }}
               className={`relative overflow-hidden rounded-[1.35rem] border p-3.5 shadow-[0_4px_12px_rgba(0,0,0,0.10)] sm:p-4 ${group.accent}`}
             >
               <div className="pointer-events-none absolute -right-8 -top-12 h-32 w-32 rounded-full bg-white/[0.025] blur-2xl" />
@@ -85,11 +92,13 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
                   const teamTheme = teamVisualThemeForCode(team.menuCode);
 
                   return (
-                    <button
+                    <motion.button
                       key={team.id}
                       type="button"
                       onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
                       style={teamAccentProperties(teamTheme)}
+                      whileTap={{ scale: PRESS_SCALE }}
+                      transition={PRESS_TRANSITION}
                       className="team-accent-outline group flex min-h-[64px] items-center justify-between gap-2 rounded-2xl border px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none sm:min-h-[70px] sm:px-4 [container-type:inline-size]"
                     >
                       <span className="team-accent-text text-[clamp(1.2rem,10cqi,2rem)] font-black uppercase leading-none tracking-[clamp(0.04em,0.8cqi,0.12em)]">
@@ -98,11 +107,11 @@ export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
                       <span className="team-accent-chip flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors" aria-hidden="true">
                         <ArrowUpRight size={13} />
                       </span>
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
-            </article>
+            </motion.article>
           );
         })}
       </section>

@@ -1,4 +1,5 @@
 import { LoaderCircle, Star } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
 import { DivisionTab, GenderTab, SportTab } from '../types';
@@ -7,6 +8,7 @@ import {
   teamAccentProperties,
 } from '../config/teamVisualThemes';
 import type { TeamVisualTheme } from '../config/teamVisualThemes';
+import { PRESS_SCALE, QUICK_TRANSITION, STANDARD_SPRING } from '../config/motion';
 
 interface TeamFavoriteButtonProps {
   sport: SportTab;
@@ -33,7 +35,7 @@ export default function TeamFavoriteButton({
   const updating = isUpdatingTeam(sport, division, gender);
 
   return (
-    <button
+    <motion.button
       type="button"
       onClick={() => void toggleTeamFavorite(sport, division, gender)}
       disabled={updating}
@@ -51,12 +53,28 @@ export default function TeamFavoriteButton({
           ? 'border-[#F4C95D]/35 bg-[#F4C95D] text-[#251600]'
           : 'team-accent-favorite'
       } ${className}`}
+      whileTap={{ scale: PRESS_SCALE }}
+      animate={{ scale: favorite ? 1.04 : 1 }}
+      transition={STANDARD_SPRING}
     >
-      {updating ? (
-        <LoaderCircle size={17} className="animate-spin" />
-      ) : (
-        <Star size={19} fill={favorite ? 'currentColor' : 'none'} />
-      )}
-    </button>
+      <AnimatePresence mode="wait" initial={false}>
+        {updating ? (
+          <motion.span key="loading" className="flex" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={QUICK_TRANSITION}>
+            <LoaderCircle size={17} className="animate-spin" />
+          </motion.span>
+        ) : (
+          <motion.span
+            key={favorite ? 'favorite' : 'not-favorite'}
+            className="flex"
+            initial={{ opacity: 0, rotate: -18, scale: 0.75 }}
+            animate={{ opacity: 1, rotate: 0, scale: 1 }}
+            exit={{ opacity: 0, rotate: 18, scale: 0.75 }}
+            transition={QUICK_TRANSITION}
+          >
+            <Star size={19} fill={favorite ? 'currentColor' : 'none'} />
+          </motion.span>
+        )}
+      </AnimatePresence>
+    </motion.button>
   );
 }

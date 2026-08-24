@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Home, CalendarDays, Newspaper, Users } from 'lucide-react';
+import { motion } from 'motion/react';
 import { AppTab } from '../types';
+import { PRESS_SCALE, PRESS_TRANSITION, STANDARD_SPRING } from '../config/motion';
 
 interface BottomNavProps {
   activeTab: AppTab;
@@ -23,19 +25,34 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
           const isActive = tab.id === activeTab;
 
           return (
-            <button
+            <motion.button
               key={tab.id}
               onClick={() => onTabChange(tab.id)}
+              whileTap={{ scale: PRESS_SCALE }}
+              transition={PRESS_TRANSITION}
               className="group relative flex h-full w-full flex-col items-center justify-center outline-none"
             >
               <div
-                className={`relative flex h-10 w-14 items-center justify-center rounded-2xl transition-all group-focus-visible:ring-2 group-focus-visible:ring-brand-sky group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-header ${
+                className={`relative flex h-10 w-14 items-center justify-center rounded-2xl group-focus-visible:ring-2 group-focus-visible:ring-brand-sky group-focus-visible:ring-offset-2 group-focus-visible:ring-offset-header ${
                   isActive
-                    ? 'bg-brand-sky text-brand-navy shadow-[0_10px_24px_rgba(102,155,188,0.24)]'
+                    ? 'text-brand-navy'
                     : 'text-[#6B7280] hover:text-brand-sky dark:text-foreground/50 dark:hover:text-brand-sky'
                 }`}
               >
-                <Icon size={22} strokeWidth={isActive ? 2.4 : 2} />
+                {isActive && (
+                  <motion.span
+                    layoutId="bottom-nav-active-pill"
+                    className="absolute inset-0 rounded-2xl bg-brand-sky shadow-[0_10px_24px_rgba(102,155,188,0.24)]"
+                    transition={STANDARD_SPRING}
+                  />
+                )}
+                <motion.span
+                  className="relative z-10 flex items-center justify-center"
+                  animate={{ scale: isActive ? 1.04 : 1 }}
+                  transition={STANDARD_SPRING}
+                >
+                  <Icon size={22} strokeWidth={isActive ? 2.4 : 2} />
+                </motion.span>
               </div>
 
               <span
@@ -45,7 +62,7 @@ export default function BottomNav({ activeTab, onTabChange }: BottomNavProps) {
               >
                 {tab.label}
               </span>
-            </button>
+            </motion.button>
           );
         })}
       </div>

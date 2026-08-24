@@ -1,6 +1,7 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
 import { Users, Trophy, ChevronRight, Clock, MapPin } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
@@ -23,6 +24,12 @@ import varsityBoysSoccerBanner from '../assets/varsityboyssoccer.png';
 import varsityBoysVolleyballBanner from '../assets/varsityboysvolleyball.png';
 import varsityGirlsSoccerBanner from '../assets/varsitygirlssoccer.png';
 import varsityGirlsVolleyballBanner from '../assets/varsitygirlsvolleyball.png';
+import {
+  PAGE_TRANSITION,
+  PRESS_SCALE,
+  PRESS_TRANSITION,
+  STANDARD_SPRING,
+} from '../config/motion';
 
 interface TeamPageScreenProps {
   sport: SportTab;
@@ -154,6 +161,21 @@ export default function TeamPageScreen({
 }: TeamPageScreenProps) {
   const [activeSection, setActiveSection] = useState<TeamPageSection>('games');
   const [gamesView, setGamesView] = useState<GamesView>('upcoming');
+  const [sectionDirection, setSectionDirection] = useState(1);
+  const [gamesDirection, setGamesDirection] = useState(1);
+  const reduceMotion = useReducedMotion();
+
+  const selectSection = (nextSection: TeamPageSection) => {
+    const currentIndex = teamPageSections.findIndex((section) => section.id === activeSection);
+    const nextIndex = teamPageSections.findIndex((section) => section.id === nextSection);
+    setSectionDirection(nextIndex >= currentIndex ? 1 : -1);
+    setActiveSection(nextSection);
+  };
+
+  const selectGamesView = (nextView: GamesView) => {
+    setGamesDirection(nextView === 'results' ? 1 : -1);
+    setGamesView(nextView);
+  };
 
   const team = findTeam(sport, division, gender);
   const sportInfo = sportDetails(sport);
@@ -462,24 +484,31 @@ export default function TeamPageScreen({
               activeSection === section.id;
 
             return (
-              <button
+              <motion.button
                 key={section.id}
                 id={`team-section-tab-${section.id}`}
                 type="button"
                 role="tab"
                 aria-selected={isActive}
                 aria-controls="team-section-panel"
-                onClick={() =>
-                  setActiveSection(section.id)
-                }
+                onClick={() => selectSection(section.id)}
+                whileTap={{ scale: PRESS_SCALE }}
+                transition={PRESS_TRANSITION}
                 className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.11em] transition-all duration-200 sm:px-6 ${
                   isActive
-                    ? 'team-accent-active'
+                    ? 'text-white'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
                 }`}
               >
-                {section.label}
-              </button>
+                {isActive && (
+                  <motion.span
+                    layoutId="team-section-active-pill"
+                    className="team-accent-active absolute inset-0 rounded-[1.05rem]"
+                    transition={STANDARD_SPRING}
+                  />
+                )}
+                <span className="relative z-10">{section.label}</span>
+              </motion.button>
             );
           })}
         </div>
@@ -491,6 +520,15 @@ export default function TeamPageScreen({
         aria-labelledby={`team-section-tab-${activeSection}`}
         className="mt-5 space-y-8 px-4 sm:px-6 lg:px-8"
       >
+        <AnimatePresence mode="wait" initial={false} custom={sectionDirection}>
+          <motion.div
+            key={activeSection}
+            custom={sectionDirection}
+            initial={{ opacity: 0, x: reduceMotion ? 0 : sectionDirection * 8 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: reduceMotion ? 0 : sectionDirection * -6 }}
+            transition={PAGE_TRANSITION}
+          >
         <div className="space-y-10">
           {activeSection === 'standings' && (
             <section className="space-y-4">
@@ -814,25 +852,32 @@ export default function TeamPageScreen({
                     gamesView === view.id;
 
                   return (
-                    <button
+                    <motion.button
                       key={view.id}
                       type="button"
                       aria-pressed={isActive}
-                      onClick={() =>
-                        setGamesView(view.id)
-                      }
-                      className={`flex min-w-fit shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-transparent px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-200 sm:px-4 ${
+                      onClick={() => selectGamesView(view.id)}
+                      whileTap={{ scale: PRESS_SCALE }}
+                      transition={PRESS_TRANSITION}
+                      className={`relative flex min-w-fit shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-transparent px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-200 sm:px-4 ${
                         isActive
-                          ? 'border-brand-maroon bg-brand-maroon text-white shadow-[0_8px_20px_rgba(120,0,0,0.24)]'
+                          ? 'text-white'
                           : 'text-foreground/45 hover:bg-foreground/[0.04] hover:text-foreground/75'
                       }`}
                     >
-                      <span className="text-[9px] font-black uppercase tracking-[0.12em] sm:text-[10px]">
+                      {isActive && (
+                        <motion.span
+                          layoutId="team-games-view-pill"
+                          className="absolute inset-0 rounded-xl border border-brand-maroon bg-brand-maroon shadow-[0_8px_20px_rgba(120,0,0,0.24)]"
+                          transition={STANDARD_SPRING}
+                        />
+                      )}
+                      <span className="relative z-10 text-[9px] font-black uppercase tracking-[0.12em] sm:text-[10px]">
                         {view.label}
                       </span>
 
                       <span
-                        className={`shrink-0 rounded-full px-1.5 py-0.5 font-mono text-[8px] font-black leading-none sm:px-2 sm:text-[9px] ${
+                        className={`relative z-10 shrink-0 rounded-full px-1.5 py-0.5 font-mono text-[8px] font-black leading-none sm:px-2 sm:text-[9px] ${
                           isActive
                             ? 'bg-white/18 text-white'
                             : 'bg-foreground/[0.05] text-foreground/38'
@@ -840,12 +885,20 @@ export default function TeamPageScreen({
                       >
                         {view.count}
                       </span>
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
 
-              <div className="grid gap-5">
+              <AnimatePresence mode="wait" initial={false} custom={gamesDirection}>
+              <motion.div
+                key={gamesView}
+                className="grid gap-5"
+                initial={{ opacity: 0, x: reduceMotion ? 0 : gamesDirection * 8 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: reduceMotion ? 0 : gamesDirection * -6 }}
+                transition={PAGE_TRANSITION}
+              >
                 {gamesView === 'upcoming' && (
                   <div className="space-y-3">
                     <div className="flex items-center justify-between gap-3">
@@ -996,7 +1049,8 @@ export default function TeamPageScreen({
                       )}
                   </div>
                 )}
-              </div>
+              </motion.div>
+              </AnimatePresence>
             </section>
           )}
         </div>
@@ -1169,6 +1223,8 @@ export default function TeamPageScreen({
             )}
           </section>
         )}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );
