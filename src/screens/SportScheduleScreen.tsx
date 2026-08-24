@@ -338,7 +338,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
 
   const closeCalendarDay = useCallback(() => {
     setSelectedCalendarDay(null);
-    requestAnimationFrame(() => calendarTriggerRef.current?.focus());
+    requestAnimationFrame(() => calendarTriggerRef.current?.focus({ preventScroll: true }));
   }, []);
 
   useEffect(() => {
