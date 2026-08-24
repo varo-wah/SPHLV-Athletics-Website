@@ -825,7 +825,7 @@ export default function TeamPageScreen({
                     Schedule & results
                   </p>
 
-                  <h2 className="mt-1 text-2xl font-black uppercase tracking-[0.08em] text-foreground sm:text-3xl">
+                  <h2 className="mt-1 text-[clamp(1.05rem,4.4vw,1.6rem)] font-black uppercase tracking-[0.06em] text-foreground">
                     Season Games
                   </h2>
                 </div>

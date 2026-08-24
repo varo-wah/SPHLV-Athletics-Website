@@ -1,5 +1,7 @@
 import { ArrowUpRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
+import FavoriteTeamsSection from '../components/FavoriteTeamsSection';
+import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { IS_PROTOTYPE } from '../config/launchSports';
 import { SPORT_CATALOG, TEAM_CATALOG } from '../config/teamCatalog';
@@ -11,6 +13,7 @@ import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, staggerDelay } from '.
 
 interface TeamsScreenProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
+  athleticsDataState: AthleticsDataState;
 }
 
 const sportVisuals: Record<SportTab, {
@@ -58,12 +61,25 @@ const sportGroups = SPORT_CATALOG
   }))
   .filter((group) => group.teams.length > 0);
 
-export default function TeamsScreen({ onSelectTeam }: TeamsScreenProps) {
+export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsScreenProps) {
   const reduceMotion = useReducedMotion();
+
+  const browseTeams = () => {
+    document.getElementById('all-teams')?.scrollIntoView({
+      behavior: reduceMotion ? 'auto' : 'smooth',
+      block: 'start',
+    });
+  };
 
   return (
     <div className="animate-in fade-in slide-in-from-bottom-4 mx-auto min-h-screen w-full max-w-3xl px-4 pb-24 pt-3 duration-500 sm:px-6 sm:pt-5">
-      <section aria-label="Teams" className="space-y-3">
+      <FavoriteTeamsSection
+        athleticsDataState={athleticsDataState}
+        onNavigateToTeam={onSelectTeam}
+        onBrowseTeams={browseTeams}
+      />
+
+      <section id="all-teams" aria-label="All teams" className="scroll-mt-20 space-y-3">
         {sportGroups.map((group, groupIndex) => {
           return (
             <motion.article

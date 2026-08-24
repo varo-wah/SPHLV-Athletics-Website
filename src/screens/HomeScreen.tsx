@@ -41,26 +41,14 @@ const favoriteTeamEmojis: Record<SportTab, string> = {
 
 function formatScheduleDateTime(event: ScheduleEvent | null) {
   if (!event) return 'Schedule pending';
-
-  const parsedDate = event.date
-    ? new Date(`${event.date} ${event.time || '00:00'}`)
-    : null;
-
+  const parsedDate = event.date ? new Date(`${event.date} ${event.time || '00:00'}`) : null;
   if (parsedDate && !Number.isNaN(parsedDate.getTime())) {
     const date = new Intl.DateTimeFormat('en-US', {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
+      weekday: 'short', month: 'short', day: 'numeric',
     }).format(parsedDate);
-
     return `${date}${event.time ? ` @ ${event.time}` : ''}`;
   }
-
-  if (event.date || event.time) {
-    return `${event.date || 'Date TBD'}${event.time ? ` @ ${event.time}` : ''}`;
-  }
-
-  return 'Date TBD';
+  return `${event.date || 'Date TBD'}${event.time ? ` @ ${event.time}` : ''}`;
 }
 
 function formatResultScore(match: SheetMatch | null) {
@@ -206,49 +194,28 @@ export default function HomeScreen({
   const reduceMotion = useReducedMotion();
 
   const { user } = useAuth();
-
-  const {
-    favoriteTeams,
-    loading: favoritesLoading,
-    error: favoritesError,
-  } = useTeamFavorites();
+  const { favoriteTeams, loading: favoritesLoading, error: favoritesError } = useTeamFavorites();
 
   const visibleFavoriteTeams = useMemo(
-    () =>
-      favoriteTeams.filter((favorite) =>
-        isLaunchTeamSelection(
-          favorite.sport,
-          favorite.division,
-          favorite.gender,
-        ),
-      ),
+    () => favoriteTeams.filter((favorite) => isLaunchTeamSelection(
+      favorite.sport,
+      favorite.division,
+      favorite.gender,
+    )),
     [favoriteTeams],
   );
 
   const favoriteTeamSummaries = useMemo(() => {
     const now = new Date();
-
-    const todayIso = `${now.getFullYear()}-${String(
-      now.getMonth() + 1,
-    ).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-
+    const todayIso = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
     return buildFavoriteTeamSummaries(
       visibleFavoriteTeams,
       athleticsDataState.data.masterScheduleEvents || [],
       athleticsDataState.data.matches || [],
       todayIso,
-      (event) =>
-        isVisibleScheduleEvent(
-          event.season,
-          event.sportKey || null,
-          event.team,
-        ),
+      (event) => isVisibleScheduleEvent(event.season, event.sportKey || null, event.team),
     );
-  }, [
-    athleticsDataState.data.masterScheduleEvents,
-    athleticsDataState.data.matches,
-    visibleFavoriteTeams,
-  ]);
+  }, [athleticsDataState.data.masterScheduleEvents, athleticsDataState.data.matches, visibleFavoriteTeams]);
 
   const latestNewsArticle = useMemo(
     () =>
@@ -329,9 +296,7 @@ export default function HomeScreen({
       .slice(0, 4);
   }, [athleticsDataState.data.masterScheduleEvents]);
 
-  const hasFavoriteTeams = Boolean(
-    user && favoriteTeamSummaries.length > 0,
-  );
+  const hasFavoriteTeams = Boolean(user && favoriteTeamSummaries.length > 0);
 
   useEffect(() => {
     const element = heroRef.current;
@@ -589,7 +554,7 @@ export default function HomeScreen({
       {user && favoritesLoading ? (
         <section
           aria-labelledby="my-teams-loading-heading"
-          className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/70 p-4 shadow-[0_4px_12px_rgba(0,0,0,0.09)] backdrop-blur-xl sm:p-5"
+          className="hidden"
         >
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[#F4C95D]/25 bg-[#F4C95D]/10 text-[#F4C95D]">
@@ -625,7 +590,7 @@ export default function HomeScreen({
       ) : hasFavoriteTeams ? (
         <section
           aria-labelledby="my-teams-heading"
-          className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/70 p-4 shadow-[0_4px_12px_rgba(0,0,0,0.09)] backdrop-blur-xl sm:p-5"
+          className="hidden"
         >
           <div className="flex items-center justify-between gap-4">
             <div className="flex min-w-0 items-center gap-3">
@@ -804,7 +769,7 @@ export default function HomeScreen({
       ) : (
         <section
           aria-labelledby="latest-news-heading"
-          className="space-y-3"
+          className="hidden"
         >
           <div className="flex items-end justify-between gap-3 px-1">
             <div>
@@ -920,7 +885,7 @@ export default function HomeScreen({
         </section>
       )}
 
-      {hasFavoriteTeams && (
+      {(
         <section
           aria-labelledby="home-news-widget-heading"
           className="space-y-3"

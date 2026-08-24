@@ -109,7 +109,14 @@ function AthleticsApp() {
       );
     }
 
-    if (activeTab === 'Teams') return <TeamsScreen onSelectTeam={navigateToTeam} />;
+    if (activeTab === 'Teams') {
+      return (
+        <TeamsScreen
+          onSelectTeam={navigateToTeam}
+          athleticsDataState={athleticsDataState}
+        />
+      );
+    }
     if (activeTab === 'Standings') return <StandingsScreen athleticsDataState={athleticsDataState} />;
     if (activeTab === 'News') return <NewsScreen initialArticleId={newsArticleId} />;
     return <LoginScreen />;
