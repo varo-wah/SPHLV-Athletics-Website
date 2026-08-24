@@ -97,7 +97,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
             formatDate={formatDate}
             onClose={() => {
               setDetailsOpen(false);
-              window.requestAnimationFrame(() => triggerRef.current?.focus());
+              window.requestAnimationFrame(() => triggerRef.current?.focus({ preventScroll: true }));
             }}
           />
         )}
