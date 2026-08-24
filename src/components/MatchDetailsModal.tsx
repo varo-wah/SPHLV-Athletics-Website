@@ -1,8 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { motion, useReducedMotion } from 'motion/react';
 import { BarChart3, CalendarDays, MapPin, Sparkles, X } from 'lucide-react';
 import { SheetMatch } from '../services/parsers';
 import { presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
 import TeamLogo from './TeamLogo';
+import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, SOFT_SPRING, staggerDelay } from '../config/motion';
 
 interface MatchDetailsModalProps {
   match: SheetMatch;
@@ -20,14 +22,20 @@ const SPORT_EMOJIS: Record<SheetMatch['sportKey'], string> = {
 
 function DetailList({ items }: { items: string[] }) {
   return (
-    <ul className="space-y-2">
-      {items.map((item) => (
-        <li key={item} className="flex gap-2 text-sm font-semibold leading-relaxed text-foreground/72">
+    <motion.ul className="space-y-2">
+      {items.map((item, index) => (
+        <motion.li
+          key={item}
+          className="flex gap-2 text-sm font-semibold leading-relaxed text-foreground/72"
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ ...QUICK_TRANSITION, delay: staggerDelay(index) }}
+        >
           <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-brand-maroon" />
           <span>{item}</span>
-        </li>
+        </motion.li>
       ))}
-    </ul>
+    </motion.ul>
   );
 }
 
@@ -36,6 +44,11 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
   const setScores = match.setScores || [];
   const statLeaders = match.statLeaders || [];
   const highlights = match.highlights || [];
+  const reduceMotion = useReducedMotion();
+  const [isDesktop, setIsDesktop] = useState(
+    () => window.matchMedia('(min-width: 640px)').matches,
+  );
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -46,18 +59,46 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  useEffect(() => {
+    closeButtonRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 640px)');
+    const handleChange = () => setIsDesktop(media.matches);
+    media.addEventListener('change', handleChange);
+    return () => media.removeEventListener('change', handleChange);
+  }, []);
+
   return (
-    <div
+    <motion.div
       className="fixed inset-0 z-[80] flex items-end justify-center bg-black/55 px-3 pb-24 pt-10 backdrop-blur-sm sm:items-center sm:pb-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={QUICK_TRANSITION}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
     >
-      <section
+      <motion.section
         role="dialog"
         aria-modal="true"
         aria-labelledby={`match-details-${match.id}`}
         className="max-h-[82vh] w-full max-w-xl overflow-y-auto rounded-[28px] border border-border/10 bg-card shadow-2xl"
+        initial={{
+          opacity: 0,
+          y: reduceMotion ? 0 : isDesktop ? 10 : 42,
+          scale: reduceMotion ? 1 : isDesktop ? 0.97 : 0.99,
+        }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{
+          opacity: 0,
+          y: reduceMotion ? 0 : isDesktop ? 8 : 30,
+          scale: reduceMotion ? 1 : 0.98,
+        }}
+        transition={SOFT_SPRING}
+        onMouseDown={(event) => event.stopPropagation()}
       >
         <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-border/8 bg-card/95 px-5 py-4 backdrop-blur-xl">
           <div>
@@ -69,14 +110,17 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
             </h2>
           </div>
 
-          <button
+          <motion.button
+            ref={closeButtonRef}
             type="button"
             onClick={onClose}
             aria-label="Close game details"
             className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.04] text-foreground/55 transition-colors hover:bg-foreground/[0.08] hover:text-foreground"
+            whileTap={{ scale: PRESS_SCALE }}
+            transition={PRESS_TRANSITION}
           >
             <X size={17} />
-          </button>
+          </motion.button>
         </div>
 
         <div className="space-y-5 p-5">
@@ -114,10 +158,16 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
                 <BarChart3 size={14} className="text-brand-maroon" /> 📊 Set scores
               </h3>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {setScores.map((score) => (
-                  <div key={score} className="rounded-xl border border-border/10 bg-subcard px-3 py-2 text-center font-mono text-xs font-black text-foreground">
+                {setScores.map((score, index) => (
+                  <motion.div
+                    key={score}
+                    className="rounded-xl border border-border/10 bg-subcard px-3 py-2 text-center font-mono text-xs font-black text-foreground"
+                    initial={{ opacity: 0, y: reduceMotion ? 0 : 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ ...QUICK_TRANSITION, delay: staggerDelay(index) }}
+                  >
                     {score}
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </section>
@@ -141,7 +191,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
             </section>
           )}
         </div>
-      </section>
-    </div>
+      </motion.section>
+    </motion.div>
   );
 }

@@ -1,5 +1,6 @@
 import { CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import CompactResultCard from '../components/CompactResultCard';
 import { IS_PROTOTYPE, isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
@@ -14,6 +15,14 @@ import { consolidateSharedScheduleEvents } from '../services/schedulePresentatio
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { buildFavoriteTeamSummaries } from '../utils/homePersonalization';
 import { getTeamFavoriteLabel } from '../utils/teamFavorites';
+import {
+  PAGE_TRANSITION,
+  PRESS_SCALE,
+  PRESS_TRANSITION,
+  QUICK_TRANSITION,
+  STANDARD_SPRING,
+  staggerDelay,
+} from '../config/motion';
 
 interface HomeScreenProps {
   athleticsDataState: AthleticsDataState;
@@ -188,6 +197,13 @@ export default function HomeScreen({
   const [gameFeedView, setGameFeedView] =
     useState<'upcoming' | 'results'>('results');
   const [heroSlide, setHeroSlide] = useState(0);
+  const [heroPaused, setHeroPaused] = useState(false);
+  const [documentVisible, setDocumentVisible] = useState(
+    () => document.visibilityState === 'visible',
+  );
+  const [heroWidth, setHeroWidth] = useState(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
 
   const { user } = useAuth();
 
@@ -318,21 +334,77 @@ export default function HomeScreen({
   );
 
   useEffect(() => {
-    if (!latestNewsArticle) return undefined;
+    const element = heroRef.current;
+    if (!element) return undefined;
+
+    const updateWidth = () => setHeroWidth(element.getBoundingClientRect().width);
+    updateWidth();
+
+    const observer = new ResizeObserver(updateWidth);
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
+
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      setDocumentVisible(document.visibilityState === 'visible');
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, []);
+
+  useEffect(() => {
+    if (
+      !latestNewsArticle ||
+      reduceMotion ||
+      heroPaused ||
+      !documentVisible
+    ) {
+      return undefined;
+    }
 
     const interval = window.setInterval(() => {
       setHeroSlide((current) => (current + 1) % 2);
-    }, 2000);
+    }, 5500);
 
     return () => window.clearInterval(interval);
-  }, [latestNewsArticle]);
+  }, [documentVisible, heroPaused, latestNewsArticle, reduceMotion]);
 
   return (
     <div className="animate-in fade-in duration-500 mt-4 space-y-6 px-4 pb-8">
-      <div className="hero-image-card" aria-roledescription="carousel" aria-label="Featured athletics updates">
-        <div
-          className="flex h-full transition-transform duration-500 ease-out motion-reduce:transition-none"
-          style={{ transform: `translateX(-${heroSlide * 50}%)`, width: '200%' }}
+      <div
+        ref={heroRef}
+        className="hero-image-card touch-pan-y"
+        aria-roledescription="carousel"
+        aria-label="Featured athletics updates"
+        onMouseEnter={() => setHeroPaused(true)}
+        onMouseLeave={() => setHeroPaused(false)}
+        onPointerDown={() => setHeroPaused(true)}
+        onPointerUp={() => setHeroPaused(false)}
+        onPointerCancel={() => setHeroPaused(false)}
+        onFocusCapture={() => setHeroPaused(true)}
+        onBlurCapture={(event) => {
+          if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false);
+        }}
+      >
+        <motion.div
+          className="flex h-full"
+          style={{ width: '200%' }}
+          animate={{ x: heroSlide * -heroWidth }}
+          transition={reduceMotion ? { duration: 0.12 } : STANDARD_SPRING}
+          drag={reduceMotion || !latestNewsArticle ? false : 'x'}
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.08}
+          onDragStart={() => setHeroPaused(true)}
+          onDragEnd={(_, info) => {
+            const shouldAdvance = info.offset.x < -40 || info.velocity.x < -350;
+            const shouldReturn = info.offset.x > 40 || info.velocity.x > 350;
+
+            if (shouldAdvance) setHeroSlide(1);
+            if (shouldReturn) setHeroSlide(0);
+            setHeroPaused(false);
+          }}
         >
           <div className="h-full w-1/2 shrink-0">
             <img
@@ -343,11 +415,13 @@ export default function HomeScreen({
           </div>
 
           {latestNewsArticle && (
-            <button
+            <motion.button
               type="button"
               onClick={() => onNavigateToNews(latestNewsArticle.id)}
               className="relative h-full w-1/2 shrink-0 overflow-hidden text-left"
               aria-label={`Read latest news: ${latestNewsArticle.title}`}
+              whileTap={{ scale: PRESS_SCALE }}
+              transition={PRESS_TRANSITION}
             >
               <img src={latestNewsArticle.image} alt="" className="hero-banner-img scale-105 object-cover" />
               <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/52 to-black/16" />
@@ -356,14 +430,27 @@ export default function HomeScreen({
                 <span className="mt-1 line-clamp-2 text-sm font-black uppercase leading-tight tracking-[0.02em]">{latestNewsArticle.title}</span>
                 <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.12em] text-white/70">Read story ›</span>
               </span>
-            </button>
+            </motion.button>
           )}
-        </div>
+        </motion.div>
 
         {latestNewsArticle && (
-          <div className="absolute bottom-2 right-3 flex gap-1" aria-hidden="true">
+          <div className="absolute bottom-2 right-3 flex gap-1" role="group" aria-label="Choose featured slide">
             {[0, 1].map((slide) => (
-              <span key={slide} className={`h-1 rounded-full transition-all ${heroSlide === slide ? 'w-4 bg-white' : 'w-1 bg-white/45'}`} />
+              <button
+                key={slide}
+                type="button"
+                onClick={() => setHeroSlide(slide)}
+                aria-label={`Show featured slide ${slide + 1}`}
+                aria-pressed={heroSlide === slide}
+                className="flex h-5 min-w-5 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+              >
+                <motion.span
+                  className={`h-1 rounded-full ${heroSlide === slide ? 'bg-white' : 'bg-white/45'}`}
+                  animate={{ width: heroSlide === slide ? 16 : 4 }}
+                  transition={QUICK_TRANSITION}
+                />
+              </button>
             ))}
           </div>
         )}
@@ -381,39 +468,66 @@ export default function HomeScreen({
             const active = gameFeedView === view.id;
 
             return (
-              <button
+              <motion.button
                 key={view.id}
                 type="button"
                 onClick={() => setGameFeedView(view.id)}
                 aria-pressed={active}
-                className={`flex items-center justify-center rounded-lg px-2 py-1.5 text-[7px] font-black uppercase tracking-[0.12em] transition-colors ${
+                whileTap={{ scale: PRESS_SCALE }}
+                transition={PRESS_TRANSITION}
+                className={`relative flex items-center justify-center rounded-lg px-2 py-1.5 text-[7px] font-black uppercase tracking-[0.12em] ${
                   active
-                    ? 'bg-brand-maroon text-white'
+                    ? 'text-white'
                     : 'text-foreground/42 hover:bg-foreground/[0.04]'
                 }`}
               >
-                {view.label}
-              </button>
+                {active && (
+                  <motion.span
+                    layoutId="home-game-feed-pill"
+                    className="absolute inset-0 rounded-lg bg-brand-maroon"
+                    transition={STANDARD_SPRING}
+                  />
+                )}
+                <span className="relative z-10">{view.label}</span>
+              </motion.button>
             );
           })}
         </div>
 
-        <div className="space-y-1.5 p-2">
+        <div className="p-2">
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.div
+              key={gameFeedView}
+              className="space-y-1.5"
+              initial={{ opacity: 0, y: reduceMotion ? 0 : 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: reduceMotion ? 0 : -4 }}
+              transition={PAGE_TRANSITION}
+            >
           {gameFeedView === 'results' &&
-            latestResults.map((match) => (
-              <CompactResultCard
+            latestResults.map((match, index) => (
+              <motion.div
                 key={match.id}
-                match={match}
-                formatDate={compactDate}
-                dense
-              />
+                initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...QUICK_TRANSITION, delay: staggerDelay(index) }}
+              >
+                <CompactResultCard
+                  match={match}
+                  formatDate={compactDate}
+                  dense
+                />
+              </motion.div>
             ))}
 
           {gameFeedView === 'upcoming' &&
-            nextGames.map((event) => (
-              <article
+            nextGames.map((event, index) => (
+              <motion.article
                 key={event.id}
                 className="grid min-h-[58px] grid-cols-[32px_minmax(0,1fr)] items-center gap-2.5 rounded-2xl border border-border/8 bg-foreground/[0.02] px-3 py-2"
+                initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ ...QUICK_TRANSITION, delay: staggerDelay(index) }}
               >
                 <span
                   className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground/[0.035] text-lg"
@@ -451,7 +565,7 @@ export default function HomeScreen({
                     {compactGameMeta(event)}
                   </p>
                 </div>
-              </article>
+              </motion.article>
             ))}
 
           {gameFeedView === 'results' &&
@@ -467,6 +581,8 @@ export default function HomeScreen({
                 No upcoming games listed
               </p>
             )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </section>
 
@@ -531,17 +647,20 @@ export default function HomeScreen({
               </div>
             </div>
 
-            <button
+            <motion.button
               type="button"
               onClick={onBrowseTeams}
+              whileTap={{ scale: PRESS_SCALE }}
+              transition={PRESS_TRANSITION}
               className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-2 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/55 transition-colors hover:border-[#B5413F]/30 hover:bg-[#B5413F]/10 hover:text-foreground"
             >
               <Plus size={13} />
               Browse
-            </button>
+            </motion.button>
           </div>
 
-          <div className="mt-4 grid gap-3 lg:grid-cols-2">
+          <motion.div layout className="mt-4 grid gap-3 lg:grid-cols-2">
+            <AnimatePresence initial={false}>
             {favoriteTeamSummaries.map(
               ({ favorite, nextEvent, recentMatch }) => {
                 const sportEmoji =
@@ -554,8 +673,9 @@ export default function HomeScreen({
                   : 'No completed games yet';
 
                 return (
-                  <button
+                  <motion.button
                     key={favorite.key}
+                    layout
                     type="button"
                     onClick={() =>
                       onNavigateToTeam(
@@ -564,6 +684,11 @@ export default function HomeScreen({
                         favorite.gender,
                       )
                     }
+                    initial={{ opacity: 0, scale: reduceMotion ? 1 : 0.98 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: reduceMotion ? 1 : 0.98 }}
+                    whileTap={{ scale: PRESS_SCALE }}
+                    transition={QUICK_TRANSITION}
                     className="group min-w-0 rounded-3xl border border-border/10 bg-foreground/[0.025] p-4 text-left transition-all hover:-translate-y-0.5 hover:border-[#B5413F]/30 hover:bg-[#B5413F]/8"
                   >
                     <div className="flex items-center justify-between gap-3">
@@ -663,11 +788,12 @@ export default function HomeScreen({
                         </div>
                       </div>
                     </div>
-                  </button>
+                  </motion.button>
                 );
               },
             )}
-          </div>
+            </AnimatePresence>
+          </motion.div>
 
           {favoritesError && (
             <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-red-400">
@@ -695,25 +821,29 @@ export default function HomeScreen({
             </div>
 
             {user && (
-              <button
+              <motion.button
                 type="button"
                 onClick={onBrowseTeams}
+                whileTap={{ scale: PRESS_SCALE }}
+                transition={PRESS_TRANSITION}
                 className="inline-flex items-center gap-1.5 rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-2 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/55 transition-colors hover:border-[#B5413F]/30 hover:bg-[#B5413F]/10 hover:text-foreground"
               >
                 <Plus size={13} />
                 Add favorites
-              </button>
+              </motion.button>
             )}
           </div>
 
           {latestNewsArticle ? (
-            <button
+            <motion.button
               type="button"
               onClick={() =>
                 onNavigateToNews(latestNewsArticle.id)
               }
               className="group relative min-h-[250px] w-full overflow-hidden rounded-3xl border border-brand-red/12 text-left shadow-[0_4px_12px_rgba(120,0,0,0.08)]"
               aria-label={`Read latest news: ${latestNewsArticle.title}`}
+              whileTap={{ scale: PRESS_SCALE }}
+              transition={PRESS_TRANSITION}
             >
               <img
                 src={latestNewsArticle.image}
@@ -751,12 +881,14 @@ export default function HomeScreen({
                   />
                 </span>
               </span>
-            </button>
+            </motion.button>
           ) : (
-            <button
+            <motion.button
               type="button"
               onClick={() => onNavigateToNews()}
               className="group flex w-full items-center gap-4 rounded-3xl border border-brand-red/12 bg-subcard p-5 text-left shadow-[0_3px_10px_rgba(120,0,0,0.06)]"
+              whileTap={{ scale: PRESS_SCALE }}
+              transition={PRESS_TRANSITION}
             >
               <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red">
                 <Newspaper size={19} />
@@ -777,7 +909,7 @@ export default function HomeScreen({
                 size={18}
                 className="text-foreground/30"
               />
-            </button>
+            </motion.button>
           )}
 
           {favoritesError && (
@@ -806,7 +938,7 @@ export default function HomeScreen({
             </h2>
           </div>
 
-          <button
+          <motion.button
             type="button"
             onClick={() =>
               onNavigateToNews(latestNewsArticle?.id)
@@ -817,6 +949,8 @@ export default function HomeScreen({
                 ? `View news: ${latestNewsArticle.title}`
                 : 'View Eagles Athletics news'
             }
+            whileTap={{ scale: PRESS_SCALE }}
+            transition={PRESS_TRANSITION}
           >
             {latestNewsArticle ? (
               <img
@@ -858,7 +992,7 @@ export default function HomeScreen({
                 />
               </span>
             </span>
-          </button>
+          </motion.button>
         </section>
       )}
     </div>

@@ -8,6 +8,7 @@ import {
   isLaunchTeamSelection,
 } from '../config/launchSports';
 import { SPORT_CATALOG, teamsForSport } from '../config/teamCatalog';
+import { PRESS_SCALE, PRESS_TRANSITION, STANDARD_SPRING, staggerDelay } from '../config/motion';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -42,14 +43,14 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}
-            transition={{ type: 'spring', damping: 27, stiffness: 220 }}
+            transition={STANDARD_SPRING}
             aria-label="Teams menu"
             className="sph-sidebar-shell fixed bottom-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-black/10 bg-[linear-gradient(160deg,#FFFFFF_0%,#F4F4F4_100%)] shadow-[12px_0_24px_rgba(0,0,0,0.14)] dark:border-white/10 dark:bg-none dark:bg-[#111111] dark:shadow-[12px_0_24px_rgba(0,0,0,0.38)]"
           >
             <div className="relative border-b border-brand-maroon/10 px-4 py-3.5 dark:border-white/[0.065]">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(0,0,0,0.055),transparent_46%)] dark:bg-[radial-gradient(circle_at_12%_0%,rgba(255,255,255,0.055),transparent_44%)]" />
               <div className="relative flex items-center justify-between gap-4">
-                <button
+                <motion.button
                   type="button"
                   onClick={() => {
                     onNavigateHome();
@@ -57,6 +58,8 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                   }}
                   className="flex min-w-0 items-center gap-3 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#F06865]"
                   aria-label="Go to Home"
+                  whileTap={{ scale: PRESS_SCALE }}
+                  transition={PRESS_TRANSITION}
                 >
                   <span className="flex h-11 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-brand-maroon/10 bg-white shadow-[0_3px_10px_rgba(120,0,0,0.10)] dark:border-white/10 dark:shadow-[0_3px_10px_rgba(0,0,0,0.22)]">
                     <img
@@ -74,26 +77,31 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                       Choose your team
                     </span>
                   </span>
-                </button>
+                </motion.button>
 
-                <button
+                <motion.button
                   type="button"
                   onClick={onClose}
                   aria-label="Close teams menu"
                   className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-brand-maroon/10 bg-muted text-brand-navy/55 transition-colors hover:border-brand-red/25 hover:bg-white hover:text-brand-red dark:border-white/10 dark:bg-white/[0.035] dark:text-foreground/55 dark:hover:bg-white dark:hover:text-black"
+                  whileTap={{ scale: 0.92 }}
+                  transition={PRESS_TRANSITION}
                 >
                   <X size={18} />
-                </button>
+                </motion.button>
               </div>
             </div>
 
             <div className="team-overlay-scroll flex-1 space-y-3 overflow-y-auto px-3.5 py-3.5">
               {teamGroups.map((sport, index) => {
                 return (
-                  <section
+                  <motion.section
                     key={sport.id}
                     aria-labelledby={`menu-${sport.id}`}
                     className="overflow-hidden rounded-2xl border border-brand-maroon/10 bg-white/72 p-3 shadow-[0_3px_10px_rgba(120,0,0,0.06)] dark:border-white/[0.065] dark:bg-white/[0.025] dark:shadow-[0_3px_10px_rgba(0,0,0,0.16)]"
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ ...STANDARD_SPRING, delay: staggerDelay(index) }}
                   >
                     <div className="mb-2.5 flex items-center justify-between gap-3">
                       <h2 id={`menu-${sport.id}`} className="flex min-w-0 items-center gap-2.5 text-xs font-black uppercase tracking-[0.13em] text-brand-navy dark:text-foreground">
@@ -111,7 +119,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                       {sport.teams.map((team) => {
                         const key = `${sport.id}-${team.division}-${team.gender}`;
                         return (
-                          <button
+                          <motion.button
                             key={key}
                             type="button"
                             aria-label={team.displayName}
@@ -121,15 +129,17 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                               onClose();
                             }}
                             className="group flex min-h-11 items-center justify-center rounded-xl border border-brand-maroon/10 bg-muted/70 px-2.5 py-2 text-center transition-colors hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:hover:border-[#B5413F]/30 dark:hover:bg-[#B5413F]/12"
+                            whileTap={{ scale: PRESS_SCALE }}
+                            transition={PRESS_TRANSITION}
                           >
                             <span className="text-sm font-black uppercase tracking-[0.12em] text-brand-navy/80 group-hover:text-brand-navy dark:text-foreground/80 dark:group-hover:text-foreground">
                               {team.menuCode}
                             </span>
-                          </button>
+                          </motion.button>
                         );
                       })}
                     </div>
-                  </section>
+                  </motion.section>
                 );
               })}
             </div>

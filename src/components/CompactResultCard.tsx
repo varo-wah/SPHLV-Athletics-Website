@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'motion/react';
 import { SheetMatch } from '../services/parsers';
 import { presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
 import MatchDetailsModal from './MatchDetailsModal';
 import TeamLogo from './TeamLogo';
+import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
 
 interface CompactResultCardProps {
   match: SheetMatch;
@@ -13,6 +15,7 @@ interface CompactResultCardProps {
 
 export default function CompactResultCard({ match, formatDate, dense = false }: CompactResultCardProps) {
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const teams = presentResultTeams(match);
   const outcome = resultOutcomeLabel(match.result);
   const hasDetails = Boolean(
@@ -28,7 +31,12 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
       : 'text-amber-700 dark:text-amber-300';
 
   const card = (
-    <article className={`overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-[0_2px_7px_rgba(0,0,0,0.06)] ${hasDetails ? 'transition-all group-hover:border-brand-maroon/30 group-hover:shadow-[0_7px_18px_rgba(120,0,0,0.10)]' : ''}`}>
+    <motion.article
+      layout
+      whileHover={hasDetails ? { y: -2 } : undefined}
+      transition={QUICK_TRANSITION}
+      className={`overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-[0_2px_7px_rgba(0,0,0,0.06)] ${hasDetails ? 'transition-[border-color,box-shadow] group-hover:border-brand-maroon/30 group-hover:shadow-[0_7px_18px_rgba(120,0,0,0.10)]' : ''}`}
+    >
       <div className={`grid grid-cols-[minmax(0,1fr)_66px] items-stretch ${dense ? 'min-h-[78px]' : 'min-h-[94px]'}`}>
         <div className="divide-y divide-border/6">
           {teams.map((team) => (
@@ -62,30 +70,38 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
           )}
         </div>
       </div>
-    </article>
+    </motion.article>
   );
 
   if (!hasDetails) return card;
 
   return (
     <>
-      <button
+      <motion.button
+        ref={triggerRef}
         type="button"
         onClick={() => setDetailsOpen(true)}
         aria-label={`Open ${match.opponent} game statistics`}
         aria-haspopup="dialog"
         className="group block w-full rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-maroon focus-visible:ring-offset-2"
+        whileTap={{ scale: PRESS_SCALE }}
+        transition={PRESS_TRANSITION}
       >
         {card}
-      </button>
+      </motion.button>
 
-      {detailsOpen && (
-        <MatchDetailsModal
-          match={match}
-          formatDate={formatDate}
-          onClose={() => setDetailsOpen(false)}
-        />
-      )}
+      <AnimatePresence>
+        {detailsOpen && (
+          <MatchDetailsModal
+            match={match}
+            formatDate={formatDate}
+            onClose={() => {
+              setDetailsOpen(false);
+              window.requestAnimationFrame(() => triggerRef.current?.focus());
+            }}
+          />
+        )}
+      </AnimatePresence>
     </>
   );
 }

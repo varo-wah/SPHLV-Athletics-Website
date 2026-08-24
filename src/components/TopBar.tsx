@@ -1,7 +1,9 @@
 import { Images, Instagram, LogOut, Moon, Sheet, Sun, UserRound, Youtube } from 'lucide-react';
+import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { IS_PROTOTYPE } from '../config/launchSports';
+import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
 
 interface TopBarProps {
   isHome?: boolean;
@@ -28,11 +30,13 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
   return (
     <div className="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border/70 dark:border-border/5">
       <div className="flex min-w-0 items-center gap-3">
-        <button
+        <motion.button
           type="button"
           aria-label="Open teams menu"
           className="flex h-10 w-14 items-center justify-center overflow-hidden rounded-xl border border-[#C1121F]/15 bg-white transition-colors hover:border-[#C1121F]/35 dark:border-white/10 dark:bg-white/90"
           onClick={onOpenMenu}
+          whileTap={{ scale: PRESS_SCALE }}
+          transition={PRESS_TRANSITION}
         >
           <img
             src="https://res.cloudinary.com/dpgt445lg/image/upload/v1775384563/image_13_obe33c.png"
@@ -40,11 +44,11 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
             className="h-9 w-12 object-contain"
             aria-hidden="true"
           />
-        </button>
+        </motion.button>
         {isHome ? (
           <nav aria-label="Athletics links" className="flex items-center gap-1.5">
             {HOME_LINKS.map(({ href, icon: Icon, label }) => href ? (
-              <a
+              <motion.a
                 key={label}
                 href={href}
                 target="_blank"
@@ -52,9 +56,11 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
                 aria-label={label}
                 title={label}
                 className="flex h-7 w-7 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:text-brand-maroon"
+                whileTap={{ scale: 0.94 }}
+                transition={PRESS_TRANSITION}
               >
                 <Icon size={13} aria-hidden="true" />
-              </a>
+              </motion.a>
             ) : (
               <span
                 key={label}
@@ -78,39 +84,56 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
         )}
       </div>
       <div className="flex items-center gap-2 sm:gap-3">
-        <button
+        <motion.button
           type="button"
           onClick={toggleTheme}
           className="text-[#7F1D1D] hover:text-[#C1121F] flex items-center justify-center dark:text-foreground dark:hover:text-foreground/80"
           aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
           aria-pressed={isDark}
+          whileTap={{ scale: 0.9 }}
+          transition={PRESS_TRANSITION}
         >
-          {isDark ? <Sun size={20} /> : <Moon size={20} />}
-        </button>
+          <AnimatePresence mode="wait" initial={false}>
+            <motion.span
+              key={isDark ? 'sun' : 'moon'}
+              className="flex items-center justify-center"
+              initial={{ opacity: 0, rotate: -28, scale: 0.8 }}
+              animate={{ opacity: 1, rotate: 0, scale: 1 }}
+              exit={{ opacity: 0, rotate: 28, scale: 0.8 }}
+              transition={QUICK_TRANSITION}
+            >
+              {isDark ? <Sun size={20} /> : <Moon size={20} />}
+            </motion.span>
+          </AnimatePresence>
+        </motion.button>
         {user ? (
           <div className="flex min-w-0 items-center gap-2 rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-1.5">
             <UserRound size={14} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
             <span className="hidden max-w-[150px] truncate text-[10px] font-black uppercase tracking-[0.12em] text-foreground/65 sm:block">
               {user.email}
             </span>
-            <button
+            <motion.button
               type="button"
               onClick={signOutUser}
               className="text-foreground/45 transition-colors hover:text-[#C1121F] dark:hover:text-[#D85A57]"
               aria-label="Sign out"
+              whileTap={{ scale: 0.9 }}
+              transition={PRESS_TRANSITION}
             >
               <LogOut size={14} />
-            </button>
+            </motion.button>
           </div>
         ) : (
-          <button
+          <motion.button
             type="button"
             onClick={onOpenLogin}
             disabled={loading}
             className="rounded-full border border-[#C1121F]/25 bg-muted px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#7F1D1D] transition-colors hover:bg-[#C1121F] hover:text-white disabled:opacity-50 dark:border-[#B5413F]/35 dark:bg-muted dark:text-[#FCA5A5] dark:hover:bg-[#B5413F] dark:hover:text-white"
+            whileTap={{ scale: PRESS_SCALE }}
+            transition={PRESS_TRANSITION}
           >
             Sign in
-          </button>
+          </motion.button>
         )}
       </div>
     </div>
