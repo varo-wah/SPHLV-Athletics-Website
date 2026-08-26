@@ -29,6 +29,51 @@ export interface NewsArticle {
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
   {
+    id: '2026-volleyball-players-of-the-week-nicolyne-alianna-jason-suhendra',
+    title: 'Volleyball Players of the Week: Nicolyne Alianna and Jason Suhendra',
+    publishedAt: '2026-08-26',
+    dateLabel: 'AUGUST 26, 2026',
+    category: 'PLAYER OF THE WEEK',
+    excerpt: 'Nicolyne Alianna delivered timely points and strong blocks, while Jason Suhendra closed out KV with seven consecutive aces.',
+    image: eagleAppHomeBanner,
+    imageAlt: 'SPH Lippo Village Athletics Eagle banner',
+    body: [
+      'SPH Lippo Village Athletics recognizes Grade 12 student Nicolyne Alianna and Jason Suhendra as this week’s Varsity Volleyball Players of the Week.',
+    ],
+    sections: [
+      {
+        heading: 'Nicolyne Alianna, Grade 12 · Opposite Hitter',
+        paragraphs: [
+          'Nicolyne stepped up this week with strong play and continued improvement. Against Parung Pargung, she finished one set as the team’s top point earner. Her blocking stood out in both the match and training throughout the week.',
+        ],
+      },
+      {
+        heading: 'Jason Suhendra · Middle',
+        paragraphs: [
+          'Jason battled through injury during the opening weeks of the season, but he stood out in the team’s first game at KV. After finding his serving range in the first set, he established the range and trajectory for his powerful topspin jump serve in the second.',
+          'Jason closed out the game with seven consecutive aces, ending KV’s hopes of a comeback and delivering a memorable finish for the Eagles.',
+        ],
+      },
+    ],
+    publicationChannel: 'published',
+  },
+  {
+    id: '2026-smp-basketball-player-of-the-week-dansen-wijaya',
+    title: 'SMP Basketball Player of the Week: Dansen Wijaya',
+    publishedAt: '2026-08-26',
+    dateLabel: 'AUGUST 26, 2026',
+    category: 'PLAYER OF THE WEEK',
+    excerpt: 'Grade 9 student Dansen Wijaya sparked a second-half rally against ACS with scoring, rebounding, playmaking, and active defense.',
+    image: eagleAppHomeBanner,
+    imageAlt: 'SPH Lippo Village Athletics Eagle banner',
+    body: [
+      'Grade 9 student Dansen Wijaya earned SMP Basketball Player of the Week after an all-around performance against ACS.',
+      'With SPH Lippo Village trailing by 15 points, Dansen stepped up on both ends of the floor. His active defense and quick transition play helped cut the deficit to six points late in the fourth quarter. He led the team in scoring on 45% shooting, while also leading the squad in rebounds and assists and adding a steal.',
+      'Dansen’s effort and all-around play provided a major lift for the team during its second-half rally.',
+    ],
+    publicationChannel: 'published',
+  },
+  {
     id: '2026-soccer-players-of-the-week-troy-biantoro-sherny-lim',
     title: 'Soccer Players of the Week: Troy Biantoro and Sherny Lim',
     publishedAt: '2026-08-23',
