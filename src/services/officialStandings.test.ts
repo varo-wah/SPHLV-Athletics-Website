@@ -30,3 +30,19 @@ test('matches the verified 26/27 workbook results', () => {
     { losses: 1, difference: -8 },
   );
 });
+
+test('matches the supplied girls volleyball ladder points', () => {
+  assert.deepEqual(
+    ['ACG', 'ACS', 'BSJ', 'SPH-KV', 'SPH-LV'].map((team) => ({
+      team,
+      points: row('Volleyball', 'Girls', team)?.points,
+    })),
+    [
+      { team: 'ACG', points: 4 },
+      { team: 'ACS', points: 0 },
+      { team: 'BSJ', points: 2 },
+      { team: 'SPH-KV', points: 0 },
+      { team: 'SPH-LV', points: 2 },
+    ],
+  );
+});

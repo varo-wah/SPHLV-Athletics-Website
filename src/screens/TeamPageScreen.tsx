@@ -352,10 +352,20 @@ export default function TeamPageScreen({
 
       return a.row.team.localeCompare(b.row.team);
     })
-    .map((entry, idx) => ({
-      ...entry,
-      rank: isPreseasonStandings ? 1 : idx + 1,
-    }));
+    .map((entry, _idx, sortedEntries) => {
+      const matchingPointRows = sortedEntries.filter(
+        (candidate) => candidate.pts === entry.pts,
+      );
+      const firstMatchingIndex = sortedEntries.findIndex(
+        (candidate) => candidate.pts === entry.pts,
+      );
+
+      return {
+        ...entry,
+        rank: isPreseasonStandings ? 1 : firstMatchingIndex + 1,
+        isTied: matchingPointRows.length > 1,
+      };
+    });
 
   const allTeamsTied =
     standingsRows.length > 1 &&
@@ -551,7 +561,9 @@ export default function TeamPageScreen({
                         <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-[0_2px_6px_rgba(15,23,42,0.16)]">
                           {allTeamsTied
                             ? 'T1'
-                            : `#${lvStanding.rank}`}
+                            : lvStanding.isTied
+                              ? `T${lvStanding.rank}`
+                              : `#${lvStanding.rank}`}
                         </div>
 
                         <div className="min-w-0">
@@ -560,7 +572,7 @@ export default function TeamPageScreen({
                               ? 'All teams tied'
                               : lvStanding.rank === 1
                                 ? 'LV leads the table'
-                                : `LV is #${lvStanding.rank}`}
+                                : `LV is ${lvStanding.isTied ? 'T' : '#'}${lvStanding.rank}`}
                           </p>
 
                           <p className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">
@@ -657,6 +669,7 @@ export default function TeamPageScreen({
                         pts,
                         rank,
                         diff,
+                        isTied,
                       }) => {
                         const normalizedTeamName = row.team
                           .toLowerCase()
@@ -696,7 +709,9 @@ export default function TeamPageScreen({
                               >
                                 {allTeamsTied
                                   ? 'T1'
-                                  : rank}
+                                  : isTied
+                                    ? `T${rank}`
+                                    : rank}
                               </span>
                             </div>
 
