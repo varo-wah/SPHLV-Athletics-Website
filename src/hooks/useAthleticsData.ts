@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   MASTER_SCHEDULE_URLS,
   RESULT_SHEET_SOURCES,
-  SHEET_URLS,
   hasValidSheetUrl,
 } from "../config/sheets";
 import {
@@ -12,13 +11,13 @@ import {
   parseCsvMatrix,
 } from "../services/googleSheets";
 import { ScheduleEvent } from "../data/scheduleTypes";
+import { OFFICIAL_STANDINGS } from "../data/officialStandings";
 import seasonOneMasterScheduleCsv from "../data/master-schedule-season-1.csv?raw";
 import { parseMasterScheduleSeason } from "../services/masterScheduleParser";
 import {
   Standing,
   SheetMatch,
   parseResultRows,
-  parseStandings,
 } from "../services/parsers";
 import { loadResultFeeds } from "../services/resultFeeds";
 
@@ -57,6 +56,7 @@ export interface AthleticsData {
   basketballStandings: Standing[];
 
   volleyballMatches: SheetMatch[];
+  volleyballStandings: Standing[];
   masterScheduleEvents: ScheduleEvent[];
 }
 
@@ -71,7 +71,7 @@ export interface AthleticsDataState {
 }
 
 const EMPTY_DATA: AthleticsData = {
-  standings: [],
+  standings: OFFICIAL_STANDINGS,
   matches: [],
 
   rawSoccerMatchRows: [],
@@ -97,27 +97,15 @@ const EMPTY_DATA: AthleticsData = {
   pages: [],
 
   soccerMatches: [],
-  soccerStandings: [],
+  soccerStandings: OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === "Soccer"),
 
   basketballMatches: [],
-  basketballStandings: [],
+  basketballStandings: OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === "Basketball"),
 
   volleyballMatches: [],
+  volleyballStandings: OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === "Volleyball"),
   masterScheduleEvents: [],
 };
-
-async function fetchRowsSafely(url: string, label: string) {
-  if (!hasValidSheetUrl(url)) {
-    return { rows: [] as CsvRow[], failed: false };
-  }
-
-  try {
-    return { rows: await fetchCsvRows(url), failed: false };
-  } catch (error) {
-    console.warn(`${label} sync failed:`, error);
-    return { rows: [] as CsvRow[], failed: true };
-  }
-}
 
 export function useAthleticsData(): AthleticsDataState {
   const [data, setData] = useState<AthleticsData>(EMPTY_DATA);
@@ -174,13 +162,9 @@ export function useAthleticsData(): AthleticsDataState {
 
       const [
         loadedResultFeeds,
-        soccerStandingFeed,
-        basketballStandingFeed,
         masterScheduleResults,
       ] = await Promise.all([
         loadResultFeeds(configuredResultSources, fetchCsvRows, resultRowsCache.current),
-        fetchRowsSafely(SHEET_URLS.soccerStandings, "Soccer standings"),
-        fetchRowsSafely(SHEET_URLS.basketballStandings, "Basketball standings"),
         masterScheduleResultsPromise,
       ]);
 
@@ -198,12 +182,10 @@ export function useAthleticsData(): AthleticsDataState {
       const basketballMatches = matches.filter((match) => match.sportKey === "Basketball");
       const volleyballMatches = matches.filter((match) => match.sportKey === "Volleyball");
 
-      const soccerStandings = parseStandings(soccerStandingFeed.rows, "Soccer");
-      const basketballStandings = parseStandings(
-        basketballStandingFeed.rows,
-        "Basketball"
-      );
-      const standings = [...soccerStandings, ...basketballStandings];
+      const standings = OFFICIAL_STANDINGS;
+      const soccerStandings = standings.filter((standing) => standing.sportKey === "Soccer");
+      const basketballStandings = standings.filter((standing) => standing.sportKey === "Basketball");
+      const volleyballStandings = standings.filter((standing) => standing.sportKey === "Volleyball");
 
       const masterScheduleEvents = masterScheduleResults.flatMap((result) => (
         parseMasterScheduleSeason(result.season, result.matrix)
@@ -249,10 +231,6 @@ export function useAthleticsData(): AthleticsDataState {
       if (masterScheduleErrorCount > 0) {
         warningParts.push(`${masterScheduleErrorCount} master schedule season${masterScheduleErrorCount === 1 ? "" : "s"} failed to sync.`);
       }
-      if (soccerStandingFeed.failed || basketballStandingFeed.failed) {
-        warningParts.push("One or more standings feeds failed to sync.");
-      }
-
       const rawSoccerMatchRows = loadedResultFeeds
         .filter((feed) => feed.source.sportKey === "Soccer")
         .flatMap((feed) => feed.rows);
@@ -265,9 +243,9 @@ export function useAthleticsData(): AthleticsDataState {
         matches,
 
         rawSoccerMatchRows,
-        rawSoccerStandingRows: soccerStandingFeed.rows,
+        rawSoccerStandingRows: [],
         rawBasketballMatchRows,
-        rawBasketballStandingRows: basketballStandingFeed.rows,
+        rawBasketballStandingRows: [],
         rawMasterScheduleRows: masterScheduleResults.map((result) => result.matrix),
         masterScheduleErrorCount,
         resultSourceStates,
@@ -284,6 +262,7 @@ export function useAthleticsData(): AthleticsDataState {
         basketballStandings,
 
         volleyballMatches,
+        volleyballStandings,
         masterScheduleEvents,
       };
 
@@ -294,6 +273,7 @@ export function useAthleticsData(): AthleticsDataState {
         invalidResultRowCount,
         soccerStandings: soccerStandings.length,
         basketballStandings: basketballStandings.length,
+        volleyballStandings: volleyballStandings.length,
         masterScheduleEvents: masterScheduleEvents.length,
         masterScheduleErrorCount,
         updatedAt: new Date().toLocaleTimeString(),
