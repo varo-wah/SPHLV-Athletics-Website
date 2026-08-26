@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
+import StandingsLadderMatrix from '../components/StandingsLadderMatrix';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import {
   teamAccentProperties,
@@ -16,6 +17,7 @@ import {
 } from '../data/jaacSchools';
 import type { JaacSchool } from '../data/jaacSchools';
 import type { ScheduleEvent } from '../data/scheduleTypes';
+import { officialStandingsLadderFor } from '../data/officialStandings';
 import { rosterForTeam } from '../data/teamRosters';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 import smpBoysBasketballBanner from '../assets/smpboysbasketball.png';
@@ -254,6 +256,7 @@ export default function TeamPageScreen({
       standing.level === division &&
       standing.genderGroup === gender,
   );
+  const officialLadder = officialStandingsLadderFor(sport, division, gender);
 
   const isPreseasonStandings = false;
   const differenceLabel =
@@ -618,6 +621,16 @@ export default function TeamPageScreen({
                   </div>
                 )}
               </div>
+
+              <StandingsLadderMatrix
+                title={`${gender} Standings / Ladder`}
+                rows={standingsForDisplay.map((standing) => ({
+                  team: standing.team,
+                  points: standing.points ?? 0,
+                }))}
+                matchups={officialLadder?.matchups ?? []}
+                accent={teamTheme.accent}
+              />
 
               <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
                 <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/10 bg-[#F1F2F3] px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-maroon sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]">

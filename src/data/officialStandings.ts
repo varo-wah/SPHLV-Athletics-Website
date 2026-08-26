@@ -1,5 +1,5 @@
 import type { Standing } from '../services/parsers';
-import type { GenderTab, SheetSport, SportTab } from '../types';
+import type { DivisionTab, GenderTab, SheetSport, SportTab } from '../types';
 
 export const OFFICIAL_STANDINGS_SOURCES = {
   Volleyball: 'https://docs.google.com/spreadsheets/d/1CmZD971NC11x7IcoRFCpQTWmvnVMWWGwPUT_J5tHhHQ/edit',
@@ -16,6 +16,20 @@ type StandingRecord = {
   forValue?: number;
   againstValue?: number;
 };
+
+export interface OfficialStandingMatchup {
+  teamA: string;
+  teamB: string;
+  scoreA: number;
+  scoreB: number;
+}
+
+export interface OfficialStandingsLadder {
+  sportKey: SportTab;
+  level: DivisionTab;
+  genderGroup: GenderTab;
+  matchups: readonly OfficialStandingMatchup[];
+}
 
 const seniorSchools = ['ACG', 'ACS', 'AIS', 'BSJ', 'GJS', 'JIS', 'SPH-KV', 'SPH-LV', 'STL'];
 const juniorSchools = ['ACG', 'ACS', 'AIS', 'BSJ', 'GJS', 'SPH-KV', 'SPH-LV', 'STL'];
@@ -83,3 +97,56 @@ export const OFFICIAL_STANDINGS: Standing[] = [
     { team: 'ACS', losses: 1, points: 0, forValue: 18, againstValue: 47 },
   ]),
 ];
+
+export const OFFICIAL_STANDINGS_LADDERS: readonly OfficialStandingsLadder[] = [
+  { sportKey: 'Soccer', level: 'SMA', genderGroup: 'Boys', matchups: [] },
+  { sportKey: 'Soccer', level: 'SMA', genderGroup: 'Girls', matchups: [] },
+  {
+    sportKey: 'Volleyball',
+    level: 'SMA',
+    genderGroup: 'Boys',
+    matchups: [
+      { teamA: 'SPH-LV', teamB: 'SPH-KV', scoreA: 2, scoreB: 0 },
+    ],
+  },
+  {
+    sportKey: 'Volleyball',
+    level: 'SMA',
+    genderGroup: 'Girls',
+    matchups: [
+      { teamA: 'ACG', teamB: 'ACS', scoreA: 2, scoreB: 0 },
+      { teamA: 'ACG', teamB: 'BSJ', scoreA: 2, scoreB: 0 },
+      { teamA: 'BSJ', teamB: 'ACS', scoreA: 2, scoreB: 0 },
+      { teamA: 'SPH-LV', teamB: 'SPH-KV', scoreA: 2, scoreB: 0 },
+    ],
+  },
+  {
+    sportKey: 'Basketball',
+    level: 'SMP',
+    genderGroup: 'Boys',
+    matchups: [
+      { teamA: 'ACS', teamB: 'SPH-LV', scoreA: 45, scoreB: 37 },
+    ],
+  },
+  {
+    sportKey: 'Basketball',
+    level: 'SMP',
+    genderGroup: 'Girls',
+    matchups: [
+      { teamA: 'SPH-LV', teamB: 'ACS', scoreA: 47, scoreB: 18 },
+    ],
+  },
+];
+
+export function officialStandingsLadderFor(
+  sportKey: SportTab,
+  level: DivisionTab,
+  genderGroup: GenderTab,
+) {
+  return OFFICIAL_STANDINGS_LADDERS.find(
+    (ladder) =>
+      ladder.sportKey === sportKey &&
+      ladder.level === level &&
+      ladder.genderGroup === genderGroup,
+  );
+}

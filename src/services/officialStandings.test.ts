@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { OFFICIAL_STANDINGS } from '../data/officialStandings';
+import {
+  OFFICIAL_STANDINGS,
+  OFFICIAL_STANDINGS_LADDERS,
+  officialStandingsLadderFor,
+} from '../data/officialStandings';
 
 function row(sportKey: string, genderGroup: string, team: string) {
   return OFFICIAL_STANDINGS.find((standing) => (
@@ -43,6 +47,28 @@ test('matches the supplied girls volleyball ladder points', () => {
       { team: 'BSJ', points: 2 },
       { team: 'SPH-KV', points: 0 },
       { team: 'SPH-LV', points: 2 },
+    ],
+  );
+});
+
+test('provides a head-to-head ladder for all six production team pages', () => {
+  assert.equal(OFFICIAL_STANDINGS_LADDERS.length, 6);
+  assert.ok(officialStandingsLadderFor('Soccer', 'SMA', 'Boys'));
+  assert.ok(officialStandingsLadderFor('Soccer', 'SMA', 'Girls'));
+  assert.ok(officialStandingsLadderFor('Volleyball', 'SMA', 'Boys'));
+  assert.ok(officialStandingsLadderFor('Volleyball', 'SMA', 'Girls'));
+  assert.ok(officialStandingsLadderFor('Basketball', 'SMP', 'Boys'));
+  assert.ok(officialStandingsLadderFor('Basketball', 'SMP', 'Girls'));
+});
+
+test('matches the supplied girls volleyball head-to-head score boxes', () => {
+  assert.deepEqual(
+    officialStandingsLadderFor('Volleyball', 'SMA', 'Girls')?.matchups,
+    [
+      { teamA: 'ACG', teamB: 'ACS', scoreA: 2, scoreB: 0 },
+      { teamA: 'ACG', teamB: 'BSJ', scoreA: 2, scoreB: 0 },
+      { teamA: 'BSJ', teamB: 'ACS', scoreA: 2, scoreB: 0 },
+      { teamA: 'SPH-LV', teamB: 'SPH-KV', scoreA: 2, scoreB: 0 },
     ],
   );
 });
