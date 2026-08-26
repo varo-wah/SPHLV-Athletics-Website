@@ -35,7 +35,7 @@
 
 :root {
   color-scheme: light;
-  --app-shell-max-width: 60rem;
+  --app-shell-max-width: 32rem;
   --card: #ffffff;
   --subcard: #f8fafc;
   --subcard-hover: #f1f5f9;
