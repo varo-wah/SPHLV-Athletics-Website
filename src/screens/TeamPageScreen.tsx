@@ -794,7 +794,7 @@ export default function TeamPageScreen({
                     {standingsRows.length} Teams ·{' '}
                     {isPreseasonStandings
                       ? 'All tied 0–0'
-                      : 'Verified Aug 26'}
+                      : 'Verified Aug 27'}
                   </span>
                 </div>
               </div>
