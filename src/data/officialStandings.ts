@@ -69,7 +69,7 @@ function table(
       forValue,
       againstValue,
       difference: forValue - againstValue,
-      notes: 'Official 26/27 standings snapshot · verified 2026-08-26',
+      notes: 'Official 26/27 standings snapshot · verified 2026-08-27',
     };
   });
 }
