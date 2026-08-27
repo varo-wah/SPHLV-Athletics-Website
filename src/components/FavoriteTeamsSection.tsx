@@ -121,7 +121,7 @@ export default function FavoriteTeamsSection({
           ))}
         </div>
       ) : summaries.length > 0 ? (
-        <motion.div layout className="mt-4 grid gap-3 lg:grid-cols-2">
+        <motion.div layout className="mt-4 grid gap-3">
           <AnimatePresence initial={false}>
             {summaries.map(({ favorite, nextEvent, recentMatch }) => (
               <motion.button
