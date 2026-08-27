@@ -89,14 +89,14 @@ export default function FavoriteTeamsSection({
   return (
     <section
       aria-labelledby="my-teams-heading"
-      className="mb-5 overflow-hidden rounded-3xl border border-border/10 bg-subcard/70 p-4 shadow-[0_4px_12px_rgba(0,0,0,0.09)] backdrop-blur-xl sm:p-5"
+      className="mb-5 overflow-hidden rounded-3xl border border-border/10 bg-subcard/70 p-4 shadow-[0_4px_12px_rgba(0,0,0,0.09)] backdrop-blur-xl"
     >
       <div className="flex items-center justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#F4C95D]/25 bg-[#F4C95D]/10 text-[#F4C95D]">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#F4C95D]/25 bg-[#F4C95D]/10 text-[#F4C95D]">
             <Star size={18} fill="currentColor" />
           </span>
-          <h1 id="my-teams-heading" className="text-xl font-black uppercase tracking-[0.08em] text-foreground">
+          <h1 id="my-teams-heading" className="text-lg font-black uppercase tracking-[0.07em] text-foreground">
             My Teams
           </h1>
         </div>
@@ -108,7 +108,7 @@ export default function FavoriteTeamsSection({
           title="Browse all teams"
           whileTap={{ scale: PRESS_SCALE }}
           transition={PRESS_TRANSITION}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:bg-brand-maroon/10 hover:text-foreground"
+          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:bg-brand-maroon/10 hover:text-foreground"
         >
           <Plus size={18} />
         </motion.button>
@@ -121,7 +121,7 @@ export default function FavoriteTeamsSection({
           ))}
         </div>
       ) : summaries.length > 0 ? (
-        <motion.div layout className="mt-4 grid gap-3">
+        <motion.div layout className="mt-4 grid gap-3 min-[480px]:grid-cols-2">
           <AnimatePresence initial={false}>
             {summaries.map(({ favorite, nextEvent, recentMatch }) => (
               <motion.button
@@ -134,22 +134,22 @@ export default function FavoriteTeamsSection({
                 exit={{ opacity: 0, scale: reduceMotion ? 1 : 0.98 }}
                 whileTap={{ scale: PRESS_SCALE }}
                 transition={QUICK_TRANSITION}
-                className="group min-w-0 rounded-3xl border border-border/10 bg-foreground/[0.025] p-3 text-left transition-all hover:-translate-y-0.5 hover:border-brand-maroon/30 hover:bg-brand-maroon/[0.06]"
+                className="group min-w-0 rounded-3xl border border-border/10 bg-foreground/[0.025] p-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-brand-maroon/30 hover:bg-brand-maroon/[0.06]"
               >
                 <div className="flex items-center justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2.5">
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.035] text-lg" aria-hidden="true">
                       {sportEmojis[favorite.sport]}
                     </span>
-                    <h2 className="truncate text-sm font-black uppercase tracking-[0.06em] text-foreground">
+                    <h2 className="line-clamp-2 text-[11px] font-black uppercase leading-tight tracking-[0.05em] text-foreground">
                       {getTeamFavoriteLabel(favorite)}
                     </h2>
                   </div>
                   <ChevronRight size={16} className="shrink-0 text-foreground/30 transition-transform group-hover:translate-x-0.5" />
                 </div>
 
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  <div className="min-w-0 rounded-2xl border border-brand-navy/8 bg-white/55 p-2.5 dark:border-white/8 dark:bg-white/[0.025]">
+                <div className="mt-2.5 grid gap-2">
+                  <div className="min-w-0 rounded-2xl border border-brand-navy/8 bg-white/55 p-2 dark:border-white/8 dark:bg-white/[0.025]">
                     <div className="flex items-center justify-between gap-2">
                       <span className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-[0.14em] text-brand-navy/55 dark:text-brand-sky/75">
                         <CalendarDays size={12} /> Next game
@@ -168,7 +168,7 @@ export default function FavoriteTeamsSection({
                     </div>
                   </div>
 
-                  <div className="min-w-0 rounded-2xl border border-brand-red/8 bg-white/55 p-2.5 dark:border-white/8 dark:bg-white/[0.025]">
+                  <div className="min-w-0 rounded-2xl border border-brand-red/8 bg-white/55 p-2 dark:border-white/8 dark:bg-white/[0.025]">
                     <div className="flex items-center justify-between gap-2">
                       <span className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-[0.14em] text-brand-red/65 dark:text-red-300/75">
                         <Trophy size={12} /> Latest result
