@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
-import { ArrowLeft, ChevronRight, Newspaper } from 'lucide-react';
+import { ArrowLeft, Newspaper } from 'lucide-react';
 import { IS_PROTOTYPE } from '../config/launchSports';
 import { visibleNewsArticles } from '../data/news';
 import type { NewsArticle } from '../data/news';
+import NewsListRow from '../components/NewsListRow';
 
 function scrollToPageTop() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -72,6 +73,20 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
               {selectedArticle.excerpt}
             </p>
 
+            {selectedArticle.youtubeVideoId && (
+              <div className="aspect-video max-w-3xl overflow-hidden rounded-2xl border border-border/10 bg-black shadow-[0_3px_10px_rgba(0,0,0,0.10)]">
+                <iframe
+                  className="h-full w-full"
+                  src={`https://www.youtube-nocookie.com/embed/${selectedArticle.youtubeVideoId}`}
+                  title={`${selectedArticle.title} video`}
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  allowFullScreen
+                />
+              </div>
+            )}
+
             <div className="max-w-3xl space-y-4 text-sm font-medium leading-7 text-foreground/58 sm:text-base">
               {selectedArticle.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
@@ -131,52 +146,14 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
           </p>
         </section>
       ) : (
-        <div className="space-y-6">
+        <div className="space-y-2">
           {articles.map((post) => (
-            <article
+            <NewsListRow
               key={post.id}
-              className="group overflow-hidden rounded-2xl border border-border/5 bg-subcard transition-all hover:border-border/20"
-            >
-              <div className="relative h-48 overflow-hidden">
-                <div className="absolute inset-0 z-10 bg-overlay transition-colors group-hover:bg-transparent" />
-                <img
-                  src={post.image}
-                  alt={post.imageAlt}
-                  className="h-full w-full object-cover grayscale mix-blend-luminosity opacity-80 transition-all duration-700 group-hover:scale-105 group-hover:grayscale-0 group-hover:opacity-100"
-                />
-                <div className="absolute left-4 top-4 z-20 flex flex-wrap gap-2">
-                  <span className="rounded bg-[#5A1C2C] px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-white/90">
-                    {post.category}
-                  </span>
-                  {post.publicationChannel === 'prototype' && (
-                    <span className="rounded border border-amber-300/25 bg-black/65 px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-amber-200">
-                      Prototype sample
-                    </span>
-                  )}
-                </div>
-              </div>
-
-              <div className="relative p-5">
-                <p className="mb-2 text-[10px] font-bold uppercase tracking-widest text-foreground/40">
-                  {post.dateLabel}
-                </p>
-                <h3 className="mb-2 text-lg font-black uppercase leading-tight tracking-wide text-foreground transition-colors group-hover:text-foreground/70">
-                  {post.title}
-                </h3>
-                <p className="mb-4 text-sm font-medium leading-relaxed text-foreground/50">
-                  {post.excerpt}
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() => openArticle(post)}
-                  aria-label={`Read more: ${post.title}`}
-                  className="inline-flex items-center text-xs font-bold uppercase tracking-widest text-foreground/45 transition-colors hover:text-foreground focus-visible:rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#B5413F]"
-                >
-                  Read more <ChevronRight size={14} className="ml-1" />
-                </button>
-              </div>
-            </article>
+              article={post}
+              onOpen={openArticle}
+              showExcerpt
+            />
           ))}
         </div>
       )}

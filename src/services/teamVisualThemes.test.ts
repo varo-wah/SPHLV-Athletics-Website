@@ -8,18 +8,18 @@ import {
   teamVisualThemesForName,
 } from '../config/teamVisualThemes';
 
-test('defines the approved accent for every production team', () => {
+test('uses blue for boys and maroon-red for girls across production teams', () => {
   assert.deepEqual(
     Object.fromEntries(
       Object.entries(TEAM_VISUAL_THEMES).map(([code, theme]) => [code, theme.accent]),
     ),
     {
-      VBS: '#C1121F',
-      VGS: '#603090',
+      VBS: '#1050A0',
+      VGS: '#C1121F',
       VBV: '#1050A0',
-      VGV: '#C02060',
-      SMPBB: '#C2410C',
-      SMPGB: '#008080',
+      VGV: '#C1121F',
+      SMPBB: '#1050A0',
+      SMPGB: '#C1121F',
     },
   );
 });

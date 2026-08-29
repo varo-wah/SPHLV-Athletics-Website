@@ -19,32 +19,26 @@ interface TeamsScreenProps {
 const sportVisuals: Record<SportTab, {
   accent: string;
   iconStyle: string;
-  buttonStyle: string;
 }> = {
   Soccer: {
-    accent: 'border-[#D85A57]/30 bg-card',
-    iconStyle: 'border-[#D85A57]/30 bg-[#B5413F]/18 text-[#F06865]',
-    buttonStyle: 'hover:border-[#D85A57]/40 hover:bg-[#B5413F]/14',
+    accent: 'border-border/10 bg-card',
+    iconStyle: 'border-border/10 bg-foreground/[0.025] text-foreground',
   },
   Volleyball: {
-    accent: 'border-[#669BBC]/25 bg-card',
-    iconStyle: 'border-[#669BBC]/30 bg-[#669BBC]/14 text-[#8FC1DD]',
-    buttonStyle: 'hover:border-[#669BBC]/40 hover:bg-[#669BBC]/12',
+    accent: 'border-border/10 bg-card',
+    iconStyle: 'border-border/10 bg-foreground/[0.025] text-foreground',
   },
   Basketball: {
-    accent: 'border-[#F4C95D]/25 bg-card',
-    iconStyle: 'border-[#F4C95D]/30 bg-[#F4C95D]/12 text-[#F4C95D]',
-    buttonStyle: 'hover:border-[#F4C95D]/35 hover:bg-[#F4C95D]/10',
+    accent: 'border-border/10 bg-card',
+    iconStyle: 'border-border/10 bg-foreground/[0.025] text-foreground',
   },
   Badminton: {
-    accent: 'border-emerald-400/25 bg-card',
-    iconStyle: 'border-emerald-400/30 bg-emerald-400/12 text-emerald-300',
-    buttonStyle: 'hover:border-emerald-400/35 hover:bg-emerald-400/10',
+    accent: 'border-border/10 bg-card',
+    iconStyle: 'border-border/10 bg-foreground/[0.025] text-foreground',
   },
   TrackAndField: {
-    accent: 'border-violet-400/25 bg-card',
-    iconStyle: 'border-violet-400/30 bg-violet-400/12 text-violet-300',
-    buttonStyle: 'hover:border-violet-400/35 hover:bg-violet-400/10',
+    accent: 'border-border/10 bg-card',
+    iconStyle: 'border-border/10 bg-foreground/[0.025] text-foreground',
   },
 };
 
@@ -87,14 +81,14 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
               initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...QUICK_TRANSITION, delay: staggerDelay(groupIndex) }}
-              className={`relative overflow-hidden rounded-[1.35rem] border p-3.5 shadow-[0_4px_12px_rgba(0,0,0,0.10)] sm:p-4 ${group.accent}`}
+              className={`relative overflow-hidden rounded-[1.35rem] border p-3 shadow-[0_3px_9px_rgba(0,0,0,0.07)] ${group.accent}`}
             >
               <div className="pointer-events-none absolute -right-8 -top-12 h-32 w-32 rounded-full bg-white/[0.025] blur-2xl" />
 
-              <div className="relative mb-3 flex items-center justify-between gap-3">
-                <h2 className="flex min-w-0 items-center gap-3 text-base font-black uppercase tracking-[0.08em] text-foreground sm:text-lg">
-                  <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border shadow-[0_2px_7px_rgba(0,0,0,0.10)] ${group.iconStyle}`} aria-hidden="true">
-                    <span className="text-[22px] leading-none" aria-hidden="true">{group.ballGlyph}</span>
+              <div className="relative mb-2.5 flex items-center justify-between gap-3">
+                <h2 className="flex min-w-0 items-center gap-2.5 text-sm font-black uppercase tracking-[0.07em] text-foreground sm:text-base">
+                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${group.iconStyle}`} aria-hidden="true">
+                    <span className="text-lg leading-none" aria-hidden="true">{group.ballGlyph}</span>
                   </span>
                   {group.label}
                 </h2>
@@ -103,7 +97,7 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
                 </span>
               </div>
 
-              <div className="relative grid grid-cols-2 gap-2.5">
+              <div className="relative grid grid-cols-2 gap-2">
                 {group.teams.map((team) => {
                   const teamTheme = teamVisualThemeForCode(team.menuCode);
 
@@ -115,13 +109,13 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
                       style={teamAccentProperties(teamTheme)}
                       whileTap={{ scale: PRESS_SCALE }}
                       transition={PRESS_TRANSITION}
-                      className="team-accent-outline group flex min-h-[64px] items-center justify-between gap-2 rounded-2xl border px-3 py-2.5 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none sm:min-h-[70px] sm:px-4 [container-type:inline-size]"
+                      className="team-accent-outline group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none [container-type:inline-size]"
                     >
-                      <span className="team-accent-text text-[clamp(1.2rem,10cqi,2rem)] font-black uppercase leading-none tracking-[clamp(0.04em,0.8cqi,0.12em)]">
+                      <span className="team-accent-text text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em]">
                         {team.menuCode}
                       </span>
-                      <span className="team-accent-chip flex h-7 w-7 shrink-0 items-center justify-center rounded-full border transition-colors" aria-hidden="true">
-                        <ArrowUpRight size={13} />
+                      <span className="team-accent-chip flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors" aria-hidden="true">
+                        <ArrowUpRight size={12} />
                       </span>
                     </motion.button>
                   );

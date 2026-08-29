@@ -34,7 +34,7 @@ function compactGameDate(event: ScheduleEvent | null) {
     month: 'short',
     day: 'numeric',
   });
-  return `${date}${event.time ? ` · ${event.time}` : ''}`;
+  return date;
 }
 
 function compactResultDate(match: SheetMatch | null) {
