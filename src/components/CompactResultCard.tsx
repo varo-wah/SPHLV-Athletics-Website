@@ -48,7 +48,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
               <span className={`flex min-w-0 items-center gap-1.5 truncate text-[13px] font-black uppercase tracking-[0.04em] ${team.winner ? 'text-foreground' : 'text-foreground/58'}`}>
                 <span className="truncate">{team.name}</span>
               </span>
-              <span className={`justify-self-end font-mono text-base font-black tabular-nums ${team.winner ? 'text-foreground' : 'text-foreground/58'}`}>
+              <span className={`justify-self-end font-mono text-sm font-black tabular-nums ${team.winner ? 'text-foreground' : 'text-foreground/58'}`}>
                 {team.score ?? '—'}
               </span>
               <span className="flex w-3 justify-center" aria-hidden={!team.winner}>
@@ -60,7 +60,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
 
         <div className="flex flex-col items-center justify-center border-l border-[#D6D8DC] px-1.5 text-center dark:border-white/15">
           <span className={`text-[10px] font-black uppercase tracking-[0.1em] ${outcomeClasses}`}>{outcome}</span>
-          <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.08em] text-foreground/75 dark:text-white/65">
+          <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.08em] text-foreground dark:text-white/70">
             {formatDate(match.date)}
           </span>
           {hasDetails && (

@@ -325,7 +325,7 @@ button {
 
 .team-accent-outline {
   border-color: var(--team-accent-border);
-  background-color: var(--team-accent-soft);
+  background-color: rgba(100, 116, 139, 0.055);
   color: var(--team-accent);
 }
 
@@ -335,7 +335,7 @@ button {
 
 .team-accent-chip {
   border-color: var(--team-accent-border);
-  background-color: var(--team-accent-soft);
+  background-color: rgba(100, 116, 139, 0.055);
   color: var(--team-accent);
 }
 
@@ -400,6 +400,11 @@ button {
 .dark .team-accent-chip,
 .dark .team-accent-favorite {
   color: var(--team-accent-bright);
+}
+
+.dark .team-accent-outline,
+.dark .team-accent-chip {
+  background-color: rgba(255, 255, 255, 0.035);
 }
 
 .dark .team-accent-rail[data-combined='true']::before {

@@ -5,7 +5,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
-import StandingsLadderMatrix from '../components/StandingsLadderMatrix';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import {
   teamAccentProperties,
@@ -17,7 +16,6 @@ import {
 } from '../data/jaacSchools';
 import type { JaacSchool } from '../data/jaacSchools';
 import type { ScheduleEvent } from '../data/scheduleTypes';
-import { officialStandingsLadderFor } from '../data/officialStandings';
 import { rosterForTeam } from '../data/teamRosters';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 import smpBoysBasketballBanner from '../assets/smpboysbasketball.png';
@@ -256,8 +254,6 @@ export default function TeamPageScreen({
       standing.level === division &&
       standing.genderGroup === gender,
   );
-  const officialLadder = officialStandingsLadderFor(sport, division, gender);
-
   const isPreseasonStandings = false;
   const differenceLabel =
     sport === 'Soccer'
@@ -382,18 +378,6 @@ export default function TeamPageScreen({
         entry.diff === standingsRows[0].diff,
     );
 
-  const leader = standingsRows[0];
-
-  const lvStanding =
-    standingsRows.find((entry) => {
-      const teamName = entry.row.team.toLowerCase().replace(/[^a-z0-9]/g, '');
-
-      return (
-        teamName === 'lv' ||
-        teamName.includes('sphlv')
-      );
-    }) ?? leader;
-
   const EmptyPanel = ({
     title,
     body,
@@ -495,7 +479,7 @@ export default function TeamPageScreen({
                 onClick={() => selectSection(section.id)}
                 whileTap={{ scale: PRESS_SCALE }}
                 transition={PRESS_TRANSITION}
-                className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[10px] font-black uppercase tracking-[0.11em] transition-all duration-200 sm:px-6 ${
+                className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[9px] font-black uppercase tracking-[0.1em] transition-all duration-200 sm:px-6 ${
                   isActive
                     ? 'text-white'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
@@ -533,104 +517,14 @@ export default function TeamPageScreen({
         <div className="space-y-10">
           {activeSection === 'standings' && (
             <section className="space-y-4">
-              <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/90 p-4 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard/40 dark:shadow-[0_4px_12px_rgba(0,0,0,0.14)]">
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
-                      {isPreseasonStandings
-                        ? 'Preseason table'
-                        : 'Official table'}
-                    </p>
-
-                    <h2 className="mt-2 text-xl font-black uppercase leading-tight tracking-[0.12em] text-foreground sm:text-3xl">
-                      Regular Season
-                      <br />
-                      Standings
-                    </h2>
-                  </div>
-
-                </div>
-
-                {lvStanding && (
-                  <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
-                    <div className="rounded-2xl border border-brand-maroon/12 border-l-4 border-l-brand-red bg-[#F4F4F3] p-4 dark:border-[#B5413F]/20 dark:border-l-[#B5413F] dark:bg-white/[0.045]">
-                      <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#B5413F]">
-                        {allTeamsTied
-                          ? 'Table status'
-                          : 'LV status'}
-                      </p>
-
-                      <div className="mt-2 flex items-center gap-3">
-                        <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-[#B5413F] text-sm font-black text-white shadow-[0_2px_6px_rgba(15,23,42,0.16)]">
-                          {allTeamsTied
-                            ? 'T1'
-                            : lvStanding.isTied
-                              ? `T${lvStanding.rank}`
-                              : `#${lvStanding.rank}`}
-                        </div>
-
-                        <div className="min-w-0">
-                          <p className="truncate text-lg font-black uppercase tracking-tight text-foreground sm:text-xl">
-                            {allTeamsTied
-                              ? 'All teams tied'
-                              : lvStanding.rank === 1
-                                ? 'LV leads the table'
-                                : `LV is ${lvStanding.isTied ? 'T' : '#'}${lvStanding.rank}`}
-                          </p>
-
-                          <p className="mt-1 text-[10px] font-black uppercase tracking-[0.18em] text-foreground/40">
-                            {lvStanding.wins}W ·{' '}
-                            {lvStanding.draws}D ·{' '}
-                            {lvStanding.losses}L
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-2 sm:min-w-[230px]">
-                      <div className="rounded-2xl border border-brand-maroon/10 bg-[#F4F4F3] p-3 text-center dark:border-border/10 dark:bg-foreground/[0.035]">
-                        <p className="text-2xl font-black text-[#B5413F]">
-                          {lvStanding.pts}
-                        </p>
-                        <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">
-                          Pts
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl border border-brand-maroon/10 bg-[#F4F4F3] p-3 text-center dark:border-border/10 dark:bg-foreground/[0.035]">
-                        <p className="text-2xl font-black text-foreground">
-                          {lvStanding.gp}
-                        </p>
-                        <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">
-                          GP
-                        </p>
-                      </div>
-
-                      <div className="rounded-2xl border border-brand-maroon/10 bg-[#F4F4F3] p-3 text-center dark:border-border/10 dark:bg-foreground/[0.035]">
-                        <p className="text-2xl font-black text-foreground">
-                          {lvStanding.diff !== null &&
-                          lvStanding.diff > 0
-                            ? `+${lvStanding.diff}`
-                            : lvStanding.diff ?? '-'}
-                        </p>
-                        <p className="text-[9px] font-black uppercase tracking-[0.16em] text-foreground/35">
-                          {differenceLabel}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
+              <div className="rounded-2xl border border-border/10 bg-subcard/50 px-4 py-3 shadow-sm">
+                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#B5413F]">
+                  Official table
+                </p>
+                <h2 className="mt-1 text-lg font-black uppercase tracking-[0.07em] text-foreground">
+                  Regular Season Standings
+                </h2>
               </div>
-
-              <StandingsLadderMatrix
-                title={`${gender} Standings / Ladder`}
-                rows={standingsForDisplay.map((standing) => ({
-                  team: standing.team,
-                  points: standing.points ?? 0,
-                }))}
-                matchups={officialLadder?.matchups ?? []}
-                accent={teamTheme.accent}
-              />
 
               <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
                 <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/10 bg-[#F1F2F3] px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-maroon sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]">
@@ -809,7 +703,7 @@ export default function TeamPageScreen({
                     Schedule & results
                   </p>
 
-                  <h2 className="mt-1 text-[clamp(1.05rem,4.4vw,1.6rem)] font-black uppercase tracking-[0.06em] text-foreground">
+                  <h2 className="mt-1 text-lg font-black uppercase tracking-[0.06em] text-foreground">
                     Season Games
                   </h2>
                 </div>

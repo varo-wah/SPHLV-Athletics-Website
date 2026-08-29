@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import CompactResultCard from '../components/CompactResultCard';
+import NewsListRow from '../components/NewsListRow';
 import { IS_PROTOTYPE, isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
 import { TEAM_CATALOG } from '../config/teamCatalog';
 import { useAuth } from '../contexts/AuthContext';
@@ -217,7 +218,7 @@ export default function HomeScreen({
     );
   }, [athleticsDataState.data.masterScheduleEvents, athleticsDataState.data.matches, visibleFavoriteTeams]);
 
-  const latestNewsArticle = useMemo(
+  const recentNewsArticles = useMemo(
     () =>
       [...visibleNewsArticles(IS_PROTOTYPE)]
         .sort((a, b) => {
@@ -230,9 +231,11 @@ export default function HomeScreen({
             : Number.MIN_SAFE_INTEGER;
 
           return bTime - aTime;
-        })[0] || null,
+        })
+        .slice(0, 3),
     [],
   );
+  const latestNewsArticle = recentNewsArticles[0] || null;
 
   const latestResults = useMemo(
     () =>
@@ -903,61 +906,33 @@ export default function HomeScreen({
             </h2>
           </div>
 
-          <motion.button
-            type="button"
-            onClick={() =>
-              onNavigateToNews(latestNewsArticle?.id)
-            }
-            className="group flex w-full items-center gap-4 overflow-hidden rounded-3xl border border-brand-red/12 bg-subcard p-3 text-left shadow-[0_3px_10px_rgba(120,0,0,0.06)] transition-all hover:-translate-y-0.5 hover:border-brand-red/25 sm:p-4"
-            aria-label={
-              latestNewsArticle
-                ? `View news: ${latestNewsArticle.title}`
-                : 'View Eagles Athletics news'
-            }
-            whileTap={{ scale: PRESS_SCALE }}
-            transition={PRESS_TRANSITION}
-          >
-            {latestNewsArticle ? (
-              <img
-                src={latestNewsArticle.image}
-                alt=""
-                className="h-20 w-20 shrink-0 rounded-2xl object-cover sm:h-24 sm:w-28"
-              />
-            ) : (
-              <span className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-brand-red/10 text-brand-red">
-                <Newspaper size={20} />
-              </span>
-            )}
-
-            <span className="min-w-0 flex-1">
-              <span className="flex flex-wrap items-center gap-2 text-[8px] font-black uppercase tracking-[0.15em] text-foreground/42">
-                <span className="text-brand-red">
-                  {latestNewsArticle?.category ||
-                    'Eagles Athletics'}
-                </span>
-
-                {latestNewsArticle?.dateLabel && (
-                  <span>
-                    {latestNewsArticle.dateLabel}
-                  </span>
-                )}
-              </span>
-
-              <span className="mt-1.5 line-clamp-2 block text-sm font-black uppercase leading-tight tracking-[0.05em] text-foreground sm:text-base">
-                {latestNewsArticle?.title ||
-                  'News publishing soon'}
-              </span>
-
-              <span className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-[#5A1C2C] px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.14em] text-white">
-                View news here
-
-                <ChevronRight
-                  size={13}
-                  className="transition-transform group-hover:translate-x-0.5"
+          {recentNewsArticles.length > 0 ? (
+            <div className="space-y-2">
+              {recentNewsArticles.map((article) => (
+                <NewsListRow
+                  key={article.id}
+                  article={article}
+                  onOpen={(selected) => onNavigateToNews(selected.id)}
                 />
+              ))}
+            </div>
+          ) : (
+            <motion.button
+              type="button"
+              onClick={() => onNavigateToNews()}
+              className="group flex w-full items-center gap-3 rounded-2xl border border-border/10 bg-subcard p-3 text-left shadow-[0_2px_7px_rgba(0,0,0,0.055)]"
+              whileTap={{ scale: PRESS_SCALE }}
+              transition={PRESS_TRANSITION}
+            >
+              <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-foreground/[0.035] text-brand-red">
+                <Newspaper size={18} />
               </span>
-            </span>
-          </motion.button>
+              <span className="text-xs font-black uppercase tracking-[0.06em] text-foreground">
+                News publishing soon
+                <ChevronRight size={13} className="ml-1 inline-block align-[-0.15em] text-brand-red" />
+              </span>
+            </motion.button>
+          )}
         </section>
       )}
     </div>

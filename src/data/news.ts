@@ -24,6 +24,7 @@ export interface NewsArticle {
   imageAlt: string;
   body: readonly [string, ...string[]];
   sections?: readonly NewsArticleSection[];
+  youtubeVideoId?: string;
   publicationChannel: NewsPublicationChannel;
 }
 
