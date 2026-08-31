@@ -11,13 +11,6 @@ import {
   isVisibleScheduleEvent,
 } from '../config/launchSports';
 import {
-  ALL_TEAMS_VISUAL_THEME,
-  FALLBACK_TEAM_VISUAL_THEME,
-  teamAccentProperties,
-  teamVisualThemeForCode,
-  teamVisualThemesForName,
-} from '../config/teamVisualThemes';
-import {
   consolidateSharedScheduleEvents,
   eventMatchesTeamFilter,
   isGameScheduleEvent,
@@ -185,17 +178,6 @@ function sportEmojiForEvent(event: ScheduleEvent) {
   }
 }
 
-function teamAccentForEvent(event: ScheduleEvent) {
-  const themes = teamVisualThemesForName(event.team);
-  const primary = themes[0] ?? FALLBACK_TEAM_VISUAL_THEME;
-  const secondary = themes[1] ?? primary;
-
-  return {
-    combined: themes.length > 1,
-    style: teamAccentProperties(primary, secondary),
-  };
-}
-
 function isMeaningfulScheduleEvent(event: ScheduleEvent) {
   return /[A-Za-z0-9]/.test(event.eventText);
 }
@@ -204,6 +186,25 @@ function displayEventTime(event: ScheduleEvent) {
   if (!event.time) return null;
   if (/\bgym\s+\d+\s*(?:am|pm)\b/i.test(event.eventText)) return null;
   return event.time;
+}
+
+function teamFilterClasses(filter: ScheduleTeamFilter, active: boolean) {
+  if (filter === 'All') {
+    return active
+      ? 'border-[#669BBC] bg-[#669BBC] text-white shadow-[0_8px_20px_rgba(102,155,188,0.24)]'
+      : 'border-[#8FC1DD] bg-[#EAF4FA] text-[#235B7A] hover:border-[#669BBC] dark:bg-[#669BBC]/15 dark:text-[#9CCCE5]';
+  }
+
+  const boysTeam = filter === 'VBS' || filter === 'VBV' || filter === 'SMPBB';
+  if (boysTeam) {
+    return active
+      ? 'border-[#669BBC] bg-[#DCEEF8] text-[#174D6B] ring-2 ring-[#669BBC]/25 shadow-[0_8px_20px_rgba(102,155,188,0.18)] dark:bg-[#669BBC]/25 dark:text-[#BFDFF0]'
+      : 'border-[#9BC8DF] bg-[#EDF7FC] text-[#286886] hover:border-[#669BBC] dark:bg-[#669BBC]/12 dark:text-[#9CCCE5]';
+  }
+
+  return active
+    ? 'border-[#DF8791] bg-[#FBE1E5] text-[#8F2633] ring-2 ring-[#DF8791]/25 shadow-[0_8px_20px_rgba(193,18,31,0.12)] dark:bg-[#C14D5B]/25 dark:text-[#F5BBC1]'
+    : 'border-[#EBA8AF] bg-[#FFF0F2] text-[#A73643] hover:border-[#DF8791] dark:bg-[#C14D5B]/12 dark:text-[#F0A8B0]';
 }
 
 function archivedWeekNames(events: ScheduleEvent[], todayIso: string) {
@@ -448,9 +449,6 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
         <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 no-scrollbar" aria-label="Filter schedule by team">
           {TEAM_FILTER_OPTIONS.map((option) => {
             const active = teamFilter === option.id;
-            const optionTheme = option.id === ALL
-              ? ALL_TEAMS_VISUAL_THEME
-              : teamVisualThemeForCode(option.id);
             return (
               <motion.button
                 key={option.id}
@@ -458,22 +456,12 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 title={option.title}
                 aria-pressed={active}
                 onClick={() => setTeamFilter(option.id)}
-                style={teamAccentProperties(optionTheme)}
                 whileTap={{ scale: PRESS_SCALE }}
                 transition={PRESS_TRANSITION}
                 className={`relative flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.07em] transition-colors ${
-                  active
-                    ? 'text-white'
-                    : 'team-accent-outline hover:-translate-y-0.5'
+                  teamFilterClasses(option.id, active)
                 }`}
               >
-                {active && (
-                  <motion.span
-                    layoutId="schedule-team-filter-pill"
-                    className="team-accent-active absolute inset-0 rounded-full"
-                    transition={STANDARD_SPRING}
-                  />
-                )}
                 <span aria-hidden="true" className="relative z-10 text-sm leading-none">{option.emoji}</span>
                 <span className="relative z-10">{option.label}</span>
               </motion.button>
@@ -608,14 +596,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
 
                 {month === 'undated' ? (
                   <div className="divide-y divide-border/10">
-                    {monthEvents.map((event) => {
-                      const teamAccent = teamAccentForEvent(event);
-                      return (
+                    {monthEvents.map((event) => (
                         <article
                           key={event.id}
-                          style={teamAccent.style}
-                          data-combined={teamAccent.combined}
-                          className="team-accent-rail grid gap-3 px-4 py-4 pl-5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+                          className="grid gap-3 px-4 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
                         >
                           <div className="min-w-0">
                             <div className="mb-2 flex flex-wrap items-center gap-2">
@@ -624,9 +608,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                 {event.eventType}
                               </span>
                               <span
-                                style={teamAccent.style}
-                                data-combined={teamAccent.combined}
-                                className="team-accent-outline team-accent-split-marker rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em]"
+                                className="rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/60"
                               >
                                 <span aria-hidden="true" className="mr-1.5">{sportEmojiForEvent(event)}</span>
                                 {event.team}
@@ -640,8 +622,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                             {event.raw}
                           </p>
                         </article>
-                      );
-                    })}
+                    ))}
                   </div>
                 ) : (
                   <div className="p-3 sm:p-4">
@@ -694,21 +675,16 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                 </div>
 
                                 <div className="mt-2 space-y-1">
-                                  {day.events.slice(0, 2).map((event) => {
-                                    const teamAccent = teamAccentForEvent(event);
-                                    return (
+                                  {day.events.slice(0, 2).map((event) => (
                                       <div
                                         key={event.id}
-                                        style={teamAccent.style}
-                                        data-combined={teamAccent.combined}
-                                        className="team-accent-rail team-accent-text truncate rounded-lg bg-muted px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] dark:bg-white/[0.055]"
+                                        className="truncate rounded-lg bg-muted px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-foreground/60 dark:bg-white/[0.055]"
                                         title={`${event.team}: ${event.eventText}`}
                                       >
                                         <span aria-hidden="true" className="mr-1">{sportEmojiForEvent(event)}</span>
                                         {shortTeamName(event.team)}
                                       </div>
-                                    );
-                                  })}
+                                  ))}
                                   {day.events.length > 2 && (
                                     <p className="text-[9px] font-black uppercase tracking-[0.08em] text-foreground/40">
                                       +{day.events.length - 2} more
@@ -897,14 +873,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
               </div>
 
               <div className="max-h-[62vh] space-y-3 overflow-y-auto p-4">
-                {selectedCalendarDay.events.map((event, index) => {
-                  const teamAccent = teamAccentForEvent(event);
-                  return (
+                {selectedCalendarDay.events.map((event, index) => (
                     <motion.article
                       key={event.id}
-                      style={teamAccent.style}
-                      data-combined={teamAccent.combined}
-                      className="team-accent-rail rounded-2xl border border-border/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F1F1F1_100%)] p-4 pl-5 shadow-[0_3px_10px_rgba(0,0,0,0.06)] dark:bg-none dark:bg-foreground/[0.025]"
+                      className="rounded-2xl border border-border/10 bg-[linear-gradient(145deg,#FFFFFF_0%,#F1F1F1_100%)] p-4 shadow-[0_3px_10px_rgba(0,0,0,0.06)] dark:bg-none dark:bg-foreground/[0.025]"
                       initial={{ opacity: 0, y: 18, scale: 0.98 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                     transition={{ ...SOFT_SPRING, delay: staggerDelay(index) }}
@@ -915,9 +887,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                         {event.eventType}
                       </span>
                       <span
-                        style={teamAccent.style}
-                        data-combined={teamAccent.combined}
-                        className="team-accent-outline team-accent-split-marker rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em]"
+                        className="rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/60"
                       >
                         <span aria-hidden="true" className="mr-1.5">{sportEmojiForEvent(event)}</span>
                         {event.team}
@@ -951,8 +921,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       </p>
                     )}
                     </motion.article>
-                  );
-                })}
+                  ))}
               </div>
             </motion.div>
           </motion.div>

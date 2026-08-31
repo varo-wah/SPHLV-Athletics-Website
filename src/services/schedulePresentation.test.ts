@@ -109,9 +109,9 @@ test('splits a multi-game volleyball cell into distinct timed fixture lines', ()
   ]);
 
   assert.deepEqual(scheduleFixtureLines(combined), [
-    { label: 'VBV/VGV vs STL', time: '08:00' },
+    { label: 'VBV/VGV at STL', time: '08:00' },
     { label: 'JIS vs STL', time: '09:00' },
-    { label: 'VBV/VGV vs JIS', time: '10:00' },
+    { label: 'VBV/VGV at JIS', time: '10:00' },
   ]);
 });
 
@@ -123,7 +123,7 @@ test('formats a shared away fixture in the requested one-line team format', () =
     raw: 'LV @ KV 08:00',
     time: '08:00',
   })), [
-    { label: 'VBV/VGV vs KV', time: '08:00' },
+    { label: 'VBV/VGV at KV', time: '08:00' },
   ]);
 });
 
@@ -135,7 +135,7 @@ test('expands slash-separated opponents without dropping either team', () => {
     raw: 'JIS/STL @ LV',
     time: '08:00',
   })), [
-    { label: 'VBV/VGV vs JIS', time: '08:00' },
-    { label: 'VBV/VGV vs STL', time: '08:00' },
+    { label: 'JIS at VBV/VGV', time: '08:00' },
+    { label: 'STL at VBV/VGV', time: '08:00' },
   ]);
 });

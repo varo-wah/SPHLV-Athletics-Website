@@ -1,5 +1,5 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users, Trophy, ChevronRight, Clock, MapPin } from 'lucide-react';
+import { Users, Trophy, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -7,23 +7,14 @@ import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import {
-  teamAccentProperties,
-  teamVisualThemeForCode,
-} from '../config/teamVisualThemes';
-import {
   jaacOpponentSchoolsForEvent,
   jaacSchoolByCode,
+  jaacSchoolForName,
 } from '../data/jaacSchools';
 import type { JaacSchool } from '../data/jaacSchools';
 import type { ScheduleEvent } from '../data/scheduleTypes';
 import { rosterForTeam } from '../data/teamRosters';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
-import smpBoysBasketballBanner from '../assets/smpboysbasketball.png';
-import smpGirlsBasketballBanner from '../assets/smpgirlsbasketball.png';
-import varsityBoysSoccerBanner from '../assets/varsityboyssoccer.png';
-import varsityBoysVolleyballBanner from '../assets/varsityboysvolleyball.png';
-import varsityGirlsSoccerBanner from '../assets/varsitygirlssoccer.png';
-import varsityGirlsVolleyballBanner from '../assets/varsitygirlsvolleyball.png';
 import {
   PAGE_TRANSITION,
   PRESS_SCALE,
@@ -180,68 +171,7 @@ export default function TeamPageScreen({
 
   const teamName =
     team?.displayName ?? `${division} ${gender} ${sportInfo.label}`;
-  const teamTheme = teamVisualThemeForCode(team?.menuCode);
-
   const roster = team ? rosterForTeam(team.id) : undefined;
-
-  const divisionLabel =
-    division === 'SMA'
-      ? 'SMA / Varsity'
-      : 'SMP / Middle School';
-
-  const getBannerForTeam = () => {
-    if (
-      sport === 'Basketball' &&
-      division === 'SMP' &&
-      gender === 'Boys'
-    ) {
-      return smpBoysBasketballBanner;
-    }
-
-    if (
-      sport === 'Basketball' &&
-      division === 'SMP' &&
-      gender === 'Girls'
-    ) {
-      return smpGirlsBasketballBanner;
-    }
-
-    if (
-      sport === 'Soccer' &&
-      division === 'SMA' &&
-      gender === 'Boys'
-    ) {
-      return varsityBoysSoccerBanner;
-    }
-
-    if (
-      sport === 'Volleyball' &&
-      division === 'SMA' &&
-      gender === 'Boys'
-    ) {
-      return varsityBoysVolleyballBanner;
-    }
-
-    if (
-      sport === 'Soccer' &&
-      division === 'SMA' &&
-      gender === 'Girls'
-    ) {
-      return varsityGirlsSoccerBanner;
-    }
-
-    if (
-      sport === 'Volleyball' &&
-      division === 'SMA' &&
-      gender === 'Girls'
-    ) {
-      return varsityGirlsVolleyballBanner;
-    }
-
-    return '';
-  };
-
-  const headerBanner = getBannerForTeam();
 
   useEffect(() => {
     setActiveSection('games');
@@ -416,30 +346,10 @@ export default function TeamPageScreen({
 
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
-      <header
-        className="mx-4 sm:mx-6 lg:mx-8"
-        style={teamAccentProperties(teamTheme)}
-      >
-        {headerBanner && (
-          <div
-            className="relative overflow-hidden rounded-2xl border border-border/10 bg-black shadow-[0_4px_12px_rgba(0,0,0,0.14)]"
-            style={{ aspectRatio: '3.368 / 1' }}
-          >
-            <img
-              src={headerBanner}
-              alt={teamName}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-          </div>
-        )}
-
-        <div className="mt-3 flex items-start justify-between gap-4 px-1">
+      <header className="mx-4 rounded-2xl border border-border/10 bg-subcard/60 px-4 py-4 shadow-sm sm:mx-6 sm:px-5 lg:mx-8">
+        <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="team-accent-text text-[9px] font-black uppercase tracking-[0.18em] sm:text-[10px] sm:tracking-[0.2em]">
-              {divisionLabel}
-            </p>
-
-            <h1 className="mt-1 text-[clamp(1.15rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.035em] text-foreground sm:text-3xl">
+            <h1 className="text-[clamp(1.15rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.035em] text-foreground sm:text-3xl">
               {teamName}
             </h1>
           </div>
@@ -448,7 +358,6 @@ export default function TeamPageScreen({
             sport={sport}
             division={division}
             gender={gender}
-            theme={teamTheme}
             className="shrink-0"
           />
         </div>
@@ -462,7 +371,6 @@ export default function TeamPageScreen({
           role="tablist"
           aria-label="Team page sections"
           className="pointer-events-auto mx-auto flex w-fit max-w-full gap-1 overflow-x-auto rounded-[1.4rem] border border-border/10 bg-canvas/80 p-1.5 shadow-[0_4px_12px_rgba(0,0,0,0.11)] backdrop-blur-2xl saturate-150 [scrollbar-width:none] supports-[backdrop-filter]:bg-canvas/65 [&::-webkit-scrollbar]:hidden"
-          style={teamAccentProperties(teamTheme)}
         >
           {teamPageSections.map((section) => {
             const isActive =
@@ -488,7 +396,7 @@ export default function TeamPageScreen({
                 {isActive && (
                   <motion.span
                     layoutId="team-section-active-pill"
-                    className="team-accent-active absolute inset-0 rounded-[1.05rem]"
+                    className="absolute inset-0 rounded-[1.05rem] border border-brand-maroon bg-brand-maroon shadow-[0_8px_20px_rgba(120,0,0,0.24)]"
                     transition={STANDARD_SPRING}
                   />
                 )}
@@ -527,7 +435,7 @@ export default function TeamPageScreen({
               </div>
 
               <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
-                <div className="grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/10 bg-[#F1F2F3] px-4 py-4 text-[10px] font-black uppercase tracking-[0.18em] text-brand-maroon sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]">
+                <div className="grid grid-cols-[40px_minmax(0,1fr)_32px_46px] gap-1 border-b border-border/10 bg-[#F1F2F3] px-3 py-4 text-[9px] font-black uppercase tracking-[0.12em] text-brand-maroon sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_44px_58px] sm:gap-2 sm:px-4 sm:text-[10px] sm:tracking-[0.18em] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]">
                   <div>Rank</div>
                   <div>Club</div>
                   <div className="text-center">
@@ -561,7 +469,7 @@ export default function TeamPageScreen({
                       <p>
                         No standings matches for{' '}
                         {sportInfo.label} ·{' '}
-                        {divisionLabel} · {gender}.
+                        {division} · {gender}.
                       </p>
                     </div>
                   ) : (
@@ -588,6 +496,7 @@ export default function TeamPageScreen({
                             'sphlv',
                           );
 
+                        const school = jaacSchoolForName(row.team);
                         const isHighlightedLeader =
                           isLvTeamRow ||
                           (idx === 0 &&
@@ -596,7 +505,7 @@ export default function TeamPageScreen({
                         return (
                           <div
                             key={`${row.id || idx}-${idx}`}
-                            className={`relative grid grid-cols-[48px_minmax(0,1fr)_64px_70px] gap-2 border-b border-border/5 px-4 py-4 transition-colors hover:bg-foreground/[0.025] sm:grid-cols-[56px_minmax(0,1fr)_52px_52px_52px_52px_70px] ${
+                            className={`relative grid grid-cols-[40px_minmax(0,1fr)_32px_46px] gap-1 border-b border-border/5 px-3 py-4 transition-colors hover:bg-foreground/[0.025] sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_44px_58px] sm:gap-2 sm:px-4 ${
                               isHighlightedLeader
                                 ? 'border border-[#B5413F]/40 bg-[#FFF4F4] shadow-[inset_0_0_0_1px_rgba(181,65,63,0.12)] dark:border-[#B5413F]/40 dark:bg-[#B5413F]/[0.055]'
                                 : ''
@@ -608,7 +517,7 @@ export default function TeamPageScreen({
 
                             <div className="flex items-center">
                               <span
-                                className={`flex h-9 w-9 items-center justify-center rounded-2xl border text-xs font-black ${
+                                className={`flex h-8 w-8 items-center justify-center rounded-xl border text-[10px] font-black sm:h-9 sm:w-9 sm:rounded-2xl sm:text-xs ${
                                   isHighlightedLeader
                                     ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-[0_10px_24px_rgba(181,65,63,0.26)]'
                                     : 'border-border/10 bg-foreground/[0.035] text-foreground/55'
@@ -622,13 +531,21 @@ export default function TeamPageScreen({
                               </span>
                             </div>
 
-                            <div className="flex min-w-0 items-center gap-3">
-                              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] text-[10px] font-black uppercase tracking-wider text-foreground/55">
-                                {teamInitials(row.team)}
-                              </div>
+                            <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                              {school ? (
+                                <img
+                                  src={school.logo}
+                                  alt={`${school.name} logo`}
+                                  className="h-9 w-9 shrink-0 rounded-xl border border-border/10 bg-white object-cover shadow-sm sm:h-10 sm:w-10 sm:rounded-2xl"
+                                />
+                              ) : (
+                                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.035] text-[9px] font-black uppercase tracking-wider text-foreground/55 sm:h-10 sm:w-10 sm:rounded-2xl sm:text-[10px]">
+                                  {teamInitials(row.team)}
+                                </div>
+                              )}
 
                               <div className="min-w-0">
-                                <p className="truncate text-base font-black uppercase tracking-wide text-foreground">
+                                <p className="text-sm font-black uppercase leading-tight tracking-[0.02em] text-foreground sm:text-base sm:tracking-wide">
                                   {row.team}
                                 </p>
 
@@ -639,7 +556,7 @@ export default function TeamPageScreen({
                               </div>
                             </div>
 
-                            <div className="flex items-center justify-center font-mono text-sm text-foreground/80">
+                            <div className="flex items-center justify-center font-mono text-xs text-foreground/80 sm:text-sm">
                               {gp}
                             </div>
 
@@ -657,7 +574,7 @@ export default function TeamPageScreen({
 
                             <div className="flex items-center justify-end">
                               <div className="text-right">
-                                <p className="font-mono text-xl font-black text-[#B5413F]">
+                                <p className="font-mono text-lg font-black text-[#B5413F] sm:text-xl">
                                   {pts}
                                 </p>
 
@@ -807,7 +724,13 @@ export default function TeamPageScreen({
                           (event) => (
                             <article
                               key={event.id}
-                              className="rounded-2xl border border-border/10 bg-subcard p-4 shadow-sm"
+                              className={`rounded-2xl border p-4 shadow-sm ${
+                                event.eventType === 'Home Game'
+                                  ? 'border-brand-maroon/25 bg-brand-maroon/[0.055]'
+                                  : event.eventType === 'Away Game'
+                                    ? 'border-slate-400/25 bg-slate-500/[0.065] dark:bg-slate-400/[0.06]'
+                                    : 'border-border/10 bg-subcard'
+                              }`}
                             >
                               <div className="flex flex-wrap items-center justify-between gap-3">
                                 <p className="text-[10px] font-black uppercase tracking-[0.16em] text-[#B5413F]">
@@ -816,7 +739,13 @@ export default function TeamPageScreen({
                                   )}
                                 </p>
 
-                                <span className="rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/48">
+                                <span className={`rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-white ${
+                                  event.eventType === 'Home Game'
+                                    ? 'border-brand-maroon bg-brand-maroon'
+                                    : event.eventType === 'Away Game'
+                                      ? 'border-slate-500 bg-slate-500'
+                                      : 'border-border/10 bg-foreground/55'
+                                }`}>
                                   {
                                     event.eventType
                                   }
@@ -829,25 +758,6 @@ export default function TeamPageScreen({
 
                               <JaacMatchup event={event} />
 
-                              <div className="mt-3 flex flex-wrap gap-3 text-[10px] font-bold uppercase tracking-[0.12em] text-foreground/42">
-                                {event.time && (
-                                  <span className="inline-flex items-center gap-1.5">
-                                    <Clock
-                                      size={12}
-                                    />
-                                    {event.time}
-                                  </span>
-                                )}
-
-                                {event.location && (
-                                  <span className="inline-flex items-center gap-1.5">
-                                    <MapPin
-                                      size={12}
-                                    />
-                                    {event.location}
-                                  </span>
-                                )}
-                              </div>
                             </article>
                           ),
                         )}

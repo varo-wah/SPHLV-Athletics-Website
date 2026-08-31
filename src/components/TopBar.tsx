@@ -12,7 +12,7 @@ interface TopBarProps {
 }
 
 const HOME_LINKS = [
-  { label: 'Instagram', href: 'https://www.instagram.com/sphlippovillage/', icon: Instagram },
+  { label: 'Instagram', href: 'https://www.instagram.com/sphlv.athletics?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==', icon: Instagram },
   { label: 'YouTube', href: 'https://www.youtube.com/@SPH-LV-Athletics', icon: Youtube },
   { label: 'Game photos', href: 'https://photos.app.goo.gl/g4MqVW3TJPQ3WNSF6', icon: Images },
   {

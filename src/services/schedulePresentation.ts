@@ -92,11 +92,11 @@ function fixtureLabels(left: string, right: string, teamCode: string) {
   const rightTeams = right.split('/').map((value) => value.trim()).filter(Boolean);
 
   if (rightTeams.some(isLvTeam)) {
-    return leftTeams.map((opponent) => `${teamCode} vs ${opponent}`);
+    return leftTeams.map((opponent) => `${opponent} at ${teamCode}`);
   }
 
   if (leftTeams.some(isLvTeam)) {
-    return rightTeams.map((opponent) => `${teamCode} vs ${opponent}`);
+    return rightTeams.map((opponent) => `${teamCode} at ${opponent}`);
   }
 
   return [`${left.trim()} vs ${right.trim()}`];

@@ -5,10 +5,6 @@ import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { IS_PROTOTYPE } from '../config/launchSports';
 import { SPORT_CATALOG, TEAM_CATALOG } from '../config/teamCatalog';
-import {
-  teamAccentProperties,
-  teamVisualThemeForCode,
-} from '../config/teamVisualThemes';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, staggerDelay } from '../config/motion';
 
 interface TeamsScreenProps {
@@ -98,28 +94,23 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
               </div>
 
               <div className="relative grid grid-cols-2 gap-2">
-                {group.teams.map((team) => {
-                  const teamTheme = teamVisualThemeForCode(team.menuCode);
-
-                  return (
+                {group.teams.map((team) => (
                     <motion.button
                       key={team.id}
                       type="button"
                       onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
-                      style={teamAccentProperties(teamTheme)}
                       whileTap={{ scale: PRESS_SCALE }}
                       transition={PRESS_TRANSITION}
-                      className="team-accent-outline group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none [container-type:inline-size]"
+                      className="group flex min-h-12 items-center justify-between gap-2 rounded-xl border border-border/10 bg-foreground/[0.025] px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:border-brand-maroon/25 hover:bg-brand-maroon/[0.04] focus-visible:outline-none [container-type:inline-size]"
                     >
-                      <span className="team-accent-text text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em]">
+                      <span className="text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em] text-foreground">
                         {team.menuCode}
                       </span>
-                      <span className="team-accent-chip flex h-6 w-6 shrink-0 items-center justify-center rounded-full border transition-colors" aria-hidden="true">
+                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/10 bg-subcard text-foreground/45 transition-colors group-hover:border-brand-maroon/25 group-hover:text-brand-maroon" aria-hidden="true">
                         <ArrowUpRight size={12} />
                       </span>
                     </motion.button>
-                  );
-                })}
+                  ))}
               </div>
             </motion.article>
           );
