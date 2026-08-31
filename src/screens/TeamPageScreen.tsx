@@ -171,6 +171,11 @@ export default function TeamPageScreen({
 
   const teamName =
     team?.displayName ?? `${division} ${gender} ${sportInfo.label}`;
+  const sectionAccent = gender === 'Boys'
+    ? '#3F7898'
+    : gender === 'Girls'
+      ? '#8C1D2C'
+      : '#64748B';
   const roster = team ? rosterForTeam(team.id) : undefined;
 
   useEffect(() => {
@@ -387,7 +392,7 @@ export default function TeamPageScreen({
                 onClick={() => selectSection(section.id)}
                 whileTap={{ scale: PRESS_SCALE }}
                 transition={PRESS_TRANSITION}
-                className={`relative min-w-fit rounded-[1.05rem] border border-transparent px-4 py-2.5 text-[9px] font-black uppercase tracking-[0.1em] transition-all duration-200 sm:px-6 ${
+                className={`relative min-w-fit rounded-[0.95rem] border border-transparent px-3 py-2 text-[8px] font-black uppercase tracking-[0.1em] transition-all duration-200 sm:px-5 sm:text-[9px] ${
                   isActive
                     ? 'text-white'
                     : 'text-foreground/42 hover:bg-foreground/[0.045] hover:text-foreground/75'
@@ -396,7 +401,8 @@ export default function TeamPageScreen({
                 {isActive && (
                   <motion.span
                     layoutId="team-section-active-pill"
-                    className="absolute inset-0 rounded-[1.05rem] border border-brand-maroon bg-brand-maroon shadow-[0_8px_20px_rgba(120,0,0,0.24)]"
+                    className="absolute inset-0 rounded-[0.95rem] border"
+                    style={{ backgroundColor: sectionAccent, borderColor: sectionAccent }}
                     transition={STANDARD_SPRING}
                   />
                 )}
@@ -424,16 +430,7 @@ export default function TeamPageScreen({
           >
         <div className="space-y-10">
           {activeSection === 'standings' && (
-            <section className="space-y-4">
-              <div className="rounded-2xl border border-border/10 bg-subcard/50 px-4 py-3 shadow-sm">
-                <p className="text-[9px] font-black uppercase tracking-[0.2em] text-[#B5413F]">
-                  Official table
-                </p>
-                <h2 className="mt-1 text-lg font-black uppercase tracking-[0.07em] text-foreground">
-                  Regular Season Standings
-                </h2>
-              </div>
-
+            <section>
               <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
                 <div className="grid grid-cols-[40px_minmax(0,1fr)_32px_46px] gap-1 border-b border-border/10 bg-[#F1F2F3] px-3 py-4 text-[9px] font-black uppercase tracking-[0.12em] text-brand-maroon sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_44px_58px] sm:gap-2 sm:px-4 sm:text-[10px] sm:tracking-[0.18em] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]">
                   <div>Rank</div>
@@ -485,22 +482,10 @@ export default function TeamPageScreen({
                         rank,
                         diff,
                         isTied,
-                      }) => {
-                        const normalizedTeamName = row.team
-                          .toLowerCase()
-                          .replace(/[^a-z0-9]/g, '');
-
-                        const isLvTeamRow =
-                          normalizedTeamName === 'lv' ||
-                          normalizedTeamName.includes(
-                            'sphlv',
-                          );
-
+                      }, displayIndex) => {
                         const school = jaacSchoolForName(row.team);
                         const isHighlightedLeader =
-                          isLvTeamRow ||
-                          (idx === 0 &&
-                            !allTeamsTied);
+                          displayIndex === 0 && !allTeamsTied;
 
                         return (
                           <div
@@ -519,7 +504,7 @@ export default function TeamPageScreen({
                               <span
                                 className={`flex h-8 w-8 items-center justify-center rounded-xl border text-[10px] font-black sm:h-9 sm:w-9 sm:rounded-2xl sm:text-xs ${
                                   isHighlightedLeader
-                                    ? 'border-[#B5413F]/30 bg-[#B5413F] text-white shadow-[0_10px_24px_rgba(181,65,63,0.26)]'
+                                    ? 'border-[#B5413F]/30 bg-[#B5413F] text-white'
                                     : 'border-border/10 bg-foreground/[0.035] text-foreground/55'
                                 }`}
                               >
@@ -663,7 +648,7 @@ export default function TeamPageScreen({
                       {isActive && (
                         <motion.span
                           layoutId="team-games-view-pill"
-                          className="absolute inset-0 rounded-xl border border-brand-maroon bg-brand-maroon shadow-[0_8px_20px_rgba(120,0,0,0.24)]"
+                          className="absolute inset-0 rounded-xl border border-[#3F7898] bg-[#3F7898]"
                           transition={STANDARD_SPRING}
                         />
                       )}

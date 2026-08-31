@@ -1,5 +1,5 @@
 import { CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import CompactResultCard from '../components/CompactResultCard';
@@ -185,13 +185,6 @@ export default function HomeScreen({
 }: HomeScreenProps) {
   const [gameFeedView, setGameFeedView] =
     useState<'upcoming' | 'results'>('results');
-  const [heroSlide, setHeroSlide] = useState(0);
-  const [heroPaused, setHeroPaused] = useState(false);
-  const [documentVisible, setDocumentVisible] = useState(
-    () => document.visibilityState === 'visible',
-  );
-  const [heroWidth, setHeroWidth] = useState(0);
-  const heroRef = useRef<HTMLDivElement>(null);
   const reduceMotion = useReducedMotion();
 
   const { user } = useAuth();
@@ -301,127 +294,14 @@ export default function HomeScreen({
 
   const hasFavoriteTeams = Boolean(user && favoriteTeamSummaries.length > 0);
 
-  useEffect(() => {
-    const element = heroRef.current;
-    if (!element) return undefined;
-
-    const updateWidth = () => setHeroWidth(element.getBoundingClientRect().width);
-    updateWidth();
-
-    const observer = new ResizeObserver(updateWidth);
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    const handleVisibilityChange = () => {
-      setDocumentVisible(document.visibilityState === 'visible');
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
-  }, []);
-
-  useEffect(() => {
-    if (
-      !latestNewsArticle ||
-      reduceMotion ||
-      heroPaused ||
-      !documentVisible
-    ) {
-      return undefined;
-    }
-
-    const interval = window.setInterval(() => {
-      setHeroSlide((current) => (current + 1) % 2);
-    }, 5500);
-
-    return () => window.clearInterval(interval);
-  }, [documentVisible, heroPaused, latestNewsArticle, reduceMotion]);
-
   return (
     <div className="animate-in fade-in duration-500 mt-4 space-y-6 px-4 pb-8">
-      <div
-        ref={heroRef}
-        className="hero-image-card touch-pan-y"
-        aria-roledescription="carousel"
-        aria-label="Featured athletics updates"
-        onMouseEnter={() => setHeroPaused(true)}
-        onMouseLeave={() => setHeroPaused(false)}
-        onPointerDown={() => setHeroPaused(true)}
-        onPointerUp={() => setHeroPaused(false)}
-        onPointerCancel={() => setHeroPaused(false)}
-        onFocusCapture={() => setHeroPaused(true)}
-        onBlurCapture={(event) => {
-          if (!event.currentTarget.contains(event.relatedTarget)) setHeroPaused(false);
-        }}
-      >
-        <motion.div
-          className="flex h-full"
-          style={{ width: '200%' }}
-          animate={{ x: heroSlide * -heroWidth }}
-          transition={reduceMotion ? { duration: 0.12 } : STANDARD_SPRING}
-          drag={reduceMotion || !latestNewsArticle ? false : 'x'}
-          dragConstraints={{ left: 0, right: 0 }}
-          dragElastic={0.08}
-          onDragStart={() => setHeroPaused(true)}
-          onDragEnd={(_, info) => {
-            const shouldAdvance = info.offset.x < -40 || info.velocity.x < -350;
-            const shouldReturn = info.offset.x > 40 || info.velocity.x > 350;
-
-            if (shouldAdvance) setHeroSlide(1);
-            if (shouldReturn) setHeroSlide(0);
-            setHeroPaused(false);
-          }}
-        >
-          <div className="h-full w-1/2 shrink-0">
-            <img
-              src={eagleAppHomeBanner}
-              alt="Eagle App — SPH-LV Athletics"
-              className="hero-banner-img"
-            />
-          </div>
-
-          {latestNewsArticle && (
-            <motion.button
-              type="button"
-              onClick={() => onNavigateToNews(latestNewsArticle.id)}
-              className="relative h-full w-1/2 shrink-0 overflow-hidden text-left"
-              aria-label={`Read latest news: ${latestNewsArticle.title}`}
-              whileTap={{ scale: PRESS_SCALE }}
-              transition={PRESS_TRANSITION}
-            >
-              <img src={latestNewsArticle.image} alt="" className="hero-banner-img scale-105 object-cover" />
-              <span className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/52 to-black/16" />
-              <span className="absolute inset-y-0 left-0 flex max-w-[78%] flex-col justify-center px-5 text-white">
-                <span className="text-[8px] font-black uppercase tracking-[0.2em] text-brand-sky">Latest news</span>
-                <span className="mt-1 line-clamp-2 text-sm font-black uppercase leading-tight tracking-[0.02em]">{latestNewsArticle.title}</span>
-                <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.12em] text-white/70">Read story ›</span>
-              </span>
-            </motion.button>
-          )}
-        </motion.div>
-
-        {latestNewsArticle && (
-          <div className="absolute bottom-2 right-3 flex gap-1" role="group" aria-label="Choose featured slide">
-            {[0, 1].map((slide) => (
-              <button
-                key={slide}
-                type="button"
-                onClick={() => setHeroSlide(slide)}
-                aria-label={`Show featured slide ${slide + 1}`}
-                aria-pressed={heroSlide === slide}
-                className="flex h-5 min-w-5 items-center justify-center rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
-              >
-                <motion.span
-                  className={`h-1 rounded-full ${heroSlide === slide ? 'bg-white' : 'bg-white/45'}`}
-                  animate={{ width: heroSlide === slide ? 16 : 4 }}
-                  transition={QUICK_TRANSITION}
-                />
-              </button>
-            ))}
-          </div>
-        )}
+      <div className="hero-image-card" aria-label="Eagle App banner">
+        <img
+          src={eagleAppHomeBanner}
+          alt="Eagle App — SPH-LV Athletics"
+          className="hero-banner-img"
+        />
       </div>
 
       <section

@@ -543,13 +543,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             onClick={() => setShowArchivedWeeks((current) => !current)}
             whileTap={{ scale: PRESS_SCALE }}
             transition={PRESS_TRANSITION}
-            className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-[8px] font-black uppercase tracking-[0.12em] transition-colors ${
+            className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[7px] font-black uppercase tracking-[0.1em] transition-colors ${
               showArchivedWeeks
                 ? 'border-[#9CA3AF]/35 bg-[#9CA3AF]/12 text-[#6B7280]'
                 : 'border-[#9CA3AF]/25 bg-[#9CA3AF]/8 text-[#6B7280] hover:border-[#6B7280]/35 hover:text-[#4B5563]'
             }`}
           >
-            <span aria-hidden="true" className="text-xs leading-none">🗃️</span>
+            <span aria-hidden="true" className="text-[10px] leading-none">🗃️</span>
             {showArchivedWeeks ? 'Hide' : 'Show'} {archivedWeeks.size} archived week{archivedWeeks.size === 1 ? '' : 's'}
           </motion.button>
         )}
