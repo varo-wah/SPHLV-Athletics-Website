@@ -1,4 +1,9 @@
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
+import dansonWijayaPlayerOfWeek from '../assets/news/danson-wijaya-player-of-week.jpg';
+import jasonSuhendraPlayerOfWeek from '../assets/news/jason-suhendra-player-of-week.jpg';
+import nicolyneAliannaPlayerOfWeek from '../assets/news/nicolyne-alianna-player-of-week.jpg';
+import shernyLimPlayerOfWeek from '../assets/news/sherny-lim-player-of-week.jpg';
+import troyMihardjaBiantoroPlayerOfWeek from '../assets/news/troy-mihardja-biantoro-player-of-week.jpg';
 
 export type NewsPublicationChannel = 'published' | 'prototype';
 
@@ -13,6 +18,11 @@ export interface NewsArticleSection {
   highlights?: readonly NewsArticleHighlight[];
 }
 
+export interface NewsArticleImage {
+  src: string;
+  alt: string;
+}
+
 export interface NewsArticle {
   id: string;
   title: string;
@@ -24,6 +34,7 @@ export interface NewsArticle {
   imageAlt: string;
   body: readonly [string, ...string[]];
   sections?: readonly NewsArticleSection[];
+  posterImages?: readonly NewsArticleImage[];
   youtubeVideoId?: string;
   publicationChannel: NewsPublicationChannel;
 }
@@ -36,8 +47,8 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     dateLabel: 'AUGUST 26, 2026',
     category: 'PLAYER OF THE WEEK',
     excerpt: 'Nicolyne Alianna delivered timely points and strong blocks, while Jason Suhendra closed out KV with seven consecutive aces.',
-    image: eagleAppHomeBanner,
-    imageAlt: 'SPH Lippo Village Athletics Eagle banner',
+    image: nicolyneAliannaPlayerOfWeek,
+    imageAlt: 'Nicolyne Alianna Varsity Volleyball Player of the Week poster',
     body: [
       'SPH Lippo Village Athletics recognizes Grade 12 student Nicolyne Alianna and Jason Suhendra as this week’s Varsity Volleyball Players of the Week.',
     ],
@@ -56,6 +67,16 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
         ],
       },
     ],
+    posterImages: [
+      {
+        src: nicolyneAliannaPlayerOfWeek,
+        alt: 'Nicolyne Alianna Varsity Volleyball Player of the Week poster',
+      },
+      {
+        src: jasonSuhendraPlayerOfWeek,
+        alt: 'Jason Suhendra Varsity Volleyball Player of the Week poster',
+      },
+    ],
     publicationChannel: 'published',
   },
   {
@@ -65,12 +86,18 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     dateLabel: 'AUGUST 26, 2026',
     category: 'PLAYER OF THE WEEK',
     excerpt: 'Grade 9 student Dansen Wijaya sparked a second-half rally against ACS with scoring, rebounding, playmaking, and active defense.',
-    image: eagleAppHomeBanner,
-    imageAlt: 'SPH Lippo Village Athletics Eagle banner',
+    image: dansonWijayaPlayerOfWeek,
+    imageAlt: 'Danson Wijaya SMP Basketball Player of the Week poster',
     body: [
       'Grade 9 student Dansen Wijaya earned SMP Basketball Player of the Week after an all-around performance against ACS.',
       'With SPH Lippo Village trailing by 15 points, Dansen stepped up on both ends of the floor. His active defense and quick transition play helped cut the deficit to six points late in the fourth quarter. He led the team in scoring on 45% shooting, while also leading the squad in rebounds and assists and adding a steal.',
       'Dansen’s effort and all-around play provided a major lift for the team during its second-half rally.',
+    ],
+    posterImages: [
+      {
+        src: dansonWijayaPlayerOfWeek,
+        alt: 'Danson Wijaya SMP Basketball Player of the Week poster',
+      },
     ],
     publicationChannel: 'published',
   },
@@ -81,8 +108,8 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     dateLabel: 'AUGUST 23, 2026',
     category: 'PLAYER OF THE WEEK',
     excerpt: 'Troy Mihardja Biantoro and Sherny Lim opened the SMA Soccer season with performances defined by hard work, attacking impact, and commitment to their teammates.',
-    image: eagleAppHomeBanner,
-    imageAlt: 'SPH Lippo Village Athletics Eagle banner',
+    image: troyMihardjaBiantoroPlayerOfWeek,
+    imageAlt: 'Troy Mihardja Biantoro Varsity Soccer Player of the Week poster',
     body: [
       'SPH Lippo Village Athletics recognizes Grade 11 student Troy Mihardja Biantoro and sophomore Sherny Lim as this week’s Soccer Players of the Week following the Eagles’ friendly matches against SMK 31.',
     ],
@@ -100,6 +127,16 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
           'Sherny started the season strongly, scoring four goals and recording two assists in her first game against SMK 31. Playing on the wing, she used her speed to stretch the defense. Her love of dance and natural agility helped her dribble past defenders with confident ball control as she drove toward goal.',
           'She also consistently looked to involve her teammates in the offense, including Grace, a strong new player for SPH Lippo Village.',
         ],
+      },
+    ],
+    posterImages: [
+      {
+        src: troyMihardjaBiantoroPlayerOfWeek,
+        alt: 'Troy Mihardja Biantoro Varsity Soccer Player of the Week poster',
+      },
+      {
+        src: shernyLimPlayerOfWeek,
+        alt: 'Sherny Lim Varsity Soccer Player of the Week poster',
       },
     ],
     publicationChannel: 'published',
