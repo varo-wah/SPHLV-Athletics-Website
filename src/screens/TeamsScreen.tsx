@@ -51,6 +51,18 @@ const sportGroups = SPORT_CATALOG
   }))
   .filter((group) => group.teams.length > 0);
 
+function teamButtonClasses(gender: GenderTab) {
+  if (gender === 'Boys') {
+    return 'border-[#9BC8DF] bg-[#EDF7FC] text-[#235B7A] hover:border-[#669BBC] hover:bg-[#DCEEF8] dark:border-[#669BBC]/35 dark:bg-[#669BBC]/15 dark:text-[#BFDFF0]';
+  }
+
+  if (gender === 'Girls') {
+    return 'border-[#EBA8AF] bg-[#FFF0F2] text-[#8F2633] hover:border-[#C1121F]/55 hover:bg-[#FBE1E5] dark:border-[#C1121F]/35 dark:bg-[#C1121F]/15 dark:text-[#F5BBC1]';
+  }
+
+  return 'border-border/10 bg-foreground/[0.025] text-foreground';
+}
+
 export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsScreenProps) {
   const reduceMotion = useReducedMotion();
 
@@ -95,22 +107,22 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
 
               <div className="relative grid grid-cols-2 gap-2">
                 {group.teams.map((team) => (
-                    <motion.button
-                      key={team.id}
-                      type="button"
-                      onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
-                      whileTap={{ scale: PRESS_SCALE }}
-                      transition={PRESS_TRANSITION}
-                      className="group flex min-h-12 items-center justify-between gap-2 rounded-xl border border-border/10 bg-foreground/[0.025] px-3 py-2 text-left transition-all hover:-translate-y-0.5 hover:border-brand-maroon/25 hover:bg-brand-maroon/[0.04] focus-visible:outline-none [container-type:inline-size]"
-                    >
-                      <span className="text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em] text-foreground">
-                        {team.menuCode}
-                      </span>
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-border/10 bg-subcard text-foreground/45 transition-colors group-hover:border-brand-maroon/25 group-hover:text-brand-maroon" aria-hidden="true">
-                        <ArrowUpRight size={12} />
-                      </span>
-                    </motion.button>
-                  ))}
+                  <motion.button
+                    key={team.id}
+                    type="button"
+                    onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
+                    whileTap={{ scale: PRESS_SCALE }}
+                    transition={PRESS_TRANSITION}
+                    className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/45 [container-type:inline-size] ${teamButtonClasses(team.gender)}`}
+                  >
+                    <span className="text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em]">
+                      {team.menuCode}
+                    </span>
+                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 bg-white/55 text-current transition-colors dark:bg-black/10" aria-hidden="true">
+                      <ArrowUpRight size={12} />
+                    </span>
+                  </motion.button>
+                ))}
               </div>
             </motion.article>
           );
