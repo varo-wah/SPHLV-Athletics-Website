@@ -2,6 +2,11 @@ import { ScheduleEvent } from '../data/scheduleTypes';
 
 export type ScheduleTeamFilter = 'All' | 'VBS' | 'VGS' | 'VBV' | 'VGV' | 'SMPBB' | 'SMPGB';
 
+export interface ScheduleFixtureLine {
+  label: string;
+  time: string | null;
+}
+
 const TEAM_FILTER_NAMES: Record<Exclude<ScheduleTeamFilter, 'All'>, string> = {
   VBS: 'Varsity Boys Soccer',
   VGS: 'Varsity Girls Soccer',
@@ -66,6 +71,60 @@ function combinedEventLabel(value: string) {
   }
 
   return value.replace(/\b(?:boys?|girls?)\b/gi, '').replace(/\s+/g, ' ').trim();
+}
+
+function teamCodeForSchedule(team: string) {
+  const value = normalized(team);
+  const combined = /boys\s*&\s*girls/.test(value);
+
+  if (value.includes('soccer')) return combined ? 'VBS/VGS' : value.includes('girls') ? 'VGS' : 'VBS';
+  if (value.includes('volleyball')) return combined ? 'VBV/VGV' : value.includes('girls') ? 'VGV' : 'VBV';
+  if (value.includes('basketball')) return combined ? 'SMPBB/SMPGB' : value.includes('girls') ? 'SMPGB' : 'SMPBB';
+  return team;
+}
+
+function isLvTeam(value: string) {
+  return /^(?:lv|sph[-\s]?lv)$/i.test(value.trim());
+}
+
+function fixtureLabels(left: string, right: string, teamCode: string) {
+  const leftTeams = left.split('/').map((value) => value.trim()).filter(Boolean);
+  const rightTeams = right.split('/').map((value) => value.trim()).filter(Boolean);
+
+  if (rightTeams.some(isLvTeam)) {
+    return leftTeams.map((opponent) => `${teamCode} vs ${opponent}`);
+  }
+
+  if (leftTeams.some(isLvTeam)) {
+    return rightTeams.map((opponent) => `${teamCode} vs ${opponent}`);
+  }
+
+  return [`${left.trim()} vs ${right.trim()}`];
+}
+
+function parseFixture(value: string, teamCode: string, time: string | null): ScheduleFixtureLine[] {
+  const match = value.trim().match(/^(.+?)\s*(?:@|\bv(?:s\.?)?\b|\bat\b)\s*(.+)$/i);
+  if (!match) return [];
+
+  return fixtureLabels(match[1], match[2], teamCode).map((label) => ({ label, time }));
+}
+
+export function scheduleFixtureLines(event: ScheduleEvent): ScheduleFixtureLine[] {
+  const rawTimes = [...event.raw.matchAll(/\b\d{1,2}:\d{2}(?:\s*(?:am|pm))?\b/gi)];
+  const source = rawTimes.length > 1 ? event.raw : event.eventText;
+  const teamCode = teamCodeForSchedule(event.team);
+  const timedSegments = [...source.matchAll(/(.+?)\s+(\d{1,2}:\d{2}(?:\s*(?:am|pm))?)(?=\s|$)/gi)];
+
+  if (timedSegments.length > 0) {
+    const fixtures = timedSegments.flatMap((match) => parseFixture(match[1], teamCode, match[2]));
+    if (fixtures.length > 0) return fixtures;
+  }
+
+  const withoutTime = source.replace(/\b\d{1,2}:\d{2}(?:\s*(?:am|pm))?\b/gi, '').trim();
+  const fixtures = parseFixture(withoutTime, teamCode, event.time ?? null);
+  if (fixtures.length > 0) return fixtures;
+
+  return [{ label: withoutTime || event.team, time: event.time ?? null }];
 }
 
 export function isGameScheduleEvent(event: ScheduleEvent) {

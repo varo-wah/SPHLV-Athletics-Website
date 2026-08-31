@@ -21,6 +21,7 @@ import {
   consolidateSharedScheduleEvents,
   eventMatchesTeamFilter,
   isGameScheduleEvent,
+  scheduleFixtureLines,
   type ScheduleTeamFilter,
 } from '../services/schedulePresentation';
 import {
@@ -203,24 +204,6 @@ function displayEventTime(event: ScheduleEvent) {
   if (!event.time) return null;
   if (/\bgym\s+\d+\s*(?:am|pm)\b/i.test(event.eventText)) return null;
   return event.time;
-}
-
-function displayEventOpponent(event: ScheduleEvent) {
-  const withoutMetadata = event.eventText
-    .replace(/\b\d{1,2}:\d{2}\b/gi, '')
-    .replace(/\b(?:gym|field|court)\s*\d*\b/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  const opponent = event.eventType === 'Home Game'
-    ? withoutMetadata.replace(/\s*@\s*(?:sph[-\s]?lv|lv)\b.*$/i, '').trim()
-    : event.eventType === 'Away Game'
-      ? withoutMetadata.replace(/^\s*(?:sph[-\s]?lv|lv)\s*@\s*/i, '').trim()
-      : event.opponent || withoutMetadata;
-
-  return (opponent || event.opponent || event.team)
-    .replace(/^\d+\s+(?=[A-Za-z])/, '')
-    .trim();
 }
 
 function archivedWeekNames(events: ScheduleEvent[], todayIso: string) {
@@ -790,17 +773,17 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                   <div className="divide-y divide-border/5">
                     {events.map((event, eventIndex) => {
                       const isToday = event.date === todayIso;
-                      const eventTime = displayEventTime(event);
                       const eventTypeLabel = event.eventType.replace(/\s+Game$/i, '');
-                      const eventTitle = displayEventOpponent(event);
-                      const teamAccent = teamAccentForEvent(event);
+                      const fixtureLines = scheduleFixtureLines(event);
+                      const hasMultipleFixtures = fixtureLines.length > 1;
+                      const eventTime = hasMultipleFixtures
+                        ? null
+                        : fixtureLines[0]?.time || displayEventTime(event);
 
                       return (
                         <article
                           key={event.id}
-                          style={teamAccent.style}
-                          data-combined={teamAccent.combined}
-                          className={`team-accent-rail grid gap-3 px-5 py-3 transition-colors md:grid-cols-[112px_minmax(0,1fr)] md:items-center ${
+                          className={`px-4 py-3 transition-colors ${
                             isToday
                               ? 'bg-muted/70 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
                               : eventIndex % 2 === 0
@@ -808,40 +791,53 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                 : 'bg-[#F4F4F3] hover:bg-[#EEEEEC] dark:bg-foreground/[0.045] dark:hover:bg-foreground/[0.065]'
                           }`}
                         >
-                          <div className="flex items-center gap-3 md:block">
-                            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-foreground/[0.035] md:mb-2">
-                              <span aria-hidden="true" className="text-[26px] leading-none">{sportEmojiForEvent(event)}</span>
+                          <div className="flex items-start gap-3">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.035]">
+                              <span aria-hidden="true" className="text-[23px] leading-none">{sportEmojiForEvent(event)}</span>
                             </div>
-                            <div>
-                              <div className="flex flex-wrap items-center gap-2">
-                                <p className="text-sm font-black uppercase tracking-wide text-foreground">
-                                  {formatDate(event.date)}
-                                </p>
-                                {isToday && (
-                                  <span className="rounded-full bg-[#B5413F] px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-white">
-                                    Today
-                                  </span>
-                                )}
+                            <div className="min-w-0 flex-1">
+                              <div className="flex min-w-0 items-center justify-between gap-2">
+                                <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
+                                  <p className="text-[13px] font-black uppercase tracking-[0.055em] text-foreground">
+                                    {formatDate(event.date)}
+                                  </p>
+                                  {eventTime && (
+                                    <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-foreground/38">
+                                      {eventTime}
+                                    </span>
+                                  )}
+                                  {isToday && (
+                                    <span className="rounded-full bg-[#B5413F]/10 px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.1em] text-[#B5413F]">
+                                      Today
+                                    </span>
+                                  )}
+                                </div>
+                                <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.14em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
+                                  {eventTypeLabel}
+                                </span>
                               </div>
-                              <p className="mt-0.5 text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/38">
-                                {[eventTime, event.location].filter(Boolean).join(' · ') || 'Time and location TBD'}
-                              </p>
-                            </div>
-                          </div>
 
-                          <div className="relative min-w-0 pr-16">
-                            <div className="absolute right-0 top-0">
-                              <span className={`rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
-                                {eventTypeLabel}
-                              </span>
+                              <div className="mt-1 divide-y divide-border/8">
+                                {fixtureLines.map((fixture, fixtureIndex) => (
+                                  <div
+                                    key={`${event.id}-fixture-${fixtureIndex}`}
+                                    className="flex min-w-0 items-baseline justify-between gap-3 py-1 first:pt-0 last:pb-0"
+                                  >
+                                    <h4
+                                      className="min-w-0 truncate text-[15px] font-black uppercase leading-snug tracking-tight text-foreground"
+                                      title={fixture.label}
+                                    >
+                                      {fixture.label}
+                                    </h4>
+                                    {hasMultipleFixtures && fixture.time && (
+                                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.06em] text-foreground/38">
+                                        {fixture.time}
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
                             </div>
-
-                            <p className="team-accent-text truncate text-[9px] font-black uppercase tracking-[0.15em]">
-                              {event.team}
-                            </p>
-                            <h4 className="mt-1 text-base font-black uppercase leading-tight tracking-tight text-foreground">
-                              {eventTitle}
-                            </h4>
                           </div>
                         </article>
                       );

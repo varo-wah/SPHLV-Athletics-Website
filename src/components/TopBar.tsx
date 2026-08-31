@@ -14,10 +14,10 @@ interface TopBarProps {
 const HOME_LINKS = [
   { label: 'Instagram', href: 'https://www.instagram.com/sphlippovillage/', icon: Instagram },
   { label: 'YouTube', href: 'https://www.youtube.com/@SPH-LV-Athletics', icon: Youtube },
-  { label: 'Photos link pending', href: null, icon: Images },
+  { label: 'Game photos', href: 'https://photos.app.goo.gl/g4MqVW3TJPQ3WNSF6', icon: Images },
   {
     label: 'Official schedule spreadsheet',
-    href: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQN3pbSoFSwKAOPx4ifplCAWQP6GYR1Hav_lIiVGI8WUQz7QlVWkx9CxXETFT2Opg/pubhtml',
+    href: 'https://sphacid-my.sharepoint.com/:x:/g/personal/pe-lv_sph_ac_id/IQApbiLW2BKYSriawFHuP4m6Aa6EmT6xX_otnN_PWWLFWpY?e=Tn4JPh',
     icon: Sheet,
   },
 ] as const;
@@ -55,20 +55,20 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
                 rel="noreferrer"
                 aria-label={label}
                 title={label}
-                className="flex h-7 w-7 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:text-brand-maroon"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:text-brand-maroon"
                 whileTap={{ scale: 0.94 }}
                 transition={PRESS_TRANSITION}
               >
-                <Icon size={13} aria-hidden="true" />
+                <Icon size={16} aria-hidden="true" />
               </motion.a>
             ) : (
               <span
                 key={label}
                 aria-label={label}
                 title={label}
-                className="flex h-7 w-7 cursor-not-allowed items-center justify-center rounded-full border border-border/8 bg-foreground/[0.02] text-foreground/20"
+                className="flex h-9 w-9 cursor-not-allowed items-center justify-center rounded-full border border-border/8 bg-foreground/[0.02] text-foreground/20"
               >
-                <Icon size={13} aria-hidden="true" />
+                <Icon size={16} aria-hidden="true" />
               </span>
             ))}
           </nav>
