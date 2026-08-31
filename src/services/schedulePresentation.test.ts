@@ -5,6 +5,7 @@ import {
   consolidateSharedScheduleEvents,
   eventMatchesTeamFilter,
   isGameScheduleEvent,
+  scheduleFixtureLines,
 } from './schedulePresentation';
 
 function event(overrides: Partial<ScheduleEvent>): ScheduleEvent {
@@ -80,4 +81,61 @@ test('games scope excludes practices and other schedule notes', () => {
   assert.equal(isGameScheduleEvent(event({ eventType: 'Tournament' })), true);
   assert.equal(isGameScheduleEvent(event({ eventType: 'Practice' })), false);
   assert.equal(isGameScheduleEvent(event({ eventType: 'Other' })), false);
+});
+
+test('splits a multi-game volleyball cell into distinct timed fixture lines', () => {
+  const [combined] = consolidateSharedScheduleEvents([
+    event({
+      id: 'boys-triangular',
+      team: 'Varsity Boys Volleyball',
+      sportKey: 'Volleyball',
+      level: 'SMA',
+      eventType: 'Home Game',
+      eventText: 'LV v STL 08:00 JIS v STL 09:00 LV v JIS 10:00',
+      raw: 'LV v STL 08:00 JIS v STL 09:00 LV v JIS 10:00',
+      time: '08:00',
+    }),
+    event({
+      id: 'girls-triangular',
+      team: 'Varsity Girls Volleyball',
+      genderGroup: 'Girls',
+      sportKey: 'Volleyball',
+      level: 'SMA',
+      eventType: 'Home Game',
+      eventText: 'LV v STL 08:00 JIS v STL 09:00 LV v JIS 10:00',
+      raw: 'LV v STL 08:00 JIS v STL 09:00 LV v JIS 10:00',
+      time: '08:00',
+    }),
+  ]);
+
+  assert.deepEqual(scheduleFixtureLines(combined), [
+    { label: 'VBV/VGV vs STL', time: '08:00' },
+    { label: 'JIS vs STL', time: '09:00' },
+    { label: 'VBV/VGV vs JIS', time: '10:00' },
+  ]);
+});
+
+test('formats a shared away fixture in the requested one-line team format', () => {
+  assert.deepEqual(scheduleFixtureLines(event({
+    team: 'Varsity Boys & Girls Volleyball',
+    eventType: 'Away Game',
+    eventText: 'LV @ KV 08:00',
+    raw: 'LV @ KV 08:00',
+    time: '08:00',
+  })), [
+    { label: 'VBV/VGV vs KV', time: '08:00' },
+  ]);
+});
+
+test('expands slash-separated opponents without dropping either team', () => {
+  assert.deepEqual(scheduleFixtureLines(event({
+    team: 'Varsity Boys & Girls Volleyball',
+    eventType: 'Home Game',
+    eventText: 'JIS/STL @ LV',
+    raw: 'JIS/STL @ LV',
+    time: '08:00',
+  })), [
+    { label: 'VBV/VGV vs JIS', time: '08:00' },
+    { label: 'VBV/VGV vs STL', time: '08:00' },
+  ]);
 });
