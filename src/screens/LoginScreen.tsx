@@ -40,15 +40,15 @@ export default function LoginScreen() {
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 min-h-screen px-4 pb-24 pt-5 sm:px-6 lg:px-8">
-      <section className="relative overflow-hidden rounded-[2rem] border border-border/10 bg-subcard p-5 shadow-[0_5px_14px_rgba(0,0,0,0.10)] sm:p-7">
+    <div className="animate-in fade-in slide-in-from-bottom-4 flex min-h-screen justify-center px-4 pb-24 pt-5 duration-500 sm:px-6">
+      <section className="relative h-fit w-full max-w-md overflow-hidden rounded-[2rem] border border-border/10 bg-subcard p-5 shadow-[0_5px_14px_rgba(0,0,0,0.10)] sm:p-7">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,0,0,0.07),transparent_34%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.06),transparent_34%)]" />
-        <div className="relative grid gap-8 lg:grid-cols-[minmax(0,1fr)_420px] lg:items-center">
+        <div className="relative grid gap-6">
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#C1121F] dark:text-[#D85A57]">
+            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-brand-maroon dark:text-[#D85A57]">
               SPHLV account
             </p>
-            <h1 className="mt-3 text-5xl font-black uppercase leading-[0.9] tracking-tight text-foreground sm:text-6xl">
+            <h1 className="mt-2 text-3xl font-black uppercase leading-none tracking-tight text-foreground">
               Sign in
             </h1>
             <p className="mt-4 max-w-xl text-sm font-semibold leading-relaxed text-foreground/55">
@@ -60,7 +60,7 @@ export default function LoginScreen() {
             {user ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.03] p-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-[#C1121F] text-white dark:bg-[#B5413F]">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-maroon text-white dark:bg-[#5A1C2C]">
                     <UserRound size={22} />
                   </div>
                   <div className="min-w-0">
@@ -105,7 +105,7 @@ export default function LoginScreen() {
                     Email
                   </span>
                   <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.035] px-4 py-3">
-                    <Mail size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+                    <Mail size={18} className="shrink-0 text-brand-maroon dark:text-[#D85A57]" />
                     <input
                       type="email"
                       value={email}
@@ -121,7 +121,7 @@ export default function LoginScreen() {
                     Password
                   </span>
                   <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.035] px-4 py-3">
-                    <LockKeyhole size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+                    <LockKeyhole size={18} className="shrink-0 text-brand-maroon dark:text-[#D85A57]" />
                     <input
                       type="password"
                       value={password}
@@ -141,7 +141,7 @@ export default function LoginScreen() {
                 <button
                   type="submit"
                   disabled={!firebaseReady || status === 'checking'}
-                  className="flex w-full items-center justify-center rounded-2xl bg-[#C1121F] px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#991B1B] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-[#B5413F] dark:hover:bg-[#8F3432]"
+                  className="flex w-full items-center justify-center rounded-2xl bg-brand-maroon px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#5F0000] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-[#5A1C2C] dark:hover:bg-[#481624]"
                 >
                   {status === 'checking' ? 'Checking account' : authMode === 'create' ? 'Create account' : 'Sign in'}
                 </button>
@@ -152,7 +152,7 @@ export default function LoginScreen() {
                     setAuthMode((current) => current === 'sign-in' ? 'create' : 'sign-in');
                     setLocalError(null);
                   }}
-                  className="w-full text-center text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 transition-colors hover:text-[#C1121F] dark:hover:text-[#D85A57]"
+                  className="w-full text-center text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 transition-colors hover:text-brand-maroon dark:hover:text-[#D85A57]"
                 >
                   {authMode === 'create' ? 'Already have an account? Sign in' : 'Need an account? Create one'}
                 </button>

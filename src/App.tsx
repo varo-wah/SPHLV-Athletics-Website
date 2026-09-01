@@ -12,7 +12,7 @@ import TeamsScreen from './screens/TeamsScreen';
 import StandingsScreen from './screens/StandingsScreen';
 import LoginScreen from './screens/LoginScreen';
 import { useAthleticsData } from './hooks/useAthleticsData';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { SportFollowsProvider } from './contexts/SportFollowsContext';
 import { TeamFavoritesProvider } from './contexts/TeamFavoritesContext';
@@ -36,6 +36,7 @@ export default function App() {
 }
 
 function AthleticsApp() {
+  const { openLoginModal } = useAuth();
   const [activeTab, setActiveTab] = useState<AppTab>('Home');
   const [activeSport, setActiveSport] = useState<SportTab>('Soccer');
   const [activeGender, setActiveGender] = useState<GenderTab>('Boys');
@@ -128,7 +129,7 @@ function AthleticsApp() {
         <TopBar
           isHome={activeTab === 'Home'}
           onOpenMenu={() => setIsSidebarOpen(true)}
-          onOpenLogin={() => handleTabChange('Login')}
+          onOpenLogin={openLoginModal}
         />
         
         <AnimatePresence initial={false}>
