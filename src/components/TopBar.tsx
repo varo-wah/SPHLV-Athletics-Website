@@ -128,7 +128,7 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
             type="button"
             onClick={onOpenLogin}
             disabled={loading}
-            className="rounded-full border border-[#C1121F]/25 bg-muted px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-[#7F1D1D] transition-colors hover:bg-[#C1121F] hover:text-white disabled:opacity-50 dark:border-[#B5413F]/35 dark:bg-muted dark:text-[#FCA5A5] dark:hover:bg-[#B5413F] dark:hover:text-white"
+            className="rounded-full border border-brand-maroon/25 bg-muted px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-brand-maroon transition-colors hover:bg-brand-maroon hover:text-white disabled:opacity-50 dark:border-[#5A1C2C]/40 dark:bg-muted dark:text-[#FCA5A5] dark:hover:bg-[#5A1C2C] dark:hover:text-white"
             whileTap={{ scale: PRESS_SCALE }}
             transition={PRESS_TRANSITION}
           >

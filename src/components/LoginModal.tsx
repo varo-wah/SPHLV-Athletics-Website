@@ -49,16 +49,21 @@ export default function LoginModal() {
   };
 
   return (
-    <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/45 px-3 pb-24 pt-10 backdrop-blur-sm sm:items-center sm:pb-10">
-      <div className="w-full max-w-md overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_10px_24px_rgba(0,0,0,0.24)]">
-        <div className="relative overflow-hidden bg-[#C1121F] px-5 py-5 text-white dark:bg-[#5A1C2C]">
+    <div className="fixed inset-0 z-[90] flex items-end justify-center overflow-y-auto bg-black/45 px-3 pb-24 pt-10 backdrop-blur-sm sm:items-center sm:pb-10">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="login-modal-title"
+        className="max-h-[calc(100dvh-6rem)] w-full max-w-md overflow-y-auto rounded-[2rem] border border-border/10 bg-subcard shadow-[0_10px_24px_rgba(0,0,0,0.24)]"
+      >
+        <div className="relative overflow-hidden bg-brand-maroon px-5 py-5 text-white dark:bg-[#5A1C2C]">
           <div className="absolute -right-12 -top-16 h-40 w-40 rounded-full bg-white/12" />
           <div className="relative z-10 flex items-start justify-between gap-4">
             <div>
               <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/65">
                 SPHLV account
               </p>
-              <h2 className="mt-1 text-2xl font-black uppercase tracking-tight">
+              <h2 id="login-modal-title" className="mt-1 text-2xl font-black uppercase tracking-tight">
                 Sign in
               </h2>
               <p className="mt-2 text-sm font-semibold leading-relaxed text-white/70">
@@ -68,7 +73,7 @@ export default function LoginModal() {
             <button
               type="button"
               onClick={closeLoginModal}
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white hover:text-[#C1121F]"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white hover:text-brand-maroon"
               aria-label="Close sign in"
             >
               <X size={18} />
@@ -98,7 +103,7 @@ export default function LoginModal() {
               Email
             </span>
             <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.025] px-4 py-3">
-              <Mail size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+              <Mail size={18} className="shrink-0 text-brand-maroon dark:text-[#D85A57]" />
               <input
                 type="email"
                 value={email}
@@ -114,7 +119,7 @@ export default function LoginModal() {
               Password
             </span>
             <div className="flex items-center gap-3 rounded-2xl border border-border/10 bg-foreground/[0.025] px-4 py-3">
-              <LockKeyhole size={18} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
+              <LockKeyhole size={18} className="shrink-0 text-brand-maroon dark:text-[#D85A57]" />
               <input
                 type="password"
                 value={password}
@@ -134,7 +139,7 @@ export default function LoginModal() {
           <button
             type="submit"
             disabled={!firebaseReady || status === 'checking'}
-            className="flex w-full items-center justify-center rounded-2xl bg-[#C1121F] px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#991B1B] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-[#B5413F] dark:hover:bg-[#8F3432]"
+            className="flex w-full items-center justify-center rounded-2xl bg-brand-maroon px-4 py-3 text-sm font-black uppercase tracking-[0.16em] text-white transition-all hover:-translate-y-0.5 hover:bg-[#5F0000] disabled:cursor-not-allowed disabled:opacity-45 dark:bg-[#5A1C2C] dark:hover:bg-[#481624]"
           >
             {status === 'checking' ? 'Checking account' : authMode === 'create' ? 'Create account' : 'Sign in'}
           </button>
@@ -145,7 +150,7 @@ export default function LoginModal() {
               setAuthMode((current) => current === 'sign-in' ? 'create' : 'sign-in');
               setLocalError(null);
             }}
-            className="w-full text-center text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 transition-colors hover:text-[#C1121F] dark:hover:text-[#D85A57]"
+            className="w-full text-center text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 transition-colors hover:text-brand-maroon dark:hover:text-[#D85A57]"
           >
             {authMode === 'create' ? 'Already have an account? Sign in' : 'Need an account? Create one'}
           </button>
