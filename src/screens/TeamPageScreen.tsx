@@ -351,7 +351,7 @@ export default function TeamPageScreen({
 
   return (
     <div className="animate-in fade-in duration-500 pb-8 cursor-default">
-      <header className="mx-4 rounded-2xl border border-border/10 bg-subcard/60 px-4 py-4 shadow-sm sm:mx-6 sm:px-5 lg:mx-8">
+      <header className="mx-4 mt-4 rounded-2xl border border-border/10 bg-subcard/60 px-4 py-4 shadow-sm sm:mx-6 sm:px-5 lg:mx-8">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
             <h1 className="text-[clamp(1.15rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.035em] text-foreground sm:text-3xl">
@@ -648,7 +648,8 @@ export default function TeamPageScreen({
                       {isActive && (
                         <motion.span
                           layoutId="team-games-view-pill"
-                          className="absolute inset-0 rounded-xl border border-[#3F7898] bg-[#3F7898]"
+                          className="absolute inset-0 rounded-xl border"
+                          style={{ backgroundColor: sectionAccent, borderColor: sectionAccent }}
                           transition={STANDARD_SPRING}
                         />
                       )}

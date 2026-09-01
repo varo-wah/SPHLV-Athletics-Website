@@ -308,10 +308,10 @@ export default function HomeScreen({
         aria-label="Games"
         className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]"
       >
-        <div className="grid grid-cols-2 gap-1 border-b border-border/6 bg-foreground/[0.02] p-1">
+        <div className="mx-auto mt-3 flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-border/10 bg-subcard/70 p-1.5 shadow-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {[
-            { id: 'results' as const, label: 'Past' },
-            { id: 'upcoming' as const, label: 'Upcoming' },
+            { id: 'results' as const, label: 'Past', count: latestResults.length },
+            { id: 'upcoming' as const, label: 'Upcoming', count: nextGames.length },
           ].map((view) => {
             const active = gameFeedView === view.id;
 
@@ -323,7 +323,7 @@ export default function HomeScreen({
                 aria-pressed={active}
                 whileTap={{ scale: PRESS_SCALE }}
                 transition={PRESS_TRANSITION}
-                className={`relative flex items-center justify-center rounded-lg px-2 py-1.5 text-[7px] font-black uppercase tracking-[0.12em] ${
+                className={`relative flex min-w-fit shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-transparent px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-200 sm:px-4 ${
                   active
                     ? 'text-white'
                     : 'text-foreground/42 hover:bg-foreground/[0.04]'
@@ -332,11 +332,22 @@ export default function HomeScreen({
                 {active && (
                   <motion.span
                     layoutId="home-game-feed-pill"
-                    className="absolute inset-0 rounded-lg bg-brand-maroon"
+                    className="absolute inset-0 rounded-xl border border-brand-maroon bg-brand-maroon"
                     transition={STANDARD_SPRING}
                   />
                 )}
-                <span className="relative z-10">{view.label}</span>
+                <span className="relative z-10 text-[9px] font-black uppercase tracking-[0.12em] sm:text-[10px]">
+                  {view.label}
+                </span>
+                <span
+                  className={`relative z-10 shrink-0 rounded-full px-1.5 py-0.5 font-mono text-[8px] font-black leading-none sm:px-2 sm:text-[9px] ${
+                    active
+                      ? 'bg-white/18 text-white'
+                      : 'bg-foreground/[0.05] text-foreground/38'
+                  }`}
+                >
+                  {view.count}
+                </span>
               </motion.button>
             );
           })}
