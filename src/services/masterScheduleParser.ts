@@ -173,7 +173,7 @@ function detectEventType(text: string, team: string): ScheduleEventType {
     return 'Practice';
   }
 
-  if (/\blv\s*@/.test(haystack) || /\bsph[-\s]?lv\s*@/.test(haystack)) {
+  if (/\b(?:sph[-\s]?lv|lv)(?:\/[a-z0-9 -]+)?\s*@/.test(haystack)) {
     return 'Away Game';
   }
 
@@ -198,6 +198,11 @@ function detectTime(text: string): string | null {
 }
 
 function detectLocation(text: string): string | null {
+  const atMatch = text.match(/@\s*([A-Za-z0-9 -]+)/);
+  if (atMatch) {
+    return cleanOpponent(atMatch[1]);
+  }
+
   const known = [
     'Main Field',
     'Side Field',
@@ -229,13 +234,12 @@ function detectLocation(text: string): string | null {
     return venue;
   }
 
-  const atMatch = text.match(/@\s*([A-Za-z0-9 -]+)/);
-  return atMatch?.[1]?.trim() ?? null;
+  return null;
 }
 
 function detectOpponent(text: string): string | null {
   const cleaned = clean(text);
-  const awayMatch = cleaned.match(/\b(?:LV|SPH[-\s]?LV)\s*@\s*([A-Za-z0-9 -]+)/i);
+  const awayMatch = cleaned.match(/\b(?:LV|SPH[-\s]?LV)(?:\/[A-Za-z0-9 -]+)?\s*@\s*([A-Za-z0-9 -]+)/i);
 
   if (awayMatch) {
     return cleanOpponent(awayMatch[1]);

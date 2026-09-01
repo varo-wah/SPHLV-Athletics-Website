@@ -4,8 +4,8 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import CompactResultCard from '../components/CompactResultCard';
 import NewsListRow from '../components/NewsListRow';
+import TeamLogo from '../components/TeamLogo';
 import { IS_PROTOTYPE, isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
-import { TEAM_CATALOG } from '../config/teamCatalog';
 import { useAuth } from '../contexts/AuthContext';
 import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
 import { visibleNewsArticles } from '../data/news';
@@ -15,6 +15,7 @@ import { SheetMatch } from '../services/parsers';
 import { consolidateSharedScheduleEvents } from '../services/schedulePresentation';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { buildFavoriteTeamSummaries } from '../utils/homePersonalization';
+import { homeUpcomingFixtures } from '../utils/homeUpcomingPresentation';
 import { getTeamFavoriteLabel } from '../utils/teamFavorites';
 import {
   PAGE_TRANSITION,
@@ -79,104 +80,6 @@ function compactDate(date: string | null) {
   });
 }
 
-function compactTeamCode(event: ScheduleEvent) {
-  const catalogTeam = TEAM_CATALOG.find(
-    (team) =>
-      team.sport === event.sportKey &&
-      team.division === event.level &&
-      team.gender === event.genderGroup,
-  );
-
-  if (catalogTeam) {
-    return catalogTeam.menuCode.replace(/^SMP([BG])B$/, 'SMP-$1B');
-  }
-
-  const division =
-    event.level === 'SMA'
-      ? 'V'
-      : event.level === 'SMP'
-        ? 'SMP'
-        : '';
-
-  const genders = /boys\s*&\s*girls/i.test(event.team)
-    ? ['B', 'G']
-    : [
-        event.genderGroup === 'Boys'
-          ? 'B'
-          : event.genderGroup === 'Girls'
-            ? 'G'
-            : '',
-      ];
-
-  const sport =
-    event.sportKey === 'Soccer'
-      ? 'S'
-      : event.sportKey === 'Volleyball'
-        ? 'V'
-        : event.sportKey === 'Basketball'
-          ? 'B'
-          : '';
-
-  const codes = genders
-    .map((gender) => `${division}${gender}${sport}`)
-    .filter(Boolean);
-
-  return (codes.join('/') || event.team).replace(
-    /^SMP([BG])B$/,
-    'SMP-$1B',
-  );
-}
-
-function compactTeamCodeColor(code: string) {
-  if (/G/.test(code)) return 'text-brand-maroon';
-  if (/B/.test(code)) return 'text-brand-sky';
-  return 'text-foreground/60';
-}
-
-function compactGameMeta(event: ScheduleEvent) {
-  const rawVenue =
-    event.eventType === 'Away Game'
-      ? event.location || event.opponent
-      : event.location || 'LV';
-
-  const venue = (rawVenue || 'LV')
-    .replace(/^@\s*/, '')
-    .replace(/^SPH[-\s]?LV$/i, 'LV')
-    .trim();
-
-  return `@${venue} ${compactDate(event.date)} ${event.time || 'TBD'}`;
-}
-
-function compactOpponentName(event: ScheduleEvent) {
-  const withoutMetadata = event.eventText
-    .replace(/\b\d{1,2}:\d{2}\b/gi, '')
-    .replace(/\b(?:gym|field|court)\s*\d*\b/gi, '')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  if (event.eventType === 'Home Game') {
-    return (
-      withoutMetadata
-        .replace(/\s*@\s*(?:sph[-\s]?lv|lv)\b.*$/i, '')
-        .trim() ||
-      event.opponent ||
-      event.team
-    );
-  }
-
-  if (event.eventType === 'Away Game') {
-    return (
-      withoutMetadata
-        .replace(/^\s*(?:sph[-\s]?lv|lv)\s*@\s*/i, '')
-        .trim() ||
-      event.opponent ||
-      event.team
-    );
-  }
-
-  return event.opponent || withoutMetadata || event.team;
-}
-
 export default function HomeScreen({
   athleticsDataState,
   onNavigateToNews,
@@ -184,7 +87,7 @@ export default function HomeScreen({
   onBrowseTeams,
 }: HomeScreenProps) {
   const [gameFeedView, setGameFeedView] =
-    useState<'upcoming' | 'results'>('results');
+    useState<'upcoming' | 'results'>('upcoming');
   const reduceMotion = useReducedMotion();
 
   const { user } = useAuth();
@@ -277,14 +180,14 @@ export default function HomeScreen({
         ),
     );
 
-    return consolidateSharedScheduleEvents(visibleEvents)
+    return homeUpcomingFixtures(consolidateSharedScheduleEvents(visibleEvents))
       .sort((a, b) => {
         const aTime = new Date(
-          `${a.date} ${a.time || '00:00'}`,
+          `${a.event.date} ${a.time || '00:00'}`,
         ).getTime();
 
         const bTime = new Date(
-          `${b.date} ${b.time || '00:00'}`,
+          `${b.event.date} ${b.time || '00:00'}`,
         ).getTime();
 
         return aTime - bTime;
@@ -308,7 +211,7 @@ export default function HomeScreen({
         aria-label="Games"
         className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]"
       >
-        <div className="mx-auto mt-3 flex w-fit max-w-full gap-1 overflow-x-auto rounded-2xl border border-border/10 bg-subcard/70 p-1.5 shadow-sm [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+        <div className="mx-auto mt-3 grid w-[calc(100%-1.5rem)] max-w-[23rem] grid-cols-2 gap-1.5 rounded-2xl border border-border/10 bg-subcard/70 p-2 shadow-sm">
           {[
             { id: 'results' as const, label: 'Past', count: latestResults.length },
             { id: 'upcoming' as const, label: 'Upcoming', count: nextGames.length },
@@ -323,7 +226,7 @@ export default function HomeScreen({
                 aria-pressed={active}
                 whileTap={{ scale: PRESS_SCALE }}
                 transition={PRESS_TRANSITION}
-                className={`relative flex min-w-fit shrink-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-transparent px-3 py-2 text-[10px] font-black uppercase tracking-[0.12em] transition-all duration-200 sm:px-4 ${
+                className={`relative flex min-w-0 items-center justify-center gap-2 whitespace-nowrap rounded-xl border border-transparent px-4 py-3 text-xs font-black uppercase tracking-[0.12em] transition-all duration-200 ${
                   active
                     ? 'text-white'
                     : 'text-foreground/42 hover:bg-foreground/[0.04]'
@@ -336,11 +239,11 @@ export default function HomeScreen({
                     transition={STANDARD_SPRING}
                   />
                 )}
-                <span className="relative z-10 text-[9px] font-black uppercase tracking-[0.12em] sm:text-[10px]">
+                <span className="relative z-10 text-[11px] font-black uppercase tracking-[0.12em] sm:text-xs">
                   {view.label}
                 </span>
                 <span
-                  className={`relative z-10 shrink-0 rounded-full px-1.5 py-0.5 font-mono text-[8px] font-black leading-none sm:px-2 sm:text-[9px] ${
+                  className={`relative z-10 shrink-0 rounded-full px-2 py-1 font-mono text-[9px] font-black leading-none ${
                     active
                       ? 'bg-white/18 text-white'
                       : 'bg-foreground/[0.05] text-foreground/38'
@@ -380,50 +283,42 @@ export default function HomeScreen({
             ))}
 
           {gameFeedView === 'upcoming' &&
-            nextGames.map((event, index) => (
+            nextGames.map((fixture, index) => (
               <motion.article
-                key={event.id}
-                className="grid min-h-[58px] grid-cols-[32px_minmax(0,1fr)] items-center gap-2.5 rounded-2xl border border-border/8 bg-foreground/[0.02] px-3 py-2"
+                key={fixture.id}
+                className={`grid min-h-[76px] grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-3 rounded-2xl border px-3 py-3 shadow-[0_2px_7px_rgba(0,0,0,0.05)] ${
+                  fixture.event.eventType === 'Home Game'
+                    ? 'border-brand-maroon/18 bg-brand-maroon/[0.035]'
+                    : 'border-border/10 bg-subcard'
+                }`}
                 initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ ...QUICK_TRANSITION, delay: staggerDelay(index) }}
               >
                 <span
-                  className="flex h-8 w-8 items-center justify-center rounded-full bg-foreground/[0.035] text-lg"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/8 bg-white/75 text-xl shadow-sm dark:bg-white/[0.05]"
                   aria-hidden="true"
                 >
-                  {favoriteTeamEmojis[event.sportKey || 'Soccer']}
+                  {favoriteTeamEmojis[fixture.event.sportKey || 'Soccer']}
                 </span>
 
                 <div className="min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="flex shrink-0 text-[9px] font-black uppercase tracking-[0.12em]">
-                      {compactTeamCode(event)
-                        .split('/')
-                        .map((code, index) => (
-                          <span
-                            key={code}
-                            className={compactTeamCodeColor(code)}
-                          >
-                            {index > 0 && (
-                              <span className="text-foreground/35">
-                                /
-                              </span>
-                            )}
-                            {code}
-                          </span>
-                        ))}
-                    </span>
-
-                    <span className="truncate text-[13px] font-black uppercase text-foreground">
-                      {compactOpponentName(event)}
-                    </span>
+                  <div className="flex min-w-0 items-baseline gap-2 text-sm font-black uppercase tracking-[0.035em] text-foreground">
+                    <span className="shrink-0">{fixture.teamCode}</span>
+                    <span className="text-[9px] text-foreground/35">VS</span>
+                    <span className="truncate">{fixture.opponent}</span>
                   </div>
 
-                  <p className="mt-1 truncate text-[8px] font-bold uppercase tracking-[0.08em] text-foreground/38">
-                    {compactGameMeta(event)}
+                  <p className="mt-1.5 truncate text-[10px] font-black uppercase tracking-[0.07em] text-foreground/75 dark:text-white/75">
+                    {compactDate(fixture.event.date)} · {fixture.time || 'Time TBD'} ·{' '}
+                    {fixture.event.eventType.replace(' Game', '')}
                   </p>
                 </div>
+
+                <TeamLogo
+                  name={fixture.opponentLogoName}
+                  className="h-10 w-10 border border-border/10 bg-white shadow-sm"
+                />
               </motion.article>
             ))}
 

@@ -401,8 +401,7 @@ export default function TeamPageScreen({
                 {isActive && (
                   <motion.span
                     layoutId="team-section-active-pill"
-                    className="absolute inset-0 rounded-[0.95rem] border"
-                    style={{ backgroundColor: sectionAccent, borderColor: sectionAccent }}
+                    className="absolute inset-0 rounded-[0.95rem] border border-brand-maroon bg-brand-maroon"
                     transition={STANDARD_SPRING}
                   />
                 )}
