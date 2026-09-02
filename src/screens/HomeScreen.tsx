@@ -288,8 +288,8 @@ export default function HomeScreen({
                 key={fixture.id}
                 className={`grid min-h-[76px] grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-3 rounded-2xl border px-3 py-3 shadow-[0_2px_7px_rgba(0,0,0,0.05)] ${
                   fixture.event.eventType === 'Home Game'
-                    ? 'border-brand-maroon/18 bg-brand-maroon/[0.035]'
-                    : 'border-border/10 bg-subcard'
+                    ? 'border-brand-maroon/18 bg-white dark:bg-subcard'
+                    : 'border-border/12 bg-[#ECEDEF] dark:bg-white/[0.055]'
                 }`}
                 initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
                 animate={{ opacity: 1, y: 0 }}
