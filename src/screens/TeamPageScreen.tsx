@@ -1,10 +1,11 @@
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users, Trophy, ChevronRight } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
+import TournamentResultsSection from '../components/TournamentResultsSection';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import {
   jaacOpponentSchoolsForEvent,
@@ -37,25 +38,6 @@ const teamPageSections: { id: TeamPageSection; label: string }[] = [
   { id: 'standings', label: 'Standings' },
   { id: 'players', label: 'Players' },
 ];
-
-const varsityBoysSoccerTournamentResults = [
-  {
-    name: 'SPH Cup',
-    placement: 'Pending',
-    detail: 'Final placement will be posted after the tournament.',
-  },
-  {
-    name: 'JAAC',
-    placement: 'Runner-up',
-    detail: 'Final · SPH 0–2 BSJ',
-  },
-  {
-    name: 'ACSC',
-    placement: 'Pending',
-    detail: 'Final placement has not been posted.',
-    href: 'https://acscconference.com/boys-soccer/',
-  },
-] as const;
 
 function formatGameDate(date: string | null) {
   if (!date) return 'Date TBD';
@@ -828,88 +810,7 @@ export default function TeamPageScreen({
           )}
         </div>
 
-        {activeSection === 'standings' &&
-          sport === 'Soccer' &&
-          division === 'SMA' &&
-          gender === 'Boys' && (
-            <section className="mt-8 space-y-4">
-              <div className="border-b border-brand-maroon/10 pb-3 dark:border-border/10">
-                <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-red">
-                  Cup · JAAC · ACSC
-                </p>
-
-                <h3 className="mt-1 text-xl font-black uppercase tracking-[0.08em] text-foreground sm:text-2xl">
-                  Tournament Results
-                </h3>
-
-                <p className="mt-1 text-xs font-semibold text-foreground/45">
-                  Final placement and championship
-                  result only.
-                </p>
-              </div>
-
-              <div className="grid gap-3 md:grid-cols-3">
-                {varsityBoysSoccerTournamentResults.map(
-                  (result) => {
-                    const content = (
-                      <div className="flex items-start gap-3">
-                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-brand-sky/18 text-brand-navy dark:text-brand-sky">
-                          <Trophy size={17} />
-                        </span>
-
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-start justify-between gap-2">
-                            <div>
-                              <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brand-red">
-                                {result.name}
-                              </p>
-
-                              <p className="mt-0.5 text-lg font-black uppercase tracking-tight text-foreground">
-                                {
-                                  result.placement
-                                }
-                              </p>
-                            </div>
-
-                            {'href' in result && (
-                              <ChevronRight
-                                size={16}
-                                className="mt-1 shrink-0 text-foreground/30"
-                              />
-                            )}
-                          </div>
-
-                          <p className="mt-1 text-[11px] font-semibold leading-relaxed text-foreground/48">
-                            {result.detail}
-                          </p>
-                        </div>
-                      </div>
-                    );
-
-                    return 'href' in result ? (
-                      <a
-                        key={result.name}
-                        href={result.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="rounded-2xl border border-brand-maroon/10 bg-white/80 p-4 shadow-sm transition-colors hover:border-brand-sky/40 dark:border-border/10 dark:bg-subcard"
-                        aria-label={`Open ${result.name} results`}
-                      >
-                        {content}
-                      </a>
-                    ) : (
-                      <article
-                        key={result.name}
-                        className="rounded-2xl border border-brand-maroon/10 bg-white/80 p-4 shadow-sm dark:border-border/10 dark:bg-subcard"
-                      >
-                        {content}
-                      </article>
-                    );
-                  },
-                )}
-              </div>
-            </section>
-          )}
+        {activeSection === 'standings' && <TournamentResultsSection />}
 
         {activeSection === 'players' && (
           <section
