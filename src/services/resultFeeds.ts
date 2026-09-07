@@ -10,13 +10,13 @@ export interface LoadedResultFeed {
 
 export async function loadResultFeeds(
   sources: ResultSheetSource[],
-  fetchRows: (url: string) => Promise<CsvRow[]>,
+  fetchRows: (url: string, source: ResultSheetSource) => Promise<CsvRow[]>,
   cache: Map<string, CsvRow[]>
 ): Promise<LoadedResultFeed[]> {
   return Promise.all(
     sources.map(async (source) => {
       try {
-        const rows = await fetchRows(source.url);
+        const rows = await fetchRows(source.url, source);
         cache.set(source.id, rows);
         return { source, rows, failed: false, fromCache: false };
       } catch (error) {
@@ -26,7 +26,7 @@ export async function loadResultFeeds(
           source,
           rows: cachedRows,
           failed: true,
-          fromCache: cachedRows.length > 0,
+          fromCache: cache.has(source.id),
         };
       }
     })

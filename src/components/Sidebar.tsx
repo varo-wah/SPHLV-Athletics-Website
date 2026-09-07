@@ -27,11 +27,54 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
     )),
   })), []);
 
+  const panelRef = React.useRef<HTMLElement>(null);
+  const closeRef = React.useRef(onClose);
+  closeRef.current = onClose;
+  React.useEffect(() => {
+    if (!isOpen) return;
+    const previous = document.activeElement as HTMLElement | null;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const panel = panelRef.current;
+    const hidden: Array<[HTMLElement, boolean]> = [];
+    let current: HTMLElement | null = panel;
+    while (current?.parentElement) {
+      for (const sibling of Array.from(current.parentElement.children)) {
+        if (sibling !== current && sibling instanceof HTMLElement && !sibling.hasAttribute('data-menu-backdrop')) {
+          hidden.push([sibling, sibling.inert]); sibling.inert = true;
+        }
+      }
+      current = current.parentElement;
+      if (current === document.body) break;
+    }
+    const focusable = (): HTMLElement[] => Array.from(panel?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), [tabindex="0"]') ?? []);
+    (focusable()[0] ?? panel)?.focus();
+    const keydown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') { event.preventDefault(); closeRef.current(); }
+      if (event.key === 'Tab') {
+        const items = focusable();
+        const first = items[0]; const last = items[items.length - 1];
+        if (!first) { event.preventDefault(); panel?.focus(); }
+        else if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
+    };
+    document.addEventListener('keydown', keydown);
+    return () => {
+      document.removeEventListener('keydown', keydown);
+      document.body.style.overflow = overflow;
+      hidden.forEach(([element, inert]) => { element.inert = inert; });
+      if (previous?.isConnected) previous.focus();
+    };
+  }, [isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
         <>
           <motion.div
+            data-menu-backdrop
+            aria-hidden="true"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -40,6 +83,10 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
           />
 
           <motion.aside
+            ref={panelRef}
+            role="dialog"
+            aria-modal="true"
+            tabIndex={-1}
             initial={{ x: '-100%' }}
             animate={{ x: 0 }}
             exit={{ x: '-100%' }}

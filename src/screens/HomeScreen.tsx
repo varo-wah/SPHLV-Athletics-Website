@@ -325,7 +325,7 @@ export default function HomeScreen({
           {gameFeedView === 'results' &&
             latestResults.length === 0 && (
               <p className="px-3 py-5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/38">
-                No completed results available
+                {athleticsDataState.loading ? 'Loading results…' : athleticsDataState.data.resultSourceStates.some(source => source.failed || !source.configured) ? 'Results unavailable — retry using Data status above' : 'No completed results recorded yet'}
               </p>
             )}
 

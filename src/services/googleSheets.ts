@@ -18,6 +18,11 @@ const SHEET_CACHE_TTL_MS = 45_000;
 let cachedPayload: { loadedAt: number; payload: SheetCachePayload } | null = null;
 let cacheRequest: Promise<SheetCachePayload> | null = null;
 
+// The deployed snapshot date is distinct from the browser retrieval time.
+export function getSheetCacheGeneratedAt(): string | null {
+  return cachedPayload?.payload.generatedAt ?? null;
+}
+
 export async function fetchCsvRows(url: string): Promise<CsvRow[]> {
   if (!hasValidSheetUrl(url)) {
     return [];
