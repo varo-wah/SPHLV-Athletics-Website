@@ -1,3 +1,5 @@
+import { useHashRoute, navigateHash } from '../hooks/useHashRoute';
+import { parseScheduleQuery } from '../services/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
@@ -307,12 +309,20 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       ? [...configuredSeasons, ...additionalSeasons]
       : fallbackScheduleData.seasons;
   }, [scheduleEvents]);
-  const [selectedSeason, setSelectedSeason] = useState(LAUNCH_SEASON);
-  const activeSeason = IS_PROTOTYPE ? selectedSeason : LAUNCH_SEASON;
-  const [teamFilter, setTeamFilter] = useState<ScheduleTeamFilter>(ALL);
-  const [scheduleScope, setScheduleScope] = useState<'games' | 'practices'>('games');
+  const hash = useHashRoute();
+  const filters = parseScheduleQuery(hash.split('?')[1] ?? '', IS_PROTOTYPE ? seasons : [LAUNCH_SEASON], LAUNCH_SEASON);
+  const activeSeason = filters.season;
+  const teamFilter = filters.team as ScheduleTeamFilter;
+  const scheduleScope = filters.scope;
+  const scheduleView: ScheduleView = filters.view;
+  const updateFilters = (patch: Partial<typeof filters>) => {
+    const next = { ...filters, ...patch };
+    navigateHash(`#/schedule?${new URLSearchParams(next).toString()}`);
+  };
+  const setTeamFilter = (team: ScheduleTeamFilter) => updateFilters({ team });
+  const setScheduleScope = (scope: 'games' | 'practices') => updateFilters({ scope });
+  const setScheduleView = (view: ScheduleView) => updateFilters({ view });
   const [collapsedWeeks, setCollapsedWeeks] = useState<Record<string, boolean>>({});
-  const [scheduleView, setScheduleView] = useState<ScheduleView>('list');
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<SelectedCalendarDay | null>(null);
   const [showArchivedWeeks, setShowArchivedWeeks] = useState(false);
   const reduceMotion = useReducedMotion();
@@ -336,11 +346,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [closeCalendarDay, selectedCalendarDay]);
 
-  useEffect(() => {
-    if (IS_PROTOTYPE && !seasons.includes(selectedSeason) && seasons[0]) {
-      setSelectedSeason(seasons[0]);
-    }
-  }, [seasons, selectedSeason]);
+
 
   const seasonEvents = useMemo(() => {
     const visibleEvents = scheduleEvents
@@ -392,14 +398,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     return a.localeCompare(b);
   });
   const clearFilters = () => {
-    setTeamFilter(ALL);
-    setScheduleScope('games');
+    updateFilters({ team: ALL, scope: 'games' });
     setShowArchivedWeeks(false);
   };
 
   const changeSeason = (season: string) => {
-    setSelectedSeason(season);
-    clearFilters();
+    updateFilters({ season, team: ALL, scope: 'games' });
+    setShowArchivedWeeks(false);
     setCollapsedWeeks({});
     setSelectedCalendarDay(null);
   };

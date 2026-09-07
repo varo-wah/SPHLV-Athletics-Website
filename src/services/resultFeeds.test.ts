@@ -47,3 +47,11 @@ test("one failed result feed preserves cached rows without suppressing healthy f
   assert.equal(loaded[1].fromCache, true);
   assert.deepEqual(loaded[1].rows, cachedRows);
 });
+
+test('successful empty feeds remain valid cached results during an outage', async () => {
+  const cache = new Map<string, CsvRow[]>([['source-a', []]]);
+  const [feed] = await loadResultFeeds([sources[0]], async () => { throw new Error('offline'); }, cache);
+  assert.equal(feed.failed, true);
+  assert.equal(feed.fromCache, true);
+  assert.deepEqual(feed.rows, []);
+});

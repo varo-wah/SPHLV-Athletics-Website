@@ -1,3 +1,4 @@
+import { createSourceRetriever, type RemoteSourceState } from '../services/sourceRetrieval';
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   MASTER_SCHEDULE_URLS,
@@ -6,6 +7,7 @@ import {
 } from "../config/sheets";
 import {
   CsvRow,
+  getSheetCacheGeneratedAt,
   fetchCsvMatrix,
   fetchCsvRows,
   parseCsvMatrix,
@@ -67,6 +69,7 @@ export interface AthleticsDataState {
   error: string | null;
   warning: string | null;
   lastUpdated: string | null;
+  remoteSources: RemoteSourceState[];
   refresh: () => Promise<void>;
 }
 
@@ -115,10 +118,17 @@ export function useAthleticsData(): AthleticsDataState {
   const [warning, setWarning] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
+  const [remoteSources, setRemoteSources] = useState<RemoteSourceState[]>([]);
+  const sourceCache = useRef(new Map<string, { value: unknown; lastSuccess: string; publishedAt?: string | null }>());
+  const inFlight = useRef(false);
   const hasLoadedOnce = useRef(false);
   const resultRowsCache = useRef(new Map<string, CsvRow[]>());
 
   const refresh = useCallback(async () => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    const sourceStates: RemoteSourceState[] = [];
+    const retrieve = createSourceRetriever(sourceCache.current, sourceStates, undefined, getSheetCacheGeneratedAt);
     try {
       if (!hasLoadedOnce.current) {
         setLoading(true);
@@ -144,11 +154,8 @@ export function useAthleticsData(): AthleticsDataState {
           }
 
           try {
-            return {
-              season: sheet.season,
-              matrix: await fetchCsvMatrix(sheet.url),
-              failed: false,
-            };
+            const result = await retrieve(`schedule-${sheet.season}`, sheet.season, 'schedule', sheet.url, fetchCsvMatrix, [] as string[][]);
+            return { season: sheet.season, matrix: result.rows, failed: result.failed };
           } catch (error) {
             console.warn(`Master schedule sync failed for ${sheet.season}:`, error);
             return {
@@ -164,7 +171,11 @@ export function useAthleticsData(): AthleticsDataState {
         loadedResultFeeds,
         masterScheduleResults,
       ] = await Promise.all([
-        loadResultFeeds(configuredResultSources, fetchCsvRows, resultRowsCache.current),
+        loadResultFeeds(configuredResultSources, async (url, source) => {
+          const result = await retrieve(source.id, source.displayName, 'results', url, fetchCsvRows, [] as CsvRow[]);
+          if (result.failed) throw new Error('Results unavailable');
+          return result.rows;
+        }, resultRowsCache.current),
         masterScheduleResultsPromise,
       ]);
 
@@ -281,7 +292,9 @@ export function useAthleticsData(): AthleticsDataState {
 
       setData(nextData);
       setWarning(warningParts.length > 0 ? warningParts.join(" ") : null);
-      setLastUpdated(new Date().toLocaleTimeString());
+      setRemoteSources(sourceStates);
+      const successes = sourceStates.map(source => source.lastSuccess).filter((date): date is string => Boolean(date)).sort();
+      setLastUpdated(successes.at(-1) ?? null);
       hasLoadedOnce.current = true;
     } catch (err) {
       console.error("Google Sheets sync failed:", err);
@@ -292,6 +305,7 @@ export function useAthleticsData(): AthleticsDataState {
           : "Failed to load Google Sheets data"
       );
     } finally {
+      inFlight.current = false;
       setLoading(false);
       setRefreshing(false);
     }
@@ -316,6 +330,7 @@ export function useAthleticsData(): AthleticsDataState {
     error,
     warning,
     lastUpdated,
+    remoteSources,
     refresh,
   };
 }

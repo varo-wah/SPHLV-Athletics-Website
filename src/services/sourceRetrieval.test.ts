@@ -1,0 +1,53 @@
+import assert from 'node:assert/strict';
+import test from 'node:test';
+import { createSourceRetriever, type RemoteSourceState } from './sourceRetrieval';
+const url = 'https://docs.google.com/spreadsheets/d/test/pub?output=csv';
+test('partial failure retains data and successful timestamp; retry recovers', async () => {
+  const cache = new Map();
+  let time = '2026-09-05T00:00:00.000Z';
+  let states: RemoteSourceState[] = [];
+  let retrieve = createSourceRetriever(cache, states, () => time);
+  await retrieve('a', 'A', 'results', url, async () => [1], []);
+  time = '2026-09-05T00:01:00.000Z';
+  states = []; retrieve = createSourceRetriever(cache, states, () => time);
+  const failed = await retrieve('a', 'A', 'results', url, async () => { throw Error('offline'); }, []);
+  await retrieve('b', 'B', 'results', url, async () => [2], []);
+  assert.deepEqual(failed.rows, [1]);
+  assert.equal(states[0].fromCache, true);
+  assert.equal(states[0].lastSuccess, '2026-09-05T00:00:00.000Z');
+  assert.equal(states[0].lastAttempt, time);
+  assert.equal(states[1].failed, false);
+  states = []; retrieve = createSourceRetriever(cache, states, () => time);
+  assert.deepEqual((await retrieve('a', 'A', 'results', url, async () => [3], [])).rows, [3]);
+  assert.equal(states[0].lastSuccess, time);
+  assert.equal(states[0].fromCache, false);
+});
+test('empty success, first failure, and missing configuration remain distinct', async () => {
+  const states: RemoteSourceState[] = []; const cache = new Map();
+  const retrieve = createSourceRetriever(cache, states);
+  await retrieve('empty', 'Empty', 'results', url, async () => [], []);
+  const fail = async () => { throw Error('offline'); };
+  await retrieve('empty', 'Empty', 'results', url, fail, []);
+  await retrieve('new', 'New', 'standings', url, fail, []);
+  await retrieve('missing', 'Missing', 'standings', '', fail, []);
+  assert.equal(states[1].fromCache, true);
+  assert.equal(states[2].fromCache, false);
+  assert.equal(states[2].lastSuccess, null);
+  assert.equal(states[3].configured, false);
+  assert.equal(states[3].lastAttempt, null);
+});
+
+test('published snapshot time remains distinct from retrieval time and survives failure', async () => {
+  const cache = new Map();
+  const states: RemoteSourceState[] = [];
+  const published = '2026-08-17T12:00:00.000Z';
+  const checked = '2026-09-07T12:00:00.000Z';
+  const retrieve = createSourceRetriever(cache, states, () => checked, () => published);
+  await retrieve('a', 'A', 'results', url, async () => [1], []);
+  await retrieve('a', 'A', 'results', url, async () => { throw Error('offline'); }, []);
+  assert.equal(states[0].lastSuccess, checked);
+  assert.equal(states[0].publishedAt, published);
+  assert.equal(states[1].publishedAt, published);
+  assert.equal(states[1].lastSuccess, checked);
+  assert.equal(states[1].fromCache, true);
+});

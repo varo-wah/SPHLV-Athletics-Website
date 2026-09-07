@@ -1,4 +1,9 @@
 import { useState } from 'react';
+import { useHashRoute, navigateHash } from './hooks/useHashRoute';
+import { parseRoute } from './services/navigation';
+import { findTeam } from './config/teamCatalog';
+import { IS_PROTOTYPE } from './config/launchSports';
+import DataStatus from './components/DataStatus';
 import { AnimatePresence, MotionConfig, motion, useReducedMotion } from 'motion/react';
 import { AppTab, SportTab, GenderTab, DivisionTab } from './types';
 import BottomNav from './components/BottomNav';
@@ -37,10 +42,12 @@ export default function App() {
 
 function AthleticsApp() {
   const { openLoginModal } = useAuth();
-  const [activeTab, setActiveTab] = useState<AppTab>('Home');
-  const [activeSport, setActiveSport] = useState<SportTab>('Soccer');
-  const [activeGender, setActiveGender] = useState<GenderTab>('Boys');
-  const [activeDivision, setActiveDivision] = useState<DivisionTab>('SMA');
+  const hash = useHashRoute();
+  const route = parseRoute(hash, IS_PROTOTYPE);
+  const activeTab = route.tab;
+  const activeSport = route.team?.sport ?? 'Soccer';
+  const activeGender = route.team?.gender ?? 'Boys';
+  const activeDivision = route.team?.division ?? 'SMA';
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [newsArticleId, setNewsArticleId] = useState<string | null>(null);
   const reduceMotion = useReducedMotion();
@@ -51,27 +58,19 @@ function AthleticsApp() {
     if (tab === 'News') {
       setNewsArticleId(null);
     }
-    setActiveTab(tab);
+    navigateHash(`#/${tab.toLowerCase()}`);
     window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   };
 
   const navigateToNews = (articleId?: string) => {
     setNewsArticleId(articleId || null);
-    setActiveTab('News');
+    navigateHash('#/news');
     window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   };
 
   const navigateToTeam = (sport: SportTab, division: DivisionTab, gender: GenderTab) => {
-    if (!isLaunchTeamSelection(sport, division, gender)) {
-      setActiveTab('Teams');
-      window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
-      return;
-    }
-
-    setActiveSport(sport);
-    setActiveDivision(division);
-    setActiveGender(gender);
-    setActiveTab('TeamPage');
+    const team = findTeam(sport, division, gender);
+    navigateHash(team && isLaunchTeamSelection(sport, division, gender) ? `#/teams/${team.id}` : '#/teams');
     window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
   };
 
@@ -93,7 +92,6 @@ function AthleticsApp() {
           sport={activeSport}
           gender={activeGender}
           division={activeDivision}
-          onSportChange={setActiveSport}
           athleticsDataState={athleticsDataState}
         />
       );
@@ -132,24 +130,13 @@ function AthleticsApp() {
           onOpenLogin={openLoginModal}
         />
         
-        <AnimatePresence initial={false}>
-          {athleticsDataState.loading && (
-            <motion.div
-              key="athletics-loading"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.18 }}
-              style={{ padding: 10, textAlign: 'center', color: '#BFD7EA', fontSize: 12 }}
-            >
-              Loading Google Sheets data...
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {['Home', 'Schedule', 'TeamPage', 'Standings'].includes(activeTab) && (
+          <DataStatus state={athleticsDataState} tab={activeTab} teamId={route.team?.id} />
+        )}
 
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
-            key={activeTab}
+            key={route.team?.id ?? activeTab}
             initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: reduceMotion ? 0 : -4 }}
