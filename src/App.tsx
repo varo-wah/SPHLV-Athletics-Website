@@ -130,7 +130,7 @@ function AthleticsApp() {
           onOpenLogin={openLoginModal}
         />
         
-        {['Home', 'Schedule', 'TeamPage', 'Standings'].includes(activeTab) && (
+        {['Home', 'TeamPage', 'Standings'].includes(activeTab) && (
           <DataStatus state={athleticsDataState} tab={activeTab} teamId={route.team?.id} />
         )}
 
