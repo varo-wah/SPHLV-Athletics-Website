@@ -27,11 +27,11 @@ test('matches the verified 26/27 workbook results', () => {
   );
   assert.deepEqual(
     { wins: row('Basketball', 'Girls', 'SPH-LV')?.wins, difference: row('Basketball', 'Girls', 'SPH-LV')?.difference },
-    { wins: 1, difference: 29 },
+    { wins: 3, difference: 139 },
   );
   assert.deepEqual(
     { losses: row('Basketball', 'Boys', 'SPH-LV')?.losses, difference: row('Basketball', 'Boys', 'SPH-LV')?.difference },
-    { losses: 1, difference: -8 },
+    { losses: 1, difference: 137 },
   );
 });
 

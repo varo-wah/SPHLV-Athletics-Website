@@ -1,3 +1,4 @@
+import basketballSnapshot from './basketballStandingsSnapshot.json';
 import type { Standing } from '../services/parsers';
 import type { DivisionTab, GenderTab, SheetSport, SportTab } from '../types';
 
@@ -69,7 +70,7 @@ function table(
       forValue,
       againstValue,
       difference: forValue - againstValue,
-      notes: 'Official 26/27 standings snapshot · verified 2026-08-27',
+      notes: `Official 26/27 standings snapshot · verified ${sportKey === 'Basketball' ? '2026-09-08' : '2026-08-27'}`,
     };
   });
 }
@@ -88,14 +89,8 @@ export const OFFICIAL_STANDINGS: Standing[] = [
     { team: 'ACS', losses: 2, points: 0, forValue: 0, againstValue: 4 },
     { team: 'SPH-KV', losses: 1, points: 0, forValue: 0, againstValue: 2 },
   ]),
-  ...table('Basketball', 'Basketball', 'SMP', 'Boys', juniorSchools, [
-    { team: 'ACS', wins: 1, points: 2, forValue: 45, againstValue: 37 },
-    { team: 'SPH-LV', losses: 1, points: 0, forValue: 37, againstValue: 45 },
-  ]),
-  ...table('Basketball', 'Basketball', 'SMP', 'Girls', juniorSchools, [
-    { team: 'SPH-LV', wins: 1, points: 2, forValue: 47, againstValue: 18 },
-    { team: 'ACS', losses: 1, points: 0, forValue: 18, againstValue: 47 },
-  ]),
+  ...table('Basketball', 'Basketball', 'SMP', 'Boys', juniorSchools, basketballSnapshot[0].records),
+  ...table('Basketball', 'Basketball', 'SMP', 'Girls', juniorSchools, basketballSnapshot[1].records),
 ];
 
 export const OFFICIAL_STANDINGS_LADDERS: readonly OfficialStandingsLadder[] = [
@@ -124,17 +119,13 @@ export const OFFICIAL_STANDINGS_LADDERS: readonly OfficialStandingsLadder[] = [
     sportKey: 'Basketball',
     level: 'SMP',
     genderGroup: 'Boys',
-    matchups: [
-      { teamA: 'ACS', teamB: 'SPH-LV', scoreA: 45, scoreB: 37 },
-    ],
+    matchups: basketballSnapshot[0].games,
   },
   {
     sportKey: 'Basketball',
     level: 'SMP',
     genderGroup: 'Girls',
-    matchups: [
-      { teamA: 'SPH-LV', teamB: 'ACS', scoreA: 47, scoreB: 18 },
-    ],
+    matchups: basketballSnapshot[1].games,
   },
 ];
 

@@ -108,6 +108,12 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
               </div>
             )}
 
+            {selectedArticle.videoUrl && (
+              <a href={selectedArticle.videoUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center rounded-xl bg-brand-maroon px-5 py-3 text-sm font-bold text-white">
+                Watch Sports Report ↗
+              </a>
+            )}
+
             {selectedArticle.youtubeVideoId && (
               <div className="aspect-video max-w-3xl overflow-hidden rounded-2xl border border-border/10 bg-black shadow-[0_3px_10px_rgba(0,0,0,0.10)]">
                 <iframe
