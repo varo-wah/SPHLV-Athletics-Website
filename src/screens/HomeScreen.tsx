@@ -1,5 +1,5 @@
 import { CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import CompactResultCard from '../components/CompactResultCard';
@@ -89,6 +89,8 @@ export default function HomeScreen({
   const [gameFeedView, setGameFeedView] =
     useState<'upcoming' | 'results'>('upcoming');
   const reduceMotion = useReducedMotion();
+  const [feedPages, setFeedPages] = useState({ upcoming: 0, results: 0 });
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
 
   const { user } = useAuth();
   const { favoriteTeams, loading: favoritesLoading, error: favoritesError } = useTeamFavorites();
@@ -152,8 +154,7 @@ export default function HomeScreen({
           ).getTime();
 
           return bTime - aTime;
-        })
-        .slice(0, 4),
+        }),
     [athleticsDataState.data.matches],
   );
 
@@ -191,9 +192,15 @@ export default function HomeScreen({
         ).getTime();
 
         return aTime - bTime;
-      })
-      .slice(0, 4);
+      });
   }, [athleticsDataState.data.masterScheduleEvents]);
+
+  const feedCount = gameFeedView === 'results' ? latestResults.length : nextGames.length;
+  const lastPage = Math.max(0, Math.ceil(feedCount / 4) - 1);
+  const feedPage = Math.min(feedPages[gameFeedView], lastPage);
+  const changeFeedPage = (step: number) => setFeedPages(pages => ({
+    ...pages, [gameFeedView]: Math.max(0, Math.min(lastPage, feedPage + step)),
+  }));
 
   const hasFavoriteTeams = Boolean(user && favoriteTeamSummaries.length > 0);
 
@@ -256,10 +263,25 @@ export default function HomeScreen({
           })}
         </div>
 
-        <div className="p-2">
+        <div className="p-2" style={{ touchAction: 'pan-y' }}
+          onTouchStart={event => {
+            const touch = event.touches[0];
+            touchStart.current = { x: touch.clientX, y: touch.clientY };
+          }}
+          onTouchCancel={() => { touchStart.current = null; }}
+          onTouchEnd={event => {
+            const start = touchStart.current;
+            touchStart.current = null;
+            if (!start) return;
+            const touch = event.changedTouches[0];
+            const dx = touch.clientX - start.x;
+            const dy = touch.clientY - start.y;
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) changeFeedPage(dx < 0 ? 1 : -1);
+          }}>
+
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
-              key={gameFeedView}
+              key={`${gameFeedView}-${feedPage}`}
               className="space-y-1.5"
               initial={{ opacity: 0, y: reduceMotion ? 0 : 6 }}
               animate={{ opacity: 1, y: 0 }}
@@ -267,7 +289,7 @@ export default function HomeScreen({
               transition={PAGE_TRANSITION}
             >
           {gameFeedView === 'results' &&
-            latestResults.map((match, index) => (
+            latestResults.slice(feedPage * 4, feedPage * 4 + 4).map((match, index) => (
               <motion.div
                 key={match.id}
                 initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
@@ -283,7 +305,7 @@ export default function HomeScreen({
             ))}
 
           {gameFeedView === 'upcoming' &&
-            nextGames.map((fixture, index) => (
+            nextGames.slice(feedPage * 4, feedPage * 4 + 4).map((fixture, index) => (
               <motion.article
                 key={fixture.id}
                 className={`grid min-h-[76px] grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-3 rounded-2xl border px-3 py-3 shadow-[0_2px_7px_rgba(0,0,0,0.05)] ${
@@ -315,10 +337,11 @@ export default function HomeScreen({
                   </p>
                 </div>
 
-                <TeamLogo
-                  name={fixture.opponentLogoName}
-                  className="h-10 w-10 border border-border/10 bg-white shadow-sm"
-                />
+                {/\bcup\b/i.test(`${fixture.opponent} ${fixture.event.eventText}`) ? (
+                  <span role="img" aria-label="Cup game" className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl shadow-sm">🏆</span>
+                ) : (
+                  <TeamLogo name={fixture.opponentLogoName} className="h-10 w-10 border border-border/10 bg-white shadow-sm" />
+                )}
               </motion.article>
             ))}
 
@@ -337,6 +360,13 @@ export default function HomeScreen({
             )}
             </motion.div>
           </AnimatePresence>
+          {feedCount > 4 && (
+            <nav aria-label={`${gameFeedView === 'results' ? 'Results' : 'Upcoming games'} pages`} className="flex flex-wrap items-center justify-between gap-2 px-2 pt-3 text-xs font-bold text-brand-maroon dark:text-red-300">
+              <button type="button" disabled={feedPage === 0} onClick={() => changeFeedPage(-1)} className="min-h-11 disabled:opacity-30">« {gameFeedView === 'results' ? 'Newer Results' : 'Previous Games'}</button>
+              <span role="status" className="text-[10px] text-foreground/60">{feedPage * 4 + 1}–{Math.min((feedPage + 1) * 4, feedCount)} of {feedCount}</span>
+              <button type="button" disabled={feedPage === lastPage} onClick={() => changeFeedPage(1)} className="min-h-11 disabled:opacity-30">{gameFeedView === 'results' ? 'Previous Results' : 'Next Games'} »</button>
+            </nav>
+          )}
         </div>
       </section>
 

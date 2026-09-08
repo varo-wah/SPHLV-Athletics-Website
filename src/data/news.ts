@@ -1,3 +1,4 @@
+import sportsReportSeptember4 from '../assets/news/sports-report-sep-4.jpg';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import dansonWijayaPlayerOfWeek from '../assets/news/danson-wijaya-player-of-week.jpg';
 import jasonSuhendraPlayerOfWeek from '../assets/news/jason-suhendra-player-of-week.jpg';
@@ -36,10 +37,24 @@ export interface NewsArticle {
   sections?: readonly NewsArticleSection[];
   posterImages?: readonly NewsArticleImage[];
   youtubeVideoId?: string;
+  videoUrl?: string;
   publicationChannel: NewsPublicationChannel;
 }
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
+  {
+    id: '2026-09-04-sports-report',
+    title: 'LV Sports Report: September 4, 2026',
+    publishedAt: '2026-09-04',
+    dateLabel: 'SEPTEMBER 4, 2026',
+    category: 'SPORTS REPORT',
+    excerpt: 'Watch the September 4 edition of the LV Sports Report with our student presenters.',
+    image: sportsReportSeptember4,
+    imageAlt: 'Student presenters announcing the September 4 LV Sports Report',
+    body: ['Catch up with LV Athletics in the September 4 edition of the Sports Report. Watch the full episode using the link below.'],
+    videoUrl: "https://sphacid-my.sharepoint.com/personal/mark_heil_sph_ac_id/_layouts/15/stream.aspx?id=%2Fpersonal%2Fmark%5Fheil%5Fsph%5Fac%5Fid%2FDocuments%2F%F0%9F%A6%85%20LV%20Game%20Day%2FLV%20Sport%27s%20Report%20Videos%2FSep%204%20%2D%20Sport%27s%20Report%20Video%2Emp4",
+    publicationChannel: 'published',
+  },
   {
     id: '2026-volleyball-players-of-the-week-nicolyne-alianna-jason-suhendra',
     title: 'Volleyball Players of the Week: Nicolyne Alianna and Jason Suhendra',
@@ -81,17 +96,17 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
   },
   {
     id: '2026-smp-basketball-player-of-the-week-dansen-wijaya',
-    title: 'SMP Basketball Player of the Week: Dansen Wijaya',
+    title: 'SMP Basketball Player of the Week: Danson Wijaya',
     publishedAt: '2026-08-26',
     dateLabel: 'AUGUST 26, 2026',
     category: 'PLAYER OF THE WEEK',
-    excerpt: 'Grade 9 student Dansen Wijaya sparked a second-half rally against ACS with scoring, rebounding, playmaking, and active defense.',
+    excerpt: 'Grade 9 student Danson Wijaya sparked a second-half rally against ACS with scoring, rebounding, playmaking, and active defense.',
     image: dansonWijayaPlayerOfWeek,
     imageAlt: 'Danson Wijaya SMP Basketball Player of the Week poster',
     body: [
-      'Grade 9 student Dansen Wijaya earned SMP Basketball Player of the Week after an all-around performance against ACS.',
-      'With SPH Lippo Village trailing by 15 points, Dansen stepped up on both ends of the floor. His active defense and quick transition play helped cut the deficit to six points late in the fourth quarter. He led the team in scoring on 45% shooting, while also leading the squad in rebounds and assists and adding a steal.',
-      'Dansen’s effort and all-around play provided a major lift for the team during its second-half rally.',
+      'Grade 9 student Danson Wijaya earned SMP Basketball Player of the Week after an all-around performance against ACS.',
+      'With SPH Lippo Village trailing by 15 points, Danson stepped up on both ends of the floor. His active defense and quick transition play helped cut the deficit to six points late in the fourth quarter. He led the team in scoring on 45% shooting, while also leading the squad in rebounds and assists and adding a steal.',
+      'Danson’s effort and all-around play provided a major lift for the team during its second-half rally.',
     ],
     posterImages: [
       {

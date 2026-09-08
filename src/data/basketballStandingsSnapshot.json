@@ -1,0 +1,226 @@
+[
+  {
+    "games": [
+      {
+        "teamA": "ACG",
+        "teamB": "ACS",
+        "scoreA": 15,
+        "scoreB": 58
+      },
+      {
+        "teamA": "ACG",
+        "teamB": "BSJ",
+        "scoreA": 2,
+        "scoreB": 27
+      },
+      {
+        "teamA": "ACS",
+        "teamB": "BSJ",
+        "scoreA": 59,
+        "scoreB": 54
+      },
+      {
+        "teamA": "ACS",
+        "teamB": "SPH-LV",
+        "scoreA": 45,
+        "scoreB": 37
+      },
+      {
+        "teamA": "BSJ",
+        "teamB": "STL",
+        "scoreA": 29,
+        "scoreB": 46
+      },
+      {
+        "teamA": "GJS",
+        "teamB": "SPH-LV",
+        "scoreA": 16,
+        "scoreB": 69
+      },
+      {
+        "teamA": "SPH-KV",
+        "teamB": "SPH-LV",
+        "scoreA": 6,
+        "scoreB": 98
+      }
+    ],
+    "records": [
+      {
+        "team": "ACG",
+        "wins": 0,
+        "losses": 2,
+        "points": 0,
+        "forValue": 17,
+        "againstValue": 85
+      },
+      {
+        "team": "ACS",
+        "wins": 3,
+        "losses": 0,
+        "points": 6,
+        "forValue": 162,
+        "againstValue": 106
+      },
+      {
+        "team": "AIS",
+        "wins": 0,
+        "losses": 0,
+        "points": 0,
+        "forValue": 0,
+        "againstValue": 0
+      },
+      {
+        "team": "BSJ",
+        "wins": 1,
+        "losses": 2,
+        "points": 2,
+        "forValue": 110,
+        "againstValue": 107
+      },
+      {
+        "team": "GJS",
+        "wins": 0,
+        "losses": 1,
+        "points": 0,
+        "forValue": 16,
+        "againstValue": 69
+      },
+      {
+        "team": "SPH-KV",
+        "wins": 0,
+        "losses": 1,
+        "points": 0,
+        "forValue": 6,
+        "againstValue": 98
+      },
+      {
+        "team": "SPH-LV",
+        "wins": 2,
+        "losses": 1,
+        "points": 4,
+        "forValue": 204,
+        "againstValue": 67
+      },
+      {
+        "team": "STL",
+        "wins": 1,
+        "losses": 0,
+        "points": 2,
+        "forValue": 46,
+        "againstValue": 29
+      }
+    ]
+  },
+  {
+    "games": [
+      {
+        "teamA": "ACG",
+        "teamB": "BSJ",
+        "scoreA": 6,
+        "scoreB": 48
+      },
+      {
+        "teamA": "ACS",
+        "teamB": "ACG",
+        "scoreA": 32,
+        "scoreB": 5
+      },
+      {
+        "teamA": "ACS",
+        "teamB": "BSJ",
+        "scoreA": 6,
+        "scoreB": 21
+      },
+      {
+        "teamA": "ACS",
+        "teamB": "SPH-LV",
+        "scoreA": 18,
+        "scoreB": 47
+      },
+      {
+        "teamA": "BSJ",
+        "teamB": "STL",
+        "scoreA": 9,
+        "scoreB": 29
+      },
+      {
+        "teamA": "GJS",
+        "teamB": "SPH-LV",
+        "scoreA": 2,
+        "scoreB": 60
+      },
+      {
+        "teamA": "SPH-KV",
+        "teamB": "SPH-LV",
+        "scoreA": 9,
+        "scoreB": 61
+      }
+    ],
+    "records": [
+      {
+        "team": "ACG",
+        "wins": 0,
+        "losses": 2,
+        "points": 0,
+        "forValue": 11,
+        "againstValue": 80
+      },
+      {
+        "team": "ACS",
+        "wins": 1,
+        "losses": 2,
+        "points": 2,
+        "forValue": 56,
+        "againstValue": 73
+      },
+      {
+        "team": "AIS",
+        "wins": 0,
+        "losses": 0,
+        "points": 0,
+        "forValue": 0,
+        "againstValue": 0
+      },
+      {
+        "team": "BSJ",
+        "wins": 2,
+        "losses": 1,
+        "points": 4,
+        "forValue": 78,
+        "againstValue": 41
+      },
+      {
+        "team": "GJS",
+        "wins": 0,
+        "losses": 1,
+        "points": 0,
+        "forValue": 2,
+        "againstValue": 60
+      },
+      {
+        "team": "SPH-KV",
+        "wins": 0,
+        "losses": 1,
+        "points": 0,
+        "forValue": 9,
+        "againstValue": 61
+      },
+      {
+        "team": "SPH-LV",
+        "wins": 3,
+        "losses": 0,
+        "points": 6,
+        "forValue": 168,
+        "againstValue": 29
+      },
+      {
+        "team": "STL",
+        "wins": 1,
+        "losses": 0,
+        "points": 2,
+        "forValue": 29,
+        "againstValue": 9
+      }
+    ]
+  }
+]
