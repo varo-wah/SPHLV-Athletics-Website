@@ -44,15 +44,16 @@ export interface NewsArticle {
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
   {
     id: '2026-09-04-sports-report',
-    title: 'LV Sports Report: September 4, 2026',
-    publishedAt: '2026-09-04',
-    dateLabel: 'SEPTEMBER 4, 2026',
+    title: 'LV Sports Report: September 2, 2026',
+    publishedAt: '2026-09-02',
+    dateLabel: 'SEPTEMBER 2, 2026',
     category: 'SPORTS REPORT',
-    excerpt: 'Watch the September 4 edition of the LV Sports Report with our student presenters.',
+    excerpt: 'Watch the September 2 edition of the LV Sports Report with our student presenters.',
     image: sportsReportSeptember4,
-    imageAlt: 'Student presenters announcing the September 4 LV Sports Report',
-    body: ['Catch up with LV Athletics in the September 4 edition of the Sports Report. Watch the full episode using the link below.'],
-    videoUrl: "https://sphacid-my.sharepoint.com/personal/mark_heil_sph_ac_id/_layouts/15/stream.aspx?id=%2Fpersonal%2Fmark%5Fheil%5Fsph%5Fac%5Fid%2FDocuments%2F%F0%9F%A6%85%20LV%20Game%20Day%2FLV%20Sport%27s%20Report%20Videos%2FSep%204%20%2D%20Sport%27s%20Report%20Video%2Emp4",
+    imageAlt: 'Student presenters announcing the September 2 LV Sports Report',
+    body: ['Catch up with LV Athletics in the September 2 edition of the Sports Report. Watch the full episode below.'],
+    youtubeVideoId: 'JCu8694AuqA',
+    videoUrl: 'https://www.youtube.com/watch?v=JCu8694AuqA',
     publicationChannel: 'published',
   },
   {

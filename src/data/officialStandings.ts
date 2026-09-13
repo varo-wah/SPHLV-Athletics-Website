@@ -1,3 +1,5 @@
+import soccerSnapshot from './soccerStandingsSnapshot.json';
+import { parseSoccerStandings } from '../services/soccerStandings';
 import basketballSnapshot from './basketballStandingsSnapshot.json';
 import type { Standing } from '../services/parsers';
 import type { DivisionTab, GenderTab, SheetSport, SportTab } from '../types';
@@ -76,8 +78,8 @@ function table(
 }
 
 export const OFFICIAL_STANDINGS: Standing[] = [
-  ...table('Soccer', 'Soccer', 'SMA', 'Boys', seniorSchools, []),
-  ...table('Soccer', 'Soccer', 'SMA', 'Girls', seniorSchools, []),
+  ...parseSoccerStandings(soccerSnapshot.boys, 'Boys'),
+  ...parseSoccerStandings(soccerSnapshot.girls, 'Girls'),
   ...table('Volleyball', 'Volleyball', 'SMA', 'Boys', seniorSchools, [
     { team: 'SPH-LV', wins: 1, points: 2, forValue: 2, againstValue: 0 },
     { team: 'SPH-KV', losses: 1, points: 0, forValue: 0, againstValue: 2 },

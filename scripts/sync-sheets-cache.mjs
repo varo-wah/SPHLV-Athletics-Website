@@ -26,7 +26,7 @@ function assertExpectedCsv(source, csv) {
   if (source.type === "results" && !normalized.includes("home team")) {
     throw new Error(`${source.label} is missing the results header`);
   }
-  if (source.type === "standings" && !normalized.includes("team")) {
+  if (source.type === "standings" && !normalized.includes("team") && !normalized.includes("standings/ladder")) {
     throw new Error(`${source.label} is missing the standings header`);
   }
   if (source.type === "schedule" && !normalized.includes("season")) {

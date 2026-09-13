@@ -1,6 +1,8 @@
+import { parseSoccerStandings } from '../services/soccerStandings';
 import { createSourceRetriever, type RemoteSourceState } from '../services/sourceRetrieval';
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  SHEET_URLS,
   MASTER_SCHEDULE_URLS,
   RESULT_SHEET_SOURCES,
   hasValidSheetUrl,
@@ -167,9 +169,17 @@ export function useAthleticsData(): AthleticsDataState {
         })
       );
 
+      const soccerStandingsPromise = Promise.all((['Boys', 'Girls'] as const).map(async (gender) => {
+        const url = gender === 'Boys' ? SHEET_URLS.soccerBoysStandings : SHEET_URLS.soccerGirlsStandings;
+        return retrieve(`soccer-${gender}-standings`, `Soccer ${gender} standings`, 'standings', url,
+          async (sourceUrl) => parseSoccerStandings(await fetchCsvMatrix(sourceUrl), gender),
+          OFFICIAL_STANDINGS.filter((row) => row.sportKey === 'Soccer' && row.genderGroup === gender));
+      }));
+
       const [
         loadedResultFeeds,
         masterScheduleResults,
+        soccerStandingResults,
       ] = await Promise.all([
         loadResultFeeds(configuredResultSources, async (url, source) => {
           const result = await retrieve(source.id, source.displayName, 'results', url, fetchCsvRows, [] as CsvRow[]);
@@ -177,6 +187,7 @@ export function useAthleticsData(): AthleticsDataState {
           return result.rows;
         }, resultRowsCache.current),
         masterScheduleResultsPromise,
+        soccerStandingsPromise,
       ]);
 
       const parsedBySource = new Map(
@@ -193,7 +204,7 @@ export function useAthleticsData(): AthleticsDataState {
       const basketballMatches = matches.filter((match) => match.sportKey === "Basketball");
       const volleyballMatches = matches.filter((match) => match.sportKey === "Volleyball");
 
-      const standings = OFFICIAL_STANDINGS;
+      const standings = [...OFFICIAL_STANDINGS.filter((row) => row.sportKey !== 'Soccer'), ...soccerStandingResults.flatMap((result) => result.rows)];
       const soccerStandings = standings.filter((standing) => standing.sportKey === "Soccer");
       const basketballStandings = standings.filter((standing) => standing.sportKey === "Basketball");
       const volleyballStandings = standings.filter((standing) => standing.sportKey === "Volleyball");
@@ -230,6 +241,9 @@ export function useAthleticsData(): AthleticsDataState {
       const unconfiguredResultCount = resultSourceStates.filter((source) => !source.configured).length;
 
       const warningParts: string[] = [];
+      if (soccerStandingResults.some((result) => result.failed)) {
+        warningParts.push('Soccer standings could not refresh; the last verified standings are shown.');
+      }
       if (unconfiguredResultCount > 0) {
         warningParts.push(`${unconfiguredResultCount} result sheet${unconfiguredResultCount === 1 ? " is" : "s are"} awaiting publication.`);
       }

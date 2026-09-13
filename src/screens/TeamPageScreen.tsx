@@ -15,6 +15,7 @@ import {
 import type { JaacSchool } from '../data/jaacSchools';
 import type { ScheduleEvent } from '../data/scheduleTypes';
 import { rosterForTeam } from '../data/teamRosters';
+import soccerSnapshot from '../data/soccerStandingsSnapshot.json';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 import {
   PAGE_TRANSITION,
@@ -172,6 +173,10 @@ export default function TeamPageScreen({
       standing.genderGroup === gender,
   );
   const isPreseasonStandings = false;
+  const soccerSource = athleticsDataState?.remoteSources.find((source) => source.id === `soccer-${gender}-standings`);
+  const standingsDate = sport === 'Soccer'
+    ? new Date(soccerSource?.publishedAt ?? soccerSnapshot.verifiedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' })
+    : sport === 'Basketball' ? 'Sep 8' : 'Aug 27';
   const differenceLabel =
     sport === 'Soccer'
       ? 'GD'
@@ -571,7 +576,7 @@ export default function TeamPageScreen({
                     {standingsRows.length} Teams ·{' '}
                     {isPreseasonStandings
                       ? 'All tied 0–0'
-                      : 'Verified Aug 27'}
+                      : `Data as of ${standingsDate}`}
                   </span>
                 </div>
               </div>
