@@ -130,9 +130,6 @@ function AthleticsApp() {
           onOpenLogin={openLoginModal}
         />
         
-        {['Home', 'TeamPage', 'Standings'].includes(activeTab) && (
-          <DataStatus state={athleticsDataState} tab={activeTab} teamId={route.team?.id} />
-        )}
 
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
@@ -145,6 +142,11 @@ function AthleticsApp() {
             {activeScreen}
           </motion.div>
         </AnimatePresence>
+
+        {['Home', 'TeamPage', 'Standings'].includes(activeTab) && (
+          <DataStatus state={athleticsDataState} tab={activeTab} teamId={route.team?.id} />
+        )}
+
         
         <Sidebar 
           isOpen={isSidebarOpen} 
