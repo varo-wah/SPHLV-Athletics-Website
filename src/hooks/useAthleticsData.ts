@@ -23,6 +23,7 @@ import {
   SheetMatch,
   parseResultRows,
 } from "../services/parsers";
+import { mergeGameDayResults } from '../services/gamedayResults';
 import { loadResultFeeds } from "../services/resultFeeds";
 
 export interface ResultSourceState {
@@ -197,9 +198,9 @@ export function useAthleticsData(): AthleticsDataState {
         ])
       );
 
-      const matches = loadedResultFeeds.flatMap((feed) => (
+      const matches = mergeGameDayResults(loadedResultFeeds.flatMap((feed) => (
         parsedBySource.get(feed.source.id)?.matches ?? []
-      ));
+      )), RESULT_SHEET_SOURCES);
       const soccerMatches = matches.filter((match) => match.sportKey === "Soccer");
       const basketballMatches = matches.filter((match) => match.sportKey === "Basketball");
       const volleyballMatches = matches.filter((match) => match.sportKey === "Volleyball");
