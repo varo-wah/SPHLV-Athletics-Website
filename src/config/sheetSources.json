@@ -1,7 +1,9 @@
 {
   "standings": {
     "soccer": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHaYs7n4UH_LqQPwGlDJzBlO8LQP0VXvX-l4uB-jvj_240jNrtBZmaXohGj5j7rg/pub?gid=730352135&single=true&output=csv",
-    "basketball": ""
+    "basketball": "",
+    "soccerBoys": "https://docs.google.com/spreadsheets/d/1-t0FXJKLwUz7_mO0Vk3A2CvD1vVoJ-u5LkF-rphwOd4/export?format=csv&gid=1754960818&range=A1:L11&output=csv",
+    "soccerGirls": "https://docs.google.com/spreadsheets/d/1-t0FXJKLwUz7_mO0Vk3A2CvD1vVoJ-u5LkF-rphwOd4/export?format=csv&gid=176213037&range=A1:L11&output=csv"
   },
   "results": [
     {

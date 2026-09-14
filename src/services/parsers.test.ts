@@ -13,6 +13,21 @@ const soccerSource: ResultSourceMetadata = {
   genderGroup: "Boys",
 };
 
+test('corrects both known Dansen stat entries only for SMP boys basketball', () => {
+  const rows = [{
+    Date: '22-Aug-2026', 'Home Team': 'SPH LV', 'Home Score': '38',
+    'Away Team': 'ACS-A', 'Away Score': '45',
+    Stats: 'Dansen: team-high points and rebounds (45% shooting)\nDansen Wijaya (#11): 8 rebounds',
+  }];
+  const basketballSource: ResultSourceMetadata = {
+    ...soccerSource, teamId: 'basketball-smp-boys', sport: 'Basketball', sportKey: 'Basketball', level: 'SMP',
+  };
+  assert.deepEqual(parseResultRows(rows, basketballSource).matches[0].statLeaders, [
+    'Danson: team-high points and rebounds (45% shooting)', 'Danson Wijaya (#11): 8 rebounds',
+  ]);
+  assert.match(parseResultRows(rows, soccerSource).matches[0].statLeaders![0], /Dansen/);
+});
+
 test("parseCsv recognizes the seven-column manager result format", () => {
   const rows = parseCsv([
     "SPH LV Varsity Boys Soccer Results,,,,,,",

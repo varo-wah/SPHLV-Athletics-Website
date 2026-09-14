@@ -3,6 +3,8 @@ import sheetSources from "./sheetSources.json";
 
 export const SHEET_URLS = {
   soccerStandings: sheetSources.standings.soccer,
+  soccerBoysStandings: sheetSources.standings.soccerBoys,
+  soccerGirlsStandings: sheetSources.standings.soccerGirls,
   basketballStandings: sheetSources.standings.basketball,
 };
 

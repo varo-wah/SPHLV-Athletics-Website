@@ -374,6 +374,11 @@ export function parseResultRows(
       duplicateRowCount += 1;
     }
 
+    // Correct the two known upstream stats spellings without altering other teams.
+    const correctPlayerName = (value: string) => source.teamId === 'basketball-smp-boys'
+      ? value.replace(/\bDansen\b/gi, 'Danson')
+      : value;
+
     matchesByKey.set(matchKey, {
       id: matchKey,
       sourceId: source.id,
@@ -400,8 +405,8 @@ export function parseResultRows(
       notes: "",
       matchType: get(row, "Match Type", "Game Type"),
       setScores: lines(get(row, "Set Scores", "Sets")),
-      statLeaders: lines(get(row, "Stat Leaders", "Statistics", "Stats")),
-      highlights: lines(get(row, "Highlights", "Notable Moments")),
+      statLeaders: lines(correctPlayerName(get(row, "Stat Leaders", "Statistics", "Stats"))),
+      highlights: lines(correctPlayerName(get(row, "Highlights", "Notable Moments"))),
       set1For: null,
       set1Against: null,
       set2For: null,
