@@ -68,3 +68,8 @@ test('uses only the opponent name for home and away fixtures', () => {
     { opponent: 'SSL', teamCode: 'VGS' },
   ]);
 });
+
+test('keeps both opponent logos on a combined JAAC fixture', () => {
+  const [fixture] = homeUpcomingFixtures([event({ team: 'SMP Boys & Girls Basketball', sportKey: 'Basketball', eventText: 'AIS/STL @ LV', raw: 'AIS/STL @ LV', opponent: 'AIS/STL', time: null })]);
+  assert.deepEqual(fixture.opponentLogoNames, ['AIS', 'SSL']);
+});

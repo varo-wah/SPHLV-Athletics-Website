@@ -26,3 +26,17 @@ test('preserves a corrected published score and does not attach conflicting revi
   const corrected = { ...fixture, scoreFor: 3, homeScore: 3, statLeaders: ['Corrected source stats'], highlights: [] };
   assert.deepEqual(mergeGameDayResults([corrected], sources)[0], corrected);
 });
+
+test('adds National High results once and recognizes the full school name from a later feed', () => {
+  const basketballSources: ResultSourceMetadata[] = ['Boys', 'Girls'].map(gender => ({
+    id: `basketball-${gender}`, teamId: `basketball-smp-${gender.toLowerCase()}`, displayName: gender,
+    sport: 'Basketball', sportKey: 'Basketball', level: 'SMP', genderGroup: gender as 'Boys' | 'Girls',
+  }));
+  const matches = mergeGameDayResults([], basketballSources);
+  assert.deepEqual(matches.map(m => [m.scoreFor, m.scoreAgainst]), [[91, 20], [43, 9]]);
+  const published = { ...matches[0], id: 'published-national', opponent: 'National High School' };
+  const merged = mergeGameDayResults([published, matches[1]], basketballSources);
+  assert.equal(merged.length, 2);
+  assert.equal(merged[0].id, 'published-national');
+  assert.equal(merged[1].locationType, 'TBD');
+});

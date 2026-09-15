@@ -1,3 +1,9 @@
+import poster0 from '../assets/news/lenka-thambrin-pow-sep9.png';
+import poster1 from '../assets/news/jacob-chandra-pow-sep9.png';
+import poster2 from '../assets/news/jaehun-oh-pow-sep9.png';
+import poster3 from '../assets/news/jillian-wongso-pow-sep9.png';
+import poster4 from '../assets/news/samantha-prijanto-pow-sep9.png';
+import poster5 from '../assets/news/sehun-jeong-pow-sep9.png';
 import sportsReportSeptember4 from '../assets/news/sports-report-sep-4.jpg';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import dansonWijayaPlayerOfWeek from '../assets/news/danson-wijaya-player-of-week.jpg';
@@ -42,6 +48,55 @@ export interface NewsArticle {
 }
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
+  {
+    id: '2026-09-09-volleyball-players-of-the-week',
+    title: 'Volleyball Players of the Week: Samantha Prijanto and Sehun Jeong',
+    publishedAt: '2026-09-09',
+    dateLabel: 'SEPTEMBER 9, 2026',
+    category: 'PLAYER OF THE WEEK',
+    excerpt: 'Recognizing Samantha Prijanto and Sehun Jeong in the September 9 Player of the Week edition.',
+    image: poster4,
+    imageAlt: 'Samantha Prijanto Player of the Week poster',
+    body: ['SPH Lippo Village Athletics recognizes Samantha Prijanto and Sehun Jeong as Volleyball Players of the Week. Their official posters are featured here.'],
+    posterImages: [
+      { src: poster4, alt: 'Samantha Prijanto Volleyball Player of the Week poster' },
+      { src: poster5, alt: 'Sehun Jeong Volleyball Player of the Week poster' },
+    ],
+    publicationChannel: 'published',
+  },
+  {
+    id: '2026-09-09-soccer-players-of-the-week',
+    title: 'Soccer Players of the Week: Jillian Wongso and Jaehun Oh',
+    publishedAt: '2026-09-09',
+    dateLabel: 'SEPTEMBER 9, 2026',
+    category: 'PLAYER OF THE WEEK',
+    excerpt: 'Recognizing Jillian Wongso and Jaehun Oh in the September 9 Player of the Week edition.',
+    image: poster3,
+    imageAlt: 'Jillian Wongso Player of the Week poster',
+    body: ['SPH Lippo Village Athletics recognizes Jillian Wongso and Jaehun Oh as Soccer Players of the Week. Their official posters are featured here.'],
+    posterImages: [
+      { src: poster3, alt: 'Jillian Wongso Soccer Player of the Week poster' },
+      { src: poster2, alt: 'Jaehun Oh Soccer Player of the Week poster' },
+    ],
+    publicationChannel: 'published',
+  },
+  {
+    id: '2026-09-09-smp-basketball-players-of-the-week',
+    title: 'SMP Basketball Players of the Week: Lenka Thambrin and Jacob Chandra',
+    publishedAt: '2026-09-09',
+    dateLabel: 'SEPTEMBER 9, 2026',
+    category: 'PLAYER OF THE WEEK',
+    excerpt: 'Recognizing Lenka Thambrin and Jacob Chandra in the September 9 Player of the Week edition.',
+    image: poster0,
+    imageAlt: 'Lenka Thambrin Player of the Week poster',
+    body: ['SPH Lippo Village Athletics recognizes Lenka Thambrin and Jacob Chandra as SMP Basketball Players of the Week. Their official posters are featured here.'],
+    posterImages: [
+      { src: poster0, alt: 'Lenka Thambrin SMP Basketball Player of the Week poster' },
+      { src: poster1, alt: 'Jacob Chandra SMP Basketball Player of the Week poster' },
+    ],
+    publicationChannel: 'published',
+  },
+
   {
     id: '2026-09-04-sports-report',
     title: 'LV Sports Report: September 2, 2026',
