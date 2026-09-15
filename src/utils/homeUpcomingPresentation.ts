@@ -7,8 +7,16 @@ export interface HomeUpcomingFixture {
   event: ScheduleEvent;
   opponent: string;
   opponentLogoName: string;
+  opponentLogoNames: string[];
   teamCode: string;
   time: string | null;
+}
+
+export function opponentLogoNames(value: string): string[] {
+  const schools = value.split(/\s*(?:\/|&|\+|,|\band\b)\s*/i)
+    .map((part) => jaacSchoolForName(part)?.code)
+    .filter((code): code is NonNullable<typeof code> => Boolean(code));
+  return schools.length ? [...new Set(schools)] : [value];
 }
 
 function teamCodeForEvent(event: ScheduleEvent) {
@@ -68,6 +76,7 @@ export function homeUpcomingFixtures(events: ScheduleEvent[]) {
         event,
         opponent: school?.code ?? opponent.toUpperCase(),
         opponentLogoName: school?.code ?? opponent,
+        opponentLogoNames: opponentLogoNames(opponent),
         teamCode,
         time: line.time ?? event.time ?? null,
       } satisfies HomeUpcomingFixture];
@@ -82,6 +91,7 @@ export function homeUpcomingFixtures(events: ScheduleEvent[]) {
       event,
       opponent: school?.code ?? opponent.toUpperCase(),
       opponentLogoName: school?.code ?? opponent,
+        opponentLogoNames: opponentLogoNames(opponent),
       teamCode,
       time: event.time ?? null,
     } satisfies HomeUpcomingFixture];

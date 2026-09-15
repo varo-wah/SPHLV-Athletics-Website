@@ -7,12 +7,28 @@ export interface GameDayUpdate {
   scoreFor: number;
   scoreAgainst: number;
   details: Pick<SheetMatch, 'statLeaders' | 'highlights' | 'matchType'>;
-  newFixture?: { time: string; venue: string };
+  newFixture?: { time: string; venue: string; locationType?: SheetMatch['locationType'] };
 }
 
 // Reviewed GameDay Summaries posts and attached workbook, September 8, 2026.
 // Provenance and unresolved results: docs/gameday-updates-20260914.md.
 export const GAMEDAY_UPDATES: GameDayUpdate[] = [
+  {
+    teamId: 'basketball-smp-boys', date: '2026-09-14', opponent: 'National High', scoreFor: 91, scoreAgainst: 20,
+    newFixture: { time: '', venue: 'SPH LV' },
+    details: {
+      statLeaders: ['Eduardo #80 — 23 points, 7 assists, 8 steals', 'Jacob #72 — 14 points, 12 rebounds, 1 block', 'Rainer #6 — 16 points, 11 assists', 'Eduardo #80 — 11/14 FG (78.6%)', 'Shane #1 — 3/4 three-pointers (75%)'],
+      highlights: ['A 91–20 home win over National High, with the new Horns offense creating open shots.', 'Shane and Danson each made three three-pointers.', 'Jacob and Rainer both recorded double-doubles.', 'With Coby unavailable, Eduardo stepped into the point guard role.'],
+    },
+  },
+  {
+    teamId: 'basketball-smp-girls', date: '2026-09-14', opponent: 'National High', scoreFor: 43, scoreAgainst: 9,
+    newFixture: { time: '', venue: '', locationType: 'TBD' },
+    details: {
+      statLeaders: ['London — 17 points, 8/12 FG (67%), 1/3 three-pointers (33%)', 'Hope — 4 assists, 7 steals, 1 block', 'Hillary — 7 steals', 'Samantha — 3 rebounds', 'Maggie — 3 rebounds'],
+      highlights: ['The SMP girls won 43–9 against National High.', 'London led the scoring with 17 points. Hope and Hillary each collected seven steals, while Samantha and Maggie led the rebounding with three apiece.'],
+    },
+  },
   {
     teamId: 'soccer-sma-boys', date: '2026-08-15', opponent: 'SMK 31', scoreFor: 1, scoreAgainst: 3,
     details: { matchType: 'Friendly', statLeaders: ['Jaehun Oh — 1 goal'], highlights: ['Jaehun Oh scored an unassisted goal.'] },

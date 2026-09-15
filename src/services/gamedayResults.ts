@@ -3,6 +3,7 @@ import { parseResultRows, type ResultSourceMetadata, type SheetMatch } from './p
 
 function opponentKey(value: string): string {
   const key = value.toLowerCase().replace(/[^a-z0-9]/g, '');
+  if (['nh', 'nhs', 'nationalhigh', 'nationalhighschool'].includes(key)) return 'nationalhigh';
   return key === 'kv' || key === 'sphkv' ? 'sphkv' : key;
 }
 
@@ -26,7 +27,7 @@ export function mergeGameDayResults(matches: SheetMatch[], sources: ResultSource
       'Home Team': 'SPH LV', 'Away Team': update.opponent,
       'Home Score': String(update.scoreFor), 'Away Score': String(update.scoreAgainst),
     }], source).matches[0];
-    if (parsed) result.push({ ...parsed, ...update.details });
+    if (parsed) result.push({ ...parsed, ...update.details, locationType: update.newFixture.locationType ?? parsed.locationType });
   }
   return result;
 }

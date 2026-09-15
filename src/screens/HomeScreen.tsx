@@ -308,7 +308,7 @@ export default function HomeScreen({
             nextGames.slice(feedPage * 4, feedPage * 4 + 4).map((fixture, index) => (
               <motion.article
                 key={fixture.id}
-                className={`grid min-h-[76px] grid-cols-[42px_minmax(0,1fr)_42px] items-center gap-3 rounded-2xl border px-3 py-3 shadow-[0_2px_7px_rgba(0,0,0,0.05)] ${
+                className={`grid min-h-[76px] grid-cols-[42px_minmax(0,1fr)_auto] items-center gap-3 rounded-2xl border px-3 py-3 shadow-[0_2px_7px_rgba(0,0,0,0.05)] ${
                   fixture.event.eventType === 'Home Game'
                     ? 'border-brand-maroon/18 bg-white dark:bg-subcard'
                     : 'border-border/12 bg-[#ECEDEF] dark:bg-white/[0.055]'
@@ -340,7 +340,11 @@ export default function HomeScreen({
                 {/\bcup\b/i.test(`${fixture.opponent} ${fixture.event.eventText}`) ? (
                   <span role="img" aria-label="Cup game" className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl shadow-sm">🏆</span>
                 ) : (
-                  <TeamLogo name={fixture.opponentLogoName} className="h-10 w-10 border border-border/10 bg-white shadow-sm" />
+                  <span className="flex shrink-0 -space-x-2">
+                    {fixture.opponentLogoNames.map((name) => (
+                      <span key={name}><TeamLogo name={name} className="h-10 w-10 border-2 border-background bg-white shadow-sm" /></span>
+                    ))}
+                  </span>
                 )}
               </motion.article>
             ))}
