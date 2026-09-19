@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SheetMatch } from '../services/parsers';
-import { presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
+import { penaltyScoreLabel, presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
 import MatchDetailsModal from './MatchDetailsModal';
 import TeamLogo from './TeamLogo';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
@@ -70,6 +70,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
           )}
         </div>
       </div>
+      {match.penalties && <p className="border-t border-border/10 px-3 py-2 text-center text-[10px] font-bold text-foreground/70">{penaltyScoreLabel(match)}</p>}
     </motion.article>
   );
 

@@ -7,6 +7,14 @@ function opponentKey(value: string): string {
   return key === 'kv' || key === 'sphkv' ? 'sphkv' : key;
 }
 
+function applyDetails(match: SheetMatch, details: typeof GAMEDAY_UPDATES[number]['details']): SheetMatch {
+  const merged = { ...match, ...details };
+  if (merged.penalties && merged.scoreFor === merged.scoreAgainst) {
+    merged.result = merged.penalties.scoreFor > merged.penalties.scoreAgainst ? 'W' : 'L';
+  }
+  return merged;
+}
+
 /** Keep reviewed additions across cache refreshes; published result scores win. */
 export function mergeGameDayResults(matches: SheetMatch[], sources: ResultSourceMetadata[]): SheetMatch[] {
   const result = [...matches];
@@ -16,7 +24,7 @@ export function mergeGameDayResults(matches: SheetMatch[], sources: ResultSource
     if (index >= 0) {
       const match = result[index];
       if (match.scoreFor === update.scoreFor && match.scoreAgainst === update.scoreAgainst) {
-        result[index] = { ...match, ...update.details };
+        result[index] = applyDetails(match, update.details);
       }
       continue;
     }
@@ -27,7 +35,7 @@ export function mergeGameDayResults(matches: SheetMatch[], sources: ResultSource
       'Home Team': 'SPH LV', 'Away Team': update.opponent,
       'Home Score': String(update.scoreFor), 'Away Score': String(update.scoreAgainst),
     }], source).matches[0];
-    if (parsed) result.push({ ...parsed, ...update.details, locationType: update.newFixture.locationType ?? parsed.locationType });
+    if (parsed) result.push(applyDetails({ ...parsed, locationType: update.newFixture.locationType ?? parsed.locationType }, update.details));
   }
   return result;
 }

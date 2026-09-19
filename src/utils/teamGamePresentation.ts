@@ -50,10 +50,10 @@ export interface PresentedResultTeam {
 }
 
 export function presentResultTeams(match: SheetMatch): [PresentedResultTeam, PresentedResultTeam] {
-  const homeWon = match.homeScore !== null
+  const homeWon = match.penalties ? (isSphLvTeam(match.homeTeam) ? match.result === 'W' : match.result === 'L') : match.homeScore !== null
     && match.awayScore !== null
     && match.homeScore > match.awayScore;
-  const awayWon = match.homeScore !== null
+  const awayWon = match.penalties ? (isSphLvTeam(match.awayTeam) ? match.result === 'W' : match.result === 'L') : match.homeScore !== null
     && match.awayScore !== null
     && match.awayScore > match.homeScore;
   const ourTeamLabel = sphResultTeamLabel(match);
@@ -70,7 +70,7 @@ export function presentResultTeams(match: SheetMatch): [PresentedResultTeam, Pre
       home: false,
     },
     {
-      name: `@ ${homeName}`,
+      name: match.locationType === 'TBD' || match.locationType === 'Neutral' ? homeName : `@ ${homeName}`,
       sourceName: match.homeTeam,
       score: match.homeScore,
       logo: teamLogoForName(match.homeTeam),
@@ -78,4 +78,8 @@ export function presentResultTeams(match: SheetMatch): [PresentedResultTeam, Pre
       home: true,
     },
   ];
+}
+
+export function penaltyScoreLabel(match: SheetMatch): string | null {
+  return match.penalties ? `SPH-LV ${match.penalties.scoreFor}–${match.penalties.scoreAgainst} on penalties` : null;
 }

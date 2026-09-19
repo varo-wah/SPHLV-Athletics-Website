@@ -40,3 +40,15 @@ test('adds National High results once and recognizes the full school name from a
   assert.equal(merged[0].id, 'published-national');
   assert.equal(merged[1].locationType, 'TBD');
 });
+
+test('keeps regulation scores separate from the semifinal shootout and preserves subsequent corrections', () => {
+  const boys: ResultSourceMetadata[] = [{ ...sources[0], id: 'boys', teamId: 'soccer-sma-boys', genderGroup: 'Boys' }];
+  const matches = mergeGameDayResults([], boys);
+  assert.deepEqual(matches.map(m => [m.opponent, m.scoreFor, m.scoreAgainst, m.result]), [
+    ['SMK-31', 1, 0, 'W'], ['PGRI-83', 1, 1, 'W'], ['SLH Moria', 1, 4, 'L'],
+  ]);
+  assert.deepEqual(matches[1].penalties, { scoreFor: 4, scoreAgainst: 3 });
+  assert.deepEqual(mergeGameDayResults(matches, boys), matches);
+  const corrected = { ...matches[1], scoreFor: 0, homeScore: 0, result: 'L' as const, penalties: undefined, highlights: [] };
+  assert.deepEqual(mergeGameDayResults([corrected], boys)[0], corrected);
+});
