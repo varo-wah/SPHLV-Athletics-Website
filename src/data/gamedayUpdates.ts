@@ -29,7 +29,7 @@ export const GAMEDAY_UPDATES: GameDayUpdate[] = [
     },
   },
   {
-    teamId: 'soccer-sma-boys', date: '2026-09-18', opponent: 'SLH Moria', scoreFor: 1, scoreAgainst: 4,
+    teamId: 'soccer-sma-boys', date: '2026-09-19', opponent: 'SLH Moria', scoreFor: 1, scoreAgainst: 4,
     newFixture: { time: '', venue: '', locationType: 'TBD' },
     details: { matchType: 'Final', highlights: ['SPH-LV lost 1–4 to SLH Moria in the final.'] },
   },
