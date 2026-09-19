@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, useReducedMotion } from 'motion/react';
 import { BarChart3, CalendarDays, MapPin, Sparkles, X } from 'lucide-react';
 import { SheetMatch } from '../services/parsers';
-import { presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
+import { penaltyScoreLabel, presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
 import TeamLogo from './TeamLogo';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, SOFT_SPRING, staggerDelay } from '../config/motion';
 
@@ -151,6 +151,8 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
               </span>
             )}
           </div>
+
+          {match.penalties && <p className="text-sm font-bold text-foreground">{penaltyScoreLabel(match)}</p>}
 
           {setScores.length > 0 && (
             <section>

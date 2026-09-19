@@ -67,6 +67,7 @@ export interface SheetMatch {
   scoreFor: number | null;
   scoreAgainst: number | null;
   notes: string;
+  penalties?: { scoreFor: number; scoreAgainst: number };
   matchType?: string;
   setScores?: string[];
   statLeaders?: string[];

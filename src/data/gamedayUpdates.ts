@@ -6,13 +6,33 @@ export interface GameDayUpdate {
   opponent: string;
   scoreFor: number;
   scoreAgainst: number;
-  details: Pick<SheetMatch, 'statLeaders' | 'highlights' | 'matchType'>;
+  details: Pick<SheetMatch, 'statLeaders' | 'highlights' | 'matchType' | 'penalties'>;
   newFixture?: { time: string; venue: string; locationType?: SheetMatch['locationType'] };
 }
 
 // Reviewed GameDay Summaries posts and attached workbook, September 8, 2026.
 // Provenance and unresolved results: docs/gameday-updates-20260914.md.
 export const GAMEDAY_UPDATES: GameDayUpdate[] = [
+  // Results reported directly by William on September 19, 2026.
+  // Kickoff times, venues and tournament name await confirmation.
+  {
+    teamId: 'soccer-sma-boys', date: '2026-09-16', opponent: 'SMK-31', scoreFor: 1, scoreAgainst: 0,
+    newFixture: { time: '', venue: '', locationType: 'TBD' },
+    details: { highlights: ['SPH-LV won 1–0 against SMK-31.'] },
+  },
+  {
+    teamId: 'soccer-sma-boys', date: '2026-09-18', opponent: 'PGRI-83', scoreFor: 1, scoreAgainst: 1,
+    newFixture: { time: '', venue: '', locationType: 'TBD' },
+    details: {
+      matchType: 'Semifinal', penalties: { scoreFor: 4, scoreAgainst: 3 },
+      highlights: ['SPH-LV advanced to the final with a 4–3 penalty shootout win after a 1–1 draw against PGRI-83.'],
+    },
+  },
+  {
+    teamId: 'soccer-sma-boys', date: '2026-09-18', opponent: 'SLH Moria', scoreFor: 1, scoreAgainst: 4,
+    newFixture: { time: '', venue: '', locationType: 'TBD' },
+    details: { matchType: 'Final', highlights: ['SPH-LV lost 1–4 to SLH Moria in the final.'] },
+  },
   {
     teamId: 'basketball-smp-boys', date: '2026-09-14', opponent: 'National High', scoreFor: 91, scoreAgainst: 20,
     newFixture: { time: '', venue: 'SPH LV' },

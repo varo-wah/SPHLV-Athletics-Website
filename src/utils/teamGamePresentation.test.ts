@@ -58,3 +58,11 @@ test('expands compact result codes into readable outcomes', () => {
   assert.equal(resultOutcomeLabel('L'), 'Loss');
   assert.equal(resultOutcomeLabel('D'), 'Draw');
 });
+
+test('shows the shootout winner without changing the regulation score, home or away', () => {
+  const tied = { ...match, homeScore: 1, awayScore: 1, scoreFor: 1, scoreAgainst: 1, penalties: { scoreFor: 4, scoreAgainst: 3 } };
+  assert.deepEqual(presentResultTeams(tied).map(t => [t.score, t.winner]), [[1, true], [1, false]]);
+  const home = { ...tied, homeTeam: 'SPH LV', awayTeam: 'PGRI-83', locationType: 'TBD' as const };
+  assert.deepEqual(presentResultTeams(home).map(t => [t.score, t.winner]), [[1, false], [1, true]]);
+  assert.equal(presentResultTeams(home)[1].name.startsWith('@'), false);
+});
