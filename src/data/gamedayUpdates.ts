@@ -1,3 +1,4 @@
+import { SEPTEMBER_UPDATES } from './septemberUpdates';
 import type { SheetMatch } from '../services/parsers';
 
 export interface GameDayUpdate {
@@ -6,32 +7,34 @@ export interface GameDayUpdate {
   opponent: string;
   scoreFor: number;
   scoreAgainst: number;
-  details: Pick<SheetMatch, 'statLeaders' | 'highlights' | 'matchType' | 'penalties'>;
+  details: Pick<SheetMatch, 'statLeaders' | 'highlights' | 'matchType' | 'penalties' | 'setScores'>;
+  replacesScore?: { scoreFor: number; scoreAgainst: number };
   newFixture?: { time: string; venue: string; locationType?: SheetMatch['locationType'] };
 }
 
 // Reviewed GameDay Summaries posts and attached workbook, September 8, 2026.
 // Provenance and unresolved results: docs/gameday-updates-20260914.md.
 export const GAMEDAY_UPDATES: GameDayUpdate[] = [
+  ...SEPTEMBER_UPDATES,
   // Results reported directly by William on September 19, 2026.
   // Kickoff times, venues and tournament name await confirmation.
   {
     teamId: 'soccer-sma-boys', date: '2026-09-16', opponent: 'SMK-31', scoreFor: 1, scoreAgainst: 0,
     newFixture: { time: '', venue: '', locationType: 'TBD' },
-    details: { highlights: ['SPH-LV won 1–0 against SMK-31.'] },
+    details: { matchType: 'SPH Cup', statLeaders: ['Solomon Schleper — 1 goal'], highlights: ['Solomon Schleper scored the winning free kick near the end of the match.'] },
   },
   {
     teamId: 'soccer-sma-boys', date: '2026-09-18', opponent: 'PGRI-83', scoreFor: 1, scoreAgainst: 1,
     newFixture: { time: '', venue: '', locationType: 'TBD' },
     details: {
-      matchType: 'Semifinal', penalties: { scoreFor: 4, scoreAgainst: 3 },
-      highlights: ['SPH-LV advanced to the final with a 4–3 penalty shootout win after a 1–1 draw against PGRI-83.'],
+      matchType: 'SPH Cup semifinal', statLeaders: ['Solomon Schleper — 1 goal'], penalties: { scoreFor: 4, scoreAgainst: 3 },
+      highlights: ['SPH-LV advanced to the final with a 4–3 penalty shootout win after a 1–1 draw against PGRI-83. Solomon scored the equalizer from a free kick.'],
     },
   },
   {
     teamId: 'soccer-sma-boys', date: '2026-09-19', opponent: 'SLH Moria', scoreFor: 1, scoreAgainst: 4,
     newFixture: { time: '', venue: '', locationType: 'TBD' },
-    details: { matchType: 'Final', highlights: ['SPH-LV lost 1–4 to SLH Moria in the final.'] },
+    details: { matchType: 'SPH Cup final', statLeaders: ['Ben — 1 goal'], highlights: ['SPH-LV finished runner-up after a 1–4 final against SLH Moria. Ben scored from a corner-kick set piece after LV went 1–0 down.'] },
   },
   {
     teamId: 'basketball-smp-boys', date: '2026-09-14', opponent: 'National High', scoreFor: 91, scoreAgainst: 20,

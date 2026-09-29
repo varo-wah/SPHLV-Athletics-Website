@@ -1,8 +1,9 @@
-import { parseSoccerStandings } from '../services/soccerStandings';
+import { VOLLEYBALL_CUP_SCHEDULE } from '../data/volleyballCupSchedule';
+import { parseLeagueStandings } from '../services/leagueStandings';
 import { createSourceRetriever, type RemoteSourceState } from '../services/sourceRetrieval';
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  SHEET_URLS,
+  LEAGUE_STANDING_SOURCES,
   MASTER_SCHEDULE_URLS,
   RESULT_SHEET_SOURCES,
   hasValidSheetUrl,
@@ -170,17 +171,15 @@ export function useAthleticsData(): AthleticsDataState {
         })
       );
 
-      const soccerStandingsPromise = Promise.all((['Boys', 'Girls'] as const).map(async (gender) => {
-        const url = gender === 'Boys' ? SHEET_URLS.soccerBoysStandings : SHEET_URLS.soccerGirlsStandings;
-        return retrieve(`soccer-${gender}-standings`, `Soccer ${gender} standings`, 'standings', url,
-          async (sourceUrl) => parseSoccerStandings(await fetchCsvMatrix(sourceUrl), gender),
-          OFFICIAL_STANDINGS.filter((row) => row.sportKey === 'Soccer' && row.genderGroup === gender));
-      }));
+      const leagueStandingsPromise = Promise.all(LEAGUE_STANDING_SOURCES.map(({ sport, gender, url }) =>
+        retrieve(`${sport.toLowerCase()}-${gender}-standings`, `${sport} ${gender} standings`, 'standings', url,
+          async (sourceUrl) => parseLeagueStandings(await fetchCsvMatrix(sourceUrl), sport, gender),
+          OFFICIAL_STANDINGS.filter((row) => row.sportKey === sport && row.genderGroup === gender))));
 
       const [
         loadedResultFeeds,
         masterScheduleResults,
-        soccerStandingResults,
+        leagueStandingResults,
       ] = await Promise.all([
         loadResultFeeds(configuredResultSources, async (url, source) => {
           const result = await retrieve(source.id, source.displayName, 'results', url, fetchCsvRows, [] as CsvRow[]);
@@ -188,7 +187,7 @@ export function useAthleticsData(): AthleticsDataState {
           return result.rows;
         }, resultRowsCache.current),
         masterScheduleResultsPromise,
-        soccerStandingsPromise,
+        leagueStandingsPromise,
       ]);
 
       const parsedBySource = new Map(
@@ -205,14 +204,14 @@ export function useAthleticsData(): AthleticsDataState {
       const basketballMatches = matches.filter((match) => match.sportKey === "Basketball");
       const volleyballMatches = matches.filter((match) => match.sportKey === "Volleyball");
 
-      const standings = [...OFFICIAL_STANDINGS.filter((row) => row.sportKey !== 'Soccer'), ...soccerStandingResults.flatMap((result) => result.rows)];
+      const standings = leagueStandingResults.flatMap((result) => result.rows);
       const soccerStandings = standings.filter((standing) => standing.sportKey === "Soccer");
       const basketballStandings = standings.filter((standing) => standing.sportKey === "Basketball");
       const volleyballStandings = standings.filter((standing) => standing.sportKey === "Volleyball");
 
-      const masterScheduleEvents = masterScheduleResults.flatMap((result) => (
+      const masterScheduleEvents = [...masterScheduleResults.flatMap((result) => (
         parseMasterScheduleSeason(result.season, result.matrix)
-      ));
+      )).filter(event => !(event.sportKey === 'Volleyball' && ['2026-09-28', '2026-09-29'].includes(event.date ?? '') && /cup/i.test(event.eventText))), ...VOLLEYBALL_CUP_SCHEDULE];
       const masterScheduleErrorCount = masterScheduleResults.filter((result) => result.failed).length;
       const loadedFeedById = new Map(loadedResultFeeds.map((feed) => [feed.source.id, feed]));
       const resultSourceStates = RESULT_SHEET_SOURCES.map((source) => {
@@ -242,7 +241,7 @@ export function useAthleticsData(): AthleticsDataState {
       const unconfiguredResultCount = resultSourceStates.filter((source) => !source.configured).length;
 
       const warningParts: string[] = [];
-      if (soccerStandingResults.some((result) => result.failed)) {
+      if (leagueStandingResults.some((result) => result.failed)) {
         warningParts.push('Soccer standings could not refresh; the last verified standings are shown.');
       }
       if (unconfiguredResultCount > 0) {

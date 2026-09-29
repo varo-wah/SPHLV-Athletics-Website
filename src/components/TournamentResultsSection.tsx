@@ -4,7 +4,7 @@ const tournaments = ['SPH Cup', 'JAAC', 'ACSC'] as const;
 
 // Tournament placements are pending until current-season results are confirmed.
 // Keep these separate from completed match scores and regular-season standings.
-export default function TournamentResultsSection() {
+export default function TournamentResultsSection({ teamId }: { teamId?: string } = {}) {
   return (
     <section className="mt-8 space-y-4" aria-label="Tournament results">
       <div className="border-b border-brand-maroon/10 pb-3 dark:border-border/10">
@@ -34,10 +34,10 @@ export default function TournamentResultsSection() {
                   {name}
                 </p>
                 <p className="mt-0.5 text-lg font-black uppercase tracking-tight text-foreground">
-                  Pending
+                  {teamId === 'soccer-sma-boys' && name === 'SPH Cup' ? 'Runner-up' : 'Pending'}
                 </p>
                 <p className="mt-1 text-[11px] font-semibold leading-relaxed text-foreground/48">
-                  Final placement will be posted after the tournament.
+                  {teamId === 'soccer-sma-boys' && name === 'SPH Cup' ? 'September 19, 2026 · Final: SPH-LV 1–4 SLH Moria' : 'Final placement will be posted after the tournament.'}
                 </p>
               </div>
             </div>

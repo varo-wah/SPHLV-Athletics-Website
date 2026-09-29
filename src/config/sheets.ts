@@ -49,3 +49,8 @@ export function hasValidSheetUrl(url: string): boolean {
     url.includes("output=csv")
   );
 }
+
+export const LEAGUE_STANDING_SOURCES = (['Soccer', 'Volleyball', 'Basketball'] as const).flatMap(sport =>
+  (['Boys', 'Girls'] as const).map(gender => ({ sport, gender,
+    url: sheetSources.standings[`${sport.toLowerCase()}${gender}` as keyof typeof sheetSources.standings],
+  })));

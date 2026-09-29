@@ -1,24 +1,13 @@
-import soccerSnapshot from './soccerStandingsSnapshot.json';
-import { parseSoccerStandings } from '../services/soccerStandings';
-import basketballSnapshot from './basketballStandingsSnapshot.json';
+import leagueSnapshot from './leagueStandingsSnapshot.json';
+import { parseLeagueStandings, type LeagueSport } from '../services/leagueStandings';
 import type { Standing } from '../services/parsers';
-import type { DivisionTab, GenderTab, SheetSport, SportTab } from '../types';
+import type { DivisionTab, GenderTab, SportTab } from '../types';
 
 export const OFFICIAL_STANDINGS_SOURCES = {
   Volleyball: 'https://docs.google.com/spreadsheets/d/1CmZD971NC11x7IcoRFCpQTWmvnVMWWGwPUT_J5tHhHQ/edit',
   Soccer: 'https://docs.google.com/spreadsheets/d/1-t0FXJKLwUz7_mO0Vk3A2CvD1vVoJ-u5LkF-rphwOd4/edit',
   Basketball: 'https://docs.google.com/spreadsheets/d/1KfoWlSyuvU9FlW1Gj0aLCI4opBkI6AtWEQFgh8i4-i8/edit',
 } as const;
-
-type StandingRecord = {
-  team: string;
-  wins?: number;
-  draws?: number;
-  losses?: number;
-  points?: number;
-  forValue?: number;
-  againstValue?: number;
-};
 
 export interface OfficialStandingMatchup {
   teamA: string;
@@ -34,102 +23,24 @@ export interface OfficialStandingsLadder {
   matchups: readonly OfficialStandingMatchup[];
 }
 
-const seniorSchools = ['ACG', 'ACS', 'AIS', 'BSJ', 'GJS', 'JIS', 'SPH-KV', 'SPH-LV', 'STL'];
-const juniorSchools = ['ACG', 'ACS', 'AIS', 'BSJ', 'GJS', 'SPH-KV', 'SPH-LV', 'STL'];
+export const OFFICIAL_STANDINGS: Standing[] = leagueSnapshot.tables.flatMap(table =>
+  parseLeagueStandings(table.matrix, table.sport as LeagueSport, table.gender as 'Boys' | 'Girls'));
 
-function table(
-  sport: SheetSport,
-  sportKey: SportTab,
-  level: 'SMA' | 'SMP',
-  genderGroup: GenderTab,
-  schools: readonly string[],
-  records: readonly StandingRecord[],
-): Standing[] {
-  const results = new Map(records.map((record) => [record.team, record]));
-
-  return schools.map((team, index) => {
-    const record = results.get(team);
-    const wins = record?.wins ?? 0;
-    const draws = record?.draws ?? 0;
-    const losses = record?.losses ?? 0;
-    const forValue = record?.forValue ?? 0;
-    const againstValue = record?.againstValue ?? 0;
-
-    return {
-      id: `official-${sportKey}-${level}-${genderGroup}-${team}`.toLowerCase(),
-      pageId: `${sportKey}-${level}-${genderGroup}`.toLowerCase(),
-      sport,
-      sportKey,
-      level,
-      genderGroup,
-      tournament: 'Season',
-      rank: index + 1,
-      team,
-      wins,
-      draws,
-      losses,
-      points: record?.points ?? wins * 3 + draws,
-      forValue,
-      againstValue,
-      difference: forValue - againstValue,
-      notes: `Official 26/27 standings snapshot · verified ${sportKey === 'Basketball' ? '2026-09-08' : '2026-08-27'}`,
-    };
-  });
-}
-
-export const OFFICIAL_STANDINGS: Standing[] = [
-  ...parseSoccerStandings(soccerSnapshot.boys, 'Boys'),
-  ...parseSoccerStandings(soccerSnapshot.girls, 'Girls'),
-  ...table('Volleyball', 'Volleyball', 'SMA', 'Boys', seniorSchools, [
-    { team: 'SPH-LV', wins: 1, points: 2, forValue: 2, againstValue: 0 },
-    { team: 'SPH-KV', losses: 1, points: 0, forValue: 0, againstValue: 2 },
-  ]),
-  ...table('Volleyball', 'Volleyball', 'SMA', 'Girls', seniorSchools, [
-    { team: 'ACG', wins: 2, points: 4, forValue: 4, againstValue: 0 },
-    { team: 'BSJ', wins: 1, losses: 1, points: 2, forValue: 2, againstValue: 2 },
-    { team: 'SPH-LV', wins: 1, points: 2, forValue: 2, againstValue: 0 },
-    { team: 'ACS', losses: 2, points: 0, forValue: 0, againstValue: 4 },
-    { team: 'SPH-KV', losses: 1, points: 0, forValue: 0, againstValue: 2 },
-  ]),
-  ...table('Basketball', 'Basketball', 'SMP', 'Boys', juniorSchools, basketballSnapshot[0].records),
-  ...table('Basketball', 'Basketball', 'SMP', 'Girls', juniorSchools, basketballSnapshot[1].records),
-];
-
-export const OFFICIAL_STANDINGS_LADDERS: readonly OfficialStandingsLadder[] = [
-  { sportKey: 'Soccer', level: 'SMA', genderGroup: 'Boys', matchups: [] },
-  { sportKey: 'Soccer', level: 'SMA', genderGroup: 'Girls', matchups: [] },
-  {
-    sportKey: 'Volleyball',
-    level: 'SMA',
-    genderGroup: 'Boys',
-    matchups: [
-      { teamA: 'SPH-LV', teamB: 'SPH-KV', scoreA: 2, scoreB: 0 },
-    ],
-  },
-  {
-    sportKey: 'Volleyball',
-    level: 'SMA',
-    genderGroup: 'Girls',
-    matchups: [
-      { teamA: 'ACG', teamB: 'ACS', scoreA: 2, scoreB: 0 },
-      { teamA: 'ACG', teamB: 'BSJ', scoreA: 2, scoreB: 0 },
-      { teamA: 'BSJ', teamB: 'ACS', scoreA: 2, scoreB: 0 },
-      { teamA: 'SPH-LV', teamB: 'SPH-KV', scoreA: 2, scoreB: 0 },
-    ],
-  },
-  {
-    sportKey: 'Basketball',
-    level: 'SMP',
-    genderGroup: 'Boys',
-    matchups: basketballSnapshot[0].games,
-  },
-  {
-    sportKey: 'Basketball',
-    level: 'SMP',
-    genderGroup: 'Girls',
-    matchups: basketballSnapshot[1].games,
-  },
-];
+export const OFFICIAL_STANDINGS_LADDERS: readonly OfficialStandingsLadder[] = leagueSnapshot.tables.map(table => {
+  const header = table.matrix[1];
+  const teams = header.slice(1, header.indexOf('Points')).map(String);
+  const matchups: OfficialStandingMatchup[] = [];
+  teams.forEach((teamA, i) => teams.slice(i + 1).forEach(teamB => {
+    const j = teams.indexOf(teamB);
+    const row = table.matrix.find(row => row[0] === teamA);
+    const reverse = table.matrix.find(row => row[0] === teamB);
+    const value = String(row?.[j + 1] ?? '').trim();
+    const other = String(reverse?.[i + 1] ?? '').trim();
+    const score = (value || other.split('-').reverse().join('-')).match(/^(\d+)\s*[-–]\s*(\d+)$/);
+    if (score) matchups.push({ teamA, teamB, scoreA: Number(score[1]), scoreB: Number(score[2]) });
+  }));
+  return { sportKey: table.sport as SportTab, level: table.sport === 'Basketball' ? 'SMP' : 'SMA', genderGroup: table.gender as GenderTab, matchups };
+});
 
 export function officialStandingsLadderFor(
   sportKey: SportTab,

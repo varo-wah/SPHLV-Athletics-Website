@@ -19,6 +19,13 @@ test('all three tournament placements start pending without stale scores or spor
 test('team standings include the shared cards without sport, division, or gender restrictions', () => {
   const source = readFileSync(new URL('../screens/TeamPageScreen.tsx', import.meta.url), 'utf8');
 
-  assert.match(source, /\{activeSection === 'standings' && <TournamentResultsSection \/>\}/);
+  assert.match(source, /\{activeSection === 'standings' && <TournamentResultsSection teamId=\{team\?\.id\} \/>\}/);
   assert.doesNotMatch(source, /varsityBoysSoccerTournamentResults/);
+});
+
+test('shows only the confirmed boys soccer cup placement', () => {
+  const html = renderToStaticMarkup(createElement(TournamentResultsSection, { teamId: 'soccer-sma-boys' }));
+  assert.match(html, /Runner-up/);
+  assert.match(html, /September 19, 2026/);
+  assert.equal((html.match(/>Pending</g) || []).length, 2);
 });
