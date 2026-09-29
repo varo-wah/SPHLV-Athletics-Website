@@ -32,10 +32,10 @@ test('adds National High results once and recognizes the full school name from a
     id: `basketball-${gender}`, teamId: `basketball-smp-${gender.toLowerCase()}`, displayName: gender,
     sport: 'Basketball', sportKey: 'Basketball', level: 'SMP', genderGroup: gender as 'Boys' | 'Girls',
   }));
-  const matches = mergeGameDayResults([], basketballSources);
+  const matches = mergeGameDayResults([], basketballSources).filter(m => m.opponent === 'National High');
   assert.deepEqual(matches.map(m => [m.scoreFor, m.scoreAgainst]), [[91, 20], [43, 9]]);
   const published = { ...matches[0], id: 'published-national', opponent: 'National High School' };
-  const merged = mergeGameDayResults([published, matches[1]], basketballSources);
+  const merged = mergeGameDayResults([published, matches[1]], basketballSources).filter(m => /National High/.test(m.opponent));
   assert.equal(merged.length, 2);
   assert.equal(merged[0].id, 'published-national');
   assert.equal(merged[1].locationType, 'TBD');
@@ -51,4 +51,16 @@ test('keeps regulation scores separate from the semifinal shootout and preserves
   assert.deepEqual(mergeGameDayResults(matches, boys), matches);
   const corrected = { ...matches[1], scoreFor: 0, homeScore: 0, result: 'L' as const, penalties: undefined, highlights: [] };
   assert.deepEqual(mergeGameDayResults([corrected], boys)[0], corrected);
+});
+
+test('applies the confirmed BSJ correction and preserves later different published scores', () => {
+  const boys: ResultSourceMetadata[] = [{ ...sources[0], id: 'boys-basketball', teamId: 'basketball-smp-boys', sport: 'Basketball', sportKey: 'Basketball', level: 'SMP', genderGroup: 'Boys' }];
+  const matches = mergeGameDayResults([], boys);
+  const bsj = matches.find(m => m.date === '2026-09-26' && m.opponent === 'BSJ')!;
+  assert.equal(bsj.scoreFor, 69);
+  const published = { ...bsj, scoreFor: 67, homeScore: 67 };
+  assert.equal(mergeGameDayResults([published], boys)[0].scoreFor, 69);
+  const later = { ...bsj, scoreFor: 70, homeScore: 70 };
+  assert.equal(mergeGameDayResults([later], boys)[0].scoreFor, 70);
+  assert.deepEqual(mergeGameDayResults(matches, boys), matches);
 });

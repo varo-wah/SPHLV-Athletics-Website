@@ -15,7 +15,7 @@ import {
 import type { JaacSchool } from '../data/jaacSchools';
 import type { ScheduleEvent } from '../data/scheduleTypes';
 import { rosterForTeam } from '../data/teamRosters';
-import soccerSnapshot from '../data/soccerStandingsSnapshot.json';
+import leagueSnapshot from '../data/leagueStandingsSnapshot.json';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 import {
   PAGE_TRANSITION,
@@ -100,7 +100,7 @@ function JaacMatchup({ event }: { event: ScheduleEvent }) {
   return (
     <div className="mt-3 rounded-xl border border-border/10 bg-foreground/[0.025] px-3 py-2.5">
       <p className="mb-2 text-[8px] font-black uppercase tracking-[0.16em] text-foreground/35">
-        JAAC matchup
+        {event.eventType === 'Tournament' ? 'Tournament matchup' : 'JAAC matchup'}
       </p>
       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
         <div className="space-y-2">
@@ -173,10 +173,8 @@ export default function TeamPageScreen({
       standing.genderGroup === gender,
   );
   const isPreseasonStandings = false;
-  const soccerSource = athleticsDataState?.remoteSources.find((source) => source.id === `soccer-${gender}-standings`);
-  const standingsDate = sport === 'Soccer'
-    ? new Date(soccerSource?.publishedAt ?? soccerSnapshot.verifiedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' })
-    : sport === 'Basketball' ? 'Sep 8' : 'Aug 27';
+  const standingsSource = athleticsDataState?.remoteSources.find((source) => source.id === `${sport.toLowerCase()}-${gender}-standings`);
+  const standingsDate = new Date(standingsSource?.publishedAt ?? leagueSnapshot.verifiedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
   const differenceLabel =
     sport === 'Soccer'
       ? 'GD'
@@ -815,7 +813,7 @@ export default function TeamPageScreen({
           )}
         </div>
 
-        {activeSection === 'standings' && <TournamentResultsSection />}
+        {activeSection === 'standings' && <TournamentResultsSection teamId={team?.id} />}
 
         {activeSection === 'players' && (
           <section

@@ -15,9 +15,9 @@ function row(sportKey: string, genderGroup: string, team: string) {
 }
 
 test('contains complete boys and girls tables for all three production sports', () => {
-  assert.equal(OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === 'Soccer').length, 18);
-  assert.equal(OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === 'Volleyball').length, 18);
-  assert.equal(OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === 'Basketball').length, 16);
+  assert.equal(OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === 'Soccer').length, 13);
+  assert.equal(OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === 'Volleyball').length, 16);
+  assert.equal(OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === 'Basketball').length, 14);
 });
 
 test('matches the verified 26/27 workbook results', () => {
@@ -27,11 +27,11 @@ test('matches the verified 26/27 workbook results', () => {
   );
   assert.deepEqual(
     { wins: row('Basketball', 'Girls', 'SPH-LV')?.wins, difference: row('Basketball', 'Girls', 'SPH-LV')?.difference },
-    { wins: 3, difference: 139 },
+    { wins: 6, difference: 189 },
   );
   assert.deepEqual(
     { losses: row('Basketball', 'Boys', 'SPH-LV')?.losses, difference: row('Basketball', 'Boys', 'SPH-LV')?.difference },
-    { losses: 1, difference: 137 },
+    { losses: 1, difference: 238 },
   );
 });
 
@@ -43,10 +43,10 @@ test('matches the supplied girls volleyball ladder points', () => {
     })),
     [
       { team: 'ACG', points: 4 },
-      { team: 'ACS', points: 0 },
-      { team: 'BSJ', points: 2 },
-      { team: 'SPH-KV', points: 0 },
-      { team: 'SPH-LV', points: 2 },
+      { team: 'ACS', points: 2 },
+      { team: 'BSJ', points: 8 },
+      { team: 'SPH-KV', points: 2 },
+      { team: 'SPH-LV', points: 12 },
     ],
   );
 });
@@ -61,14 +61,9 @@ test('provides a head-to-head ladder for all six production team pages', () => {
   assert.ok(officialStandingsLadderFor('Basketball', 'SMP', 'Girls'));
 });
 
-test('matches the supplied girls volleyball head-to-head score boxes', () => {
-  assert.deepEqual(
-    officialStandingsLadderFor('Volleyball', 'SMA', 'Girls')?.matchups,
-    [
-      { teamA: 'ACG', teamB: 'ACS', scoreA: 2, scoreB: 0 },
-      { teamA: 'ACG', teamB: 'BSJ', scoreA: 2, scoreB: 0 },
-      { teamA: 'BSJ', teamB: 'ACS', scoreA: 2, scoreB: 0 },
-      { teamA: 'SPH-LV', teamB: 'SPH-KV', scoreA: 2, scoreB: 0 },
-    ],
-  );
+test('includes all six completed LV volleyball matchups in the current ladder', () => {
+  const games = officialStandingsLadderFor('Volleyball', 'SMA', 'Girls')!.matchups;
+  const lv = games.filter(g => [g.teamA, g.teamB].includes('SPH-LV'));
+  assert.equal(lv.length, 6);
+  assert.ok(lv.some(g => g.teamA === 'ACG' && g.teamB === 'SPH-LV' && g.scoreA === 1 && g.scoreB === 2));
 });

@@ -1,0 +1,1207 @@
+[
+  {
+    "sport": "Volleyball",
+    "gender": "Boys",
+    "matrix": [
+      [
+        "Boys Schedule - Volleyball"
+      ],
+      [
+        null,
+        "*all schools must play one game versus all other schools*"
+      ],
+      [
+        "Date",
+        "Time",
+        "Location",
+        "Home Team",
+        "Score",
+        "Away Team",
+        "Score"
+      ],
+      [
+        "Saturday, August 15th",
+        "9:00",
+        "SPH-KV",
+        "SPH-KV",
+        "0",
+        "SPH-LV",
+        "2"
+      ],
+      [
+        "Saturday, August 29th",
+        "8:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "STL",
+        "0"
+      ],
+      [
+        "Saturday, August 29th",
+        "9:00",
+        "SPH-LV",
+        "JIS",
+        "1",
+        "STL",
+        "2"
+      ],
+      [
+        "Saturday, August 29th",
+        "10:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "JIS",
+        "0"
+      ],
+      [
+        "Saturday, August 29th",
+        "8:00",
+        "BSJ",
+        "BSJ",
+        "2",
+        "ACS",
+        "0"
+      ],
+      [
+        "Monday, August 31st ",
+        "15.30",
+        "BSJ",
+        "BSJ",
+        "2",
+        "STL",
+        "0"
+      ],
+      [
+        "Saturday, September 5th",
+        "8:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "ACS",
+        "0"
+      ],
+      [
+        "Saturday, September 5th",
+        "9:00",
+        "SPH-LV",
+        "GJS",
+        "2",
+        "ACS",
+        "0"
+      ],
+      [
+        "Saturday, September 5th",
+        "10:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "GJS",
+        "1"
+      ],
+      [
+        "Saturday, September 12th",
+        "08:00",
+        "GJS",
+        "GJS",
+        null,
+        "ACG"
+      ],
+      [
+        "Saturday, September 12th",
+        "08:00",
+        "GJS",
+        "GJS",
+        "2",
+        "JIS",
+        "0"
+      ],
+      [
+        "Saturday, September 12th",
+        "08:00",
+        "GJS",
+        "ACG",
+        null,
+        "JIS"
+      ],
+      [
+        "Saturday, September 19th",
+        null,
+        "JIS",
+        "JIS",
+        "1",
+        "BSJ",
+        "2"
+      ],
+      [
+        "Saturday, September 19th",
+        null,
+        "JIS",
+        "JIS",
+        null,
+        "ACG"
+      ],
+      [
+        "Saturday, September 19th",
+        null,
+        "JIS",
+        "ACG",
+        "2",
+        "BSJ",
+        "1"
+      ],
+      [
+        "Monday , September 21st",
+        null,
+        "GJS",
+        "GJS",
+        "2",
+        "BSJ",
+        "1"
+      ],
+      [
+        "Saturday, September 26th",
+        "8:00",
+        "ACG",
+        "ACG",
+        "0",
+        "SPH-LV",
+        "2"
+      ],
+      [
+        "Saturday, September 26th",
+        "08:00",
+        "SPH-KV",
+        "SPH-KV",
+        "0",
+        "GJS",
+        "2"
+      ],
+      [
+        "Saturday, September 26th",
+        "08:00",
+        "SPH-KV",
+        "SPH-KV",
+        "1",
+        "BSJ",
+        "2"
+      ],
+      [
+        "Tuesday, September 29th",
+        "16:00",
+        "GJS",
+        "GJS",
+        null,
+        "STL"
+      ],
+      [
+        "Friday, October 2nd",
+        "16:00",
+        "SPH-LV",
+        "SPH-LV",
+        null,
+        "BSJ"
+      ]
+    ]
+  },
+  {
+    "sport": "Volleyball",
+    "gender": "Girls",
+    "matrix": [
+      [
+        "Girls Schedule - Volleyball"
+      ],
+      [
+        null,
+        "*all schools must play one game versus all other schools*"
+      ],
+      [
+        "Date",
+        "Time",
+        "Location",
+        "Home Team",
+        "Score",
+        "Away Team",
+        "Score"
+      ],
+      [
+        "Saturday, August 22nd ",
+        "7.30",
+        "BSJ",
+        "BSJ",
+        "0",
+        "ACG",
+        "2"
+      ],
+      [
+        "Saturday, August 22nd ",
+        "9.00",
+        "BSJ",
+        "BSJ",
+        "2",
+        "ACS",
+        "0"
+      ],
+      [
+        "Saturday, August 22nd ",
+        "10.30",
+        "BSJ",
+        "ACG",
+        "2",
+        "ACS",
+        "0"
+      ],
+      [
+        "Saturday, August 29th",
+        "8:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "STL",
+        "0"
+      ],
+      [
+        "Saturday, August 29th",
+        "9:00",
+        "SPH-LV",
+        "JIS",
+        "2",
+        "STL",
+        "0"
+      ],
+      [
+        "Saturday, August 29th",
+        "10:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "JIS",
+        "0"
+      ],
+      [
+        "Monday, August 31st ",
+        "15.30",
+        "BSJ",
+        "BSJ",
+        "2",
+        "STL",
+        "0"
+      ],
+      [
+        "Saturday, September 5th",
+        "8:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "ACS",
+        "0"
+      ],
+      [
+        "Saturday, September 5th",
+        "9:00",
+        "SPH-LV",
+        "GJS",
+        "1",
+        "ACS",
+        "2"
+      ],
+      [
+        "Saturday, September 5th",
+        "10:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "GJS",
+        "0"
+      ],
+      [
+        "Saturday, September 12th",
+        "08:00",
+        "GJS",
+        "GJS",
+        null,
+        "ACG"
+      ],
+      [
+        "Saturday, September 12th",
+        "08:00",
+        "GJS",
+        "GJS",
+        "0",
+        "JIS",
+        "2"
+      ],
+      [
+        "Saturday, September 12th",
+        "08:00",
+        "GJS",
+        "ACG",
+        null,
+        "JIS"
+      ],
+      [
+        "Saturday, September 19th",
+        null,
+        "JIS",
+        "JIS",
+        "2",
+        "BSJ",
+        "0"
+      ],
+      [
+        "Saturday, September 19th",
+        null,
+        "JIS",
+        "JIS",
+        null,
+        "ACG"
+      ],
+      [
+        "Monday , September 21st",
+        null,
+        "GJS",
+        "GJS",
+        "0",
+        "BSJ",
+        "2"
+      ],
+      [
+        "Saturday, September 26th",
+        "8:00",
+        "ACG",
+        "ACG",
+        "1",
+        "SPH-LV",
+        "2"
+      ],
+      [
+        "Saturday, September 26th",
+        "08:00",
+        "SPH-KV",
+        "SPH-KV",
+        "2",
+        "GJS",
+        "0"
+      ],
+      [
+        "Saturday, September 26th",
+        "08:00",
+        "SPH-KV",
+        "SPH-KV",
+        "0",
+        "BSJ",
+        "2"
+      ],
+      [
+        "Tuesday, September 29th",
+        "16:00",
+        "GJS",
+        "GJS",
+        null,
+        "STL"
+      ],
+      [
+        "Friday, October 2nd",
+        "16:00",
+        "SPH-LV",
+        "SPH-LV",
+        null,
+        "BSJ"
+      ]
+    ]
+  },
+  {
+    "sport": "Soccer",
+    "gender": "Boys",
+    "matrix": [
+      [
+        "Boys Schedule - Football"
+      ],
+      [
+        null,
+        "*all schools must play one game versus all other schools*"
+      ],
+      [
+        "Date",
+        "Time",
+        "Location",
+        "Home Team",
+        "Score",
+        "Away Team",
+        "Score"
+      ],
+      [
+        "Friday, September 4th",
+        "16:00",
+        "BSJ",
+        "BSJ",
+        "2",
+        "STL",
+        "0"
+      ],
+      [
+        "Sat, September 5th",
+        "08:00",
+        "GJS",
+        "GJS",
+        "12",
+        "SPH-KV",
+        "0"
+      ],
+      [
+        "Sat, September 5th",
+        "08:00",
+        "GJS",
+        "GJS",
+        "3",
+        "SPH-LV",
+        "0"
+      ],
+      [
+        "Sat, September 5th",
+        "08:00",
+        "GJS",
+        "SPH-KV",
+        "0",
+        "SPH-LV",
+        "12"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "GJS",
+        "GJS",
+        "3",
+        "STL",
+        "1",
+        "Red card- STL N11"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "GJS",
+        "GJS",
+        null,
+        "ACS"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "GJS",
+        "STL",
+        null,
+        "ACS"
+      ],
+      [
+        "Friday, September 18th",
+        "16:00",
+        "BSJ",
+        "BSJ",
+        "7",
+        "SPH-KV",
+        "0"
+      ],
+      [
+        "Sat, September 19th",
+        "9:00",
+        "BSJ",
+        "BSJ",
+        "1",
+        "ACS",
+        "3"
+      ],
+      [
+        "Wed, September 23rd",
+        "16:00",
+        "GJS",
+        "GJS",
+        "5",
+        "ACS",
+        "1"
+      ],
+      [
+        "Friday, October 2nd",
+        "16:00",
+        "BSJ",
+        "BSJ",
+        null,
+        "SPH-LV"
+      ],
+      [
+        "Sat, October 3rd",
+        "08:00",
+        "BSJ",
+        "BSJ",
+        null,
+        "GJS"
+      ],
+      [
+        "Sat, October 17th",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        null,
+        "ACS"
+      ],
+      [
+        "Sat, October 17th",
+        "09:30",
+        "SPH-LV",
+        "KV",
+        null,
+        "ACS"
+      ],
+      [
+        "Tues, October 27th",
+        "16:00",
+        "SPH-LV",
+        "SPH-LV",
+        null,
+        "STL"
+      ]
+    ]
+  },
+  {
+    "sport": "Soccer",
+    "gender": "Girls",
+    "matrix": [
+      [
+        "Girls Schedule - Football"
+      ],
+      [
+        null,
+        "*all schools must play one game versus all other schools*"
+      ],
+      [
+        "Date",
+        "Time",
+        "Location",
+        "Home Team",
+        "Score",
+        "Away Team",
+        "Score"
+      ],
+      [
+        "Sat, August 29th",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        null,
+        "ACS",
+        "cancelled"
+      ],
+      [
+        "Friday, September 4th",
+        "16:00",
+        "BSJ",
+        "BSJ",
+        "5",
+        "STL",
+        "1"
+      ],
+      [
+        "Sat, September 5th",
+        "9:00",
+        "BSJ",
+        "BSJ",
+        "2",
+        "ACS",
+        "1"
+      ],
+      [
+        "Sat, September 5th",
+        "08:00",
+        "SPH-LV",
+        "GJS",
+        "1",
+        "JIS",
+        "0"
+      ],
+      [
+        "Sat, September 5th",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        "2",
+        "SPH-KV",
+        "2"
+      ],
+      [
+        "Sat, September 5th",
+        "09:30",
+        "SPH-LV",
+        "SPH-LV",
+        "3",
+        "JIS",
+        "0"
+      ],
+      [
+        "Sat, September 5th",
+        "09:30",
+        "SPH-LV",
+        "GJS",
+        "1",
+        "SPH-KV",
+        "2"
+      ],
+      [
+        "Sat, September 5th",
+        "11:00",
+        "SPH-LV",
+        "SPH-LV",
+        "6",
+        "GJS",
+        "0"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "STL",
+        "STL",
+        "2",
+        "GJS",
+        "0"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "STL",
+        "STL",
+        "2",
+        "ACS",
+        "2"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "STL",
+        "GJS",
+        "0",
+        "ACS",
+        "5"
+      ],
+      [
+        "Friday, September 18th",
+        "16:00",
+        "BSJ",
+        "BSJ",
+        "3",
+        "SPH-KV",
+        "1"
+      ],
+      [
+        "Sat, September 19th",
+        "09:00",
+        "JIS",
+        "JIS",
+        "0",
+        "BSJ",
+        "3"
+      ],
+      [
+        "Thur, September 24th",
+        "16:30",
+        "JIS",
+        "JIS",
+        "1",
+        "SPH KV",
+        "2"
+      ],
+      [
+        "Friday, October 2nd",
+        "16:00",
+        "BSJ",
+        "BSJ",
+        "2",
+        "SPH-LV",
+        "0"
+      ],
+      [
+        "Sat, October 3rd",
+        "08:00",
+        "GJS",
+        "GJS",
+        null,
+        "BSJ"
+      ],
+      [
+        "Mon, October 19th",
+        "16:00",
+        "STL",
+        "STL",
+        null,
+        "SPH-LV"
+      ]
+    ]
+  },
+  {
+    "sport": "Basketball",
+    "gender": "Boys",
+    "matrix": [
+      [
+        "Boys Schedule - Basketball"
+      ],
+      [
+        null,
+        "*all schools must play one game versus all other schools*"
+      ],
+      [
+        "Date",
+        "Time",
+        "Location",
+        "Home Team",
+        "Score",
+        "Away Team",
+        "Score"
+      ],
+      [
+        "Sat, August 22nd",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        "37",
+        "ACS",
+        "45"
+      ],
+      [
+        "Sat, August 29th",
+        "08:00",
+        "SPH-KV",
+        "SPH-KV",
+        "6",
+        "SPH-LV",
+        "98"
+      ],
+      [
+        "Mon, August 31",
+        "15:30",
+        "BSJ",
+        "BSJ",
+        "29",
+        "STL",
+        "46"
+      ],
+      [
+        "Sat, September 5th",
+        "11:15",
+        "SPH-LV",
+        "SPH-LV",
+        "69",
+        "GJS",
+        "16"
+      ],
+      [
+        "Sat, September 5th",
+        "8:00",
+        "BSJ",
+        "BSJ",
+        "27",
+        "ACG",
+        "2",
+        "Mercy rule applied"
+      ],
+      [
+        "Sat, September 5th",
+        "9:15",
+        "BSJ",
+        "ACS",
+        "58",
+        "ACG",
+        "15"
+      ],
+      [
+        "Sat, September 5th",
+        "10:45",
+        "BSJ",
+        "BSJ",
+        "54",
+        "ACS",
+        "59"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "AIS",
+        "AIS",
+        null,
+        "GJS"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "AIS",
+        "AIS",
+        null,
+        "SPH-KV"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "AIS",
+        "GJS",
+        null,
+        "SPH-KV"
+      ],
+      [
+        "Tue, September 15th",
+        "16.00",
+        "BSJ",
+        "BSJ",
+        "71",
+        "SPH-KV",
+        "18"
+      ],
+      [
+        "Sat, September 19th",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        "50",
+        "STL",
+        "18"
+      ],
+      [
+        "Sat, September 19th",
+        "09:15",
+        "SPH-LV",
+        "AIS",
+        "27",
+        "STL",
+        "26"
+      ],
+      [
+        "Sat, September 19th",
+        "10:30",
+        "SPH-LV",
+        "SPH-LV",
+        "61",
+        "AIS",
+        "17"
+      ],
+      [
+        "Sat, September 19th",
+        "09:15",
+        "SPH-KV",
+        "SPH-KV",
+        "2",
+        "ACS",
+        "69"
+      ],
+      [
+        "Tue, September 22nd",
+        "16:00",
+        "SPH KV",
+        "SPH KV",
+        "38",
+        "ACG",
+        "22"
+      ],
+      [
+        "Tue, September 22nd",
+        "16:00",
+        "GJS",
+        "GJS",
+        "16",
+        "BSJ",
+        "62"
+      ],
+      [
+        "Sat, September 26th",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        "67",
+        "BSJ",
+        "25"
+      ],
+      [
+        "Sat, September 26th",
+        "10:30",
+        "SPH-LV",
+        "SPH-LV",
+        "41",
+        "ACG",
+        "14"
+      ],
+      [
+        "Thur, September 28",
+        "16:00",
+        "STL",
+        "STL",
+        null,
+        "KV"
+      ],
+      [
+        "Sat, October 3rd",
+        "08:00",
+        "GJS",
+        "GJS",
+        null,
+        "STL"
+      ],
+      [
+        "Sat, October 3rd",
+        "08:00",
+        "GJS",
+        "GJS",
+        null,
+        "ACG"
+      ],
+      [
+        "Sat, October 3rd",
+        "08:00",
+        "GJS",
+        "STL",
+        null,
+        "ACG"
+      ],
+      [
+        "Wed, October 7",
+        "16:00",
+        "ACS",
+        "ACS",
+        null,
+        "STL"
+      ]
+    ]
+  },
+  {
+    "sport": "Basketball",
+    "gender": "Girls",
+    "matrix": [
+      [
+        "Girls Schedule - Basketball"
+      ],
+      [
+        null,
+        "*all schools must play one game versus all other schools*"
+      ],
+      [
+        "Date",
+        "Time",
+        "Location",
+        "Home Team",
+        "Score",
+        "Away Team",
+        "Score"
+      ],
+      [
+        "Sat, August 22nd",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        "47",
+        "ACS",
+        "18"
+      ],
+      [
+        "Sat, August 29th",
+        "08:00",
+        "SPH-KV",
+        "SPH-KV",
+        "9",
+        "SPH-LV",
+        "61"
+      ],
+      [
+        "Mon, August 32",
+        "15:30",
+        "BSJ",
+        "BSJ",
+        "9",
+        "STL",
+        "29"
+      ],
+      [
+        "Sat, September 5th",
+        "11:15",
+        "SPH-LV",
+        "SPH-LV",
+        "60",
+        "GJS",
+        "2"
+      ],
+      [
+        "Sat, September 5th",
+        "8:00",
+        "BSJ",
+        "BSJ",
+        "48",
+        "ACG",
+        "6"
+      ],
+      [
+        "Sat, September 5th",
+        "9:15",
+        "BSJ",
+        "ACS",
+        "32",
+        "ACG",
+        "5"
+      ],
+      [
+        "Sat, September 5th",
+        "10:45",
+        "BSJ",
+        "BSJ",
+        "21",
+        "ACS",
+        "6"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "AIS",
+        "AIS",
+        null,
+        "GJS"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "AIS",
+        "AIS",
+        null,
+        "SPH-KV"
+      ],
+      [
+        "Sat, September 12th",
+        "08:00",
+        "AIS",
+        "GJS",
+        null,
+        "SPH-KV"
+      ],
+      [
+        "Tues, September 15th",
+        "16:00",
+        "BSJ",
+        "BSJ",
+        "19",
+        "SPH-KV",
+        "12"
+      ],
+      [
+        "Sat, September 19th",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        "28",
+        "STL",
+        "26"
+      ],
+      [
+        "Sat, September 19th",
+        "09:15",
+        "SPH-LV",
+        "AIS",
+        "9",
+        "STL",
+        "39"
+      ],
+      [
+        "Sat, September 19th",
+        "10:30",
+        "SPH-LV",
+        "SPH-LV",
+        "43",
+        "AIS",
+        "12"
+      ],
+      [
+        "Sat, September 19th",
+        "08:00",
+        "SPH-KV",
+        "SPH-KV",
+        "14",
+        "ACS",
+        "32"
+      ],
+      [
+        "Sat, September 19th",
+        "10:30",
+        "SPH-LV",
+        "SPH-LV",
+        "43",
+        "AIS",
+        "12"
+      ],
+      [
+        "Tue, September 22nd",
+        "16:00",
+        "SPH KV",
+        "SPH KV",
+        "28",
+        "ACG",
+        "3"
+      ],
+      [
+        "Tue, September 22nd",
+        "16:00",
+        "GJS",
+        "GJS",
+        null,
+        "BSJ"
+      ],
+      [
+        "Sat, September 26th",
+        "08:00",
+        "SPH-LV",
+        "SPH-LV",
+        "36",
+        "BSJ",
+        "21"
+      ],
+      [
+        "Sat, September 26th",
+        "10:30",
+        "SPH-LV",
+        "SPH-LV",
+        "49",
+        "ACG",
+        "16"
+      ],
+      [
+        "Thur, October 1 ",
+        "16:00",
+        "STL",
+        "STL",
+        null,
+        "KV"
+      ],
+      [
+        "Sat, October 3rd",
+        "08:00",
+        "GJS",
+        "GJS",
+        null,
+        "STL"
+      ],
+      [
+        "Sat, October 3rd",
+        "08:00",
+        "GJS",
+        "GJS",
+        null,
+        "ACG"
+      ],
+      [
+        "Sat, October 3rd",
+        "08:00",
+        "GJS",
+        "STL",
+        null,
+        "ACG"
+      ],
+      [
+        "Thur, October 8",
+        "16:00",
+        "ACS ",
+        "ACS",
+        null,
+        "STL"
+      ]
+    ]
+  }
+]

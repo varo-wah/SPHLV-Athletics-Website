@@ -2,8 +2,12 @@
   "standings": {
     "soccer": "https://docs.google.com/spreadsheets/d/e/2PACX-1vQHaYs7n4UH_LqQPwGlDJzBlO8LQP0VXvX-l4uB-jvj_240jNrtBZmaXohGj5j7rg/pub?gid=730352135&single=true&output=csv",
     "basketball": "",
-    "soccerBoys": "https://docs.google.com/spreadsheets/d/1-t0FXJKLwUz7_mO0Vk3A2CvD1vVoJ-u5LkF-rphwOd4/export?format=csv&gid=1754960818&range=A1:L11&output=csv",
-    "soccerGirls": "https://docs.google.com/spreadsheets/d/1-t0FXJKLwUz7_mO0Vk3A2CvD1vVoJ-u5LkF-rphwOd4/export?format=csv&gid=176213037&range=A1:L11&output=csv"
+    "soccerBoys": "https://docs.google.com/spreadsheets/d/1-t0FXJKLwUz7_mO0Vk3A2CvD1vVoJ-u5LkF-rphwOd4/export?format=csv&gid=1754960818&range=A1:Q11&output=csv",
+    "soccerGirls": "https://docs.google.com/spreadsheets/d/1-t0FXJKLwUz7_mO0Vk3A2CvD1vVoJ-u5LkF-rphwOd4/export?format=csv&gid=176213037&range=A1:Q11&output=csv",
+    "volleyballBoys": "https://docs.google.com/spreadsheets/d/1CmZD971NC11x7IcoRFCpQTWmvnVMWWGwPUT_J5tHhHQ/export?format=csv&gid=1163298850&range=A1:Q11&output=csv",
+    "volleyballGirls": "https://docs.google.com/spreadsheets/d/1CmZD971NC11x7IcoRFCpQTWmvnVMWWGwPUT_J5tHhHQ/export?format=csv&gid=1064957677&range=A1:Q11&output=csv",
+    "basketballBoys": "https://docs.google.com/spreadsheets/d/1KfoWlSyuvU9FlW1Gj0aLCI4opBkI6AtWEQFgh8i4-i8/export?format=csv&gid=245857498&range=A1:Q11&output=csv",
+    "basketballGirls": "https://docs.google.com/spreadsheets/d/1KfoWlSyuvU9FlW1Gj0aLCI4opBkI6AtWEQFgh8i4-i8/export?format=csv&gid=1885483236&range=A1:Q11&output=csv"
   },
   "results": [
     {
