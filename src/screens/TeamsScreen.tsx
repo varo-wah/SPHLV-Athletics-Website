@@ -82,6 +82,14 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
       />
 
       <section id="all-teams" aria-label="All teams" className="scroll-mt-20 space-y-3">
+        {IS_PROTOTYPE && <article className="rounded-2xl border border-brand-sky/30 bg-card p-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-foreground/50">New team previews</p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <a href="#/teams/swimming" className="rounded-xl bg-foreground/5 p-4 font-bold">Swimming ↗</a>
+            <a href="#/teams/cross-country" className="rounded-xl bg-foreground/5 p-4 font-bold">Cross Country ↗</a>
+          </div>
+          <p className="mt-3 text-xs text-foreground/60">Existing schedule · fictional sample performances</p>
+        </article>}
         {sportGroups.map((group, groupIndex) => {
           return (
             <motion.article

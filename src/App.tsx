@@ -13,6 +13,7 @@ import SportScheduleScreen from './screens/SportScheduleScreen';
 import NewsScreen from './screens/NewsScreen';
 import HomeScreen from './screens/HomeScreen';
 import TeamPageScreen from './screens/TeamPageScreen';
+import EnduranceTeamScreen from './screens/EnduranceTeamScreen';
 import TeamsScreen from './screens/TeamsScreen';
 import StandingsScreen from './screens/StandingsScreen';
 import LoginScreen from './screens/LoginScreen';
@@ -75,6 +76,7 @@ function AthleticsApp() {
   };
 
   const activeScreen = (() => {
+    if (route.enduranceSport) return <EnduranceTeamScreen sport={route.enduranceSport} state={athleticsDataState} />;
     if (activeTab === 'Home') {
       return (
         <HomeScreen
@@ -133,7 +135,7 @@ function AthleticsApp() {
 
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
-            key={route.team?.id ?? activeTab}
+            key={route.enduranceSport ?? route.team?.id ?? activeTab}
             initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: reduceMotion ? 0 : -4 }}
