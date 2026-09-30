@@ -19,3 +19,11 @@ test('schedule query restores filters and defaults invalid values', () => {
   assert.deepEqual(parseScheduleQuery('season=Season+2&team=VBS&scope=practices&view=calendar', ['Season 1', 'Season 2'], 'Season 1'), { season: 'Season 2', team: 'VBS', scope: 'practices', view: 'calendar' });
   assert.deepEqual(parseScheduleQuery('season=Season+2&team=bad&scope=bad&view=bad', ['Season 1'], 'Season 1'), { season: 'Season 1', team: 'All', scope: 'games', view: 'list' });
 });
+
+test('cross-country is public while swimming remains a prototype', () => {
+  for (const sport of ['swimming', 'cross-country']) {
+    assert.equal(parseRoute(`#/teams/${sport}`, true).enduranceSport, sport);
+    assert.equal(parseRoute(`#/teams/${sport}`, false).enduranceSport, sport === 'cross-country' ? sport : undefined);
+    assert.equal(parseRoute(`#/teams/${sport}/unknown`, true).enduranceSport, undefined);
+  }
+});

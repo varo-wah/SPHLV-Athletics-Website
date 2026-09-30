@@ -140,6 +140,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             </div>
 
             <div className="team-overlay-scroll flex-1 space-y-3 overflow-y-auto px-3.5 py-3.5">
+              <a href="#/teams/cross-country" onClick={onClose} className="mb-4 block rounded-xl border border-border/10 bg-foreground/5 p-4 text-sm font-bold">Cross Country ↗</a>
               {teamGroups.map((sport, index) => {
                 return (
                   <motion.section
