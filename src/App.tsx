@@ -13,6 +13,7 @@ import SportScheduleScreen from './screens/SportScheduleScreen';
 import NewsScreen from './screens/NewsScreen';
 import HomeScreen from './screens/HomeScreen';
 import TeamPageScreen from './screens/TeamPageScreen';
+import CrossCountryScreen from './screens/CrossCountryScreen';
 import EnduranceTeamScreen from './screens/EnduranceTeamScreen';
 import TeamsScreen from './screens/TeamsScreen';
 import StandingsScreen from './screens/StandingsScreen';
@@ -76,6 +77,7 @@ function AthleticsApp() {
   };
 
   const activeScreen = (() => {
+    if (route.enduranceSport === 'cross-country') return <CrossCountryScreen state={athleticsDataState} />;
     if (route.enduranceSport) return <EnduranceTeamScreen sport={route.enduranceSport} state={athleticsDataState} />;
     if (activeTab === 'Home') {
       return (

@@ -6,7 +6,7 @@ export function parseRoute(hash: string, prototype = false) {
   const [path, query = ''] = hash.replace(/^#\/?/, '').split('?');
   const parts = path.split('/');
   if (parts[0] === 'teams' && parts.length > 1) {
-    if (prototype && parts.length === 2 && ['swimming', 'cross-country'].includes(parts[1])) {
+    if (parts.length === 2 && (parts[1] === 'cross-country' || (prototype && parts[1] === 'swimming'))) {
       return { tab: 'Teams' as const, team: undefined, query, enduranceSport: parts[1] as 'swimming' | 'cross-country' };
     }
     const team = TEAM_CATALOG.find(team => team.id === parts[1] && parts.length === 2 && (prototype || team.production));
