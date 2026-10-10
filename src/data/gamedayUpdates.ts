@@ -1,3 +1,4 @@
+import { OCTOBER_UPDATES } from './octoberUpdates';
 import { SEPTEMBER_UPDATES } from './septemberUpdates';
 import type { SheetMatch } from '../services/parsers';
 
@@ -15,6 +16,7 @@ export interface GameDayUpdate {
 // Reviewed GameDay Summaries posts and attached workbook, September 8, 2026.
 // Provenance and unresolved results: docs/gameday-updates-20260914.md.
 export const GAMEDAY_UPDATES: GameDayUpdate[] = [
+  ...OCTOBER_UPDATES,
   ...SEPTEMBER_UPDATES,
   // Results reported directly by William on September 19, 2026.
   // Kickoff times, venues and tournament name await confirmation.

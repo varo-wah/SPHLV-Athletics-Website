@@ -1,3 +1,9 @@
+import award26 from '../assets/news/samantha-chai-pow-sep29.png';
+import award25 from '../assets/news/sam-winardi-pow-sep29.png';
+import award24 from '../assets/news/coby-michael-pow-sep29.png';
+import award23 from '../assets/news/isabelle-chendra-pow-sep29.png';
+import award22 from '../assets/news/solomon-schleper-pow-sep29.png';
+import award21 from '../assets/news/evans-sutjatma-pow-sep29.png';
 import poster0 from '../assets/news/lenka-thambrin-pow-sep9.png';
 import poster1 from '../assets/news/jacob-chandra-pow-sep9.png';
 import poster2 from '../assets/news/jaehun-oh-pow-sep9.png';
@@ -49,11 +55,64 @@ export interface NewsArticle {
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
   {
+    id: '2026-10-10-volleyball-players-of-the-week', title: 'Volleyball Players of the Week: Samantha Chai and Evans Sutjatma',
+    publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'PLAYER OF THE WEEK',
+    excerpt: 'The September 29 award edition recognizes Samantha Chai and Evans Sutjatma.',
+    image: award26, imageAlt: 'Samantha Chai Player of the Week poster',
+    body: ['Congratulations to Samantha Chai and Evans Sutjatma, the volleyball selections in the September 29 Player of the Week edition.'],
+    sections: [
+      { heading: 'Samantha Chai · Girls Volleyball', paragraphs: ['Samantha contributed 20 kills across the SPH Cup as the girls finished runner-up.'] },
+      { heading: 'Evans Sutjatma · Boys Volleyball · Outside Hitter', paragraphs: ['Evans recorded four kills and three aces in the 2–0 win over ACG (25–18, 25–13). He kept plays alive during the SPH Cup and brought a positive spirit to the team.'] },
+    ],
+    posterImages: [{ src: award26, alt: 'Samantha Chai Volleyball Player of the Week' }, { src: award21, alt: 'Evans Sutjatma Volleyball Player of the Week' }],
+    publicationChannel: 'published',
+  },
+  {
+    id: '2026-10-10-sam-winardi-player-of-the-week', title: 'SMP Girls Basketball Player of the Week: Sam Winardi',
+    publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'PLAYER OF THE WEEK',
+    excerpt: 'Sam recorded 13 points, nine rebounds, two assists and two steals against BSJ.',
+    image: award25, imageAlt: 'Sam Winardi Player of the Week poster',
+    body: ['Sam Winardi is recognized in the September 29 Player of the Week edition. The SMP girls basketball guard contributed 13 points, nine rebounds, two assists and two steals against BSJ. Her speed in transition, coachability and positive spirit stood out.'],
+    posterImages: [{ src: award25, alt: 'Sam Winardi Basketball Player of the Week' }], publicationChannel: 'published',
+  },
+  {
+    id: '2026-10-10-volleyball-bsj-recap', title: 'Volleyball Teams Sweep BSJ',
+    publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'GAME RECAP',
+    excerpt: 'Both varsity teams won 2–0 on October 2, with strong serving and contributions across the squads.',
+    image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
+    body: ['Both varsity volleyball teams beat BSJ in straight sets on October 2, as reported in GameDay Summaries on October 3.'],
+    sections: [
+      { heading: 'Boys · 25–16, 25–23', paragraphs: ['Jared delivered five perfect-tempo sets, Jericho contributed three kills and John made four blocks. The bench added eight service aces in the last set.'] },
+      { heading: 'Girls · 25–18, 25–14', paragraphs: ['Trisha served six aces. Sam Chai and Christa contributed in attack, with consistent passing from Louie and Yujin.'] },
+    ], publicationChannel: 'published',
+  },
+  {
+    id: '2026-10-10-girls-volleyball-cup', title: 'Girls Volleyball Finish SPH Cup Runner-up',
+    publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'SPH CUP',
+    excerpt: 'Three wins in four matches earned the girls second place in the September 28–29 SPH Cup.',
+    image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
+    body: ['The girls finished runner-up in the SPH Cup, beating SLH Moria 2–1, SMA 4 2–0 and St. Laurensia 2–0, with a 0–2 loss to SMA 15.'],
+    sections: [
+      { heading: 'Tournament contributions', paragraphs: ['Sam Chai finished with 20 kills across the tournament, including 16 across the two games highlighted in the report. Trisha recorded 14 tournament kills, with 11 kills and eight aces across those two games.', 'Louisa provided consistent passing. Ellyanna played three positions in one game, and Sammy adapted to the 5–1 system as setter.'] },
+    ], publicationChannel: 'published',
+  },
+  {
+    id: '2026-10-10-boys-basketball-st-john', title: 'SMP Boys A Defeat St John 52–43',
+    publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'GAME RECAP',
+    excerpt: 'Coby’s double-double and a strong second-quarter defense helped the boys secure the win.',
+    image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
+    body: ['In a GameDay Summaries report posted September 29, the SMP boys A team recorded a 52–43 win over St John. After a close first quarter, LV’s defense slowed St John in the second quarter.'],
+    sections: [{ heading: 'Stat leaders', paragraphs: ['Coby contributed 17 points, 14 rebounds and five assists. Rainer scored 11 points on 5/6 shooting (83.3%). Denzel added 11 points and six steals, making one of four three-pointers. Matthew and Jacob each recorded a block.'] }],
+    publicationChannel: 'published',
+  },
+
+  {
     id: '2026-09-29-soccer-players-of-the-week',
     title: 'Soccer Players of the Week: Isa and Solomon Schleper',
     publishedAt: '2026-09-29', dateLabel: 'SEPTEMBER 29, 2026', category: 'PLAYER OF THE WEEK',
     excerpt: 'Isa scored five goals across three matches, while Solomon helped lead the boys to second place in the SPH Cup.',
-    image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
+    image: award23, imageAlt: 'Isabelle Chendra Player of the Week poster',
+    posterImages: [{ src: award23, alt: 'Isabelle Chendra Soccer Player of the Week' }, { src: award22, alt: 'Solomon Schleper Soccer Player of the Week' }],
     body: ['SPH-LV Athletics recognizes Isa and Solomon Schleper as Soccer Players of the Week.'],
     sections: [
       { heading: 'Isa · SMA Girls Soccer · Forward', paragraphs: [
@@ -69,7 +128,8 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     id: '2026-09-29-coby-player-of-the-week', title: 'SMP Boys Basketball Player of the Week: Coby',
     publishedAt: '2026-09-29', dateLabel: 'SEPTEMBER 29, 2026', category: 'PLAYER OF THE WEEK',
     excerpt: 'Coby’s passing, defensive pressure and all-round contributions make the team better.',
-    image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
+    image: award24, imageAlt: 'Coby Michael Player of the Week poster',
+    posterImages: [{ src: award24, alt: 'Coby Michael Basketball Player of the Week' }],
     body: ['Coby earned Player of the Week honors this week, but what stands out most is how much of his game is about making the team better. He’s a great passer — often leading the team in assists and consistently finding teammates when he is double teamed. On defense, his relentless pressure creates turnovers that turn into easy transition buckets for everyone, not just him. For the season, he is averaging 20 points, 8 assists, 8 rebounds, and 7 steals on 67% shooting.'],
     sections: [{ heading: 'Source', paragraphs: ['Player of the Week write-up supplied by Mark Heil, September 29, 2026.'] }],
     publicationChannel: 'published',

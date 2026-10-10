@@ -34,10 +34,10 @@ export default function TournamentResultsSection({ teamId }: { teamId?: string }
                   {name}
                 </p>
                 <p className="mt-0.5 text-lg font-black uppercase tracking-tight text-foreground">
-                  {teamId === 'soccer-sma-boys' && name === 'SPH Cup' ? 'Runner-up' : 'Pending'}
+                  {['soccer-sma-boys', 'volleyball-sma-girls'].includes(teamId ?? '') && name === 'SPH Cup' ? 'Runner-up' : 'Pending'}
                 </p>
                 <p className="mt-1 text-[11px] font-semibold leading-relaxed text-foreground/48">
-                  {teamId === 'soccer-sma-boys' && name === 'SPH Cup' ? 'September 19, 2026 · Final: SPH-LV 1–4 SLH Moria' : 'Final placement will be posted after the tournament.'}
+                  {teamId === 'soccer-sma-boys' && name === 'SPH Cup' ? 'September 19, 2026 · Final: SPH-LV 1–4 SLH Moria' : teamId === 'volleyball-sma-girls' && name === 'SPH Cup' ? 'September 28–29, 2026 · 3 wins, 1 loss' : 'Final placement will be posted after the tournament.'}
                 </p>
               </div>
             </div>
