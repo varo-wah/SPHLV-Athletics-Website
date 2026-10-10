@@ -64,3 +64,24 @@ test('applies the confirmed BSJ correction and preserves later different publish
   assert.equal(mergeGameDayResults([later], boys)[0].scoreFor, 70);
   assert.deepEqual(mergeGameDayResults(matches, boys), matches);
 });
+
+test('retains Cup classification and October set scores across repeated feed merges', () => {
+  const volleyballSources: ResultSourceMetadata[] = ['Boys', 'Girls'].map(gender => ({
+    id: `volleyball-${gender}`, teamId: `volleyball-sma-${gender.toLowerCase()}`, displayName: gender,
+    sport: 'Volleyball', sportKey: 'Volleyball', level: 'SMA', genderGroup: gender as 'Boys' | 'Girls',
+  }));
+  const matches = mergeGameDayResults([], volleyballSources);
+  const cup = matches.filter(m => m.teamId === 'volleyball-sma-girls' && m.matchType === 'SPH Cup');
+  assert.equal(cup.length, 4);
+  assert.equal(cup.filter(m => m.result === 'W').length, 3);
+  const bsj = matches.filter(m => m.date === '2026-10-02' && m.opponent === 'BSJ');
+  assert.deepEqual(bsj.map(m => [m.scoreFor, m.scoreAgainst, m.setScores]), [
+    [2, 0, ['25–16', '25–23']], [2, 0, ['25–18', '25–14']],
+  ]);
+  assert.ok(bsj.every(m => m.locationType === 'TBD'));
+  assert.deepEqual(mergeGameDayResults(matches, volleyballSources), matches);
+  const published = { ...cup[3], id: 'published-cup-stl', opponent: 'STL' };
+  const refreshed = mergeGameDayResults([published], volleyballSources);
+  assert.equal(refreshed.filter(m => m.date === '2026-09-29' && m.teamId === 'volleyball-sma-girls' && /STL|Laurensia/.test(m.opponent)).length, 1);
+  assert.equal(refreshed[0].id, 'published-cup-stl');
+});
