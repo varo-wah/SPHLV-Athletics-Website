@@ -9,3 +9,4 @@ Sources: GameDay Summaries posts September 29 and October 3; Player of the Week 
 - September 9 posters already exist; no duplicate articles added.
 - September 19 basketball STL score remains unchanged pending resolution of 50–18 versus 50–20.
 - No health details are republished. The girls BSJ report’s ambiguous three-kill phrase is not converted into individual totals.
+- Refreshed six official standings feeds. Five pass the standings parser; boys basketball has a published GJS points/score inconsistency, so the existing validated fallback remains in use. No standings values were guessed.
