@@ -19,7 +19,7 @@ export function parseLeagueStandings(matrix: readonly (readonly unknown[])[], sp
       let value = String(row[column + 1] ?? '').trim();
       // Some league rows omit the losing side of an otherwise recorded fixture.
       const reverse = String(matrix.find(cells => cells[0] === opponent)?.[index + 1] ?? '').trim();
-      if (!value && /^\d+\s*[-–]\s*\d+$/.test(reverse)) value = reverse.split(/[-–]/).reverse().join('-');
+      if (!value && /^\d+\s*[-–]\s*\d+$/.test(reverse)) value = reverse.split(/[-–]/).map(score => score.trim()).reverse().join('-');
       if (!value) return;
       const score = value.match(/^(\d+)\s*[-–]\s*(\d+)$/);
       if (!score) throw new Error(`Invalid ${sport.toLowerCase()} score: ${team} vs ${opponent}`);
