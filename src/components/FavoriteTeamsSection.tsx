@@ -1,8 +1,6 @@
-import { CalendarDays, ChevronRight, MapPin, Plus, Star, Trophy } from 'lucide-react';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import { useMemo } from 'react';
+import { CalendarDays, ChevronRight, Plus, Star } from 'lucide-react';
+import { useId, useMemo } from 'react';
 import { isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
-import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
 import { useAuth } from '../contexts/AuthContext';
 import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
 import { ScheduleEvent } from '../data/scheduleTypes';
@@ -11,6 +9,7 @@ import { SheetMatch } from '../services/parsers';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import { buildFavoriteTeamSummaries } from '../utils/homePersonalization';
 import { getTeamFavoriteLabel } from '../utils/teamFavorites';
+import { penaltyScoreLabel, resultOutcomeLabel } from '../utils/teamGamePresentation';
 
 interface FavoriteTeamsSectionProps {
   athleticsDataState: AthleticsDataState;
@@ -26,23 +25,12 @@ const sportEmojis: Record<SportTab, string> = {
   TrackAndField: '🏃',
 };
 
-function compactGameDate(event: ScheduleEvent | null) {
-  if (!event?.date) return 'Schedule pending';
-  const parsed = new Date(`${event.date} ${event.time || '00:00'}`);
-  if (Number.isNaN(parsed.getTime())) return event.date;
-  const date = parsed.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-  });
-  return date;
-}
-
-function compactResultDate(match: SheetMatch | null) {
-  if (!match?.date) return 'Awaiting result';
-  const [year, month, day] = match.date.split('-').map(Number);
+function compactDate(date: string | null | undefined, fallback: string) {
+  if (!date) return fallback;
+  const [year, month, day] = date.split('-').map(Number);
   const parsed = new Date(year, month - 1, day);
   return Number.isNaN(parsed.getTime())
-    ? match.date
+    ? date
     : parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
@@ -56,7 +44,12 @@ function resultColor(match: SheetMatch | null) {
   if (match?.result === 'W') return 'text-brand-sky';
   if (match?.result === 'L') return 'text-brand-red dark:text-red-300';
   if (match?.result === 'D') return 'text-amber-700 dark:text-amber-300';
-  return 'text-foreground/35';
+  return 'text-foreground/40';
+}
+
+function nextGameLabel(event: ScheduleEvent | null) {
+  if (!event) return 'No upcoming game listed';
+  return `${compactDate(event.date, 'Date TBD')}${event.time ? ` · ${event.time}` : ''} · ${event.eventText}`;
 }
 
 export default function FavoriteTeamsSection({
@@ -64,8 +57,8 @@ export default function FavoriteTeamsSection({
   onNavigateToTeam,
   onBrowseTeams,
 }: FavoriteTeamsSectionProps) {
-  const reduceMotion = useReducedMotion();
-  const { user } = useAuth();
+  const headingId = useId();
+  const { user, openLoginModal } = useAuth();
   const { favoriteTeams, loading, error } = useTeamFavorites();
 
   const summaries = useMemo(() => {
@@ -84,119 +77,78 @@ export default function FavoriteTeamsSection({
     );
   }, [athleticsDataState.data.masterScheduleEvents, athleticsDataState.data.matches, favoriteTeams]);
 
-  if (!user) return null;
-
   return (
-    <section
-      aria-labelledby="my-teams-heading"
-      className="mb-5 overflow-hidden rounded-3xl border border-border/10 bg-subcard/70 p-4 shadow-[0_4px_12px_rgba(0,0,0,0.09)] backdrop-blur-xl"
-    >
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-[#F4C95D]/25 bg-[#F4C95D]/10 text-[#F4C95D]">
-            <Star size={18} fill="currentColor" />
-          </span>
-          <h1 id="my-teams-heading" className="text-lg font-black uppercase tracking-[0.07em] text-foreground">
-            My Teams
-          </h1>
-        </div>
-
-        <motion.button
-          type="button"
-          onClick={onBrowseTeams}
-          aria-label="Browse all teams"
-          title="Browse all teams"
-          whileTap={{ scale: PRESS_SCALE }}
-          transition={PRESS_TRANSITION}
-          className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:bg-brand-maroon/10 hover:text-foreground"
-        >
-          <Plus size={18} />
-        </motion.button>
+    <section aria-labelledby={headingId} className="mb-5">
+      <div className="flex items-center justify-between gap-3 border-b border-border/10 pb-2.5">
+        <h2 id={headingId} className="flex items-center gap-2 text-base font-black uppercase tracking-[0.06em]">
+          <Star size={17} className="text-amber-600 dark:text-amber-300" fill="currentColor" />
+          My Teams
+        </h2>
+        {user && (
+          <button
+            type="button"
+            onClick={onBrowseTeams}
+            className="inline-flex min-h-10 items-center gap-1.5 px-2 text-xs font-bold text-foreground/65 hover:text-foreground"
+          >
+            <Plus size={15} /> Add teams
+          </button>
+        )}
       </div>
 
-      {loading ? (
-        <div className="mt-4 grid gap-3 sm:grid-cols-2" aria-label="Loading favorite teams">
-          {[0, 1].map((item) => (
-            <div key={item} className="h-32 animate-pulse rounded-3xl bg-foreground/[0.035]" />
-          ))}
+      {!user ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 py-3">
+          <p className="text-xs leading-relaxed text-foreground/60">Pin your teams to see their latest results here.</p>
+          <button type="button" onClick={openLoginModal} className="min-h-10 text-xs font-bold text-brand-maroon dark:text-red-300">Sign in to pin teams <ChevronRight size={13} className="inline-block" /></button>
+        </div>
+      ) : loading ? (
+        <div className="mt-3 grid gap-3 sm:grid-cols-2" aria-label="Loading favorite teams">
+          {[0, 1].map((item) => <div key={item} className="h-28 animate-pulse rounded-lg bg-foreground/5" />)}
         </div>
       ) : summaries.length > 0 ? (
-        <motion.div layout className="mt-4 grid gap-3 min-[480px]:grid-cols-2">
-          <AnimatePresence initial={false}>
-            {summaries.map(({ favorite, nextEvent, recentMatch }) => (
-              <motion.button
-                key={favorite.key}
-                layout
-                type="button"
-                onClick={() => onNavigateToTeam(favorite.sport, favorite.division, favorite.gender)}
-                initial={{ opacity: 0, scale: reduceMotion ? 1 : 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: reduceMotion ? 1 : 0.98 }}
-                whileTap={{ scale: PRESS_SCALE }}
-                transition={QUICK_TRANSITION}
-                className="group min-w-0 rounded-3xl border border-border/10 bg-foreground/[0.025] p-2.5 text-left transition-all hover:-translate-y-0.5 hover:border-brand-maroon/30 hover:bg-brand-maroon/[0.06]"
-              >
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.035] text-lg" aria-hidden="true">
-                      {sportEmojis[favorite.sport]}
-                    </span>
-                    <h2 className="line-clamp-2 text-[11px] font-black uppercase leading-tight tracking-[0.05em] text-foreground">
-                      {getTeamFavoriteLabel(favorite)}
-                    </h2>
-                  </div>
-                  <ChevronRight size={16} className="shrink-0 text-foreground/30 transition-transform group-hover:translate-x-0.5" />
+        <div className="mt-3 grid gap-3 min-[480px]:grid-cols-2">
+          {summaries.map(({ favorite, nextEvent, recentMatch }) => (
+            <button
+              key={favorite.key}
+              type="button"
+              onClick={() => onNavigateToTeam(favorite.sport, favorite.division, favorite.gender)}
+              className={`group min-w-0 rounded-lg border border-l-[3px] bg-card p-3 text-left transition-colors hover:bg-foreground/[0.025] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/45 ${favorite.gender === 'Boys' ? 'border-border/10 border-l-[#669BBC]' : favorite.gender === 'Girls' ? 'border-border/10 border-l-[#DF8791]' : 'border-border/10 border-l-foreground/35'}`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <h3 className="flex min-w-0 items-center gap-2 text-[11px] font-black uppercase leading-snug tracking-[0.03em]">
+                  <span className="shrink-0 text-lg" aria-hidden="true">{sportEmojis[favorite.sport]}</span>
+                  {getTeamFavoriteLabel(favorite)}
+                </h3>
+                <ChevronRight size={15} className="shrink-0 text-foreground/35" />
+              </div>
+              <div className="mt-3 flex items-center justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold uppercase tracking-[0.1em] text-foreground/50">
+                    Latest result · {compactDate(recentMatch?.date, 'Pending')}
+                  </p>
+                  <p className="mt-1 truncate text-sm font-bold">
+                    {athleticsDataState.loading ? 'Loading result' : recentMatch ? `vs ${recentMatch.opponent}` : 'No completed game'}
+                  </p>
                 </div>
-
-                <div className="mt-2.5 grid gap-2">
-                  <div className="min-w-0 rounded-2xl border border-brand-navy/8 bg-white/55 p-2 dark:border-white/8 dark:bg-white/[0.025]">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-[0.14em] text-brand-navy/55 dark:text-brand-sky/75">
-                        <CalendarDays size={12} /> Next game
-                      </span>
-                      <span className="shrink-0 text-[8px] font-bold uppercase text-foreground/48">
-                        {compactGameDate(nextEvent)}
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center justify-between gap-2">
-                      <span className="truncate text-[11px] font-black uppercase text-brand-navy dark:text-white">
-                        {athleticsDataState.loading ? 'Loading schedule' : nextEvent?.eventText || 'No upcoming game'}
-                      </span>
-                      <span className="flex shrink-0 items-center gap-1 text-[8px] font-bold uppercase text-foreground/42">
-                        <MapPin size={10} className="text-brand-sky" /> {nextEvent?.location || 'TBD'}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="min-w-0 rounded-2xl border border-brand-red/8 bg-white/55 p-2 dark:border-white/8 dark:bg-white/[0.025]">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="flex items-center gap-1.5 text-[8px] font-black uppercase tracking-[0.14em] text-brand-red/65 dark:text-red-300/75">
-                        <Trophy size={12} /> Latest result
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <span className="text-[8px] font-bold uppercase text-foreground/48">{compactResultDate(recentMatch)}</span>
-                        <strong className={`text-xs font-black ${resultColor(recentMatch)}`}>{recentMatch?.result || '—'}</strong>
-                      </span>
-                    </div>
-                    <div className="mt-2 flex items-center justify-between gap-2">
-                      <span className="truncate text-[11px] font-black uppercase text-brand-navy dark:text-white">
-                        {athleticsDataState.loading ? 'Loading result' : recentMatch ? `vs ${recentMatch.opponent}` : 'No completed game'}
-                      </span>
-                      <strong className="shrink-0 text-xs text-brand-navy dark:text-white">{resultScore(recentMatch)}</strong>
-                    </div>
-                  </div>
+                <div className="flex shrink-0 items-baseline gap-2">
+                  <span className={`text-xs font-black ${resultColor(recentMatch)}`}>{recentMatch ? resultOutcomeLabel(recentMatch.result) : '—'}</span>
+                  <strong className="text-xl tabular-nums">{resultScore(recentMatch)}</strong>
                 </div>
-              </motion.button>
-            ))}
-          </AnimatePresence>
-        </motion.div>
+              </div>
+              {recentMatch?.penalties && <p className="mt-1 text-right text-[10px] text-foreground/60">{penaltyScoreLabel(recentMatch)}</p>}
+              <p className="mt-3 flex gap-1.5 border-t border-border/10 pt-2 text-[10px] leading-relaxed text-foreground/60">
+                <CalendarDays size={12} className="mt-0.5 shrink-0" />
+                <span><span className="font-bold">Next: </span>{athleticsDataState.loading ? 'Loading schedule' : nextGameLabel(nextEvent)}</span>
+              </p>
+            </button>
+          ))}
+        </div>
       ) : (
-        <p className="mt-4 rounded-2xl border border-dashed border-border/15 px-4 py-5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/42">
-          Favorite a team below to pin it here.
-        </p>
+        <button type="button" onClick={onBrowseTeams} className="w-full py-4 text-left text-xs leading-relaxed text-foreground/60 hover:text-foreground">
+          Open a team and tap its star to pin it here. <span className="font-bold text-brand-maroon dark:text-red-300">Browse teams →</span>
+        </button>
       )}
 
-      {error && <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.12em] text-red-400">{error}</p>}
+      {error && <p role="status" className="mt-2 text-xs text-red-600 dark:text-red-300">{error}</p>}
     </section>
   );
 }

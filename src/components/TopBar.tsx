@@ -33,7 +33,7 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
         <motion.button
           type="button"
           aria-label="Open teams menu"
-          className="flex h-10 w-14 items-center justify-center overflow-hidden rounded-xl border border-[#C1121F]/15 bg-white transition-colors hover:border-[#C1121F]/35 dark:border-white/10 dark:bg-white/90"
+          className="flex h-10 w-14 items-center justify-center overflow-hidden rounded-lg transition-colors hover:bg-foreground/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/50"
           onClick={onOpenMenu}
           whileTap={{ scale: PRESS_SCALE }}
           transition={PRESS_TRANSITION}
@@ -41,7 +41,7 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
           <img
             src="https://res.cloudinary.com/dpgt445lg/image/upload/v1775384563/image_13_obe33c.png"
             alt=""
-            className="h-9 w-12 object-contain"
+            className="h-9 w-12 object-contain mix-blend-multiply dark:mix-blend-normal dark:rounded-md"
             aria-hidden="true"
           />
         </motion.button>
@@ -73,7 +73,7 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
             ))}
           </nav>
         ) : (
-          <span className="truncate text-xs font-black uppercase tracking-[0.14em] text-[#1F2937] dark:text-foreground sm:text-sm">
+          <span className="truncate text-xs font-bold uppercase tracking-[0.1em] text-foreground/80 sm:text-sm">
             LV Eagle App
           </span>
         )}

@@ -12,6 +12,9 @@ function scrollToPageTop() {
 
 export default function NewsScreen({ initialArticleId = null }: { initialArticleId?: string | null }) {
   const articles = useMemo(() => visibleNewsArticles(IS_PROTOTYPE), []);
+  const [category, setCategory] = useState('All');
+  const categories = ['All', 'SPORTS REPORT', 'PLAYER OF THE WEEK', 'ATHLETE SPOTLIGHT'];
+  const filteredArticles = category === 'All' ? articles : articles.filter(article => article.category === category);
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(initialArticleId);
   const selectedArticle = articles.find((article) => article.id === selectedArticleId) || null;
 
@@ -39,7 +42,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
           Back to News
         </button>
 
-        <div className="overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_5px_14px_rgba(0,0,0,0.12)]">
+        <div className="overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-[0_5px_14px_rgba(0,0,0,0.12)]">
           {selectedArticle.posterImages ? (
             <div className="border-b border-border/10 bg-foreground/[0.025] p-5 sm:p-8">
               <div className="flex flex-wrap items-center gap-2">
@@ -50,7 +53,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
                   {selectedArticle.dateLabel}
                 </span>
               </div>
-              <h2 className="mt-4 max-w-4xl text-2xl font-black uppercase leading-tight tracking-wide text-foreground sm:text-4xl">
+              <h2 className="mt-4 max-w-4xl text-2xl font-black leading-tight text-foreground sm:text-3xl">
                 {selectedArticle.title}
               </h2>
             </div>
@@ -71,7 +74,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
                     {selectedArticle.dateLabel}
                   </span>
                 </div>
-                <h2 className="mt-4 max-w-4xl text-2xl font-black uppercase leading-tight tracking-wide text-white sm:text-4xl">
+                <h2 className="mt-4 max-w-4xl text-2xl font-black leading-tight text-white sm:text-3xl">
                   {selectedArticle.title}
                 </h2>
               </div>
@@ -171,8 +174,12 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
         <h2 className="text-xl font-black uppercase tracking-widest text-foreground">EAGLES NEWS</h2>
       </div>
 
-      {articles.length === 0 ? (
-        <section className="rounded-[2rem] border border-border/10 bg-subcard px-6 py-14 text-center shadow-[0_4px_12px_rgba(0,0,0,0.09)]">
+      <div className="flex gap-2 overflow-x-auto pb-2" aria-label="News categories">
+        {categories.map(item => <button key={item} type="button" aria-pressed={category === item} onClick={() => setCategory(item)} className={`shrink-0 rounded-lg px-3 py-2 text-[10px] font-bold transition-colors ${category === item ? 'bg-brand-maroon text-white' : 'bg-foreground/5 text-foreground/60'}`}>{item === 'All' ? 'All stories' : item === 'SPORTS REPORT' ? 'Sports reports' : item === 'PLAYER OF THE WEEK' ? 'Player of the Week' : 'Spotlights'}</button>)}
+      </div>
+
+      {filteredArticles.length === 0 ? (
+        <section className="rounded-2xl border border-border/10 bg-subcard px-6 py-14 text-center shadow-[0_4px_12px_rgba(0,0,0,0.09)]">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] text-[#B5413F]">
             <Newspaper size={25} />
           </div>
@@ -188,7 +195,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
         </section>
       ) : (
         <div className="space-y-2">
-          {articles.map((post) => (
+          {filteredArticles.map((post) => (
             <NewsListRow
               key={post.id}
               article={post}
