@@ -432,7 +432,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           </div>
         )}
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="Filter schedule by team">
+        <div className="grid grid-cols-2 gap-2" aria-label="Filter schedule by team">
           {TEAM_FILTER_OPTIONS.map((option) => {
             const active = teamFilter === option.id;
             return (
@@ -444,12 +444,12 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 onClick={() => setTeamFilter(option.id)}
                 whileTap={{ scale: PRESS_SCALE }}
                 transition={PRESS_TRANSITION}
-                className={`relative flex min-h-10 items-center gap-1.5 rounded-lg border px-3 py-2 text-[10px] font-black uppercase tracking-[0.07em] transition-colors ${
+                className={`relative flex min-h-10 min-w-0 items-center gap-1.5 rounded-lg border px-3 py-2 text-left transition-colors ${
                   teamFilterClasses(option.id, active)
                 }`}
               >
-                <span aria-hidden="true" className="relative z-10 text-sm leading-none">{option.emoji}</span>
-                <span className="relative z-10">{option.label}</span>
+                <span aria-hidden="true" className="relative z-10 shrink-0 text-sm leading-none">{option.emoji}</span>
+                <span className="relative z-10 min-w-0 flex-1 break-words whitespace-normal text-[11px] font-black uppercase leading-snug tracking-[0.04em]">{option.label}</span>
               </motion.button>
             );
           })}
