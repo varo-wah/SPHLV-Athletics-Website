@@ -1,11 +1,12 @@
 import { useHashRoute, navigateHash } from '../hooks/useHashRoute';
 import { parseScheduleQuery } from '../services/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, ChevronUp, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import scheduleDataJson from '../data/schedule.json';
 import { ScheduleData, ScheduleEvent, ScheduleEventType } from '../data/scheduleTypes';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
+import { chronologicalScheduleDays, readableFixtureLabel, scheduleDayStatus } from '../utils/scheduleTimeline';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import {
   IS_PROTOTYPE,
@@ -62,37 +63,37 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
   },
   {
     id: 'VBS',
-    label: 'VBS',
+    label: 'Boys Soccer',
     title: 'Varsity Boys Soccer',
     emoji: '⚽',
   },
   {
     id: 'VGS',
-    label: 'VGS',
+    label: 'Girls Soccer',
     title: 'Varsity Girls Soccer',
     emoji: '⚽',
   },
   {
     id: 'VBV',
-    label: 'VBV',
+    label: 'Boys Volleyball',
     title: 'Varsity Boys Volleyball',
     emoji: '🏐',
   },
   {
     id: 'VGV',
-    label: 'VGV',
+    label: 'Girls Volleyball',
     title: 'Varsity Girls Volleyball',
     emoji: '🏐',
   },
   {
     id: 'SMPBB',
-    label: 'SMPBB',
+    label: 'SMP Boys Basketball',
     title: 'SMP Boys Basketball',
     emoji: '🏀',
   },
   {
     id: 'SMPGB',
-    label: 'SMPGB',
+    label: 'SMP Girls Basketball',
     title: 'SMP Girls Basketball',
     emoji: '🏀',
   },
@@ -111,11 +112,6 @@ interface SportScheduleScreenProps {
   division?: DivisionTab;
   onSportChange?: (sport: SportTab) => void;
   athleticsDataState?: AthleticsDataState;
-}
-
-function weekNumber(week: string | null) {
-  const match = week?.match(/\d+/);
-  return match ? Number(match[0]) : 999;
 }
 
 function formatDate(date: string | null) {
@@ -243,14 +239,17 @@ function monthLabel(key: string) {
 }
 
 function shortTeamName(team: string) {
-  return team
-    .replace(/\b(Varsity|SMP|SMA)\b/gi, '')
-    .trim()
-    .split(/\s+/)
-    .map((part) => part[0])
-    .join('')
-    .slice(0, 4)
-    .toUpperCase();
+  if (/boys\s*&\s*girls/i.test(team)) return 'Boys & Girls';
+  if (/\bgirls?\b/i.test(team)) return 'Girls';
+  if (/\bboys?\b/i.test(team)) return 'Boys';
+  return team.replace(/\b(Varsity|SMP|SMA)\b/gi, '').trim();
+}
+
+function eventGenderAccent(event: ScheduleEvent) {
+  if (/boys\s*&\s*girls/i.test(event.team)) return 'border-l-foreground/25';
+  if (event.genderGroup === 'Girls' || /\bgirls?\b/i.test(event.team)) return 'border-l-[#DF8791]';
+  if (event.genderGroup === 'Boys' || /\bboys?\b/i.test(event.team)) return 'border-l-[#669BBC]';
+  return 'border-l-foreground/25';
 }
 
 function groupEventsByMonth(events: ScheduleEvent[]) {
@@ -286,15 +285,6 @@ function buildMonthDays(key: string, events: ScheduleEvent[]) {
   ];
 }
 
-function groupEventsByWeek(events: ScheduleEvent[]) {
-  return events.reduce<Record<string, ScheduleEvent[]>>((groups, event) => {
-    const key = event.week || 'Unassigned Week';
-    groups[key] = groups[key] || [];
-    groups[key].push(event);
-    return groups;
-  }, {});
-}
-
 export default function SportScheduleScreen({ athleticsDataState }: SportScheduleScreenProps) {
   const liveEvents = athleticsDataState?.data.masterScheduleEvents || [];
   const scheduleEvents = liveEvents.length > 0 ? liveEvents : fallbackScheduleData.events;
@@ -322,7 +312,6 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const setTeamFilter = (team: ScheduleTeamFilter) => updateFilters({ team });
   const setScheduleScope = (scope: 'games' | 'practices') => updateFilters({ scope });
   const setScheduleView = (view: ScheduleView) => updateFilters({ view });
-  const [collapsedWeeks, setCollapsedWeeks] = useState<Record<string, boolean>>({});
   const [selectedCalendarDay, setSelectedCalendarDay] = useState<SelectedCalendarDay | null>(null);
   const [showArchivedWeeks, setShowArchivedWeeks] = useState(false);
   const reduceMotion = useReducedMotion();
@@ -341,6 +330,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     calendarCloseRef.current?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') closeCalendarDay();
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        calendarCloseRef.current?.focus();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
@@ -378,11 +371,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
     });
   }, [archivedWeeks, scheduleScope, seasonEvents, showArchivedWeeks, teamFilter]);
 
-  const groupedEvents = useMemo(() => groupEventsByWeek(filteredEvents), [filteredEvents]);
-  const visibleWeeks = Object.keys(groupedEvents).sort((a, b) => {
-    const archiveCompare = Number(archivedWeeks.has(a)) - Number(archivedWeeks.has(b));
-    return archiveCompare || weekNumber(a) - weekNumber(b);
-  });
+  const timelineDays = useMemo(() => chronologicalScheduleDays(filteredEvents), [filteredEvents]);
   const seasonEventCounts = useMemo(() => (
     scheduleEvents.reduce<Record<string, number>>((counts, event) => {
       if (isMeaningfulScheduleEvent(event)) {
@@ -405,15 +394,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const changeSeason = (season: string) => {
     updateFilters({ season, team: ALL, scope: 'games' });
     setShowArchivedWeeks(false);
-    setCollapsedWeeks({});
     setSelectedCalendarDay(null);
-  };
-
-  const toggleWeek = (week: string) => {
-    setCollapsedWeeks((current) => ({
-      ...current,
-      [week]: !(current[week] ?? week !== visibleWeeks[0]),
-    }));
   };
 
   return (
@@ -451,7 +432,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           </div>
         )}
 
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 no-scrollbar" aria-label="Filter schedule by team">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3" aria-label="Filter schedule by team">
           {TEAM_FILTER_OPTIONS.map((option) => {
             const active = teamFilter === option.id;
             return (
@@ -463,7 +444,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 onClick={() => setTeamFilter(option.id)}
                 whileTap={{ scale: PRESS_SCALE }}
                 transition={PRESS_TRANSITION}
-                className={`relative flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[9px] font-black uppercase tracking-[0.07em] transition-colors ${
+                className={`relative flex min-h-10 items-center gap-1.5 rounded-lg border px-3 py-2 text-[10px] font-black uppercase tracking-[0.07em] transition-colors ${
                   teamFilterClasses(option.id, active)
                 }`}
               >
@@ -474,11 +455,11 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           })}
         </div>
 
-        <div className="flex items-end justify-between gap-4 border-b border-border/10">
+        <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border/10">
           <div className="flex gap-5" aria-label="Filter schedule by event type">
             {([
               { id: 'games', label: 'Games', emoji: '🏆' },
-              { id: 'practices', label: 'Practices', emoji: '🏋️' },
+              { id: 'practices', label: 'Games + practice', emoji: '🏋️' },
             ] as const).map((scope) => (
               <motion.button
                 key={scope.id}
@@ -511,7 +492,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
 
           <div className="mb-1 flex rounded-xl border border-border/10 bg-subcard p-1">
             {[
-              { id: 'list' as const, label: 'List', emoji: '📋' },
+              { id: 'list' as const, label: 'Timeline', emoji: '📋' },
               { id: 'calendar' as const, label: 'Calendar', emoji: '🗓️' },
             ].map((view) => {
               const active = scheduleView === view.id;
@@ -524,7 +505,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                   onClick={() => setScheduleView(view.id)}
                   whileTap={{ scale: PRESS_SCALE }}
                   transition={PRESS_TRANSITION}
-                  className={`relative flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+                  className={`relative flex min-h-9 items-center justify-center gap-1.5 rounded-lg px-2 text-[10px] font-bold transition-colors ${
                     active ? 'text-brand-navy' : 'text-foreground/40 hover:text-foreground/70'
                   }`}
                 >
@@ -535,7 +516,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       transition={STANDARD_SPRING}
                     />
                   )}
-                  <span aria-hidden="true" className="relative z-10 text-base leading-none">{view.emoji}</span>
+                  <span aria-hidden="true" className="relative z-10 text-sm leading-none">{view.emoji}</span><span className="relative z-10">{view.label}</span>
                 </motion.button>
               );
             })}
@@ -548,14 +529,14 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             onClick={() => setShowArchivedWeeks((current) => !current)}
             whileTap={{ scale: PRESS_SCALE }}
             transition={PRESS_TRANSITION}
-            className={`inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 text-[7px] font-black uppercase tracking-[0.1em] transition-colors ${
+            className={`inline-flex min-h-10 items-center gap-1.5 rounded-lg border px-3 py-2 text-[10px] font-black uppercase tracking-[0.1em] transition-colors ${
               showArchivedWeeks
                 ? 'border-[#9CA3AF]/35 bg-[#9CA3AF]/12 text-[#6B7280]'
                 : 'border-[#9CA3AF]/25 bg-[#9CA3AF]/8 text-[#6B7280] hover:border-[#6B7280]/35 hover:text-[#4B5563]'
             }`}
           >
             <span aria-hidden="true" className="text-[10px] leading-none">🗃️</span>
-            {showArchivedWeeks ? 'Hide' : 'Show'} {archivedWeeks.size} archived week{archivedWeeks.size === 1 ? '' : 's'}
+            {showArchivedWeeks ? 'Hide' : 'Show'} {archivedWeeks.size} past week{archivedWeeks.size === 1 ? '' : 's'}
           </motion.button>
         )}
       </section>
@@ -574,8 +555,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             No events match these filters
           </p>
           <p className="mt-2 text-xs text-foreground/40">
-            Clear the filters or open the archived weeks to see more events.
+            Clear the team filter or show past weeks to see more events.
           </p>
+          <button type="button" onClick={clearFilters} className="mt-3 min-h-10 text-xs font-bold text-brand-maroon dark:text-red-300">Clear filters</button>
         </div>
       ) : scheduleView === 'calendar' ? (
         <section className="space-y-5">
@@ -584,7 +566,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             const days = buildMonthDays(month, monthEvents);
 
             return (
-              <div key={month} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_4px_12px_rgba(15,23,42,0.06)]">
+              <div key={month} className="overflow-hidden rounded-xl border border-border/10 bg-subcard">
                 <div className="flex flex-col gap-3 border-b border-border/10 bg-muted/70 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#C1121F]">
@@ -642,6 +624,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                         const hasEvents = Boolean(day && day.events.length > 0);
                         const dateIso = day && month !== 'undated' ? `${month}-${String(day.day).padStart(2, '0')}` : null;
                         const isToday = dateIso === todayIso;
+                        const isPast = Boolean(dateIso && dateIso < todayIso);
                         const CellTag = hasEvents ? 'button' : 'div';
 
                         return (
@@ -652,12 +635,12 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                               calendarTriggerRef.current = event.currentTarget as HTMLButtonElement;
                               setSelectedCalendarDay({ label: formatLongDate(dateIso), events: day.events });
                             } : undefined}
-                            className={`min-h-[74px] rounded-2xl border p-2 text-left transition-all ${
+                            className={`min-h-[68px] rounded-lg border p-1 text-left transition-all sm:p-2 ${
                               day
                                 ? isToday
                                   ? 'border-[#B5413F]/45 bg-[#B5413F]/10 ring-1 ring-inset ring-[#B5413F]/25 dark:bg-white/[0.075]'
                                   : hasEvents
-                                    ? 'border-[#C1121F]/25 bg-white shadow-[0_3px_10px_rgba(15,23,42,0.05)] hover:-translate-y-0.5 hover:border-[#C1121F]/50 hover:shadow-[0_5px_14px_rgba(193,18,31,0.11)] dark:bg-foreground/[0.025]'
+                                    ? 'border-border/20 bg-white hover:border-foreground/40 dark:bg-foreground/[0.025]'
                                     : 'border-brand-maroon/10 bg-muted/70 dark:border-white/10 dark:bg-white/[0.055]'
                                 : 'border-transparent bg-transparent'
                             }`}
@@ -665,15 +648,15 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                             {day && (
                               <>
                                 <div className="flex items-center justify-between gap-1">
-                                  <span className={`text-xs font-black ${hasEvents ? 'text-[#C1121F]' : 'text-foreground/38'}`}>
+                                  <span className={`text-xs font-black ${isToday ? 'text-[#C1121F]' : isPast ? 'text-foreground/45' : hasEvents ? 'text-foreground' : 'text-foreground/38'}`}>
                                     {day.day}
                                   </span>
                                   {isToday ? (
-                                    <span className="rounded-full bg-[#B5413F] px-1.5 py-0.5 text-[7px] font-black uppercase tracking-[0.08em] text-white">
-                                      Today
+                                    <span aria-label="Today" className="h-1.5 w-1.5 rounded-full bg-[#B5413F] sm:h-auto sm:w-auto sm:px-1.5 sm:py-0.5 sm:text-[7px] sm:font-black sm:text-white">
+                                      <span className="hidden sm:inline">Today</span>
                                     </span>
                                   ) : hasEvents && (
-                                    <span className="rounded-full bg-[#C1121F] px-1.5 py-0.5 text-[8px] font-black text-white shadow-[0_6px_14px_rgba(193,18,31,0.2)]">
+                                    <span className={`rounded-full px-1 py-0.5 text-[8px] font-bold ${isPast ? 'bg-foreground/10 text-foreground/45' : 'bg-foreground/10 text-foreground/75'}`}>
                                       {day.events.length}
                                     </span>
                                   )}
@@ -683,7 +666,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                   {day.events.slice(0, 2).map((event) => (
                                       <div
                                         key={event.id}
-                                        className="truncate rounded-lg bg-muted px-2 py-1 text-[9px] font-black uppercase tracking-[0.08em] text-foreground/60 dark:bg-white/[0.055]"
+                                        className={`truncate border-l-2 bg-muted px-1 py-1 text-[9px] font-bold text-foreground/60 dark:bg-white/[0.055] ${eventGenderAccent(event)}`}
                                         title={`${event.team}: ${event.eventText}`}
                                       >
                                         <span aria-hidden="true" className="mr-1">{sportEmojiForEvent(event)}</span>
@@ -709,125 +692,62 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           })}
         </section>
       ) : (
-        <section className="space-y-4">
-          {visibleWeeks.map((week) => {
-            const events = groupedEvents[week];
-            const collapsed = collapsedWeeks[week] ?? week !== visibleWeeks[0];
-            const archived = archivedWeeks.has(week);
-            const containsToday = events.some((event) => event.date === todayIso);
-
-            return (
-              <div key={week} className="overflow-hidden rounded-3xl border border-border/10 bg-subcard shadow-[0_4px_12px_rgba(0,0,0,0.10)]">
-                <button
-                  type="button"
-                  onClick={() => toggleWeek(week)}
-                  className={`flex w-full items-center justify-between gap-4 border-b border-border/5 px-4 py-4 text-left ${
-                    containsToday ? 'bg-white/[0.065]' : archived ? 'bg-foreground/[0.025]' : 'bg-muted/70'
-                  }`}
-                >
-                  <div>
-                    <p className="text-[10px] font-black uppercase tracking-[0.22em] text-[#B5413F]">
-                      {activeSeason}
-                    </p>
-                    <h3 className="mt-1 text-xl font-black uppercase tracking-[0.08em] text-foreground">
-                      {week}
-                    </h3>
+        <section aria-label="Schedule timeline">
+          <div className="mb-4 flex flex-wrap gap-x-4 gap-y-2 text-[10px] font-bold text-foreground/55" aria-label="Date key">
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-[#C1121F]" />Today</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full bg-foreground/30" />Past date</span>
+            <span className="flex items-center gap-1.5"><span className="h-2 w-2 rounded-full border border-foreground/40" />Upcoming</span>
+          </div>
+          <div className="ml-2 border-l border-border/20 pl-5">
+            {timelineDays.map((day) => {
+              const status = scheduleDayStatus(day.date, todayIso);
+              return (
+                <section key={day.key} aria-label={formatDate(day.date)} className="relative pb-6 last:pb-0">
+                  <span aria-hidden="true" className={`absolute -left-[1.6rem] top-1.5 h-2.5 w-2.5 rounded-full ring-4 ring-background ${status === 'today' ? 'bg-[#C1121F]' : status === 'past' ? 'bg-foreground/30' : 'border border-foreground/40 bg-background'}`} />
+                  <div className="mb-2.5 flex flex-wrap items-center gap-2">
+                    <h3 className={`text-sm font-black ${status === 'past' ? 'text-foreground/60' : 'text-foreground'}`}>{formatDate(day.date)}</h3>
+                    {status === 'today' && <span className="text-[10px] font-bold text-[#C1121F] dark:text-red-300">Today</span>}
+                    {status === 'past' && <span className="text-[10px] font-medium text-foreground/45">Past date</span>}
                   </div>
-                  <div className="flex items-center gap-3">
-                    {(containsToday || archived) && (
-                      <span className={`rounded-full border px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] ${
-                        containsToday
-                          ? 'border-brand-sky/35 bg-brand-sky text-brand-navy'
-                          : 'border-border/10 bg-foreground/[0.035] text-foreground/38'
-                      }`}>
-                        {containsToday ? 'This week' : 'Archived'}
-                      </span>
-                    )}
-                    <span className="rounded-full border border-border/10 bg-subcard px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/50">
-                      {events.length}
-                    </span>
-                    {collapsed ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
-                  </div>
-                </button>
-
-                {!collapsed && (
-                  <div className="divide-y divide-border/5">
-                    {events.map((event, eventIndex) => {
-                      const isToday = event.date === todayIso;
-                      const eventTypeLabel = event.eventType.replace(/\s+Game$/i, '');
+                  <div className="overflow-hidden rounded-lg border border-border/10 bg-card">
+                    {day.events.map((event) => {
                       const fixtureLines = scheduleFixtureLines(event);
                       const hasMultipleFixtures = fixtureLines.length > 1;
-                      const eventTime = hasMultipleFixtures
-                        ? null
-                        : fixtureLines[0]?.time || displayEventTime(event);
-
+                      const eventTime = hasMultipleFixtures ? null : fixtureLines[0]?.time || displayEventTime(event);
                       return (
-                        <article
+                        <button
                           key={event.id}
-                          className={`px-4 py-3 transition-colors ${
-                            isToday
-                              ? 'bg-muted/70 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
-                              : eventIndex % 2 === 0
-                                ? 'bg-white/90 hover:bg-white dark:bg-foreground/[0.02] dark:hover:bg-foreground/[0.04]'
-                                : 'bg-[#F4F4F3] hover:bg-[#EEEEEC] dark:bg-foreground/[0.045] dark:hover:bg-foreground/[0.065]'
-                          }`}
+                          type="button"
+                          aria-haspopup="dialog"
+                          aria-label={`View event details: ${event.team}, ${formatDate(event.date)}, ${event.eventText}`}
+                          onClick={(clickEvent) => {
+                            calendarTriggerRef.current = clickEvent.currentTarget;
+                            setSelectedCalendarDay({ label: formatLongDate(event.date), events: [event] });
+                          }}
+                          className={`block w-full border-b border-l-[3px] border-b-border/10 px-3 py-3 text-left transition-colors last:border-b-0 hover:bg-foreground/[0.035] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-sky ${eventGenderAccent(event)} ${status === 'today' ? 'bg-brand-red/[0.025]' : ''}`}
                         >
-                          <div className="flex items-start gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-border/10 bg-foreground/[0.035]">
-                              <span aria-hidden="true" className="text-[23px] leading-none">{sportEmojiForEvent(event)}</span>
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <div className="flex min-w-0 items-center justify-between gap-2">
-                                <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
-                                  <p className="text-[13px] font-black uppercase tracking-[0.055em] text-foreground">
-                                    {formatDate(event.date)}
-                                  </p>
-                                  {eventTime && (
-                                    <span className="text-[11px] font-bold uppercase tracking-[0.06em] text-foreground/38">
-                                      {eventTime}
-                                    </span>
-                                  )}
-                                  {isToday && (
-                                    <span className="rounded-full bg-[#B5413F]/10 px-2 py-0.5 text-[8px] font-black uppercase tracking-[0.1em] text-[#B5413F]">
-                                      Today
-                                    </span>
-                                  )}
-                                </div>
-                                <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[8px] font-black uppercase tracking-[0.14em] ${EVENT_TYPE_STYLES[event.eventType]}`}>
-                                  {eventTypeLabel}
-                                </span>
-                              </div>
-
-                              <div className="mt-1 divide-y divide-border/8">
-                                {fixtureLines.map((fixture, fixtureIndex) => (
-                                  <div
-                                    key={`${event.id}-fixture-${fixtureIndex}`}
-                                    className="flex min-w-0 items-baseline justify-between gap-3 py-1 first:pt-0 last:pb-0"
-                                  >
-                                    <h4
-                                      className="min-w-0 truncate text-[15px] font-black uppercase leading-snug tracking-tight text-foreground"
-                                      title={fixture.label}
-                                    >
-                                      {fixture.label}
-                                    </h4>
-                                    {hasMultipleFixtures && fixture.time && (
-                                      <span className="shrink-0 text-[10px] font-bold uppercase tracking-[0.06em] text-foreground/38">
-                                        {fixture.time}
-                                      </span>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        </article>
+                          <span className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[10px] text-foreground/60">
+                            <span className="font-bold"><span aria-hidden="true" className="mr-1.5">{sportEmojiForEvent(event)}</span>{event.team}</span>
+                            <span className="font-semibold">{eventTime || (hasMultipleFixtures ? 'Multiple games' : 'Time TBD')} · {event.eventType.replace(/\s+Game$/i, '')}</span>
+                          </span>
+                          <span className="mt-1.5 block space-y-1.5">
+                            {fixtureLines.map((fixture, fixtureIndex) => (
+                              <span key={`${event.id}-fixture-${fixtureIndex}`} className="flex items-baseline justify-between gap-3">
+                                <span className="min-w-0 text-sm font-bold leading-snug">{readableFixtureLabel(fixture.label)}</span>
+                                {hasMultipleFixtures && <span className="shrink-0 text-xs tabular-nums text-foreground/55">{fixture.time || 'Time TBD'}</span>}
+                              </span>
+                            ))}
+                          </span>
+                          {event.location && <span className="mt-1.5 block text-[10px] text-foreground/55">{event.location}</span>}
+                          <span className="mt-2 block text-[10px] font-bold text-brand-maroon dark:text-red-300">View details →</span>
+                        </button>
                       );
                     })}
                   </div>
-                )}
-              </div>
-            );
-          })}
+                </section>
+              );
+            })}
+          </div>
         </section>
       )}
       </motion.div>
@@ -843,6 +763,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             onClick={closeCalendarDay}
           >
             <motion.div
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="schedule-event-details-title"
               className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_10px_24px_rgba(0,0,0,0.22)]"
               initial={{ opacity: 0, y: 42, scale: 0.94, rotateX: 8 }}
               animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
@@ -856,9 +779,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 <div className="relative z-10 flex items-start justify-between gap-4">
                   <div>
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/65">
-                      Calendar day
+                      Event details
                     </p>
-                    <h3 className="mt-1 text-2xl font-black uppercase tracking-tight">
+                    <h3 id="schedule-event-details-title" className="mt-1 text-2xl font-black uppercase tracking-tight">
                       {selectedCalendarDay.label}
                     </h3>
                     <p className="mt-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/65">
@@ -870,7 +793,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                     type="button"
                     onClick={closeCalendarDay}
                     className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition-colors hover:bg-white hover:text-[#C1121F]"
-                    aria-label="Close calendar events"
+                    aria-label="Close event details"
                   >
                     <X size={18} />
                   </button>
