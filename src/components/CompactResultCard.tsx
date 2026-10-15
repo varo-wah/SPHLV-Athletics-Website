@@ -18,10 +18,8 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const teams = presentResultTeams(match);
   const outcome = resultOutcomeLabel(match.result);
-  const accent = match.genderGroup === 'Boys' ? '#3F7898' : match.genderGroup === 'Girls' ? '#B83B78' : '#64748B';
   const hasDetails = Boolean(
     match.matchType ||
-    match.penalties ||
     match.setScores?.length ||
     match.statLeaders?.length ||
     match.highlights?.length,
@@ -39,12 +37,6 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
       transition={QUICK_TRANSITION}
       className={`overflow-hidden rounded-2xl border border-border/10 bg-subcard shadow-[0_2px_7px_rgba(0,0,0,0.06)] ${hasDetails ? 'transition-[border-color,box-shadow] group-hover:border-brand-maroon/30 group-hover:shadow-[0_7px_18px_rgba(120,0,0,0.10)]' : ''}`}
     >
-      {!dense && (
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/8 px-3 py-2 text-[10px] font-bold">
-          <span style={{ color: accent }}>{match.genderGroup} · {match.sportKey === 'TrackAndField' ? 'Track & Field' : match.sportKey}</span>
-          <span className="text-foreground/50">{match.matchType || match.tournament}</span>
-        </div>
-      )}
       <div className={`grid grid-cols-[minmax(0,1fr)_66px] items-stretch ${dense ? 'min-h-[78px]' : 'min-h-[94px]'}`}>
         <div className="divide-y divide-border/6">
           {teams.map((team) => (
@@ -68,22 +60,17 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
 
         <div className="flex flex-col items-center justify-center border-l border-[#D6D8DC] px-1.5 text-center dark:border-white/15">
           <span className={`text-[10px] font-black uppercase tracking-[0.1em] ${outcomeClasses}`}>{outcome}</span>
-          <span className="mt-1 text-[9px] font-bold text-foreground/65">
+          <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.08em] text-foreground dark:text-white/70">
             {formatDate(match.date)}
           </span>
+          {hasDetails && (
+            <span className="mt-1 text-[7px] font-black uppercase tracking-[0.1em] text-brand-maroon">
+              Stats ›
+            </span>
+          )}
         </div>
       </div>
       {match.penalties && <p className="border-t border-border/10 px-3 py-2 text-center text-[10px] font-bold text-foreground/70">{penaltyScoreLabel(match)}</p>}
-      {!dense && Boolean(match.setScores?.length) && (
-        <div className="border-t border-border/8 px-3 py-2 text-[11px] text-foreground/65">
-          <span className="font-bold">Sets: </span>{match.setScores?.join(' · ')}
-        </div>
-      )}
-      {hasDetails && (
-        <div className="flex items-center justify-between border-t border-border/8 px-3 py-2 text-[10px] font-bold" style={{ color: accent }}>
-          <span>View game details</span><span aria-hidden="true">→</span>
-        </div>
-      )}
     </motion.article>
   );
 
@@ -95,7 +82,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
         ref={triggerRef}
         type="button"
         onClick={() => setDetailsOpen(true)}
-        aria-label={`View ${match.genderGroup} ${match.sportKey} vs ${match.opponent}, ${formatDate(match.date)} game details`}
+        aria-label={`Open ${match.opponent} game statistics`}
         aria-haspopup="dialog"
         className="group block w-full rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-maroon focus-visible:ring-offset-2"
         whileTap={{ scale: PRESS_SCALE }}

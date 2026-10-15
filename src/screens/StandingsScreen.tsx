@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { AthleticsDataState } from "../hooks/useAthleticsData";
-import { formatWinPercentage, rankStandings } from "../utils/standingsPresentation";
-import type { Standing } from "../services/parsers";
 
 interface StandingsScreenProps {
   athleticsDataState: AthleticsDataState;
@@ -12,18 +10,11 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
   const [levelFilter, setLevelFilter] = useState<"All" | "SMP" | "SMA">("All");
   const [genderFilter, setGenderFilter] = useState<"All" | "Boys" | "Girls" | "Combined">("All");
 
-  const filteredStandings = data.soccerStandings.filter((standing) => {
+  const standings = data.soccerStandings.filter((standing) => {
     if (levelFilter !== "All" && standing.level !== levelFilter) return false;
     if (genderFilter !== "All" && standing.genderGroup !== genderFilter) return false;
     return true;
   });
-  // Rank each league table separately when multiple groups are visible.
-  const groups = new Map<string, Standing[]>();
-  filteredStandings.forEach(standing => {
-    const key = `${standing.level}-${standing.genderGroup}-${standing.tournament}`;
-    groups.set(key, [...(groups.get(key) ?? []), standing]);
-  });
-  const standings = [...groups.values()].flatMap(rankStandings);
 
   return (
     <div className="px-4 pb-24 space-y-6">
@@ -35,7 +26,7 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
           Soccer Standings
         </h1>
         <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground/40">
-          Ranked by wins ÷ games played. Draws count as games played.
+          Basketball and other sports will unlock after their sheets are published.
         </p>
       </div>
 
@@ -104,7 +95,7 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
                   <th className="text-center p-3">W</th>
                   <th className="text-center p-3">D</th>
                   <th className="text-center p-3">L</th>
-                  <th className="text-center p-3">Win %</th>
+                  <th className="text-center p-3">Pts</th>
                   <th className="text-center p-3">For</th>
                   <th className="text-center p-3">Against</th>
                   <th className="text-center p-3">Diff</th>
@@ -112,9 +103,9 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
               </thead>
 
               <tbody>
-                {standings.map(({ row: standing, rank, isTied, winPercentage }, index) => (
+                {standings.map((standing, index) => (
                   <tr key={`${standing.id}-${index}`} className="border-b border-border/5 last:border-0">
-                    <td className="p-3 font-black">{isTied ? `T${rank}` : rank}</td>
+                    <td className="p-3 font-black">{standing.rank ?? "-"}</td>
                     <td className="p-3 font-bold">{standing.team}</td>
                     <td className="p-3 text-foreground/60">{standing.level}</td>
                     <td className="p-3 text-foreground/60">{standing.genderGroup}</td>
@@ -122,7 +113,7 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
                     <td className="p-3 text-center">{standing.wins ?? "-"}</td>
                     <td className="p-3 text-center">{standing.draws ?? "-"}</td>
                     <td className="p-3 text-center">{standing.losses ?? "-"}</td>
-                    <td className="p-3 text-center font-black">{formatWinPercentage(winPercentage)}</td>
+                    <td className="p-3 text-center font-black">{standing.points ?? "-"}</td>
                     <td className="p-3 text-center">{standing.forValue ?? "-"}</td>
                     <td className="p-3 text-center">{standing.againstValue ?? "-"}</td>
                     <td className="p-3 text-center">{standing.difference ?? "-"}</td>

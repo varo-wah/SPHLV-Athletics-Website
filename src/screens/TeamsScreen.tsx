@@ -82,6 +82,19 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
       />
 
       <section id="all-teams" aria-label="All teams" className="scroll-mt-20 space-y-3">
+        <article className="rounded-2xl border border-border/10 bg-card p-4">
+          <h2 className="text-sm font-black uppercase tracking-widest">Cross Country</h2>
+          <a href="#/teams/cross-country" className="mt-3 flex items-center justify-between rounded-xl bg-foreground/5 p-4 font-bold">Meet the runners <ArrowUpRight size={18} /></a>
+          <p className="mt-3 text-xs text-foreground/60">5 km personal bests · Meets & training</p>
+        </article>
+        {IS_PROTOTYPE && <article className="rounded-2xl border border-brand-sky/30 bg-card p-4">
+          <p className="text-xs font-bold uppercase tracking-widest text-foreground/50">New team previews</p>
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            <a href="#/teams/swimming" className="rounded-xl bg-foreground/5 p-4 font-bold">Swimming ↗</a>
+
+          </div>
+          <p className="mt-3 text-xs text-foreground/60">Existing schedule · fictional sample performances</p>
+        </article>}
         {sportGroups.map((group, groupIndex) => {
           return (
             <motion.article
@@ -89,7 +102,7 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
               initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...QUICK_TRANSITION, delay: staggerDelay(groupIndex) }}
-              className={`relative overflow-hidden rounded-xl border p-3 ${group.accent}`}
+              className={`relative overflow-hidden rounded-[1.35rem] border p-3 shadow-[0_3px_9px_rgba(0,0,0,0.07)] ${group.accent}`}
             >
               <div className="pointer-events-none absolute -right-8 -top-12 h-32 w-32 rounded-full bg-white/[0.025] blur-2xl" />
 
@@ -111,14 +124,12 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
                     key={team.id}
                     type="button"
                     onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
-                    aria-label={team.displayName}
                     whileTap={{ scale: PRESS_SCALE }}
                     transition={PRESS_TRANSITION}
                     className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/45 [container-type:inline-size] ${teamButtonClasses(team.gender)}`}
                   >
-                    <span>
-                      <span className="block text-base font-black leading-none">{team.gender === 'Combined' ? 'Mixed' : team.gender}</span>
-                      <span className="mt-1.5 block text-[10px] font-bold tracking-[0.05em] opacity-70">{team.division === 'SMA' ? 'Varsity' : 'SMP'}</span>
+                    <span className="text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em]">
+                      {team.menuCode}
                     </span>
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 bg-white/55 text-current transition-colors dark:bg-black/10" aria-hidden="true">
                       <ArrowUpRight size={12} />
@@ -129,19 +140,6 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
             </motion.article>
           );
         })}
-        <a href="#/teams/cross-country" className="flex min-h-16 items-center justify-between gap-3 rounded-xl border border-border/10 bg-card px-4 py-3 transition-colors hover:bg-foreground/[0.025]">
-          <span className="flex items-center gap-3">
-            <span className="text-xl" aria-hidden="true">🏃</span>
-            <span><span className="block text-sm font-black">Cross Country</span><span className="mt-0.5 block text-xs text-foreground/55">Runners, meets & 5 km personal bests</span></span>
-          </span>
-          <ArrowUpRight size={17} className="shrink-0 text-foreground/45" />
-        </a>
-        {IS_PROTOTYPE && (
-          <a href="#/teams/swimming" className="flex min-h-16 items-center justify-between gap-3 rounded-xl border border-brand-sky/25 bg-card px-4 py-3">
-            <span><span className="block text-sm font-black">Swimming</span><span className="mt-0.5 block text-xs text-foreground/55">Preview · fictional sample performances</span></span>
-            <ArrowUpRight size={17} className="shrink-0 text-foreground/45" />
-          </a>
-        )}
       </section>
     </div>
   );
