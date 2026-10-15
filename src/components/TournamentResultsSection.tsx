@@ -5,12 +5,11 @@ const tournaments = ['SPH Cup', 'JAAC', 'ACSC'] as const;
 // Tournament placements are pending until current-season results are confirmed.
 // Keep these separate from completed match scores and regular-season standings.
 export default function TournamentResultsSection({ teamId }: { teamId?: string } = {}) {
-  const eligibleTournaments = tournaments.filter(name => name !== 'ACSC' || !teamId?.split('-').includes('smp'));
   return (
     <section className="mt-8 space-y-4" aria-label="Tournament results">
       <div className="border-b border-brand-maroon/10 pb-3 dark:border-border/10">
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-red">
-          {eligibleTournaments.map(name => name === 'SPH Cup' ? 'Cup' : name).join(' · ')}
+          Cup · JAAC · ACSC
         </p>
         <h3 className="mt-1 text-xl font-black uppercase tracking-[0.08em] text-foreground sm:text-2xl">
           Tournament Results
@@ -21,7 +20,7 @@ export default function TournamentResultsSection({ teamId }: { teamId?: string }
       </div>
 
       <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,16rem),1fr))] gap-3">
-        {eligibleTournaments.map((name) => (
+        {tournaments.map((name) => (
           <article
             key={name}
             className="rounded-2xl border border-brand-maroon/10 bg-white/80 p-4 shadow-sm dark:border-border/10 dark:bg-subcard"

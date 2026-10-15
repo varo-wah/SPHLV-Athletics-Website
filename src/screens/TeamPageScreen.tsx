@@ -5,8 +5,6 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
-import PlayerRoster from '../components/PlayerRoster';
-import { formatWinPercentage, rankStandings, standingsRecordLabel, standingsShowDraws } from '../utils/standingsPresentation';
 import TournamentResultsSection from '../components/TournamentResultsSection';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import {
@@ -159,7 +157,7 @@ export default function TeamPageScreen({
   const sectionAccent = gender === 'Boys'
     ? '#3F7898'
     : gender === 'Girls'
-      ? '#B83B78'
+      ? '#8C1D2C'
       : '#64748B';
   const roster = team ? rosterForTeam(team.id) : undefined;
 
@@ -174,10 +172,7 @@ export default function TeamPageScreen({
       standing.level === division &&
       standing.genderGroup === gender,
   );
-  const showDraws = standingsShowDraws(sport);
-  const standingsGrid = showDraws
-    ? 'sm:grid-cols-[52px_minmax(0,1fr)_40px_40px_40px_40px_76px]'
-    : 'sm:grid-cols-[52px_minmax(0,1fr)_40px_40px_40px_76px]';
+  const isPreseasonStandings = false;
   const standingsSource = athleticsDataState?.remoteSources.find((source) => source.id === `${sport.toLowerCase()}-${gender}-standings`);
   const standingsDate = new Date(standingsSource?.publishedAt ?? leagueSnapshot.verifiedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
   const differenceLabel =
@@ -231,8 +226,77 @@ export default function TeamPageScreen({
         gameTimestamp(b.date, b.time),
     );
 
-  const standingsRows = rankStandings(standingsForDisplay);
-  const allTeamsTied = standingsRows.length > 1 && standingsRows.every(entry => entry.rank === 1 && entry.isTied);
+  const standingsRows = standingsForDisplay
+    .map((row, idx) => {
+      const wins = row.wins ?? 0;
+      const draws = row.draws ?? 0;
+      const losses = row.losses ?? 0;
+
+      const gp = wins + draws + losses;
+
+      const pts =
+        row.points ?? wins * 3 + draws;
+
+      const goalsFor =
+        row.forValue ?? 0;
+
+      const diff =
+        row.difference ??
+        (row.forValue !== null && row.againstValue !== null
+          ? row.forValue - row.againstValue
+          : 0);
+
+      return {
+        row,
+        idx,
+        wins,
+        draws,
+        losses,
+        gp,
+        pts,
+        goalsFor,
+        diff,
+        rank: idx + 1,
+      };
+    })
+    .sort((a, b) => {
+      if (b.pts !== a.pts) return b.pts - a.pts;
+      if (b.diff !== a.diff) return b.diff - a.diff;
+      if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
+      if (b.wins !== a.wins) return b.wins - a.wins;
+
+      if (isPreseasonStandings) {
+        return a.idx - b.idx;
+      }
+
+      return a.row.team.localeCompare(b.row.team);
+    })
+    .map((entry, _idx, sortedEntries) => {
+      const matchingPointRows = sortedEntries.filter(
+        (candidate) => candidate.pts === entry.pts,
+      );
+      const firstMatchingIndex = sortedEntries.findIndex(
+        (candidate) => candidate.pts === entry.pts,
+      );
+
+      return {
+        ...entry,
+        rank: isPreseasonStandings ? 1 : firstMatchingIndex + 1,
+        isTied: matchingPointRows.length > 1,
+      };
+    });
+
+  const allTeamsTied =
+    standingsRows.length > 1 &&
+    standingsRows.every(
+      (entry) =>
+        entry.pts === standingsRows[0].pts &&
+        entry.gp === standingsRows[0].gp &&
+        entry.wins === standingsRows[0].wins &&
+        entry.draws === standingsRows[0].draws &&
+        entry.losses === standingsRows[0].losses &&
+        entry.diff === standingsRows[0].diff,
+    );
 
   const EmptyPanel = ({
     title,
@@ -275,7 +339,6 @@ export default function TeamPageScreen({
       <header className="mx-4 mt-4 rounded-2xl border border-border/10 bg-subcard/60 px-4 py-4 shadow-sm sm:mx-6 sm:px-5 lg:mx-8">
         <div className="flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <p className="mb-1.5 text-[10px] font-black uppercase tracking-[0.2em]" style={{ color: sectionAccent }}>{gender} · {division === 'SMA' ? 'Varsity' : division}</p>
             <h1 className="text-[clamp(1.15rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.035em] text-foreground sm:text-3xl">
               {teamName}
             </h1>
@@ -323,8 +386,7 @@ export default function TeamPageScreen({
                 {isActive && (
                   <motion.span
                     layoutId="team-section-active-pill"
-                    className="absolute inset-0 rounded-[0.95rem] border"
-                    style={{ backgroundColor: sectionAccent, borderColor: sectionAccent }}
+                    className="absolute inset-0 rounded-[0.95rem] border border-brand-maroon bg-brand-maroon"
                     transition={STANDARD_SPRING}
                   />
                 )}
@@ -354,7 +416,7 @@ export default function TeamPageScreen({
           {activeSection === 'standings' && (
             <section>
               <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
-                <div className={`grid grid-cols-[40px_minmax(0,1fr)_32px_68px] gap-1 border-b border-border/10 bg-[#F1F2F3] px-3 py-4 text-[9px] font-black uppercase tracking-[0.12em] text-foreground/65 ${standingsGrid} sm:gap-2 sm:px-4 sm:text-[10px] sm:tracking-[0.18em] dark:border-white/10 dark:bg-muted`}>
+                <div className="grid grid-cols-[40px_minmax(0,1fr)_32px_46px] gap-1 border-b border-border/10 bg-[#F1F2F3] px-3 py-4 text-[9px] font-black uppercase tracking-[0.12em] text-brand-maroon sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_44px_58px] sm:gap-2 sm:px-4 sm:text-[10px] sm:tracking-[0.18em] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]">
                   <div>Rank</div>
                   <div>Club</div>
                   <div className="text-center">
@@ -363,12 +425,14 @@ export default function TeamPageScreen({
                   <div className="hidden text-center sm:block">
                     W
                   </div>
-                  {showDraws && <div className="hidden text-center sm:block">D</div>}
+                  <div className="hidden text-center sm:block">
+                    D
+                  </div>
                   <div className="hidden text-center sm:block">
                     L
                   </div>
                   <div className="text-right">
-                    Win %
+                    Pts
                   </div>
                 </div>
 
@@ -398,7 +462,7 @@ export default function TeamPageScreen({
                         draws,
                         losses,
                         gp,
-                        winPercentage,
+                        pts,
                         rank,
                         diff,
                         isTied,
@@ -410,7 +474,7 @@ export default function TeamPageScreen({
                         return (
                           <div
                             key={`${row.id || idx}-${idx}`}
-                            className={`relative grid grid-cols-[40px_minmax(0,1fr)_32px_68px] gap-1 border-b border-border/5 px-3 py-4 transition-colors hover:bg-foreground/[0.025] ${standingsGrid} sm:gap-2 sm:px-4 ${
+                            className={`relative grid grid-cols-[40px_minmax(0,1fr)_32px_46px] gap-1 border-b border-border/5 px-3 py-4 transition-colors hover:bg-foreground/[0.025] sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_44px_58px] sm:gap-2 sm:px-4 ${
                               isHighlightedLeader
                                 ? 'border border-[#B5413F]/40 bg-[#FFF4F4] shadow-[inset_0_0_0_1px_rgba(181,65,63,0.12)] dark:border-[#B5413F]/40 dark:bg-[#B5413F]/[0.055]'
                                 : ''
@@ -455,7 +519,8 @@ export default function TeamPageScreen({
                                 </p>
 
                                 <p className="mt-1 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/35 sm:hidden">
-                                  {standingsRecordLabel(wins, draws, losses, sport)}
+                                  {wins}W · {draws}D ·{' '}
+                                  {losses}L
                                 </p>
                               </div>
                             </div>
@@ -468,7 +533,9 @@ export default function TeamPageScreen({
                               {wins}
                             </div>
 
-                            {showDraws && <div className="hidden items-center justify-center font-mono text-sm text-foreground/70 sm:flex">{draws}</div>}
+                            <div className="hidden items-center justify-center font-mono text-sm text-foreground/70 sm:flex">
+                              {draws}
+                            </div>
 
                             <div className="hidden items-center justify-center font-mono text-sm text-foreground/70 sm:flex">
                               {losses}
@@ -476,8 +543,8 @@ export default function TeamPageScreen({
 
                             <div className="flex items-center justify-end">
                               <div className="text-right">
-                                <p className="font-mono text-sm font-black sm:text-base" style={{ color: sectionAccent }}>
-                                  {formatWinPercentage(winPercentage)}
+                                <p className="font-mono text-lg font-black text-[#B5413F] sm:text-xl">
+                                  {pts}
                                 </p>
 
                                 <p className="text-[9px] font-black uppercase tracking-[0.14em] text-foreground/30">
@@ -498,18 +565,19 @@ export default function TeamPageScreen({
 
                 <div className="flex flex-col gap-2 border-t border-brand-maroon/5 bg-[#F4F4F3] px-5 py-4 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 sm:flex-row sm:items-center sm:justify-between dark:border-border/5 dark:bg-foreground/[0.025] dark:text-foreground/35">
                   <span>
-                    Official workbook snapshot
+                    {isPreseasonStandings
+                      ? 'Preseason table'
+                      : 'Official workbook snapshot'}
                   </span>
 
                   <span>
                     {standingsRows.length} Teams ·{' '}
-                    Data as of {standingsDate}
+                    {isPreseasonStandings
+                      ? 'All tied 0–0'
+                      : `Data as of ${standingsDate}`}
                   </span>
                 </div>
               </div>
-              <p className="mt-3 px-1 text-[11px] leading-relaxed text-foreground/55">
-                Win % = wins ÷ games played.{showDraws ? ' Draws count as games played.' : ''} Equal percentages are ordered by {sport === 'Soccer' ? 'goal' : sport === 'Volleyball' ? 'set' : 'point'} difference, scoring, then wins. Unplayed records show —.
-              </p>
             </section>
           )}
 
@@ -517,7 +585,7 @@ export default function TeamPageScreen({
             <section className="space-y-4">
               <div className="flex flex-col gap-4 rounded-2xl border border-border/10 bg-subcard/50 px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em]" style={{ color: sectionAccent }}>
+                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
                     Schedule & results
                   </p>
 
@@ -757,7 +825,7 @@ export default function TeamPageScreen({
 
               <div className="relative flex items-end justify-between gap-4">
                 <div>
-                  <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em]" style={{ color: sectionAccent }}>
+                  <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.22em] text-[#C1121F] dark:text-[#D85A57]">
                     <Users size={14} />
                     Official team list
                   </p>
@@ -767,7 +835,7 @@ export default function TeamPageScreen({
                   </h3>
                 </div>
 
-                <div className="relative flex h-14 min-w-14 shrink-0 flex-col items-center justify-center rounded-2xl border px-3 text-white" style={{ backgroundColor: sectionAccent, borderColor: sectionAccent }}>
+                <div className="relative flex h-14 min-w-14 shrink-0 flex-col items-center justify-center rounded-2xl border border-[#B5413F]/20 bg-[#5A1C2C] px-3 text-white shadow-[0_12px_30px_rgba(90,28,44,0.24)]">
                   <span
                     className={`${
                       roster
@@ -789,16 +857,31 @@ export default function TeamPageScreen({
             </div>
 
             {roster ? (
-              <PlayerRoster
-                key={team?.id}
-                players={roster.players}
-                teamId={roster.teamId}
-                teamName={teamName}
-                matches={completedResults}
-                accent={sectionAccent}
-                loading={athleticsDataState?.loading}
-                formatDate={formatGameDate}
-              />
+              <ol
+                className="grid gap-2.5 sm:grid-cols-2"
+                aria-label={`${teamName} player roster`}
+              >
+                {roster.players.map(
+                  (player, index) => (
+                    <li
+                      key={player}
+                      data-player-name={player}
+                      className="group flex min-h-16 items-center gap-3 overflow-hidden rounded-2xl border border-border/10 bg-subcard px-3.5 py-3 shadow-[0_3px_9px_rgba(0,0,0,0.04)] transition-all duration-200 hover:-translate-y-0.5 hover:border-[#B5413F]/25 hover:shadow-[0_5px_14px_rgba(90,28,44,0.09)]"
+                    >
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#B5413F]/15 bg-[#B5413F]/[0.07] font-mono text-[11px] font-black text-[#B5413F] transition-colors group-hover:bg-[#5A1C2C] group-hover:text-white">
+                        {String(index + 1).padStart(
+                          2,
+                          '0',
+                        )}
+                      </span>
+
+                      <span className="min-w-0 text-[13px] font-black uppercase leading-snug tracking-[0.045em] text-foreground sm:text-sm">
+                        {player}
+                      </span>
+                    </li>
+                  ),
+                )}
+              </ol>
             ) : (
               <div className="flex min-h-[230px] flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-border/15 bg-foreground/[0.018] px-6 text-center">
                 <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] text-foreground/30">

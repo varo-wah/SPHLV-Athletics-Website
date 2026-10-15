@@ -51,18 +51,9 @@ export interface NewsArticle {
   youtubeVideoId?: string;
   videoUrl?: string;
   publicationChannel: NewsPublicationChannel;
-  archived?: boolean;
 }
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
-  {
-    id: '2026-10-15-sports-report', title: "LV Game Day Sport’s Report: October 12, 2026",
-    publishedAt: '2026-10-15', dateLabel: 'OCTOBER 15, 2026', category: 'SPORTS REPORT',
-    excerpt: 'Watch the October 12 edition of the LV Game Day Sport’s Report.',
-    image: 'https://i.ytimg.com/vi/6JxJXMnhXyY/hqdefault.jpg', imageAlt: 'LV Sports Report video thumbnail',
-    body: ['Catch up with Eagles Athletics in the latest video report.'],
-    youtubeVideoId: '6JxJXMnhXyY', videoUrl: 'https://youtu.be/6JxJXMnhXyY', publicationChannel: 'published',
-  },
   {
     id: '2026-10-10-volleyball-players-of-the-week', title: 'Volleyball Players of the Week: Samantha Chai and Evans Sutjatma',
     publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'PLAYER OF THE WEEK',
@@ -85,7 +76,7 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     posterImages: [{ src: award25, alt: 'Sam Winardi Basketball Player of the Week' }], publicationChannel: 'published',
   },
   {
-    id: '2026-10-10-volleyball-bsj-recap', archived: true, title: 'Volleyball Teams Sweep BSJ',
+    id: '2026-10-10-volleyball-bsj-recap', title: 'Volleyball Teams Sweep BSJ',
     publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'GAME RECAP',
     excerpt: 'Both varsity teams won 2–0 on October 2, with strong serving and contributions across the squads.',
     image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
@@ -96,7 +87,7 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     ], publicationChannel: 'published',
   },
   {
-    id: '2026-10-10-girls-volleyball-cup', archived: true, title: 'Girls Volleyball Finish SPH Cup Runner-up',
+    id: '2026-10-10-girls-volleyball-cup', title: 'Girls Volleyball Finish SPH Cup Runner-up',
     publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'SPH CUP',
     excerpt: 'Three wins in four matches earned the girls second place in the September 28–29 SPH Cup.',
     image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
@@ -106,7 +97,7 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     ], publicationChannel: 'published',
   },
   {
-    id: '2026-10-10-boys-basketball-st-john', archived: true, title: 'SMP Boys A Defeat St John 52–43',
+    id: '2026-10-10-boys-basketball-st-john', title: 'SMP Boys A Defeat St John 52–43',
     publishedAt: '2026-10-10', dateLabel: 'OCTOBER 10, 2026', category: 'GAME RECAP',
     excerpt: 'Coby’s double-double and a strong second-quarter defense helped the boys secure the win.',
     image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
@@ -144,7 +135,7 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     publicationChannel: 'published',
   },
   {
-    id: '2026-09-26-basketball-b-teams-bsj', archived: true, title: 'SMP Basketball B Teams Battle BSJ',
+    id: '2026-09-26-basketball-b-teams-bsj', title: 'SMP Basketball B Teams Battle BSJ',
     publishedAt: '2026-09-28', dateLabel: 'SEPTEMBER 28, 2026', category: 'GAME RECAP',
     excerpt: 'The girls B team lost by just one point, while Mason led the boys with 10 points.',
     image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
@@ -155,7 +146,7 @@ const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
     ], publicationChannel: 'published',
   },
   {
-    id: '2026-09-28-volleyball-cup-schedule', archived: true, title: 'SPH Cup Volleyball: September 28–29 Schedule',
+    id: '2026-09-28-volleyball-cup-schedule', title: 'SPH Cup Volleyball: September 28–29 Schedule',
     publishedAt: '2026-09-28', dateLabel: 'SEPTEMBER 28, 2026', category: 'SPH CUP',
     excerpt: 'The boys play on Court 1 and the girls on Court 2, with the same opponents and start times.',
     image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
@@ -459,7 +450,7 @@ export const NEWS_ARTICLES: readonly NewsArticle[] = [
 ];
 
 export function visibleNewsArticles(isPrototype: boolean): readonly NewsArticle[] {
-  return NEWS_ARTICLES.filter((article) => !article.archived && (
+  return NEWS_ARTICLES.filter((article) => (
     isPrototype
       ? true
       : article.publicationChannel === 'published'

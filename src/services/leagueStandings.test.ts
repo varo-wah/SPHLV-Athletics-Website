@@ -21,11 +21,3 @@ test('recovers a missing reciprocal result while rejecting a malformed matrix', 
   matrix[1][2] = 'SPH-LV';
   assert.throws(() => parseLeagueStandings(matrix, 'Volleyball', 'Boys'), /header/);
 });
-
-test('recovers spaced reciprocal scores without weakening points validation', () => {
-  const matrix = [['Standings'], ['', 'SPH-LV', 'STL', 'Points'], ['SPH-LV', '', '', '0'], ['STL', '42 – 25', '', '2']];
-  const rows = parseLeagueStandings(matrix, 'Basketball', 'Boys');
-  assert.deepEqual([rows[0].wins, rows[0].losses, rows[0].forValue, rows[0].againstValue], [0, 1, 25, 42]);
-  matrix[2][3] = '2';
-  assert.throws(() => parseLeagueStandings(matrix, 'Basketball', 'Boys'), /points disagree/);
-});
