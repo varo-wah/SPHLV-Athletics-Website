@@ -54,6 +54,10 @@ export interface SheetMatch {
   genderGroup: GenderTab;
   tournament: TournamentTab;
   date: string;
+  /** Source posting date; not evidence of the match date. */
+  reportedDate?: string;
+  reviewedFixtureId?: string;
+  sourceFixtureId?: string;
   time: string;
   homeTeam: string;
   awayTeam: string;
@@ -364,11 +368,13 @@ export function parseResultRows(
     const scoreFor = homeIsSphLv ? homeScore : awayScore;
     const scoreAgainst = homeIsSphLv ? awayScore : homeScore;
     const opponent = homeIsSphLv ? awayTeam : homeTeam;
+    const fixtureIdentity = get(row, "Reviewed Fixture ID", "Fixture ID", "Match ID", "Round");
     const matchKey = [
       source.id,
       date,
       normalizedTeamName(homeTeam),
       normalizedTeamName(awayTeam),
+      ...(fixtureIdentity ? [normalizedTeamName(fixtureIdentity)] : []),
     ].join("-");
 
     if (matchesByKey.has(matchKey)) {
@@ -391,6 +397,8 @@ export function parseResultRows(
       genderGroup: source.genderGroup,
       tournament: "Other",
       date,
+      ...(get(row, "Reviewed Fixture ID") ? { reviewedFixtureId: get(row, "Reviewed Fixture ID") } : {}),
+      ...(get(row, "Fixture ID", "Match ID") ? { sourceFixtureId: get(row, "Fixture ID", "Match ID") } : {}),
       time,
       homeTeam,
       awayTeam,

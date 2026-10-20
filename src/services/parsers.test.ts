@@ -130,3 +130,22 @@ test("parses optional match type, set scores, stat leaders, and highlights", () 
   assert.deepEqual(parsed.matches[0].statLeaders, ["Sam: 7 service aces", "Evie: 2 blocks"]);
   assert.equal(parsed.matches[0].highlights?.length, 2);
 });
+
+test('preserves separate same-day fixtures when round or reviewed fixture IDs are supplied', () => {
+  const row = { Date: '17-Oct-2026', 'Home Team': 'SPH LV', 'Home Score': '2', 'Away Team': 'POPB', 'Away Score': '1' };
+  const rounded = parseResultRows([
+    { ...row, Round: 'Group stage' },
+    { ...row, Round: 'Third place', 'Away Score': '0' },
+  ], soccerSource);
+  assert.equal(rounded.matches.length, 2);
+  assert.equal(rounded.duplicateRowCount, 0);
+  const reviewed = parseResultRows([
+    { ...row, 'Reviewed Fixture ID': 'popb-first' },
+    { ...row, 'Reviewed Fixture ID': 'popb-third-place', 'Away Score': '0' },
+  ], soccerSource);
+  assert.equal(reviewed.matches.length, 2);
+  assert.deepEqual(reviewed.matches.map(match => match.reviewedFixtureId), ['popb-first', 'popb-third-place']);
+  const identified = parseResultRows([{ ...row, 'Fixture ID': 'popb-first' }], soccerSource).matches[0];
+  assert.equal(identified.sourceFixtureId, 'popb-first');
+  assert.equal(identified.reviewedFixtureId, undefined);
+});

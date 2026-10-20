@@ -38,7 +38,8 @@ function compactGameDate(event: ScheduleEvent | null) {
 }
 
 function compactResultDate(match: SheetMatch | null) {
-  if (!match?.date) return 'Awaiting result';
+  if (!match) return 'Awaiting result';
+  if (!match.date) return 'Date TBD';
   const [year, month, day] = match.date.split('-').map(Number);
   const parsed = new Date(year, month - 1, day);
   return Number.isNaN(parsed.getTime())

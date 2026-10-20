@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import scheduleDataJson from '../data/schedule.json';
 import { ScheduleData, ScheduleEvent, ScheduleEventType } from '../data/scheduleTypes';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
+import ScheduleEventNotes from '../components/ScheduleEventNotes';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import {
   IS_PROTOTYPE,
@@ -622,6 +623,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                             <h4 className="text-base font-black uppercase tracking-tight text-foreground">
                               {event.eventText}
                             </h4>
+                            <ScheduleEventNotes event={event} showTime />
                           </div>
                           <p className="text-xs font-bold uppercase tracking-[0.14em] text-foreground/45">
                             {event.raw}
@@ -805,7 +807,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                     className="flex min-w-0 items-baseline justify-between gap-3 py-1 first:pt-0 last:pb-0"
                                   >
                                     <h4
-                                      className="min-w-0 truncate text-[15px] font-black uppercase leading-snug tracking-tight text-foreground"
+                                      className={`min-w-0 ${event.sourceUrl ? 'whitespace-normal' : 'truncate'} text-[15px] font-black uppercase leading-snug tracking-tight text-foreground`}
                                       title={fixture.label}
                                     >
                                       {fixture.label}
@@ -818,6 +820,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                                   </div>
                                 ))}
                               </div>
+                              <ScheduleEventNotes event={event} />
                             </div>
                           </div>
                         </article>
@@ -920,7 +923,8 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       {event.week && <span>🗓️ {event.week}</span>}
                     </div>
 
-                    {event.raw && (
+                    <ScheduleEventNotes event={event} />
+                    {event.raw && !event.sourceUrl && (
                       <p className="mt-3 rounded-xl border border-brand-maroon/10 bg-muted px-3 py-2 text-xs font-bold text-foreground/55 dark:border-white/10 dark:bg-white/[0.07] dark:text-white/60">
                         {event.raw}
                       </p>

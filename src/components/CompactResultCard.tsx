@@ -19,6 +19,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
   const teams = presentResultTeams(match);
   const outcome = resultOutcomeLabel(match.result);
   const hasDetails = Boolean(
+    match.reportedDate ||
     match.matchType ||
     match.setScores?.length ||
     match.statLeaders?.length ||
@@ -61,7 +62,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
         <div className="flex flex-col items-center justify-center border-l border-[#D6D8DC] px-1.5 text-center dark:border-white/15">
           <span className={`text-[10px] font-black uppercase tracking-[0.1em] ${outcomeClasses}`}>{outcome}</span>
           <span className="mt-1 text-[8px] font-bold uppercase tracking-[0.08em] text-foreground dark:text-white/70">
-            {formatDate(match.date)}
+            {match.date ? formatDate(match.date) : 'Date TBD'}
           </span>
           {hasDetails && (
             <span className="mt-1 text-[7px] font-black uppercase tracking-[0.1em] text-brand-maroon">

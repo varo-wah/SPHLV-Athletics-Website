@@ -68,3 +68,13 @@ test('uses the nearest visible upcoming game and newest completed result', () =>
   assert.equal(summary.nextEvent?.id, 'next');
   assert.equal(summary.recentMatch?.id, 'newest');
 });
+
+test('shows a new undated report as a completed result without treating its report date as a fixture date', () => {
+  const report = resultMatch({ id: 'undated', date: '', reportedDate: '2026-10-18' });
+  const [summary] = buildFavoriteTeamSummaries(
+    [favorite], [], [resultMatch({ date: '2026-10-02' }), report], '2026-10-20', () => true,
+  );
+  assert.equal(summary.recentMatch?.id, 'undated');
+  assert.equal(summary.recentMatch?.date, '');
+  assert.equal(summary.nextEvent, null);
+});

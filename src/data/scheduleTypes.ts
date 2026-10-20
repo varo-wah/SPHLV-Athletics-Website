@@ -22,6 +22,10 @@ export interface ScheduleEvent {
   location?: string | null;
   opponent?: string | null;
   time?: string | null;
+  timeZone?: string;
+  details?: string;
+  sourceUrl?: string;
+  sourceLabel?: string;
   raw: string;
 }
 

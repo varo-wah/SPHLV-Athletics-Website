@@ -23,7 +23,7 @@ function eventTimestamp(event: ScheduleEvent) {
 }
 
 function matchTimestamp(match: SheetMatch) {
-  const parsed = new Date(`${match.date} ${match.time || '00:00'}`).getTime();
+  const parsed = new Date(`${match.date || match.reportedDate || ''} ${match.time || '00:00'}`).getTime();
   return Number.isNaN(parsed) ? Number.MIN_SAFE_INTEGER : parsed;
 }
 

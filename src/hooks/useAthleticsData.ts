@@ -25,6 +25,8 @@ import {
   parseResultRows,
 } from "../services/parsers";
 import { mergeGameDayResults } from '../services/gamedayResults';
+import { mergeReviewedCupSchedule } from '../services/reviewedCupSchedule';
+import { mergeAcscSoccerSchedule } from '../services/acscSchedule';
 import { loadResultFeeds } from "../services/resultFeeds";
 
 export interface ResultSourceState {
@@ -209,9 +211,9 @@ export function useAthleticsData(): AthleticsDataState {
       const basketballStandings = standings.filter((standing) => standing.sportKey === "Basketball");
       const volleyballStandings = standings.filter((standing) => standing.sportKey === "Volleyball");
 
-      const masterScheduleEvents = [...masterScheduleResults.flatMap((result) => (
+      const masterScheduleEvents = mergeAcscSoccerSchedule(mergeReviewedCupSchedule([...masterScheduleResults.flatMap((result) => (
         parseMasterScheduleSeason(result.season, result.matrix)
-      )).filter(event => !(event.sportKey === 'Volleyball' && ['2026-09-28', '2026-09-29'].includes(event.date ?? '') && /cup/i.test(event.eventText))), ...VOLLEYBALL_CUP_SCHEDULE];
+      )).filter(event => !(event.sportKey === 'Volleyball' && ['2026-09-28', '2026-09-29'].includes(event.date ?? '') && /cup/i.test(event.eventText))), ...VOLLEYBALL_CUP_SCHEDULE]));
       const masterScheduleErrorCount = masterScheduleResults.filter((result) => result.failed).length;
       const loadedFeedById = new Map(loadedResultFeeds.map((feed) => [feed.source.id, feed]));
       const resultSourceStates = RESULT_SHEET_SOURCES.map((source) => {
@@ -242,7 +244,7 @@ export function useAthleticsData(): AthleticsDataState {
 
       const warningParts: string[] = [];
       if (leagueStandingResults.some((result) => result.failed)) {
-        warningParts.push('Soccer standings could not refresh; the last verified standings are shown.');
+        warningParts.push('Some league standings could not refresh; the last verified standings are shown.');
       }
       if (unconfiguredResultCount > 0) {
         warningParts.push(`${unconfiguredResultCount} result sheet${unconfiguredResultCount === 1 ? " is" : "s are"} awaiting publication.`);

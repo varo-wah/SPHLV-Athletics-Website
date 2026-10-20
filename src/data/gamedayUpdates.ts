@@ -1,10 +1,15 @@
 import { OCTOBER_UPDATES } from './octoberUpdates';
+import { OCTOBER_20_UPDATES } from './october20Updates';
 import { SEPTEMBER_UPDATES } from './septemberUpdates';
 import type { SheetMatch } from '../services/parsers';
 
 export interface GameDayUpdate {
   teamId: string;
+  /** Empty when only the report date is known; never substitute a posting date. */
   date: string;
+  reportedDate?: string;
+  /** Distinguishes multiple games against the same opponent, even without dates. */
+  fixtureId?: string;
   opponent: string;
   scoreFor: number;
   scoreAgainst: number;
@@ -16,6 +21,8 @@ export interface GameDayUpdate {
 // Reviewed GameDay Summaries posts and attached workbook, September 8, 2026.
 // Provenance and unresolved results: docs/gameday-updates-20260914.md.
 export const GAMEDAY_UPDATES: GameDayUpdate[] = [
+  // Keep later rounds ahead when an exact start time is unavailable.
+  ...OCTOBER_20_UPDATES.slice().reverse(),
   ...OCTOBER_UPDATES,
   ...SEPTEMBER_UPDATES,
   // Results reported directly by William on September 19, 2026.

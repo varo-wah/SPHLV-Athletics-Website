@@ -3,11 +3,12 @@ const acsLogo = new URL('../assets/jaac/acs.jpeg', import.meta.url).href;
 const aisLogo = new URL('../assets/jaac/ais.jpeg', import.meta.url).href;
 const bsjLogo = new URL('../assets/jaac/bsj.jpeg', import.meta.url).href;
 const gjsLogo = new URL('../assets/jaac/gjs.jpeg', import.meta.url).href;
+const jisLogo = new URL('../assets/jaac/jis.jpg', import.meta.url).href;
 const kvLogo = new URL('../assets/jaac/kv.jpeg', import.meta.url).href;
 const lvLogo = new URL('../assets/jaac/lv-circle.png', import.meta.url).href;
 const sslLogo = new URL('../assets/jaac/ssl.jpeg', import.meta.url).href;
 
-export type JaacSchoolCode = 'ACG' | 'ACS' | 'AIS' | 'BSJ' | 'GJS' | 'KV' | 'LV' | 'SSL';
+export type JaacSchoolCode = 'ACG' | 'ACS' | 'AIS' | 'BSJ' | 'GJS' | 'JIS' | 'KV' | 'LV' | 'SSL';
 
 export interface JaacSchool {
   code: JaacSchoolCode;
@@ -52,6 +53,10 @@ const JAAC_SCHOOLS = [
     mascot: 'Hawks',
     logo: gjsLogo,
     aliases: ['GJS', 'Global Jaya', 'Global Jaya School'],
+  },
+  {
+    code: 'JIS', name: 'Jakarta Intercultural School', mascot: 'Dragons', logo: jisLogo,
+    aliases: ['JIS', 'Jakarta Intercultural School', 'Jakarta International School'],
   },
   {
     code: 'KV',
