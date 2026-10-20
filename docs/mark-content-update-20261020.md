@@ -39,3 +39,13 @@ Source: Mark Heil's direct Teams messages, read October 20 through his October 1
 - [School logos supplied by Mark](https://drive.google.com/drive/folders/1UYs9GDCKzAKYf78_XNnGhX8NPTU7voTe).
 
 The October 20 desktop was locked while inspecting image attachments, so unverified image details are not represented as confirmed facts.
+
+## Validation and preview
+
+- Implementation commit: `e1e7ab1` on `codex/mark-content-20261020`.
+- All 88 tests pass; TypeScript and diff checks pass.
+- Prototype and production builds pass with the existing Firebase public app configuration.
+- [Hosted original-design preview](https://sphlv-athletics--mark-updates-gmz9fyso.web.app/#/home), expires November 19, 2026 at 21:07 UTC+7.
+- The hosted JavaScript bundle's SHA-256 matches the verified production build.
+- Browser checks confirmed new basketball scores and statistics, explicit unconfirmed-date disclosure, the four boys Cup schedule cards, cleaned-up News, win-percentage standings, and the girls' volleyball fallback dated September 29.
+- Remote `main` remains `764de303`; neither production nor the separate V2 redesign was promoted or replaced.
