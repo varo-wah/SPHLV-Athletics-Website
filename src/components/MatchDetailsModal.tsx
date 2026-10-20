@@ -143,7 +143,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
               {resultOutcomeLabel(match.result)}
             </span>
             <span className="inline-flex items-center gap-1.5 rounded-full border border-border/10 bg-subcard px-3 py-1.5">
-              <CalendarDays size={12} /> {formatDate(match.date)}{match.time ? ` · ${match.time}` : ''}
+              <CalendarDays size={12} /> {match.date ? formatDate(match.date) : 'Match date to be confirmed'}{match.time ? ` · ${match.time}` : ''}
             </span>
             {match.venue && (
               <span className="inline-flex items-center gap-1.5 rounded-full border border-border/10 bg-subcard px-3 py-1.5">
@@ -151,6 +151,12 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
               </span>
             )}
           </div>
+
+          {!match.date && match.reportedDate && (
+            <p className="text-xs font-semibold leading-relaxed text-foreground/55">
+              Reported {formatDate(match.reportedDate)} in GameDay Summaries. The match date has not been confirmed.
+            </p>
+          )}
 
           {match.penalties && <p className="text-sm font-bold text-foreground">{penaltyScoreLabel(match)}</p>}
 

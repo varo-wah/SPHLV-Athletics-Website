@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
+import { formatWinPercentage, rankStandings, standingsRecordLabel, standingsShowDraws } from '../utils/standingsPresentation';
 import TournamentResultsSection from '../components/TournamentResultsSection';
 import { findTeam, sportDetails } from '../config/teamCatalog';
 import {
@@ -172,7 +173,10 @@ export default function TeamPageScreen({
       standing.level === division &&
       standing.genderGroup === gender,
   );
-  const isPreseasonStandings = false;
+  const showDraws = standingsShowDraws(sport);
+  const standingsGrid = showDraws
+    ? 'sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_44px_76px]'
+    : 'sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_76px]';
   const standingsSource = athleticsDataState?.remoteSources.find((source) => source.id === `${sport.toLowerCase()}-${gender}-standings`);
   const standingsDate = new Date(standingsSource?.publishedAt ?? leagueSnapshot.verifiedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
   const differenceLabel =
@@ -199,8 +203,8 @@ export default function TeamPageScreen({
     )
     .sort(
       (a, b) =>
-        gameTimestamp(b.date, b.time) -
-        gameTimestamp(a.date, a.time),
+        gameTimestamp(b.date || b.reportedDate || '', b.time) -
+        gameTimestamp(a.date || a.reportedDate || '', a.time),
     );
 
   const today = new Date();
@@ -226,77 +230,8 @@ export default function TeamPageScreen({
         gameTimestamp(b.date, b.time),
     );
 
-  const standingsRows = standingsForDisplay
-    .map((row, idx) => {
-      const wins = row.wins ?? 0;
-      const draws = row.draws ?? 0;
-      const losses = row.losses ?? 0;
-
-      const gp = wins + draws + losses;
-
-      const pts =
-        row.points ?? wins * 3 + draws;
-
-      const goalsFor =
-        row.forValue ?? 0;
-
-      const diff =
-        row.difference ??
-        (row.forValue !== null && row.againstValue !== null
-          ? row.forValue - row.againstValue
-          : 0);
-
-      return {
-        row,
-        idx,
-        wins,
-        draws,
-        losses,
-        gp,
-        pts,
-        goalsFor,
-        diff,
-        rank: idx + 1,
-      };
-    })
-    .sort((a, b) => {
-      if (b.pts !== a.pts) return b.pts - a.pts;
-      if (b.diff !== a.diff) return b.diff - a.diff;
-      if (b.goalsFor !== a.goalsFor) return b.goalsFor - a.goalsFor;
-      if (b.wins !== a.wins) return b.wins - a.wins;
-
-      if (isPreseasonStandings) {
-        return a.idx - b.idx;
-      }
-
-      return a.row.team.localeCompare(b.row.team);
-    })
-    .map((entry, _idx, sortedEntries) => {
-      const matchingPointRows = sortedEntries.filter(
-        (candidate) => candidate.pts === entry.pts,
-      );
-      const firstMatchingIndex = sortedEntries.findIndex(
-        (candidate) => candidate.pts === entry.pts,
-      );
-
-      return {
-        ...entry,
-        rank: isPreseasonStandings ? 1 : firstMatchingIndex + 1,
-        isTied: matchingPointRows.length > 1,
-      };
-    });
-
-  const allTeamsTied =
-    standingsRows.length > 1 &&
-    standingsRows.every(
-      (entry) =>
-        entry.pts === standingsRows[0].pts &&
-        entry.gp === standingsRows[0].gp &&
-        entry.wins === standingsRows[0].wins &&
-        entry.draws === standingsRows[0].draws &&
-        entry.losses === standingsRows[0].losses &&
-        entry.diff === standingsRows[0].diff,
-    );
+  const standingsRows = rankStandings(standingsForDisplay);
+  const allTeamsTied = standingsRows.length > 1 && standingsRows.every(entry => entry.rank === 1 && entry.isTied);
 
   const EmptyPanel = ({
     title,
@@ -416,7 +351,7 @@ export default function TeamPageScreen({
           {activeSection === 'standings' && (
             <section>
               <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
-                <div className="grid grid-cols-[40px_minmax(0,1fr)_32px_46px] gap-1 border-b border-border/10 bg-[#F1F2F3] px-3 py-4 text-[9px] font-black uppercase tracking-[0.12em] text-brand-maroon sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_44px_58px] sm:gap-2 sm:px-4 sm:text-[10px] sm:tracking-[0.18em] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]">
+                <div className={`grid grid-cols-[40px_minmax(0,1fr)_32px_68px] gap-1 border-b border-border/10 bg-[#F1F2F3] px-3 py-4 text-[9px] font-black uppercase tracking-[0.12em] text-brand-maroon ${standingsGrid} sm:gap-2 sm:px-4 sm:text-[10px] sm:tracking-[0.18em] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]`}>
                   <div>Rank</div>
                   <div>Club</div>
                   <div className="text-center">
@@ -425,14 +360,12 @@ export default function TeamPageScreen({
                   <div className="hidden text-center sm:block">
                     W
                   </div>
-                  <div className="hidden text-center sm:block">
-                    D
-                  </div>
+                  {showDraws && <div className="hidden text-center sm:block">D</div>}
                   <div className="hidden text-center sm:block">
                     L
                   </div>
                   <div className="text-right">
-                    Pts
+                    Win %
                   </div>
                 </div>
 
@@ -462,7 +395,7 @@ export default function TeamPageScreen({
                         draws,
                         losses,
                         gp,
-                        pts,
+                        winPercentage,
                         rank,
                         diff,
                         isTied,
@@ -474,7 +407,7 @@ export default function TeamPageScreen({
                         return (
                           <div
                             key={`${row.id || idx}-${idx}`}
-                            className={`relative grid grid-cols-[40px_minmax(0,1fr)_32px_46px] gap-1 border-b border-border/5 px-3 py-4 transition-colors hover:bg-foreground/[0.025] sm:grid-cols-[52px_minmax(0,1fr)_44px_44px_44px_44px_58px] sm:gap-2 sm:px-4 ${
+                            className={`relative grid grid-cols-[40px_minmax(0,1fr)_32px_68px] gap-1 border-b border-border/5 px-3 py-4 transition-colors hover:bg-foreground/[0.025] ${standingsGrid} sm:gap-2 sm:px-4 ${
                               isHighlightedLeader
                                 ? 'border border-[#B5413F]/40 bg-[#FFF4F4] shadow-[inset_0_0_0_1px_rgba(181,65,63,0.12)] dark:border-[#B5413F]/40 dark:bg-[#B5413F]/[0.055]'
                                 : ''
@@ -519,8 +452,7 @@ export default function TeamPageScreen({
                                 </p>
 
                                 <p className="mt-1 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/35 sm:hidden">
-                                  {wins}W · {draws}D ·{' '}
-                                  {losses}L
+                                  {standingsRecordLabel(wins, draws, losses, sport)}
                                 </p>
                               </div>
                             </div>
@@ -533,9 +465,7 @@ export default function TeamPageScreen({
                               {wins}
                             </div>
 
-                            <div className="hidden items-center justify-center font-mono text-sm text-foreground/70 sm:flex">
-                              {draws}
-                            </div>
+                            {showDraws && <div className="hidden items-center justify-center font-mono text-sm text-foreground/70 sm:flex">{draws}</div>}
 
                             <div className="hidden items-center justify-center font-mono text-sm text-foreground/70 sm:flex">
                               {losses}
@@ -543,8 +473,8 @@ export default function TeamPageScreen({
 
                             <div className="flex items-center justify-end">
                               <div className="text-right">
-                                <p className="font-mono text-lg font-black text-[#B5413F] sm:text-xl">
-                                  {pts}
+                                <p className="font-mono text-sm font-black text-[#B5413F] sm:text-base">
+                                  {formatWinPercentage(winPercentage)}
                                 </p>
 
                                 <p className="text-[9px] font-black uppercase tracking-[0.14em] text-foreground/30">
@@ -565,16 +495,12 @@ export default function TeamPageScreen({
 
                 <div className="flex flex-col gap-2 border-t border-brand-maroon/5 bg-[#F4F4F3] px-5 py-4 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 sm:flex-row sm:items-center sm:justify-between dark:border-border/5 dark:bg-foreground/[0.025] dark:text-foreground/35">
                   <span>
-                    {isPreseasonStandings
-                      ? 'Preseason table'
-                      : 'Official workbook snapshot'}
+                    Official workbook snapshot
                   </span>
 
                   <span>
                     {standingsRows.length} Teams ·{' '}
-                    {isPreseasonStandings
-                      ? 'All tied 0–0'
-                      : `Data as of ${standingsDate}`}
+                    Data as of {standingsDate}
                   </span>
                 </div>
               </div>
@@ -813,7 +739,7 @@ export default function TeamPageScreen({
           )}
         </div>
 
-        {activeSection === 'standings' && <TournamentResultsSection teamId={team?.id} />}
+        {activeSection === 'standings' && <TournamentResultsSection teamId={team?.id} matches={completedResults} />}
 
         {activeSection === 'players' && (
           <section

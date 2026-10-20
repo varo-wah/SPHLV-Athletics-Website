@@ -146,14 +146,15 @@ export default function HomeScreen({
         )
         .sort((a, b) => {
           const aTime = new Date(
-            `${a.date} ${a.time || '00:00'}`,
+            `${a.date || a.reportedDate || ''} ${a.time || '00:00'}`,
           ).getTime();
 
           const bTime = new Date(
-            `${b.date} ${b.time || '00:00'}`,
+            `${b.date || b.reportedDate || ''} ${b.time || '00:00'}`,
           ).getTime();
 
-          return bTime - aTime;
+          return (Number.isNaN(bTime) ? Number.MIN_SAFE_INTEGER : bTime)
+            - (Number.isNaN(aTime) ? Number.MIN_SAFE_INTEGER : aTime);
         }),
     [athleticsDataState.data.matches],
   );
@@ -566,8 +567,7 @@ export default function HomeScreen({
 
                         <div className="mt-2 flex items-center justify-between gap-2 text-[9px] font-bold uppercase tracking-[0.06em] text-foreground/42">
                           <span className="truncate">
-                            {recentMatch?.date ||
-                              'Awaiting result'}
+                            {recentMatch ? recentMatch.date || 'Date TBD' : 'Awaiting result'}
                           </span>
 
                           <strong className="shrink-0 text-sm text-brand-navy dark:text-white">
