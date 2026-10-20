@@ -110,6 +110,9 @@ function parseFixture(value: string, teamCode: string, time: string | null): Sch
 }
 
 export function scheduleFixtureLines(event: ScheduleEvent): ScheduleFixtureLine[] {
+  // Reviewed schedules already have explicit fixture labels and kickoff fields.
+  // Source notes may list several conditional slots; those are not extra games.
+  if (event.sourceUrl) return [{ label: event.eventText, time: event.time ?? null }];
   const rawTimes = [...event.raw.matchAll(/\b\d{1,2}:\d{2}(?:\s*(?:am|pm))?\b/gi)];
   const source = rawTimes.length > 1 ? event.raw : event.eventText;
   const teamCode = teamCodeForSchedule(event.team);

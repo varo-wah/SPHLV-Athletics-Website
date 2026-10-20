@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
+import ScheduleEventNotes from '../components/ScheduleEventNotes';
 import { formatWinPercentage, rankStandings, standingsRecordLabel, standingsShowDraws } from '../utils/standingsPresentation';
 import TournamentResultsSection from '../components/TournamentResultsSection';
 import { findTeam, sportDetails } from '../config/teamCatalog';
@@ -653,6 +654,7 @@ export default function TeamPageScreen({
                               </h4>
 
                               <JaacMatchup event={event} />
+                              <ScheduleEventNotes event={event} showTime />
 
                             </article>
                           ),

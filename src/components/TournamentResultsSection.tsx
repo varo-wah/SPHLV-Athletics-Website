@@ -1,5 +1,6 @@
 import { Trophy } from 'lucide-react';
 import type { SheetMatch } from '../services/parsers';
+import { ACSC_SOCCER_2026 } from '../data/acscSoccer2026';
 
 const tournaments = ['SPH Cup', 'JAAC', 'ACSC'] as const;
 const basketballCupFinals: Record<string, string> = {
@@ -65,6 +66,17 @@ export default function TournamentResultsSection({ teamId, matches = [] }: { tea
                 <p className="mt-1 text-[11px] font-semibold leading-relaxed text-foreground/48">
                   {name === 'SPH Cup' ? cupSummary : 'Final placement will be posted after the tournament.'}
                 </p>
+                {name === 'ACSC' && teamId === 'soccer-sma-boys' && (
+                  <div className="mt-2 space-y-1 text-[11px] font-semibold leading-relaxed text-foreground/55">
+                    <p>October 21–24, 2026 · Grace International School, Chiang Mai</p>
+                    <p>Pool A: SPH, YISS, Morrison and ICS Hong Kong. Pool ranking uses 3 points for a win and 1 for a draw.</p>
+                    <p>Results awaiting confirmation. Confirmed fixtures are listed under Games.</p>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1">
+                      <a className="text-brand-maroon underline underline-offset-2" href={ACSC_SOCCER_2026.sourceUrl} target="_blank" rel="noopener noreferrer">Tournament booklet</a>
+                      <a className="text-brand-maroon underline underline-offset-2" href={ACSC_SOCCER_2026.livestreamUrl} target="_blank" rel="noopener noreferrer">Host livestream channel</a>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </article>
