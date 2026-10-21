@@ -5,6 +5,10 @@ import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import CompactResultCard from '../components/CompactResultCard';
 import NewsListRow from '../components/NewsListRow';
 import TeamLogo from '../components/TeamLogo';
+import { AcscWatchLinks } from '../components/AcscTournamentBanner';
+import { ACSC_LOGO, acscSchoolForName } from '../data/acscSchools';
+import { acscTournamentForEvent } from '../data/acscTournaments2026';
+import { scheduleTimeLabel, scheduleTimestamp } from '../utils/scheduleTime';
 import { IS_PROTOTYPE, isLaunchTeamSelection, isVisibleScheduleEvent } from '../config/launchSports';
 import { useAuth } from '../contexts/AuthContext';
 import { useTeamFavorites } from '../contexts/TeamFavoritesContext';
@@ -48,7 +52,7 @@ function formatScheduleDateTime(event: ScheduleEvent | null) {
     const date = new Intl.DateTimeFormat('en-US', {
       weekday: 'short', month: 'short', day: 'numeric',
     }).format(parsedDate);
-    return `${date}${event.time ? ` @ ${event.time}` : ''}`;
+    return `${date}${event.time ? ` · ${scheduleTimeLabel(event)}` : ''}`;
   }
   return `${event.date || 'Date TBD'}${event.time ? ` @ ${event.time}` : ''}`;
 }
@@ -183,17 +187,7 @@ export default function HomeScreen({
     );
 
     return homeUpcomingFixtures(consolidateSharedScheduleEvents(visibleEvents))
-      .sort((a, b) => {
-        const aTime = new Date(
-          `${a.event.date} ${a.time || '00:00'}`,
-        ).getTime();
-
-        const bTime = new Date(
-          `${b.event.date} ${b.time || '00:00'}`,
-        ).getTime();
-
-        return aTime - bTime;
-      });
+      .sort((a, b) => scheduleTimestamp({ ...a.event, time: a.time }) - scheduleTimestamp({ ...b.event, time: b.time }));
   }, [athleticsDataState.data.masterScheduleEvents]);
 
   const feedCount = gameFeedView === 'results' ? latestResults.length : nextGames.length;
@@ -214,6 +208,8 @@ export default function HomeScreen({
           className="hero-banner-img"
         />
       </div>
+
+      <AcscWatchLinks />
 
       <section
         aria-label="Games"
@@ -322,23 +318,28 @@ export default function HomeScreen({
                   className="flex h-10 w-10 items-center justify-center rounded-xl border border-border/8 bg-white/75 text-xl shadow-sm dark:bg-white/[0.05]"
                   aria-hidden="true"
                 >
-                  {favoriteTeamEmojis[fixture.event.sportKey || 'Soccer']}
+                  {fixture.event.tournamentId ? <img src={ACSC_LOGO} alt="" className="h-8 w-8 object-contain" /> : favoriteTeamEmojis[fixture.event.sportKey || 'Soccer']}
                 </span>
 
                 <div className="min-w-0">
                   <div className="flex min-w-0 items-baseline gap-2 text-sm font-black uppercase tracking-[0.035em] text-foreground">
                     <span className="shrink-0">{fixture.teamCode}</span>
-                    <span className="text-[9px] text-foreground/35">VS</span>
-                    <span className="truncate">{fixture.opponent}</span>
+                    {(!fixture.event.tournamentId || fixture.event.opponent) && <span className="text-[9px] text-foreground/35">VS</span>}
+                    <span className={fixture.event.tournamentId ? 'min-w-0 text-xs leading-snug' : 'truncate'}>{fixture.event.tournamentId && !fixture.event.opponent ? fixture.event.eventText.replace(/^ACSC /, '') : acscSchoolForName(fixture.opponent)?.shortName ?? fixture.opponent}</span>
                   </div>
 
-                  <p className="mt-1.5 truncate text-[10px] font-black uppercase tracking-[0.07em] text-foreground/75 dark:text-white/75">
-                    {compactDate(fixture.event.date)} · {fixture.time || 'Time TBD'} ·{' '}
-                    {fixture.event.eventType.replace(' Game', '')}
+                  <p className="mt-1.5 text-[10px] font-black uppercase leading-relaxed tracking-[0.07em] text-foreground/75 dark:text-white/75">
+                    {compactDate(fixture.event.date)} · {scheduleTimeLabel({ ...fixture.event, time: fixture.time })} ·{' '}
+                    {fixture.event.tournamentId ? 'ACSC' : fixture.event.eventType.replace(' Game', '')}
                   </p>
+                  {acscTournamentForEvent(fixture.event) && <a href={acscTournamentForEvent(fixture.event)!.livestreamUrl} target="_blank" rel="noopener noreferrer" className="mt-1 inline-flex min-h-9 items-center text-[11px] font-bold text-brand-maroon underline underline-offset-2 dark:text-red-300">Watch on YouTube</a>}
                 </div>
 
-                {/\bcup\b/i.test(`${fixture.opponent} ${fixture.event.eventText}`) ? (
+                {fixture.event.tournamentId && acscSchoolForName(fixture.event.opponent) ? (
+                  <img src={acscSchoolForName(fixture.event.opponent)!.logo} alt={`${acscSchoolForName(fixture.event.opponent)!.name} logo`} className="h-10 w-10 rounded-full bg-white object-contain p-1" />
+                ) : fixture.event.tournamentId ? (
+                  <Trophy size={24} className="text-brand-maroon dark:text-red-300" aria-label="ACSC tournament round" />
+                ) : /\bcup\b/i.test(`${fixture.opponent} ${fixture.event.eventText}`) ? (
                   <span role="img" aria-label="Cup game" className="flex h-10 w-10 items-center justify-center rounded-full bg-white text-xl shadow-sm">🏆</span>
                 ) : (
                   <span className="flex shrink-0 -space-x-2">

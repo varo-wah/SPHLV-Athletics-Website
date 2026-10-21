@@ -32,6 +32,7 @@ const baseEvent: Omit<ScheduleEvent, 'id' | 'date' | 'day' | 'eventText' | 'raw'
   timeZone: ACSC_SOCCER_2026.timeZone,
   sourceUrl: ACSC_SOCCER_2026.sourceUrl,
   sourceLabel: ACSC_SOCCER_2026.sourceLabel,
+  tournamentId: 'acsc-soccer-boys-2026',
 };
 
 /** Pool fixtures are fixed; playoff slots depend on pool positions and results. */

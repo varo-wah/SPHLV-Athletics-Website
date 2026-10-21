@@ -1,6 +1,7 @@
 import { Trophy } from 'lucide-react';
 import type { SheetMatch } from '../services/parsers';
 import { ACSC_SOCCER_2026 } from '../data/acscSoccer2026';
+import AcscTournamentBanner from './AcscTournamentBanner';
 
 const tournaments = ['SPH Cup', 'JAAC', 'ACSC'] as const;
 const basketballCupFinals: Record<string, string> = {
@@ -34,6 +35,7 @@ export default function TournamentResultsSection({ teamId, matches = [] }: { tea
   }
   return (
     <section className="mt-8 space-y-4" aria-label="Tournament results">
+      {teamId?.startsWith('volleyball-') && <AcscTournamentBanner teamId={teamId} />}
       <div className="border-b border-brand-maroon/10 pb-3 dark:border-border/10">
         <p className="text-[10px] font-black uppercase tracking-[0.22em] text-brand-red">
           {eligibleTournaments.map(name => name === 'SPH Cup' ? 'Cup' : name).join(' · ')}

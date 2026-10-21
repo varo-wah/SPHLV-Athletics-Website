@@ -26,6 +26,7 @@ export interface ScheduleEvent {
   details?: string;
   sourceUrl?: string;
   sourceLabel?: string;
+  tournamentId?: string;
   raw: string;
 }
 

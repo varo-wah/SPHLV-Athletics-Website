@@ -7,6 +7,7 @@ import scheduleDataJson from '../data/schedule.json';
 import { ScheduleData, ScheduleEvent, ScheduleEventType } from '../data/scheduleTypes';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import ScheduleEventNotes from '../components/ScheduleEventNotes';
+import { scheduleTimestamp } from '../utils/scheduleTime';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import {
   IS_PROTOTYPE,
@@ -359,7 +360,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       .sort((a, b) => {
         const dateCompare = (a.date || '').localeCompare(b.date || '');
         if (dateCompare !== 0) return dateCompare;
-        return a.team.localeCompare(b.team);
+        return scheduleTimestamp(a) - scheduleTimestamp(b) || a.team.localeCompare(b.team);
       });
 
     return consolidateSharedScheduleEvents(visibleEvents);

@@ -6,6 +6,8 @@ import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
 import ScheduleEventNotes from '../components/ScheduleEventNotes';
+import AcscTournamentBanner from '../components/AcscTournamentBanner';
+import { scheduleTimestamp } from '../utils/scheduleTime';
 import { formatWinPercentage, rankStandings, standingsRecordLabel, standingsShowDraws } from '../utils/standingsPresentation';
 import TournamentResultsSection from '../components/TournamentResultsSection';
 import { findTeam, sportDetails } from '../config/teamCatalog';
@@ -227,8 +229,7 @@ export default function TeamPageScreen({
     )
     .sort(
       (a, b) =>
-        gameTimestamp(a.date, a.time) -
-        gameTimestamp(b.date, b.time),
+        scheduleTimestamp(a) - scheduleTimestamp(b),
     );
 
   const standingsRows = rankStandings(standingsForDisplay);
@@ -510,6 +511,7 @@ export default function TeamPageScreen({
 
           {activeSection === 'games' && (
             <section className="space-y-4">
+              <AcscTournamentBanner teamId={team?.id} />
               <div className="flex flex-col gap-4 rounded-2xl border border-border/10 bg-subcard/50 px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
@@ -622,7 +624,9 @@ export default function TeamPageScreen({
                             <article
                               key={event.id}
                               className={`rounded-2xl border p-4 shadow-sm ${
-                                event.eventType === 'Home Game'
+                                event.tournamentId
+                                  ? 'border-brand-maroon/25 bg-brand-maroon/[0.035]'
+                                  : event.eventType === 'Home Game'
                                   ? 'border-brand-maroon/25 bg-brand-maroon/[0.055]'
                                   : event.eventType === 'Away Game'
                                     ? 'border-slate-400/25 bg-slate-500/[0.065] dark:bg-slate-400/[0.06]'
