@@ -1,4 +1,5 @@
 import { ScheduleEvent } from '../data/scheduleTypes';
+import { scheduleTimestamp } from './scheduleTime';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 import { SheetMatch } from '../services/parsers';
 import { DivisionTab, GenderTab, SportTab } from '../types';
@@ -16,11 +17,6 @@ interface TeamIdentity {
   genderGroup?: GenderTab;
 }
 
-function eventTimestamp(event: ScheduleEvent) {
-  if (!event.date) return Number.MAX_SAFE_INTEGER;
-  const parsed = new Date(`${event.date} ${event.time || '00:00'}`).getTime();
-  return Number.isNaN(parsed) ? Number.MAX_SAFE_INTEGER : parsed;
-}
 
 function matchTimestamp(match: SheetMatch) {
   const parsed = new Date(`${match.date || match.reportedDate || ''} ${match.time || '00:00'}`).getTime();
@@ -48,7 +44,7 @@ export function buildFavoriteTeamSummaries(
         && Boolean(event.date && event.date >= todayIso)
         && isVisibleEvent(event)
       ))
-      .sort((a, b) => eventTimestamp(a) - eventTimestamp(b))[0] || null;
+      .sort((a, b) => scheduleTimestamp(a) - scheduleTimestamp(b))[0] || null;
 
     const recentMatch = matches
       .filter((match) => (
