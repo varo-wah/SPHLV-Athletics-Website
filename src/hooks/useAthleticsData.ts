@@ -27,6 +27,8 @@ import {
 import { mergeGameDayResults } from '../services/gamedayResults';
 import { mergeReviewedCupSchedule } from '../services/reviewedCupSchedule';
 import { mergeAcscSoccerSchedule, mergeAcscVolleyballSchedule } from '../services/acscSchedule';
+import { acscGameDayUpdates, mergeAcscCompetitionSchedule } from '../services/acscResults';
+import { GAMEDAY_UPDATES } from '../data/gamedayUpdates';
 import { loadResultFeeds } from "../services/resultFeeds";
 
 export interface ResultSourceState {
@@ -201,7 +203,7 @@ export function useAthleticsData(): AthleticsDataState {
 
       const matches = mergeGameDayResults(loadedResultFeeds.flatMap((feed) => (
         parsedBySource.get(feed.source.id)?.matches ?? []
-      )), RESULT_SHEET_SOURCES);
+      )), RESULT_SHEET_SOURCES, [...GAMEDAY_UPDATES, ...acscGameDayUpdates()]);
       const soccerMatches = matches.filter((match) => match.sportKey === "Soccer");
       const basketballMatches = matches.filter((match) => match.sportKey === "Basketball");
       const volleyballMatches = matches.filter((match) => match.sportKey === "Volleyball");
@@ -211,9 +213,9 @@ export function useAthleticsData(): AthleticsDataState {
       const basketballStandings = standings.filter((standing) => standing.sportKey === "Basketball");
       const volleyballStandings = standings.filter((standing) => standing.sportKey === "Volleyball");
 
-      const masterScheduleEvents = mergeAcscVolleyballSchedule(mergeAcscSoccerSchedule(mergeReviewedCupSchedule([...masterScheduleResults.flatMap((result) => (
+      const masterScheduleEvents = mergeAcscCompetitionSchedule(mergeAcscVolleyballSchedule(mergeAcscSoccerSchedule(mergeReviewedCupSchedule([...masterScheduleResults.flatMap((result) => (
         parseMasterScheduleSeason(result.season, result.matrix)
-      )).filter(event => !(event.sportKey === 'Volleyball' && ['2026-09-28', '2026-09-29'].includes(event.date ?? '') && /cup/i.test(event.eventText))), ...VOLLEYBALL_CUP_SCHEDULE])));
+      )).filter(event => !(event.sportKey === 'Volleyball' && ['2026-09-28', '2026-09-29'].includes(event.date ?? '') && /cup/i.test(event.eventText))), ...VOLLEYBALL_CUP_SCHEDULE]))));
       const masterScheduleErrorCount = masterScheduleResults.filter((result) => result.failed).length;
       const loadedFeedById = new Map(loadedResultFeeds.map((feed) => [feed.source.id, feed]));
       const resultSourceStates = RESULT_SHEET_SOURCES.map((source) => {

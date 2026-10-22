@@ -1,4 +1,5 @@
 import { jaacSchoolForName } from '../data/jaacSchools';
+import { acscSchoolForName } from '../data/acscSchools';
 import { SheetMatch } from '../services/parsers';
 
 function normalizedTeamKey(value: string) {
@@ -30,7 +31,7 @@ export function formatTeamName(value: string) {
 }
 
 export function teamLogoForName(value: string | null | undefined) {
-  return jaacSchoolForName(value)?.logo ?? null;
+  return jaacSchoolForName(value)?.logo ?? acscSchoolForName(value)?.logo ?? null;
 }
 
 export function resultOutcomeLabel(result: SheetMatch['result']) {

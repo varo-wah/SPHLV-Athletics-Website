@@ -7,6 +7,7 @@ import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
 import ScheduleEventNotes from '../components/ScheduleEventNotes';
 import AcscTournamentBanner from '../components/AcscTournamentBanner';
+import AcscCompetitionPanel from '../components/AcscCompetitionPanel';
 import { scheduleTimestamp } from '../utils/scheduleTime';
 import { formatWinPercentage, rankStandings, standingsRecordLabel, standingsShowDraws } from '../utils/standingsPresentation';
 import TournamentResultsSection from '../components/TournamentResultsSection';
@@ -222,6 +223,7 @@ export default function TeamPageScreen({
     .filter(
       (event) =>
         isCompetitiveScheduleEvent(event) &&
+        event.status !== 'Finished' &&
         event.sportKey === sport &&
         event.level === division &&
         event.genderGroup === gender &&
@@ -350,8 +352,10 @@ export default function TeamPageScreen({
             transition={PAGE_TRANSITION}
           >
         <div className="space-y-10">
+          {activeSection === 'standings' && <AcscCompetitionPanel teamId={team?.id} />}
           {activeSection === 'standings' && (
             <section>
+              <h2 className="mb-3 text-sm font-black uppercase tracking-wide">JAAC standings</h2>
               <div className="overflow-hidden rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
                 <div className={`grid grid-cols-[40px_minmax(0,1fr)_32px_68px] gap-1 border-b border-border/10 bg-[#F1F2F3] px-3 py-4 text-[9px] font-black uppercase tracking-[0.12em] text-brand-maroon ${standingsGrid} sm:gap-2 sm:px-4 sm:text-[10px] sm:tracking-[0.18em] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]`}>
                   <div>Rank</div>
@@ -511,7 +515,7 @@ export default function TeamPageScreen({
 
           {activeSection === 'games' && (
             <section className="space-y-4">
-              <AcscTournamentBanner teamId={team?.id} />
+              <AcscTournamentBanner teamId={team?.id} onViewStandings={() => selectSection('standings')} />
               <div className="flex flex-col gap-4 rounded-2xl border border-border/10 bg-subcard/50 px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
@@ -676,16 +680,16 @@ export default function TeamPageScreen({
                       </h3>
 
                       <span className="rounded-full border border-border/10 bg-subcard px-3 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/45">
-                        Manager sheet
+                        Verified results
                       </span>
                     </div>
 
-                    {!resultSourceState?.configured ? (
+                    {completedResults.length === 0 && !resultSourceState?.configured ? (
                       <EmptyPanel
                         title="Results sheet awaiting publication"
                         body="This team feed will activate when its published CSV URL is configured."
                       />
-                    ) : resultSourceState.failed &&
+                    ) : completedResults.length === 0 && resultSourceState?.failed &&
                       !resultSourceState.fromCache ? (
                       <EmptyPanel
                         title="Results temporarily unavailable"

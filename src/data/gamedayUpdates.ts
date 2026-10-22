@@ -13,7 +13,7 @@ export interface GameDayUpdate {
   opponent: string;
   scoreFor: number;
   scoreAgainst: number;
-  details: Pick<SheetMatch, 'statLeaders' | 'highlights' | 'matchType' | 'penalties' | 'setScores'>;
+  details: Pick<SheetMatch, 'statLeaders' | 'highlights' | 'matchType' | 'penalties' | 'setScores'> & Partial<Pick<SheetMatch, 'tournament'>>;
   replacesScore?: { scoreFor: number; scoreAgainst: number };
   newFixture?: { time: string; venue: string; locationType?: SheetMatch['locationType'] };
 }

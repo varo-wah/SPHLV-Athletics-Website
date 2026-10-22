@@ -41,6 +41,7 @@ export function buildFavoriteTeamSummaries(
       .filter((event) => (
         matchesFavorite(event)
         && isCompetitiveScheduleEvent(event)
+        && event.status !== 'Finished'
         && Boolean(event.date && event.date >= todayIso)
         && isVisibleEvent(event)
       ))

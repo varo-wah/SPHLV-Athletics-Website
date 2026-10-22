@@ -24,16 +24,17 @@ test('replaces the two volleyball arrival placeholders and preserves other event
   assert.ok(added.every(event => event.date !== '2026-10-20'));
 });
 
-test('source-verified opponents stay separate from disputed and conditional slots', () => {
+test('source-verified opponents stay separate from conditional slots', () => {
   assert.deepEqual(ACSC_BOYS_VOLLEYBALL_SCHEDULE.filter(event => event.opponent).map(event => [event.date, event.time, event.opponent]), [
     ['2026-10-21', '09:00', 'YISS'], ['2026-10-21', '12:00', 'Faith'],
-    ['2026-10-21', '14:00', 'Grace'], ['2026-10-22', '13:45', 'ICS Hong Kong'],
+    ['2026-10-21', '14:00', 'Grace'], ['2026-10-22', '09:30', 'Dalat'],
+    ['2026-10-22', '13:30', 'ICS Hong Kong'], ['2026-10-23', '10:00', 'ICS Bangkok'],
   ]);
   assert.deepEqual(ACSC_GIRLS_VOLLEYBALL_SCHEDULE.filter(event => event.opponent).map(event => [event.date, event.time, event.opponent]), [
     ['2026-10-21', '08:30', 'Dalat'], ['2026-10-21', '10:30', 'ICS Hong Kong'],
     ['2026-10-21', '14:30', 'ICS Bangkok'], ['2026-10-22', '08:30', 'YISS'],
     ['2026-10-22', '10:30', 'Grace'], ['2026-10-22', '14:30', 'Faith'],
-    ['2026-10-22', '16:30', 'Morrison'],
+    ['2026-10-22', '16:30', 'Morrison'], ['2026-10-23', '18:00', 'Morrison'],
   ]);
   for (const event of added) {
     assert.ok(eventMatchesTeamFilter(event, event.genderGroup === 'Boys' ? 'VBV' : 'VGV'));

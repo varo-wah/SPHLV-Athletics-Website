@@ -9,6 +9,7 @@ export default function ScheduleEventNotes({ event, showTime = false }: { event:
   return (
     <div className="mt-2 space-y-1 text-xs font-semibold leading-relaxed text-foreground/55">
       <AcscMatchup event={event} />
+      {event.status === 'Finished' && event.resultScore && <p className="font-black text-foreground">Final · SPH {event.resultScore} {event.opponent}</p>}
       {(showTime || event.timeZone) && <p>{scheduleTimeLabel(event)}</p>}
       {event.location && <p>{event.location}</p>}
       {event.details && <p>{event.details}</p>}
