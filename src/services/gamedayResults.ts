@@ -1,7 +1,10 @@
 import { GAMEDAY_UPDATES, type GameDayUpdate } from '../data/gamedayUpdates';
 import type { ResultSourceMetadata, SheetMatch } from './parsers';
+import { acscSchoolForName } from '../data/acscSchools';
 
 function opponentKey(value: string): string {
+  const acscSchool = acscSchoolForName(value);
+  if (acscSchool) return acscSchool.code;
   const key = value.toLowerCase().replace(/[^a-z0-9]/g, '');
   if (['nh', 'nhs', 'nationalhigh', 'nationalhighschool'].includes(key)) return 'nationalhigh';
   if (['stl', 'ssl', 'stlaurensia', 'santalaurensia'].includes(key)) return 'stl';

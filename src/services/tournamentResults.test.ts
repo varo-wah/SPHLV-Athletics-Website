@@ -28,12 +28,14 @@ test('SMP basketball shows Cup and JAAC cards without an ACSC card or heading', 
   }
 });
 
-test('shows only the confirmed boys soccer cup placement', () => {
+test('shows the confirmed soccer cup placement and keeps ACSC final placement in progress', () => {
   const html = renderToStaticMarkup(createElement(TournamentResultsSection, { teamId: 'soccer-sma-boys' }));
   assert.match(html, /Runner-up/);
   assert.match(html, /September 19, 2026/);
   assert.match(html, />ACSC<\/p>/);
-  assert.equal((html.match(/>Pending</g) || []).length, 2);
+  assert.equal((html.match(/>Pending</g) || []).length, 1);
+  assert.match(html, />In progress</);
+  assert.match(html, /third in Pool A/);
 });
 
 test('renders reviewed basketball finals through the matches prop without inventing the girls match date', () => {

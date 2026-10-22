@@ -180,6 +180,7 @@ export default function HomeScreen({
           event.team,
         ) &&
         event.date &&
+        event.status !== 'Finished' &&
         event.date >= todayIso &&
         ['Home Game', 'Away Game', 'Tournament'].includes(
           event.eventType,

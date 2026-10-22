@@ -27,6 +27,9 @@ export interface ScheduleEvent {
   sourceUrl?: string;
   sourceLabel?: string;
   tournamentId?: string;
+  status?: 'Scheduled' | 'Finished';
+  /** SPH score first, for verified completed tournament fixtures. */
+  resultScore?: string;
   raw: string;
 }
 
