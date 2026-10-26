@@ -16,7 +16,7 @@ export const ACSC_GIRLS_VOLLEYBALL_2026 = {
   sourceLabel: 'Official ACSC girls volleyball tournament booklet',
   scheduleUrl: 'https://docs.google.com/presentation/d/e/2PACX-1vTmw83IXsQ1Bx8cEpDl0CfDfbbYccDVwwQSqiuePxXyxTPhaECEoMEONTHdCE0WU9T91NJJZfPBHpMz/pub?start=true&loop=true&delayms=3000',
   livestreamUrl: 'https://www.youtube.com/@icsbkkathleticsarts2416/streams',
-  sourceNote: 'Schedule may change; check the official schedule.',
+  sourceNote: 'Match play concluded October 24, 2026.',
 } as const;
 
 const localTimeNote = 'Bangkok local time (UTC+7), the same as Jakarta.';
@@ -39,7 +39,7 @@ const baseEvent: Omit<ScheduleEvent, 'id' | 'date' | 'day' | 'eventText' | 'raw'
   tournamentId: ACSC_GIRLS_VOLLEYBALL_2026.id,
 };
 
-/** Round-robin fixtures are fixed; playoff slots depend on seeding and results. */
+/** Confirmed SPH fixtures, including the completed playoff and placement matches. */
 export const ACSC_GIRLS_VOLLEYBALL_SCHEDULE: ScheduleEvent[] = [
   {
     ...baseEvent,
@@ -134,26 +134,31 @@ export const ACSC_GIRLS_VOLLEYBALL_SCHEDULE: ScheduleEvent[] = [
     opponent: 'Morrison',
     eventText: 'ACSC quarterfinal: Morrison vs SPH',
     location: `${ACSC_GIRLS_VOLLEYBALL_2026.venue} · Court 1`,
-    details: `Game 3 · Second-seeded Morrison vs seventh-seeded SPH. ${localTimeNote}`,
-    raw: 'Official ACSC girls volleyball live schedule slide 5 and elimination bracket, checked October 23: G3, Friday October 23, 18:00, Court 1, Morrison (seed 2) vs SPH (seed 7).',
+    details: `Game 3 · Morrison won 3–0. ${localTimeNote}`,
+    raw: 'Official ACSC girls volleyball live schedule slide 5 and elimination bracket, checked October 26: G3, Friday October 23, 18:00, Court 1, Morrison 3–0 SPH.',
   },
   {
     ...baseEvent,
     id: 'acsc-volleyball-girls-2026-semifinal-consolation',
     date: '2026-10-24',
     day: 'Sat',
-    eventText: 'ACSC semifinal or consolation round · TBD',
+    time: '08:00',
+    opponent: 'Faith',
+    eventText: 'ACSC consolation: SPH vs Faith',
     location: `${ACSC_GIRLS_VOLLEYBALL_2026.venue} · Court 2`,
-    details: `If SPH wins its quarterfinal: semifinal at 09:30 vs the YISS/Faith winner. If SPH loses: consolation at 08:00 vs the YISS/Faith loser. Both are on Court 2. ${localTimeNote}`,
-    raw: 'Official ACSC girls volleyball live schedule slides 5–6 and elimination bracket, checked October 23: SPH plays G3; G6 pairs losers of G3/G4 at 08:00 on Court 2, and G8 pairs winners of G3/G4 at 09:30 on Court 2. G4 is YISS vs Faith. No G3 result is confirmed.',
+    details: `Game 6 · SPH won 2–0 and advanced to the fifth-place match. ${localTimeNote}`,
+    raw: 'Official ACSC girls volleyball live schedule slide 6 and elimination bracket, checked October 26: G6, Saturday October 24, 08:00, Court 2, SPH 2–0 Faith.',
   },
   {
     ...baseEvent,
     id: 'acsc-volleyball-girls-2026-final-placement',
     date: '2026-10-24',
     day: 'Sat',
-    eventText: 'ACSC final placement match · TBD',
-    details: `5th/6th and 7th/8th matches start at 12:00; the championship and 3rd/4th match start at 13:30. SPH’s opponent and court depend on earlier results. ${localTimeNote}`,
-    raw: 'Official ACSC girls volleyball booklet p. 5 and live schedule slide 6: Saturday October 24 at 12:00, 5th/6th on Court 1 and 7th/8th on Court 2; at 13:30, championship on Court 1 and 3rd/4th on Court 2. SPH placement is not confirmed.',
+    time: '12:00',
+    opponent: 'ICS Hong Kong',
+    eventText: 'ACSC fifth-place match: SPH vs ICS Hong Kong',
+    location: `${ACSC_GIRLS_VOLLEYBALL_2026.venue} · Court 1`,
+    details: `Game 9 · SPH lost 2–3 and finished sixth. ${localTimeNote}`,
+    raw: 'Official ACSC girls volleyball live schedule slide 6, elimination bracket and results/awards slide, checked October 26: G9, Saturday October 24, 12:00, Court 1, SPH 2–3 ICS Hong Kong. Final placements confirm ICS Hong Kong fifth and SPH sixth.',
   },
 ];

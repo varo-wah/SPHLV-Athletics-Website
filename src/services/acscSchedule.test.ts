@@ -26,28 +26,30 @@ test('replaces only the boys soccer arrival placeholder with six tournament fixt
     && event.timeZone === 'Asia/Bangkok' && event.sourceUrl === ACSC_SOCCER_2026.scheduleUrl));
 });
 
-test('uses verified pool fields and Grace quarterfinal without claiming a semifinal place', () => {
+test('uses all six completed soccer fixtures and the corrected placement fields', () => {
   const known = ACSC_SOCCER_SCHEDULE.filter(event => event.opponent);
   assert.deepEqual(known.map(event => [event.date, event.time, event.opponent]), [
     ['2026-10-21', '08:00', 'Morrison'],
     ['2026-10-21', '15:00', 'ICS Hong Kong'],
     ['2026-10-22', '15:00', 'YISS'],
     ['2026-10-23', '08:00', 'Grace'],
+    ['2026-10-23', '15:00', 'Dalat'],
+    ['2026-10-24', '08:00', 'Morrison'],
   ]);
   assert.ok(known.slice(0, 2).every(event => event.location?.endsWith('Field 2')));
   assert.equal(known[2].location, `${ACSC_SOCCER_2026.venue} · Field 1`);
   assert.equal(known[3].location, `${ACSC_SOCCER_2026.venue} · Field 2`);
   assert.equal(known[3].id, 'acsc-soccer-2026-quarterfinal');
   assert.match(known[3].eventText, /quarterfinal Q2/);
+  assert.ok(known.slice(3).every(event => event.location === `${ACSC_SOCCER_2026.venue} · Field 2`));
+  assert.equal(known[4].id, 'acsc-soccer-2026-semifinal-placement');
+  assert.equal(known[5].id, 'acsc-soccer-2026-final-placement');
+  assert.ok(known.every(event => event.status === 'Finished'));
+  assert.deepEqual(known.map(event => event.resultScore), ['5–3', '0–4', '2–2', '0–2', '0–1', '2–0']);
+  assert.match(known[4].eventText, /placement semifinal/);
+  assert.match(known[5].eventText, /seventh-place/);
   assert.deepEqual(ACSC_SOCCER_2026.poolTeams, ['SPH', 'YISS', 'Morrison', 'ICS Hong Kong']);
-  const conditional = ACSC_SOCCER_SCHEDULE.filter(event => !event.opponent);
-  assert.deepEqual(conditional.map(event => [event.date, event.time]), [
-    ['2026-10-23', '15:00'],
-    ['2026-10-24', null],
-  ]);
-  assert.match(conditional[0].details ?? '', /If SPH beats Grace/);
-  assert.match(conditional[0].details ?? '', /Otherwise: placement match/);
-  assert.ok(conditional.every(event => /depend|await/i.test(event.details ?? '')));
+  assert.equal(ACSC_SOCCER_SCHEDULE.filter(event => !event.opponent).length, 0);
 });
 
 test('repeated merges are idempotent and preserve later published opponent aliases', () => {
@@ -75,8 +77,7 @@ test('retains the production Varsity team name and VBS filter and only confirmed
     && event.season === 'Season 1' && event.sportKey === 'Soccer'));
   assert.ok(ACSC_SOCCER_SCHEDULE.every(event => eventMatchesTeamFilter(event, 'VBS')));
   assert.ok(ACSC_SOCCER_SCHEDULE.every(event => !eventMatchesTeamFilter(event, 'VGS')));
-  const conditional = ACSC_SOCCER_SCHEDULE.filter(event => !event.opponent);
-  for (const event of conditional) {
+  for (const event of ACSC_SOCCER_SCHEDULE) {
     assert.deepEqual(scheduleFixtureLines(event), [{ label: event.eventText, time: event.time ?? null }]);
   }
 });

@@ -56,9 +56,12 @@ export function mergeAcscVolleyballSchedule(events: ScheduleEvent[]): ScheduleEv
   const merged = events.filter(event => !(volleyballGender(event)
     && event.date === '2026-10-20' && !event.opponent
     && /^acsc(?:\s*@\s*(?:hk|bkk))?$/i.test(event.eventText.trim())));
-  for (const fixture of [...ACSC_BOYS_VOLLEYBALL_SCHEDULE, ...ACSC_GIRLS_VOLLEYBALL_SCHEDULE]) {
+  const reviewedFixtures = [...ACSC_BOYS_VOLLEYBALL_SCHEDULE, ...ACSC_GIRLS_VOLLEYBALL_SCHEDULE];
+  const reviewedIds = new Set(reviewedFixtures.map(fixture => fixture.id));
+  for (const fixture of reviewedFixtures) {
     const index = merged.findIndex(existing => existing.id === fixture.id || (
-      fixture.opponent && existing.opponent && volleyballGender(existing) === fixture.genderGroup
+      !reviewedIds.has(existing.id)
+      && fixture.opponent && existing.opponent && volleyballGender(existing) === fixture.genderGroup
       && existing.date === fixture.date && /\bacsc\b/i.test(existing.eventText)
       && (acscSchoolForName(existing.opponent)?.code ?? normalizedOpponent(existing.opponent))
         === (acscSchoolForName(fixture.opponent)?.code ?? normalizedOpponent(fixture.opponent))

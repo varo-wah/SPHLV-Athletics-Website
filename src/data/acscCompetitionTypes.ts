@@ -31,6 +31,8 @@ export interface AcscCompetitionMatch {
   setScores?: string[];
   /** SPH-specific scorers, only when verified. */
   statLeaders?: string[];
+  /** Shootout score, separate from the regulation score. */
+  penalties?: { homeScore: number; awayScore: number };
 }
 
 export interface AcscCompetitionSnapshot {
@@ -43,6 +45,10 @@ export interface AcscCompetitionSnapshot {
   timeZone: 'Asia/Bangkok' | 'Asia/Hong_Kong';
   summary: string;
   caveat?: string;
+  /** The tournament has concluded; missing scores remain unreported, never inferred. */
+  complete?: boolean;
+  finalPlacements?: { school: AcscSchoolCode; rank: number }[];
+  awards?: { school: AcscSchoolCode; label: string; recipient?: string }[];
   pools: { name: string; complete: boolean; rows: AcscPoolRow[] }[];
   matches: AcscCompetitionMatch[];
 }

@@ -3,9 +3,10 @@ import { acscSchoolForName } from '../data/acscSchools';
 import type { GameDayUpdate } from '../data/gamedayUpdates';
 import type { ScheduleEvent } from '../data/scheduleTypes';
 import { acscTournamentForTeam } from '../data/acscTournaments2026';
+import type { AcscCompetitionSnapshot } from '../data/acscCompetitionTypes';
 
-export function acscGameDayUpdates(): GameDayUpdate[] {
-  return ACSC_COMPETITION_RESULTS.flatMap(snapshot => snapshot.matches
+export function acscGameDayUpdates(snapshots: readonly AcscCompetitionSnapshot[] = ACSC_COMPETITION_RESULTS): GameDayUpdate[] {
+  return snapshots.flatMap(snapshot => snapshot.matches
     .filter(match => (match.home === 'SPH' || match.away === 'SPH') && acscMatchFinished(match))
     .map(match => {
       const sphHome = match.home === 'SPH';
@@ -18,6 +19,10 @@ export function acscGameDayUpdates(): GameDayUpdate[] {
         details: {
           tournament: 'ACSC' as const, matchType: `ACSC ${match.stage}`,
           statLeaders: match.statLeaders,
+          ...(match.penalties ? { penalties: {
+            scoreFor: sphHome ? match.penalties.homeScore : match.penalties.awayScore,
+            scoreAgainst: sphHome ? match.penalties.awayScore : match.penalties.homeScore,
+          } } : {}),
           setScores: match.setScores?.map(score => sphHome ? score : score.split(/[–-]/).reverse().join('–')),
           highlights: match.notes ? [match.notes] : undefined,
         },
@@ -26,11 +31,12 @@ export function acscGameDayUpdates(): GameDayUpdate[] {
 }
 
 /** Reflect confirmed matches in the shared calendar without losing its completed fixtures. */
-export function mergeAcscCompetitionSchedule(events: ScheduleEvent[]): ScheduleEvent[] {
+export function mergeAcscCompetitionSchedule(events: ScheduleEvent[], snapshots: readonly AcscCompetitionSnapshot[] = ACSC_COMPETITION_RESULTS): ScheduleEvent[] {
   const merged = [...events];
-  for (const snapshot of ACSC_COMPETITION_RESULTS) {
+  for (const snapshot of snapshots) {
     const base = events.find(event => event.tournamentId === snapshot.tournamentId);
     if (!base) continue;
+    const knownFixtureIds = new Set(snapshot.matches.map(match => match.fixtureId ?? match.id));
     for (const match of snapshot.matches.filter(item => item.home === 'SPH' || item.away === 'SPH')) {
       const id = match.fixtureId ?? match.id;
       const sphHome = match.home === 'SPH';
@@ -39,21 +45,27 @@ export function mergeAcscCompetitionSchedule(events: ScheduleEvent[]): ScheduleE
       if (index < 0) {
         const sameOpponent = merged.map((event, position) => ({ event, position })).filter(({ event }) => (
           event.tournamentId === snapshot.tournamentId && event.date === match.date
+          && !knownFixtureIds.has(event.id)
           && acscSchoolForName(event.opponent)?.code === acscSchoolForName(opponent)?.code
         ));
         if (sameOpponent.length === 1) index = sameOpponent[0].position;
       }
       const finished = acscMatchFinished(match);
-      const resultScore = finished ? `${sphHome ? match.homeScore : match.awayScore}–${sphHome ? match.awayScore : match.homeScore}` : undefined;
+      const concluded = finished || snapshot.complete === true;
+      const penalties = match.penalties
+        ? ` (${sphHome ? match.penalties.homeScore : match.penalties.awayScore}–${sphHome ? match.penalties.awayScore : match.penalties.homeScore} on penalties)`
+        : '';
+      const resultScore = finished ? `${sphHome ? match.homeScore : match.awayScore}–${sphHome ? match.awayScore : match.homeScore}${penalties}` : undefined;
       const fixture: ScheduleEvent = {
         ...base, ...(index >= 0 ? merged[index] : {}),
         id, date: match.date, time: match.time, opponent,
         day: new Date(`${match.date}T12:00:00Z`).toLocaleDateString('en-US', { weekday: 'short', timeZone: 'UTC' }),
         eventText: `ACSC ${match.stage}: SPH vs ${opponent}`,
         timeZone: snapshot.timeZone, location: match.venue ?? base.location,
-        details: match.notes ?? match.stage, status: finished ? 'Finished' : 'Scheduled', resultScore,
-        sourceUrl: finished ? snapshot.sourceUrl : acscTournamentForTeam(snapshot.teamId)?.scheduleUrl ?? base.sourceUrl,
-        sourceLabel: finished ? snapshot.sourceLabel : 'Official ACSC schedule',
+        details: !finished && snapshot.complete ? `Score unreported. ${match.notes ?? match.stage}` : match.notes ?? match.stage,
+        status: concluded ? 'Finished' : 'Scheduled', resultScore,
+        sourceUrl: concluded ? snapshot.sourceUrl : acscTournamentForTeam(snapshot.teamId)?.scheduleUrl ?? base.sourceUrl,
+        sourceLabel: concluded ? snapshot.sourceLabel : 'Official ACSC schedule',
         raw: `Verified ${snapshot.verifiedAt}: ${snapshot.sourceLabel}. ${match.id}`,
       };
       if (index >= 0) merged[index] = fixture;

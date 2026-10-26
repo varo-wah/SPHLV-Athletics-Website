@@ -13,42 +13,42 @@ export interface AcscSchool {
   aliases: readonly string[];
 }
 
-/** Logos supplied by the conference's current member-school directory. */
+/** School artwork from Mark's ACSC_Logos (noBG) folder; Dalat retains the official conference asset. */
 export const ACSC_SCHOOLS = [
   {
     code: 'SPH', name: 'Sekolah Pelita Harapan', shortName: 'SPH',
     logo: new URL('../assets/acsc/sph.png', import.meta.url).href,
-    logoSourceUrl: 'https://acscconference.com/wp-content/uploads/2024/03/logo-sph-v03.png',
+    logoSourceUrl: 'https://drive.google.com/file/d/1Tv0MSAGA_OcUJ0v_ZGEE6NEa57Z4-PdU/view',
     aliases: ['SPH', 'SPH LV', 'SPH-LV', 'SPH Lippo Village', 'Sekolah Pelita Harapan', 'Sekolah Pelita Harapan Lippo Village'],
   },
   {
     code: 'MORRISON', name: 'Morrison Academy', shortName: 'Morrison',
     logo: new URL('../assets/acsc/morrison.png', import.meta.url).href,
-    logoSourceUrl: 'https://acscconference.com/wp-content/uploads/2022/12/logo-morrison.png',
+    logoSourceUrl: 'https://drive.google.com/file/d/15COkCCknnfk5CBArjLJDfhP5bgyhDCB2/view',
     aliases: ['Morrison', 'Morrison Academy', 'Morrison Academy Taichung', 'MAC'],
   },
   {
     code: 'ICS-HK', name: 'International Christian School, Hong Kong', shortName: 'ICS Hong Kong',
     logo: new URL('../assets/acsc/ics-hk.png', import.meta.url).href,
-    logoSourceUrl: 'https://acscconference.com/wp-content/uploads/2022/12/logo-ics-hongkong.png',
+    logoSourceUrl: 'https://drive.google.com/file/d/18iojnVK2A_izxQFWr9Bd8lGPP3e5j2_G/view',
     aliases: ['ICS-HK', 'ICS HK', 'ICS Hong Kong', 'International Christian School Hong Kong', 'International Christian School, Hong Kong'],
   },
   {
     code: 'ICS-BKK', name: 'International Community School, Bangkok', shortName: 'ICS Bangkok',
     logo: new URL('../assets/acsc/ics-bkk.png', import.meta.url).href,
-    logoSourceUrl: 'https://acscconference.com/wp-content/uploads/2024/03/logo-ics-bkk-03.png',
+    logoSourceUrl: 'https://drive.google.com/file/d/1TlS5ykBy6YxBNFOYBIyejiTPZQfL9YrX/view',
     aliases: ['ICS-BKK', 'ICS BKK', 'ICS Bangkok', 'International Community School', 'International Community School Bangkok', 'International Community School, Bangkok'],
   },
   {
     code: 'GIS', name: 'Grace International School', shortName: 'Grace',
     logo: new URL('../assets/acsc/grace.png', import.meta.url).href,
-    logoSourceUrl: 'https://acscconference.com/wp-content/uploads/2026/10/logo-gis-2026-1028x1028-1.png',
+    logoSourceUrl: 'https://drive.google.com/file/d/1yK1RvTyqtWlueahFX99PC7FH8UTAvrte/view',
     aliases: ['GIS', 'Grace', 'Grace International School'],
   },
   {
     code: 'FAITH', name: 'Faith Academy', shortName: 'Faith',
     logo: new URL('../assets/acsc/faith.png', import.meta.url).href,
-    logoSourceUrl: 'https://acscconference.com/wp-content/uploads/2022/12/logo-faith-academy.png',
+    logoSourceUrl: 'https://drive.google.com/file/d/1lxXVWCaBGwXX4-UIF99lp2F6mHH015np/view',
     aliases: ['FA', 'Faith', 'Faith Academy'],
   },
   {
@@ -60,7 +60,7 @@ export const ACSC_SCHOOLS = [
   {
     code: 'YISS', name: 'Yongsan International School of Seoul', shortName: 'YISS',
     logo: new URL('../assets/acsc/yiss.png', import.meta.url).href,
-    logoSourceUrl: 'https://acscconference.com/wp-content/uploads/2025/08/2025-logo-yiss-guardians-v01.png',
+    logoSourceUrl: 'https://drive.google.com/file/d/1t53-q_2dvkXm39dFoAmY__a4X933_ym_/view',
     aliases: ['YISS', 'Yongsan', 'Yongsan International School', 'Yongsan International School of Seoul'],
   },
 ] as const satisfies readonly AcscSchool[];
