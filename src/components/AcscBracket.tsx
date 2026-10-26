@@ -6,7 +6,6 @@ import { acscMatchFinished } from '../data/acscCompetitionResults2026';
 import type { AcscCompetitionMatch, AcscCompetitionSnapshot } from '../data/acscCompetitionTypes';
 import { ACSC_LOGO, acscSchoolForName } from '../data/acscSchools';
 import { acscTournamentForTeam } from '../data/acscTournaments2026';
-
 import { bracketLayout, CARD_WIDTH, CARD_HEIGHT, COLUMN_GAP, EDGE } from '../utils/acscBracketLayout';
 
 function matchWinner(match: AcscCompetitionMatch): string | null {
@@ -23,7 +22,7 @@ function BracketCard({ match }: { match: AcscCompetitionMatch }) {
   const hasSph = match.home === 'SPH' || match.away === 'SPH';
   const finished = acscMatchFinished(match);
   const date = new Date(`${match.date}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
-  return <article aria-label={`${match.stage}: ${acscSchoolForName(match.home)?.shortName ?? match.home} versus ${acscSchoolForName(match.away)?.shortName ?? match.away}`} className={`flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-sm ${hasSph ? 'border-brand-maroon/50 ring-1 ring-brand-maroon/10' : 'border-border/20'}`}>
+  return <article aria-label={`${match.stage}: ${acscSchoolForName(match.home)?.shortName ?? match.home} versus ${acscSchoolForName(match.away)?.shortName ?? match.away}`} className={`flex h-full flex-col overflow-hidden rounded-xl border bg-card shadow-sm ${hasSph ? 'border-brand-maroon/50 ring-1 ring-brand-maroon/10 dark:border-red-400/50 dark:ring-red-400/10' : 'border-border/20'}`}>
     <div className="flex min-h-8 items-center justify-between gap-2 border-b border-border/10 px-3 py-1.5 text-[9px] font-bold uppercase tracking-wide text-foreground/60">
       <span className="truncate" title={match.stage}>{match.stage}</span><span className="shrink-0">{date}</span>
     </div>
@@ -47,8 +46,8 @@ function BracketView({ snapshot, expanded = false }: { key?: string; snapshot: A
   const [scale, setScale] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lane = definition.lanes.find(item => item.id === selected) ?? definition.lanes[0];
-  const { positions, width, height, paths } = bracketLayout(lane);
   const matches = new Map(snapshot.matches.map(match => [match.id, match]));
+  const { positions, width, height, paths } = bracketLayout(lane, matches);
   const changeLane = (id: string) => { setSelected(id); scrollRef.current?.scrollTo({ top: 0, left: 0 }); };
   const fit = () => {
     const viewport = scrollRef.current;
@@ -56,9 +55,9 @@ function BracketView({ snapshot, expanded = false }: { key?: string; snapshot: A
   };
   return <div className={`flex min-h-0 flex-col ${expanded ? 'h-full' : ''}`}>
     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/10 p-3">
-      <div className="flex flex-wrap gap-1.5" role="group" aria-label="Bracket paths">
+      {definition.lanes.length > 1 ? <div className="flex flex-wrap gap-1.5" role="group" aria-label="Bracket paths">
         {definition.lanes.map(item => <button key={item.id} type="button" onClick={() => changeLane(item.id)} aria-pressed={lane.id === item.id} className={`min-h-9 rounded-lg px-3 text-[11px] font-bold ${lane.id === item.id ? 'bg-brand-maroon text-white' : 'border border-border/15 bg-subcard text-foreground/70 hover:bg-foreground/5'}`}>{item.title}</button>)}
-      </div>
+      </div> : <p className="text-xs font-bold">{lane.title}</p>}
       <div className="flex items-center gap-1" role="group" aria-label="Bracket zoom">
         <button type="button" aria-label="Zoom bracket out" disabled={scale <= 0.35} onClick={() => setScale(value => Math.max(0.35, value - 0.15))} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/15 disabled:opacity-30"><Minus size={15} /></button>
         <output aria-live="polite" className="w-10 text-center text-[10px] font-bold tabular-nums">{Math.round(scale * 100)}%</output>
@@ -69,14 +68,18 @@ function BracketView({ snapshot, expanded = false }: { key?: string; snapshot: A
     </div>
     <div className="space-y-1.5 border-b border-border/10 px-3 py-2 text-[10px] leading-relaxed text-foreground/60">
       {lane.description && <p>{lane.description}</p>}
-      <p className="flex flex-wrap gap-x-4 gap-y-1"><span className="inline-flex items-center gap-1.5"><span className="w-5 border-t-2 border-brand-maroon/50" />Winner advances</span><span className="inline-flex items-center gap-1.5"><span className="w-5 border-t-2 border-dashed border-foreground/35" />Loser advances</span><span>SPH fixtures outlined</span></p>
+      <p className="flex flex-wrap gap-x-4 gap-y-1"><span className="inline-flex items-center gap-1.5"><span className="w-5 border-t-2 border-brand-maroon/75 dark:border-red-400/80" />Winner advances</span><span className="inline-flex items-center gap-1.5"><span className="w-5 border-t-2 border-dashed border-brand-navy/70 dark:border-brand-sky" />Loser advances</span><span>SPH fixtures outlined</span></p>
       <ul className="sr-only" aria-label="Bracket progression">{lane.edges.map(edge => <li key={`${edge.from}-${edge.to}-${edge.outcome}`}>{edge.outcome} of {matches.get(edge.from)?.stage} advances to {matches.get(edge.to)?.stage}.</li>)}</ul>
     </div>
-    <div ref={scrollRef} tabIndex={0} role="region" aria-label={`${lane.title} bracket, scroll to explore`} className={`overflow-auto overscroll-contain bg-foreground/[0.025] outline-offset-[-2px] ${expanded ? 'min-h-0 flex-1' : 'h-[420px]'}`}>
+    <div ref={scrollRef} tabIndex={0} role="region" aria-label={`${lane.title} bracket, scroll to explore`} className={`overflow-auto overscroll-contain bg-subcard outline-offset-[-2px] ${expanded ? 'min-h-0 flex-1' : 'h-[420px]'}`}>
       <div className="mx-auto" style={{ width: width * scale, height: height * scale }}>
         <div className="relative origin-top-left" style={{ width, height, transform: `scale(${scale})` }}>
           <svg width={width} height={height} aria-hidden="true" className="pointer-events-none absolute inset-0">
-            {paths.map(edge => <path key={`${edge.from}-${edge.to}-${edge.outcome}`} d={edge.d} fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray={edge.outcome === 'loser' ? '5 4' : undefined} className={edge.outcome === 'loser' ? 'text-foreground/30' : 'text-brand-maroon/50'} />)}
+            {paths.map(edge => <g key={`${edge.from}-${edge.to}-${edge.outcome}`}>
+              <title>{`${edge.outcome === 'winner' ? 'Winner' : 'Loser'} of ${matches.get(edge.from)?.stage} → ${matches.get(edge.to)?.stage}`}</title>
+              <path d={edge.d} fill="none" stroke="var(--subcard)" strokeWidth="6" strokeLinejoin="round" />
+              <path d={edge.d} fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" strokeDasharray={edge.outcome === 'loser' ? '7 5' : undefined} className={edge.outcome === 'loser' ? 'text-brand-navy/70 dark:text-brand-sky' : 'text-brand-maroon/75 dark:text-red-400/80'} />
+            </g>)}
           </svg>
           {lane.rounds.map((round, column) => <div key={round.id}>
             <h4 className="absolute text-center text-[10px] font-black uppercase tracking-wider text-foreground/60" style={{ top: 16, left: EDGE + column * (CARD_WIDTH + COLUMN_GAP), width: CARD_WIDTH }}>{round.title}</h4>
