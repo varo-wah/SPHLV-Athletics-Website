@@ -36,28 +36,20 @@ export const ACSC_BRACKETS: AcscBracketDefinition[] = [
     teamId: 'soccer-sma-boys',
     lanes: [
       {
-        id: 'championship', title: 'Championship bracket',
-        description: 'Quarterfinal winners advance toward the final. Semifinal losers play for third place.',
+        id: 'complete', title: 'Complete tournament bracket',
+        description: 'Follow every team from the quarterfinals to its final placement. Solid lines show winners advancing; dashed lines show losers entering consolation or placement matches.',
         rounds: [
           { id: 'quarterfinals', title: 'Quarterfinals', matchIds: ['q1', 'q2', 'q3', 'q4'].map(soccer) },
-          { id: 'semifinals', title: 'Semifinals', matchIds: ['g6', 'g8'].map(soccer) },
-          { id: 'medals', title: 'Final & third place', matchIds: ['final', 'g11'].map(soccer) },
+          { id: 'semifinals', title: 'Semifinals & consolation', matchIds: ['g6', 'g8', 'g5', 'g7'].map(soccer) },
+          { id: 'placements', title: 'Final & placement matches', matchIds: ['final', 'g11', 'g9', 'g10'].map(soccer) },
         ],
         edges: [
           edge(soccer('q1'), soccer('g6')), edge(soccer('q2'), soccer('g6')),
           edge(soccer('q3'), soccer('g8')), edge(soccer('q4'), soccer('g8')),
+          edge(soccer('q1'), soccer('g5'), 'loser'), edge(soccer('q2'), soccer('g5'), 'loser'),
+          edge(soccer('q3'), soccer('g7'), 'loser'), edge(soccer('q4'), soccer('g7'), 'loser'),
           edge(soccer('g6'), soccer('final')), edge(soccer('g8'), soccer('final')),
           edge(soccer('g6'), soccer('g11'), 'loser'), edge(soccer('g8'), soccer('g11'), 'loser'),
-        ],
-      },
-      {
-        id: 'placements', title: 'Fifth–eighth place',
-        description: 'Quarterfinal losers enter these placement semifinals. Winners play for fifth; losers play for seventh.',
-        rounds: [
-          { id: 'placement-semifinals', title: 'Placement semifinals', matchIds: ['g5', 'g7'].map(soccer) },
-          { id: 'placement-finals', title: 'Fifth & seventh place', matchIds: ['g9', 'g10'].map(soccer) },
-        ],
-        edges: [
           edge(soccer('g5'), soccer('g9')), edge(soccer('g7'), soccer('g9')),
           edge(soccer('g5'), soccer('g10'), 'loser'), edge(soccer('g7'), soccer('g10'), 'loser'),
         ],
@@ -68,28 +60,20 @@ export const ACSC_BRACKETS: AcscBracketDefinition[] = [
     teamId: 'volleyball-sma-girls',
     lanes: [
       {
-        id: 'championship', title: 'Championship bracket',
-        description: 'Quarterfinal winners advance toward the final. Semifinal losers play for third place.',
+        id: 'complete', title: 'Complete tournament bracket',
+        description: 'Follow every team from the quarterfinals to its final placement. Solid lines show winners advancing; dashed lines show losers entering consolation or placement matches.',
         rounds: [
           { id: 'quarterfinals', title: 'Quarterfinals', matchIds: [1, 2, 3, 4].map(girls) },
-          { id: 'semifinals', title: 'Semifinals', matchIds: [7, 8].map(girls) },
-          { id: 'medals', title: 'Final & third place', matchIds: [11, 12].map(girls) },
+          { id: 'semifinals', title: 'Semifinals & consolation', matchIds: [7, 8, 5, 6].map(girls) },
+          { id: 'placements', title: 'Final & placement matches', matchIds: [11, 12, 9, 10].map(girls) },
         ],
         edges: [
           edge(girls(1), girls(7)), edge(girls(2), girls(7)),
           edge(girls(3), girls(8)), edge(girls(4), girls(8)),
+          edge(girls(1), girls(5), 'loser'), edge(girls(2), girls(5), 'loser'),
+          edge(girls(3), girls(6), 'loser'), edge(girls(4), girls(6), 'loser'),
           edge(girls(7), girls(11)), edge(girls(8), girls(11)),
           edge(girls(7), girls(12), 'loser'), edge(girls(8), girls(12), 'loser'),
-        ],
-      },
-      {
-        id: 'placements', title: 'Fifth–eighth place',
-        description: 'Quarterfinal losers enter these consolation matches. Winners play for fifth; losers play for seventh.',
-        rounds: [
-          { id: 'consolation', title: 'Consolation matches', matchIds: [5, 6].map(girls) },
-          { id: 'placement-finals', title: 'Fifth & seventh place', matchIds: [9, 10].map(girls) },
-        ],
-        edges: [
           edge(girls(5), girls(9)), edge(girls(6), girls(9)),
           edge(girls(5), girls(10), 'loser'), edge(girls(6), girls(10), 'loser'),
         ],

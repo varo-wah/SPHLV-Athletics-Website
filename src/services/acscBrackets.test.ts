@@ -50,6 +50,43 @@ for (const definition of ACSC_BRACKETS) {
   });
 }
 
+for (const teamId of ['soccer-sma-boys', 'volleyball-sma-girls']) {
+  test(`${teamId}: one complete bracket keeps all eight teams connected through three four-match stages`, () => {
+    const bracket = acscBracketForTeam(teamId)!;
+    assert.equal(bracket.lanes.length, 1, 'championship and consolation must remain in one connected view');
+    const lane = bracket.lanes[0];
+    assert.deepEqual(lane.rounds.map(round => round.matchIds.length), [4, 4, 4]);
+    const matches = new Map(acscResultsForTeam(teamId)!.matches.map(match => [match.id, match]));
+    const participants = (ids: string[]) => ids.flatMap(id => {
+      const match = matches.get(id)!;
+      return [match.home, match.away];
+    }).sort();
+    const schools = participants(lane.rounds[0].matchIds);
+    assert.equal(new Set(schools).size, 8);
+
+    for (const [roundIndex, round] of lane.rounds.entries()) {
+      assert.deepEqual(participants(round.matchIds), schools, 'every team must appear exactly once in each stage');
+      for (const id of round.matchIds) {
+        const incoming = lane.edges.filter(edge => edge.to === id);
+        assert.equal(incoming.length, roundIndex === 0 ? 0 : 2, 'later matches need both visible feeder paths');
+        const outgoing = lane.edges.filter(edge => edge.from === id);
+        if (roundIndex === lane.rounds.length - 1) {
+          assert.equal(outgoing.length, 0, 'placement matches end the bracket');
+          continue;
+        }
+        assert.deepEqual(outgoing.map(edge => edge.outcome).sort(), ['loser', 'winner'], 'both winner and loser must continue, including quarterfinal losers');
+        for (const edge of outgoing) {
+          assert.ok(lane.rounds[roundIndex + 1].matchIds.includes(edge.to), 'each path must reach the next visible stage');
+          const school = resultSchool(matches.get(id)!, edge.outcome);
+          assert.ok(school, 'the source result must confirm the advancing participant');
+          const target = matches.get(edge.to)!;
+          assert.ok([target.home, target.away].includes(school), `${school} must continue from ${id} to its actual next match`);
+        }
+      }
+    }
+  });
+}
+
 test('boys volleyball keeps its exhibition separate and never invents missing playoff scores', () => {
   const bracket = acscBracketForTeam('volleyball-sma-boys')!;
   const exhibition = bracket.lanes.find(lane => lane.id === 'exhibition')!;
