@@ -3,11 +3,13 @@ import type { AcscCompetitionMatch, AcscCompetitionSnapshot } from '../data/acsc
 import { ACSC_LOGO, acscSchoolForName } from '../data/acscSchools';
 import { scheduleTimeLabel } from '../utils/scheduleTime';
 
-function School({ name }: { name: string }) {
+function School({ name, compact = false }: { name: string; compact?: boolean }) {
   const school = acscSchoolForName(name);
-  return <span className="inline-flex min-w-0 items-center gap-1.5">
-    {school && <img src={school.logo} alt="" className="h-5 w-5 shrink-0 rounded-full bg-white object-contain p-0.5" />}
-    <span>{school?.shortName ?? name}</span>
+  const label = compact && (school?.code === 'ICS-HK' || school?.code === 'ICS-BKK')
+    ? school.code.replace('-', ' ') : school?.shortName ?? name;
+  return <span className={`inline-flex min-w-0 max-w-full items-center ${compact ? 'gap-1' : 'gap-1.5'}`}>
+    {school && <img src={school.logo} alt="" className={`${compact ? 'h-4 w-4' : 'h-5 w-5'} shrink-0 rounded-full bg-white object-contain p-0.5`} />}
+    {compact ? <span className="truncate" title={school?.name ?? name}><span aria-hidden="true">{label}</span><span className="sr-only">{school?.name ?? name}</span></span> : <span>{label}</span>}
   </span>;
 }
 
@@ -62,21 +64,30 @@ export default function AcscCompetitionPanel({ teamId }: { teamId?: string }) {
       <ul className="space-y-2">{next.map(match => <Match key={match.id} match={match} snapshot={snapshot} />)}</ul>
     </div>}
     {snapshot.pools.map(pool => <div key={pool.name}>
-      <h3 className="mb-2 text-xs font-black uppercase tracking-wide">{pool.name} · {pool.complete ? 'Pool play complete' : snapshot.complete ? 'Official pool standings' : 'Results so far'}</h3>
+      <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+        <h3 className="text-xs font-black uppercase tracking-wide">{pool.name}</h3>
+        <span className="rounded-full bg-foreground/[0.05] px-2 py-1 text-[9px] font-semibold text-foreground/55">{pool.complete ? 'Pool play complete' : snapshot.complete ? 'Official pool standings' : 'Results so far'}</span>
+      </div>
       <div className="overflow-x-auto rounded-xl border border-border/10">
-        <table className="w-full text-left text-[11px]">
+        <table className="w-full min-w-[17rem] table-fixed text-[11px] tabular-nums">
           <caption className="sr-only">{pool.name} ACSC standings</caption>
+          <colgroup>
+            <col className="w-[22px]" /><col />
+            <col className="w-6" /><col className="w-6" />{snapshot.sport === 'Soccer' && <col className="w-6" />}<col className="w-6" />
+            <col className="w-11" />
+            {pool.rows.some(row => row.points !== undefined) && <col className="w-[30px]" />}
+          </colgroup>
           <thead className="bg-brand-maroon/5 text-[9px] uppercase text-foreground/60"><tr>
-            <th className="px-2 py-2" scope="col">#</th><th className="py-2" scope="col">School</th>
-            <th scope="col">P</th><th scope="col">W</th>{snapshot.sport === 'Soccer' && <th scope="col">D</th>}<th scope="col">L</th>
-            <th className="pr-2" scope="col">{snapshot.sport === 'Soccer' ? 'Goals' : 'Sets'}</th>
-            {pool.rows.some(row => row.points !== undefined) && <th className="pr-2" scope="col">Pts</th>}
+            <th className="py-2.5 text-center" scope="col" aria-label="Rank">#</th><th className="pl-1 text-left" scope="col">School</th>
+            <th className="text-center" scope="col" aria-label="Played">P</th><th className="text-center" scope="col" aria-label="Wins">W</th>{snapshot.sport === 'Soccer' && <th className="text-center" scope="col" aria-label="Draws">D</th>}<th className="text-center" scope="col" aria-label="Losses">L</th>
+            <th className="text-center" scope="col">{snapshot.sport === 'Soccer' ? 'Goals' : 'Sets'}</th>
+            {pool.rows.some(row => row.points !== undefined) && <th className="border-l border-border/10 text-center" scope="col" aria-label="Points">Pts</th>}
           </tr></thead>
           <tbody>{pool.rows.map(row => <tr key={row.school} className={`border-t border-border/10 ${row.school === 'SPH' ? 'bg-brand-maroon/[0.07] font-black' : 'font-semibold'}`}>
-            <td className="px-2 py-2">{row.rank ?? '—'}</td><th className="py-2 pr-2" scope="row"><School name={row.school} /></th>
-            <td>{row.played}</td><td>{row.wins}</td>{snapshot.sport === 'Soccer' && <td>{row.draws ?? 0}</td>}<td>{row.losses}</td>
-            <td className="pr-2 whitespace-nowrap">{row.forValue !== undefined && row.againstValue !== undefined ? `${row.forValue}–${row.againstValue}` : '—'}</td>
-            {pool.rows.some(item => item.points !== undefined) && <td className="pr-2">{row.points ?? '—'}</td>}
+            <td className="py-2.5 text-center text-foreground/60">{row.rank ?? '—'}</td><th className="py-2.5 pl-1 pr-1 text-left" scope="row"><School name={row.school} compact /></th>
+            <td className="text-center">{row.played}</td><td className="text-center">{row.wins}</td>{snapshot.sport === 'Soccer' && <td className="text-center">{row.draws ?? 0}</td>}<td className="text-center">{row.losses}</td>
+            <td className="whitespace-nowrap text-center">{row.forValue !== undefined && row.againstValue !== undefined ? `${row.forValue}–${row.againstValue}` : '—'}</td>
+            {pool.rows.some(item => item.points !== undefined) && <td className="border-l border-border/10 text-center font-black">{row.points ?? '—'}</td>}
           </tr>)}</tbody>
         </table>
       </div>
