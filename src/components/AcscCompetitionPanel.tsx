@@ -2,6 +2,7 @@ import { acscMatchFinished, acscResultsForTeam } from '../data/acscCompetitionRe
 import type { AcscCompetitionMatch, AcscCompetitionSnapshot } from '../data/acscCompetitionTypes';
 import { ACSC_LOGO, acscSchoolForName } from '../data/acscSchools';
 import { scheduleTimeLabel } from '../utils/scheduleTime';
+import AcscBracket from './AcscBracket';
 
 function School({ name, compact = false }: { name: string; compact?: boolean }) {
   const school = acscSchoolForName(name);
@@ -92,8 +93,9 @@ export default function AcscCompetitionPanel({ teamId }: { teamId?: string }) {
         </table>
       </div>
     </div>)}
-    <details open className="rounded-xl border border-border/10 p-3">
-      <summary className="cursor-pointer text-xs font-black uppercase">Playoff bracket</summary>
+    <AcscBracket key={snapshot.teamId} snapshot={snapshot} />
+    <details className="rounded-xl border border-border/10 p-3">
+      <summary className="cursor-pointer text-xs font-black uppercase">Playoff match list</summary>
       <p className="my-2 text-[10px] leading-relaxed text-foreground/60">{snapshot.complete ? 'Tournament complete. Unpublished or conflicting scores remain unreported.' : 'Winner and loser labels are conditional. A scheduled match is not a confirmed result.'}</p>
       <ul className="space-y-2">{playoffs.map(match => <Match key={match.id} match={match} snapshot={snapshot} />)}</ul>
     </details>
