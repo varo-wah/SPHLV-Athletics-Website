@@ -1,16 +1,152 @@
 import type { AcscCompetitionSnapshot } from './acscCompetitionTypes';
 
-/** Verified against all 56 reciprocal pool cells and the official seeded bracket. */
+/** Verified pool records retained; all playoff scores and final awards reviewed October 26. */
 export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
   "tournamentId": "acsc-volleyball-girls-2026",
   "teamId": "volleyball-sma-girls",
   "sport": "Volleyball",
-  "verifiedAt": "2026-10-22T22:38:24.393396+00:00",
-  "sourceUrl": "https://docs.google.com/presentation/d/e/2PACX-1vSLWBGWjob-QNBz7M9DLfXW0MOLF1jZMnP5IlPTKyaBJOkjjWqFWVLqCGz9KLupzGa8MBATe_J9x_BC/pub?start=false&loop=false&delayms=3000",
-  "sourceLabel": "Official ACSC girls volleyball round-robin results",
+  "verifiedAt": "2026-10-26T05:46:56.906890+00:00",
+  "sourceUrl": "https://acscconference.com/girls-volleyball/",
+  "sourceLabel": "Official ACSC girls volleyball results and awards",
   "timeZone": "Asia/Bangkok",
-  "summary": "SPH finished the round robin in seventh place (2–5). The quarterfinal is against Morrison on October 23 at 18:00, Court 1.",
-  "caveat": "Round-robin results are complete. Playoff results are not yet confirmed; semifinal and placement opponents remain conditional.",
+  "summary": "SPH finished sixth and received the Sportsmanship Award. Samantha Chai was selected to the All-Tournament Team.",
+  "caveat": "Individual playoff set points have not been published.",
+  "complete": true,
+  "finalPlacements": [
+    {
+      "school": "ICS-BKK",
+      "rank": 1
+    },
+    {
+      "school": "MORRISON",
+      "rank": 2
+    },
+    {
+      "school": "YISS",
+      "rank": 3
+    },
+    {
+      "school": "DALAT",
+      "rank": 4
+    },
+    {
+      "school": "ICS-HK",
+      "rank": 5
+    },
+    {
+      "school": "SPH",
+      "rank": 6
+    },
+    {
+      "school": "GIS",
+      "rank": 7
+    },
+    {
+      "school": "FAITH",
+      "rank": 8
+    }
+  ],
+  "awards": [
+    {
+      "school": "ICS-BKK",
+      "label": "MVP",
+      "recipient": "Vivi Sojoeiya"
+    },
+    {
+      "school": "DALAT",
+      "label": "Top Hitter",
+      "recipient": "Clarise Yeoh"
+    },
+    {
+      "school": "MORRISON",
+      "label": "Top Passer",
+      "recipient": "Amy Yen"
+    },
+    {
+      "school": "YISS",
+      "label": "Top Server",
+      "recipient": "Hanna An"
+    },
+    {
+      "school": "YISS",
+      "label": "Top Setter",
+      "recipient": "Chloe Smith"
+    },
+    {
+      "school": "ICS-HK",
+      "label": "Top Blocker",
+      "recipient": "Lyanne Shudzeka"
+    },
+    {
+      "school": "SPH",
+      "label": "Sportsmanship Award"
+    },
+    {
+      "school": "ICS-BKK",
+      "label": "All-Tournament Team",
+      "recipient": "Vivi Sojoeiya"
+    },
+    {
+      "school": "ICS-BKK",
+      "label": "All-Tournament Team",
+      "recipient": "Rini Liu"
+    },
+    {
+      "school": "ICS-BKK",
+      "label": "All-Tournament Team",
+      "recipient": "Kullayana Caudell"
+    },
+    {
+      "school": "MORRISON",
+      "label": "All-Tournament Team",
+      "recipient": "Tien Huang"
+    },
+    {
+      "school": "MORRISON",
+      "label": "All-Tournament Team",
+      "recipient": "Anne Lo"
+    },
+    {
+      "school": "MORRISON",
+      "label": "All-Tournament Team",
+      "recipient": "Kylea Messimer"
+    },
+    {
+      "school": "YISS",
+      "label": "All-Tournament Team",
+      "recipient": "Jiyu Lee"
+    },
+    {
+      "school": "YISS",
+      "label": "All-Tournament Team",
+      "recipient": "Jaelyn Koo"
+    },
+    {
+      "school": "DALAT",
+      "label": "All-Tournament Team",
+      "recipient": "Clarise Yeoh"
+    },
+    {
+      "school": "ICS-HK",
+      "label": "All-Tournament Team",
+      "recipient": "Emmy Leung-Shea"
+    },
+    {
+      "school": "SPH",
+      "label": "All-Tournament Team",
+      "recipient": "Samantha Chai"
+    },
+    {
+      "school": "GIS",
+      "label": "All-Tournament Team",
+      "recipient": "Amy Bowers"
+    },
+    {
+      "school": "FAITH",
+      "label": "All-Tournament Team",
+      "recipient": "Naya Gumpal"
+    }
+  ],
   "pools": [
     {
       "name": "Round robin",
@@ -561,8 +697,8 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "kind": "playoff",
       "home": "ICS-BKK",
       "away": "GIS",
-      "homeScore": null,
-      "awayScore": null,
+      "homeScore": 3,
+      "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 1"
     },
     {
@@ -573,8 +709,8 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "kind": "playoff",
       "home": "DALAT",
       "away": "ICS-HK",
-      "homeScore": null,
-      "awayScore": null,
+      "homeScore": 3,
+      "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 2"
     },
     {
@@ -585,8 +721,8 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "kind": "playoff",
       "home": "MORRISON",
       "away": "SPH",
-      "homeScore": null,
-      "awayScore": null,
+      "homeScore": 3,
+      "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 1",
       "fixtureId": "acsc-volleyball-girls-2026-quarterfinal"
     },
@@ -598,8 +734,8 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "kind": "playoff",
       "home": "YISS",
       "away": "FAITH",
-      "homeScore": null,
-      "awayScore": null,
+      "homeScore": 3,
+      "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 2"
     },
     {
@@ -608,12 +744,11 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "08:00",
       "stage": "Consolation · G5",
       "kind": "playoff",
-      "home": "Loser G1",
-      "away": "Loser G2",
-      "homeScore": null,
-      "awayScore": null,
-      "venue": "International Community School, Bangkok, Thailand · Court 1",
-      "notes": "Participants depend on earlier playoff results. Times are Bangkok local (UTC+7), the same as Jakarta."
+      "home": "GIS",
+      "away": "ICS-HK",
+      "homeScore": 1,
+      "awayScore": 2,
+      "venue": "International Community School, Bangkok, Thailand · Court 1"
     },
     {
       "id": "acsc-girls-volleyball-2026-g6",
@@ -621,12 +756,12 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "08:00",
       "stage": "Consolation · G6",
       "kind": "playoff",
-      "home": "Loser G3",
-      "away": "Loser G4",
-      "homeScore": null,
-      "awayScore": null,
+      "home": "SPH",
+      "away": "FAITH",
+      "homeScore": 2,
+      "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 2",
-      "notes": "Participants depend on earlier playoff results. Times are Bangkok local (UTC+7), the same as Jakarta."
+      "fixtureId": "acsc-volleyball-girls-2026-semifinal-consolation"
     },
     {
       "id": "acsc-girls-volleyball-2026-g7",
@@ -634,12 +769,11 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "09:30",
       "stage": "Semifinal · G7",
       "kind": "playoff",
-      "home": "Winner G1",
-      "away": "Winner G2",
-      "homeScore": null,
-      "awayScore": null,
-      "venue": "International Community School, Bangkok, Thailand · Court 1",
-      "notes": "Participants depend on earlier playoff results. Times are Bangkok local (UTC+7), the same as Jakarta."
+      "home": "ICS-BKK",
+      "away": "DALAT",
+      "homeScore": 3,
+      "awayScore": 1,
+      "venue": "International Community School, Bangkok, Thailand · Court 1"
     },
     {
       "id": "acsc-girls-volleyball-2026-g8",
@@ -647,12 +781,11 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "09:30",
       "stage": "Semifinal · G8",
       "kind": "playoff",
-      "home": "Winner G3",
-      "away": "Winner G4",
-      "homeScore": null,
-      "awayScore": null,
-      "venue": "International Community School, Bangkok, Thailand · Court 2",
-      "notes": "Participants depend on earlier playoff results. Times are Bangkok local (UTC+7), the same as Jakarta."
+      "home": "MORRISON",
+      "away": "YISS",
+      "homeScore": 3,
+      "awayScore": 1,
+      "venue": "International Community School, Bangkok, Thailand · Court 2"
     },
     {
       "id": "acsc-girls-volleyball-2026-g9",
@@ -660,12 +793,12 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "12:00",
       "stage": "5th/6th place · G9",
       "kind": "playoff",
-      "home": "Winner G5",
-      "away": "Winner G6",
-      "homeScore": null,
-      "awayScore": null,
+      "home": "SPH",
+      "away": "ICS-HK",
+      "homeScore": 2,
+      "awayScore": 3,
       "venue": "International Community School, Bangkok, Thailand · Court 1",
-      "notes": "Participants depend on earlier playoff results. Times are Bangkok local (UTC+7), the same as Jakarta."
+      "fixtureId": "acsc-volleyball-girls-2026-final-placement"
     },
     {
       "id": "acsc-girls-volleyball-2026-g10",
@@ -673,12 +806,11 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "12:00",
       "stage": "7th/8th place · G10",
       "kind": "playoff",
-      "home": "Loser G5",
-      "away": "Loser G6",
-      "homeScore": null,
-      "awayScore": null,
-      "venue": "International Community School, Bangkok, Thailand · Court 2",
-      "notes": "Participants depend on earlier playoff results. Times are Bangkok local (UTC+7), the same as Jakarta."
+      "home": "FAITH",
+      "away": "GIS",
+      "homeScore": 0,
+      "awayScore": 3,
+      "venue": "International Community School, Bangkok, Thailand · Court 2"
     },
     {
       "id": "acsc-girls-volleyball-2026-g11",
@@ -686,12 +818,11 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "13:30",
       "stage": "Championship · G11",
       "kind": "playoff",
-      "home": "Winner G7",
-      "away": "Winner G8",
-      "homeScore": null,
-      "awayScore": null,
-      "venue": "International Community School, Bangkok, Thailand · Court 1",
-      "notes": "Participants depend on earlier playoff results. Times are Bangkok local (UTC+7), the same as Jakarta."
+      "home": "ICS-BKK",
+      "away": "MORRISON",
+      "homeScore": 3,
+      "awayScore": 1,
+      "venue": "International Community School, Bangkok, Thailand · Court 1"
     },
     {
       "id": "acsc-girls-volleyball-2026-g12",
@@ -699,12 +830,11 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "13:30",
       "stage": "3rd/4th place · G12",
       "kind": "playoff",
-      "home": "Loser G7",
-      "away": "Loser G8",
-      "homeScore": null,
-      "awayScore": null,
-      "venue": "International Community School, Bangkok, Thailand · Court 2",
-      "notes": "Participants depend on earlier playoff results. Times are Bangkok local (UTC+7), the same as Jakarta."
+      "home": "DALAT",
+      "away": "YISS",
+      "homeScore": 1,
+      "awayScore": 3,
+      "venue": "International Community School, Bangkok, Thailand · Court 2"
     }
   ]
 };

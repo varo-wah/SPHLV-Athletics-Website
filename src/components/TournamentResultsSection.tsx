@@ -8,6 +8,17 @@ const basketballCupFinals: Record<string, string> = {
   'basketball-smp-boys': '2026-boys-basketball-cup-final',
   'basketball-smp-girls': '2026-girls-basketball-cup-final',
 };
+const basketballJaacFinals: Record<string, string> = {
+  'basketball-smp-boys': '2026-boys-basketball-jaac-final',
+  'basketball-smp-girls': '2026-girls-basketball-jaac-final',
+};
+
+function finalSummary(match: SheetMatch): string {
+  const dateLabel = match.date
+    ? new Date(`${match.date}T12:00:00+07:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'Asia/Jakarta' })
+    : 'Match date to be confirmed';
+  return `${dateLabel} · Final: SPH-LV ${match.scoreFor}–${match.scoreAgainst} ${match.opponent}`;
+}
 
 // Keep these separate from completed match scores and regular-season standings.
 export default function TournamentResultsSection({ teamId, matches = [] }: { teamId?: string; matches?: readonly SheetMatch[] } = {}) {
@@ -19,6 +30,13 @@ export default function TournamentResultsSection({ teamId, matches = [] }: { tea
     && match.status === 'Finished'
     && (match.result === 'W' || match.result === 'L')
     && match.scoreFor !== null && match.scoreAgainst !== null);
+  const jaacFinal = matches.find(match => match.teamId === teamId
+    && match.reviewedFixtureId === basketballJaacFinals[teamId ?? '']
+    && match.reviewedFixtureId !== undefined && match.status === 'Finished'
+    && (match.result === 'W' || match.result === 'L')
+    && match.scoreFor !== null && match.scoreAgainst !== null);
+  const acscRank = acsc?.finalPlacements?.find(row => row.school === 'SPH')?.rank;
+  const acscPlacement = acscRank === 1 ? 'Champions' : acscRank === 2 ? 'Runner-up' : acscRank === 3 ? '3rd place' : acscRank ? `${acscRank}th place` : acsc?.complete ? 'Placement unconfirmed' : 'In progress';
   let cupPlacement = 'Pending';
   let cupSummary = 'Final placement will be posted after the tournament.';
   if (teamId === 'soccer-sma-boys') {
@@ -29,10 +47,7 @@ export default function TournamentResultsSection({ teamId, matches = [] }: { tea
     cupSummary = 'September 28–29, 2026 · 3 wins, 1 loss';
   } else if (basketballFinal) {
     cupPlacement = basketballFinal.result === 'W' ? 'Champions' : 'Runner-up';
-    const dateLabel = basketballFinal.date
-      ? new Date(`${basketballFinal.date}T12:00:00+07:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'Asia/Jakarta' })
-      : 'Match date to be confirmed';
-    cupSummary = `${dateLabel} · Final: SPH-LV ${basketballFinal.scoreFor}–${basketballFinal.scoreAgainst} ${basketballFinal.opponent}`;
+    cupSummary = finalSummary(basketballFinal);
   }
   return (
     <section className="mt-8 space-y-4" aria-label="Tournament results">
@@ -64,15 +79,15 @@ export default function TournamentResultsSection({ teamId, matches = [] }: { tea
                   {name}
                 </p>
                 <p className="mt-0.5 text-lg font-black uppercase tracking-tight text-foreground">
-                  {name === 'SPH Cup' ? cupPlacement : name === 'ACSC' && acsc ? 'In progress' : 'Pending'}
+                  {name === 'SPH Cup' ? cupPlacement : name === 'ACSC' && acsc ? acscPlacement : name === 'JAAC' && jaacFinal ? jaacFinal.result === 'W' ? 'Champions' : 'Runner-up' : 'Pending'}
                 </p>
                 <p className="mt-1 text-[11px] font-semibold leading-relaxed text-foreground/48">
-                  {name === 'SPH Cup' ? cupSummary : 'Final placement will be posted after the tournament.'}
+                  {name === 'SPH Cup' ? cupSummary : name === 'JAAC' && jaacFinal ? finalSummary(jaacFinal) : name === 'ACSC' && acsc?.complete ? 'October 21–24, 2026 · Tournament complete' : 'Final placement will be posted after the tournament.'}
                 </p>
                 {name === 'ACSC' && acsc && (
                   <div className="mt-2 space-y-1 text-[11px] font-semibold leading-relaxed text-foreground/55">
                     <p>{acsc.summary}</p>
-                    <p>Pool standings and playoff fixtures are shown above.</p>
+                    <p>{acsc.complete ? 'Final standings, match results and awards are shown above.' : 'Pool standings and playoff fixtures are shown above.'}</p>
                   </div>
                 )}
               </div>

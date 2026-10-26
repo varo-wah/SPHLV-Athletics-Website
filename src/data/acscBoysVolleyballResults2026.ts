@@ -1,24 +1,56 @@
 import type { AcscCompetitionSnapshot } from './acscCompetitionTypes';
 
-/** Official scores and published standings, checked against reciprocal result cells. */
+/** Official final placements and rankings; unreported or conflicting scores stay null. */
 export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
   "tournamentId": "acsc-volleyball-boys-2026",
   "teamId": "volleyball-sma-boys",
   "sport": "Volleyball",
-  "verifiedAt": "2026-10-23T05:38:15+07:00",
-  "sourceUrl": "https://docs.google.com/presentation/d/e/2PACX-1vT5T1iY8F2mhmVMm4osYIKsWYvNSNQwFuJPb8Wi_m8SgcqWPDZAvWYTnMWnKT8bugpYATnhcQSvQHkY/pub?start=true&loop=true&delayms=3000",
-  "sourceLabel": "Official ACSC boys volleyball pools and standings",
+  "verifiedAt": "2026-10-26T12:48:07+07:00",
+  "sourceUrl": "https://docs.google.com/presentation/d/e/2PACX-1vT7sCekOMtJPrF8ylZKbmAfD89OFTOTzrwckWCtLgivIz_rVqaXzBVkgBHe4eiCfoh_rEC5z8zGMmiS/pub?start=false&loop=false&delayms=3000",
+  "sourceLabel": "Official ACSC boys volleyball results and awards",
   "timeZone": "Asia/Hong_Kong",
-  "summary": "18 of 21 round-robin results are posted. SPH is 0–5; its remaining pool match is against ICS Bangkok on October 23.",
-  "caveat": "Final seeds and SPH playoff opponents are not confirmed. Some official playoff times and courts disagree and are marked to be confirmed. Set points are omitted where the source is inconsistent.",
+  "summary": "SPH finished seventh at ACSC boys volleyball. Paul Schleper was named to the All-Tournament team.",
+  "caveat": "Final placements and round-robin rankings are official. The Grace–Dalat pool score conflicts with the final standings and is withheld. Unpublished playoff scores and disputed historical times remain unconfirmed.",
   "pools": [
     {
-      "name": "Round-robin",
+      "name": "Final round-robin rankings",
       "complete": false,
       "rows": [
         {
+          "school": "FAITH",
+          "rank": 1,
+          "played": 6,
+          "wins": 6,
+          "losses": 0,
+          "points": 18
+        },
+        {
+          "school": "YISS",
+          "rank": 2,
+          "played": 6,
+          "wins": 5,
+          "losses": 1,
+          "points": 15
+        },
+        {
+          "school": "DALAT",
+          "rank": 3,
+          "played": 6,
+          "wins": 4,
+          "losses": 2,
+          "points": 12
+        },
+        {
+          "school": "GIS",
+          "rank": 4,
+          "played": 6,
+          "wins": 3,
+          "losses": 3,
+          "points": 9
+        },
+        {
           "school": "ICS-HK",
-          "rank": null,
+          "rank": 5,
           "played": 6,
           "wins": 2,
           "losses": 4,
@@ -26,51 +58,19 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
         },
         {
           "school": "ICS-BKK",
-          "rank": null,
-          "played": 5,
-          "wins": 0,
+          "rank": 6,
+          "played": 6,
+          "wins": 1,
           "losses": 5,
-          "points": 0
-        },
-        {
-          "school": "GIS",
-          "rank": null,
-          "played": 5,
-          "wins": 3,
-          "losses": 2,
-          "points": 9
-        },
-        {
-          "school": "YISS",
-          "rank": null,
-          "played": 5,
-          "wins": 5,
-          "losses": 0,
-          "points": 15
+          "points": 3
         },
         {
           "school": "SPH",
-          "rank": null,
-          "played": 5,
+          "rank": 7,
+          "played": 6,
           "wins": 0,
-          "losses": 5,
+          "losses": 6,
           "points": 0
-        },
-        {
-          "school": "DALAT",
-          "rank": null,
-          "played": 5,
-          "wins": 3,
-          "losses": 2,
-          "points": 9
-        },
-        {
-          "school": "FAITH",
-          "rank": null,
-          "played": 5,
-          "wins": 5,
-          "losses": 0,
-          "points": 15
         }
       ]
     }
@@ -305,10 +305,9 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "kind": "pool",
       "home": "YISS",
       "away": "FAITH",
-      "homeScore": null,
-      "awayScore": null,
-      "venue": "International Christian School, Hong Kong · UG",
-      "notes": "Result not yet posted in the verified official pool snapshot."
+      "homeScore": 0,
+      "awayScore": 2,
+      "venue": "International Christian School, Hong Kong · UG"
     },
     {
       "id": "acsc-bvb-2026-pool-ics-bkk-sph",
@@ -318,11 +317,10 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "kind": "pool",
       "home": "ICS-BKK",
       "away": "SPH",
-      "homeScore": null,
-      "awayScore": null,
+      "homeScore": 2,
+      "awayScore": 0,
       "venue": "International Christian School, Hong Kong · LG",
-      "fixtureId": "acsc-volleyball-boys-2026-round-7",
-      "notes": "Result not yet posted in the verified official pool snapshot."
+      "fixtureId": "acsc-volleyball-boys-2026-round-7"
     },
     {
       "id": "acsc-bvb-2026-pool-gis-dalat",
@@ -335,7 +333,7 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong · UG",
-      "notes": "Result not yet posted in the verified official pool snapshot."
+      "notes": "Score withheld: the official matrix says Grace 2–0 Dalat, but the final GP/W/L table and playoff seeding indicate a Dalat win. Host confirmation is needed."
     },
     {
       "id": "acsc-bvb-2026-playoff-1",
@@ -343,11 +341,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "13:00",
       "stage": "Playoffs · M1",
       "kind": "playoff",
-      "home": "Seed #4",
-      "away": "Seed #5",
+      "home": "GIS",
+      "away": "ICS-HK",
       "homeScore": null,
       "awayScore": null,
-      "venue": "International Christian School, Hong Kong · LG"
+      "venue": "International Christian School, Hong Kong · UG",
+      "notes": "Named pairing verified in the final official bracket; exact score not published."
     },
     {
       "id": "acsc-bvb-2026-playoff-2",
@@ -355,11 +354,13 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "13:00",
       "stage": "Playoffs · M2",
       "kind": "playoff",
-      "home": "Seed #2",
-      "away": "Seed #7",
+      "home": "YISS",
+      "away": "SPH",
       "homeScore": null,
       "awayScore": null,
-      "venue": "International Christian School, Hong Kong · UG"
+      "venue": "International Christian School, Hong Kong · LG",
+      "notes": "Named pairing verified in the final official bracket; exact score not published.",
+      "fixtureId": "acsc-volleyball-boys-2026-seeding"
     },
     {
       "id": "acsc-bvb-2026-playoff-3",
@@ -367,11 +368,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "14:15",
       "stage": "Playoffs · M3",
       "kind": "playoff",
-      "home": "Seed #3",
-      "away": "Seed #6",
+      "home": "DALAT",
+      "away": "ICS-BKK",
       "homeScore": null,
       "awayScore": null,
-      "venue": "International Christian School, Hong Kong · LG"
+      "venue": "International Christian School, Hong Kong · LG",
+      "notes": "Named pairing verified in the final official bracket; exact score not published."
     },
     {
       "id": "acsc-bvb-2026-playoff-4",
@@ -379,12 +381,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "14:15",
       "stage": "Playoffs · M4",
       "kind": "playoff",
-      "home": "Seed #1",
-      "away": "Winner M1",
+      "home": "FAITH",
+      "away": "ICS-HK",
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong",
-      "notes": "Court to be confirmed: the official schedule lists UG; the bracket lists LG."
+      "notes": "Named pairing verified in the final official bracket; exact score not published. Court to be confirmed: the official schedule lists UG; the bracket lists LG."
     },
     {
       "id": "acsc-bvb-2026-playoff-5",
@@ -392,12 +394,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "15:45",
       "stage": "Playoffs · M5",
       "kind": "playoff",
-      "home": "Winner M2",
-      "away": "Winner M3",
+      "home": "YISS",
+      "away": "DALAT",
       "homeScore": null,
       "awayScore": null,
-      "venue": "International Christian School, Hong Kong",
-      "notes": "Court to be confirmed: the official schedule lists UG; the bracket lists LG."
+      "venue": "International Christian School, Hong Kong · UG",
+      "notes": "Named pairing verified in the final official bracket; exact score not published."
     },
     {
       "id": "acsc-bvb-2026-playoff-7",
@@ -405,11 +407,13 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "15:45",
       "stage": "Playoffs · M7",
       "kind": "playoff",
-      "home": "Loser M2",
-      "away": "Loser M3",
+      "home": "SPH",
+      "away": "ICS-BKK",
       "homeScore": null,
       "awayScore": null,
-      "venue": "International Christian School, Hong Kong · LG"
+      "venue": "International Christian School, Hong Kong · LG",
+      "notes": "Seventh-place elimination match. SPH finished seventh according to the official awards; the exact match score is not published in the bracket.",
+      "fixtureId": "acsc-volleyball-boys-2026-consolation"
     },
     {
       "id": "acsc-bvb-2026-playoff-8",
@@ -417,11 +421,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "08:00",
       "stage": "Playoffs · M8",
       "kind": "playoff",
-      "home": "Loser M4",
-      "away": "Winner M7",
+      "home": "ICS-BKK",
+      "away": "ICS-HK",
       "homeScore": null,
       "awayScore": null,
-      "venue": "International Christian School, Hong Kong · LG"
+      "venue": "International Christian School, Hong Kong · LG",
+      "notes": "Named pairing verified in the final official bracket; exact score not published."
     },
     {
       "id": "acsc-bvb-2026-playoff-9",
@@ -429,11 +434,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "08:00",
       "stage": "Playoffs · M9",
       "kind": "playoff",
-      "home": "Loser M1",
-      "away": "Loser M5",
+      "home": "GIS",
+      "away": "YISS",
       "homeScore": null,
       "awayScore": null,
-      "venue": "International Christian School, Hong Kong · UG"
+      "venue": "International Christian School, Hong Kong · UG",
+      "notes": "Named pairing verified in the final official bracket; exact score not published."
     },
     {
       "id": "acsc-bvb-2026-playoff-6",
@@ -441,12 +447,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "09:30",
       "stage": "Playoffs · M6",
       "kind": "playoff",
-      "home": "Winner M4",
-      "away": "Winner M5",
+      "home": "FAITH",
+      "away": "DALAT",
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong · UG",
-      "notes": "Best of five sets."
+      "notes": "Named pairing verified in the final official bracket; exact score not published. Best of five sets."
     },
     {
       "id": "acsc-bvb-2026-playoff-10",
@@ -454,11 +460,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "11:00",
       "stage": "Playoffs · M10",
       "kind": "playoff",
-      "home": "Loser M8",
-      "away": "Loser M9",
+      "home": "ICS-BKK",
+      "away": "YISS",
       "homeScore": null,
       "awayScore": null,
-      "venue": "International Christian School, Hong Kong · UG"
+      "venue": "International Christian School, Hong Kong · UG",
+      "notes": "Named pairing verified in the final official bracket; exact score not published."
     },
     {
       "id": "acsc-bvb-2026-playoff-11",
@@ -466,12 +473,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "12:30",
       "stage": "Playoffs · M11",
       "kind": "playoff",
-      "home": "Winner M8",
-      "away": "Winner M9",
+      "home": "ICS-HK",
+      "away": "GIS",
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong",
-      "notes": "Court to be confirmed: the official schedule lists LG; the bracket lists UG."
+      "notes": "Named pairing verified in the final official bracket; exact score not published. Court to be confirmed: the official schedule lists LG; the bracket lists UG."
     },
     {
       "id": "acsc-bvb-2026-playoff-12",
@@ -479,12 +486,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": null,
       "stage": "Playoffs · M12",
       "kind": "playoff",
-      "home": "Loser M6",
-      "away": "Winner M11",
+      "home": "DALAT",
+      "away": "GIS",
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong · UG",
-      "notes": "Best of five sets. Start time to be confirmed: official schedule 12:30; bracket 14:00 Hong Kong time."
+      "notes": "Named pairing verified in the final official bracket; exact score not published. Best of five sets. Start time to be confirmed: official schedule 12:30; bracket 14:00 Hong Kong time."
     },
     {
       "id": "acsc-bvb-2026-playoff-13",
@@ -492,12 +499,12 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": null,
       "stage": "Championship · M13",
       "kind": "playoff",
-      "home": "Winner M6",
-      "away": "Winner M12",
+      "home": "FAITH",
+      "away": "DALAT",
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong · UG",
-      "notes": "Championship, best of five sets. Start time to be confirmed: official schedule 15:30; bracket 16:00 Hong Kong time."
+      "notes": "Named pairing verified in the final official bracket; exact score not published. Championship, best of five sets. Start time to be confirmed: official schedule 15:30; bracket 16:00 Hong Kong time."
     },
     {
       "id": "acsc-bvb-2026-playoff-exhibition",
@@ -505,12 +512,51 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "time": "14:00",
       "stage": "Exhibition",
       "kind": "playoff",
-      "home": "Loser M7",
-      "away": "Loser M10",
+      "home": "SPH",
+      "away": "ICS-BKK",
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong · UG",
-      "notes": "Exhibition match."
+      "notes": "Exhibition pairing verified in the final official bracket; exact score not published. This does not change final placement.",
+      "fixtureId": "acsc-volleyball-boys-2026-playoffs-placement"
+    }
+  ],
+  "complete": true,
+  "finalPlacements": [
+    {
+      "school": "FAITH",
+      "rank": 1
+    },
+    {
+      "school": "DALAT",
+      "rank": 2
+    },
+    {
+      "school": "GIS",
+      "rank": 3
+    },
+    {
+      "school": "ICS-HK",
+      "rank": 4
+    },
+    {
+      "school": "YISS",
+      "rank": 5
+    },
+    {
+      "school": "ICS-BKK",
+      "rank": 6
+    },
+    {
+      "school": "SPH",
+      "rank": 7
+    }
+  ],
+  "awards": [
+    {
+      "school": "SPH",
+      "label": "All-Tournament",
+      "recipient": "Paul Schleper"
     }
   ]
 };
