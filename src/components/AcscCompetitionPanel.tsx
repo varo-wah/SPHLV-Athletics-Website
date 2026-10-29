@@ -60,6 +60,26 @@ export default function AcscCompetitionPanel({ teamId }: { teamId?: string }) {
         <p className="mt-1 text-foreground/60">{award.label}</p>
       </li>)}</ul>
     </div>}
+    {snapshot.playerStats && <div className="max-w-md">
+      <h3 className="mb-2 text-xs font-black uppercase tracking-wide">{snapshot.playerStats.label}</h3>
+      <div className="overflow-hidden rounded-xl border border-border/10">
+        <table className="w-full table-fixed text-xs tabular-nums">
+          <caption className="sr-only">{snapshot.playerStats.label}</caption>
+          <colgroup><col /><col className="w-16" /><col className="w-16" /></colgroup>
+          <thead className="bg-brand-maroon/5 text-[10px] uppercase text-foreground/60"><tr>
+            <th scope="col" className="px-3 py-2 text-left">Player</th>
+            <th scope="col" className="py-2 text-center">Goals</th>
+            <th scope="col" className="py-2 text-center">Assists</th>
+          </tr></thead>
+          <tbody>{snapshot.playerStats.players.map(player => <tr key={player.name} className="border-t border-border/10">
+            <th scope="row" className="px-3 py-2 text-left font-semibold">{player.name}</th>
+            <td className="py-2 text-center font-bold">{player.goals ?? <span aria-label="Not reported">—</span>}</td>
+            <td className="py-2 text-center font-bold">{player.assists ?? <span aria-label="Not reported">—</span>}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+      <p className="mt-2 text-[10px] leading-relaxed text-foreground/55">{snapshot.playerStats.sourceLabel}. — = not reported.</p>
+    </div>}
     {next.length > 0 && <div>
       <h3 className="mb-2 text-xs font-black uppercase tracking-wide">Confirmed SPH fixtures</h3>
       <ul className="space-y-2">{next.map(match => <Match key={match.id} match={match} snapshot={snapshot} />)}</ul>

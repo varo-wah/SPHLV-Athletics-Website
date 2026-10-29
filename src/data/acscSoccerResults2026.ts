@@ -465,6 +465,19 @@ export const ACSC_SOCCER_RESULTS: AcscCompetitionSnapshot = {
       "rank": 8
     }
   ],
+  "playerStats": {
+    "label": "Reported ACSC player totals",
+    "sourceLabel": "Mark Heil · GameDay Summaries · 26 October 2026",
+    "reportedAt": "2026-10-26T19:14:00+07:00",
+    "players": [
+      { "name": "Troy Biantoro", "goals": 4 },
+      { "name": "Tobin Soelystio", "goals": 1 },
+      { "name": "Kenzo Stanley", "goals": 2 },
+      { "name": "Ben Yulianto", "goals": 1 },
+      { "name": "Yusang Chon", "goals": 1, "assists": 2 },
+      { "name": "Deven", "assists": 1 }
+    ]
+  },
   "awards": [
     {
       "school": "SPH",

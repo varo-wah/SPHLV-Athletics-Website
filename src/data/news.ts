@@ -17,6 +17,9 @@ import jasonSuhendraPlayerOfWeek from '../assets/news/jason-suhendra-player-of-w
 import nicolyneAliannaPlayerOfWeek from '../assets/news/nicolyne-alianna-player-of-week.jpg';
 import shernyLimPlayerOfWeek from '../assets/news/sherny-lim-player-of-week.jpg';
 import troyMihardjaBiantoroPlayerOfWeek from '../assets/news/troy-mihardja-biantoro-player-of-week.jpg';
+import samanthaChaiAcsc from '../assets/news/samantha-chai-acsc-all-tournament-2026.png';
+import paulSchleperAcsc from '../assets/news/paul-schleper-acsc-all-tournament-2026.png';
+import solomonSchleperAcsc from '../assets/news/solomon-schleper-acsc-all-tournament-2026.png';
 
 export type NewsPublicationChannel = 'published' | 'prototype';
 
@@ -55,6 +58,29 @@ export interface NewsArticle {
 }
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
+  {
+    id: '2026-10-29-acsc-all-tournament', title: 'ACSC All-Tournament Honours: Samantha, Paul and Solomon',
+    publishedAt: '2026-10-29', dateLabel: 'OCTOBER 29, 2026', category: 'ACSC AWARDS',
+    excerpt: 'Samantha Chai, Paul Schleper and Solomon Schleper earned All-Tournament recognition at ACSC.',
+    image: samanthaChaiAcsc, imageAlt: 'Samantha Chai ACSC All-Tournament poster',
+    body: ['Congratulations to Samantha Chai (girls volleyball), Paul Schleper (boys volleyball) and Solomon Schleper (boys soccer) on their ACSC All-Tournament selections. Their award posters are featured here.'],
+    posterImages: [
+      { src: samanthaChaiAcsc, alt: 'Samantha Chai · ACSC Girls Volleyball All-Tournament' },
+      { src: paulSchleperAcsc, alt: 'Paul Schleper · ACSC Boys Volleyball All-Tournament' },
+      { src: solomonSchleperAcsc, alt: 'Solomon Schleper · ACSC Boys Soccer All-Tournament' },
+    ], publicationChannel: 'published',
+  },
+  {
+    id: '2026-10-29-soccer-recap', title: 'Soccer: Girls Beat BSJ 3–2, Boys Beat STL 3–0',
+    publishedAt: '2026-10-29', dateLabel: 'OCTOBER 29, 2026', category: 'GAME RECAP',
+    excerpt: 'Both varsity soccer teams won on October 27, with Grace scoring the girls’ late winner.',
+    image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
+    body: ['The varsity soccer teams recorded two JAAC wins on October 27: the girls beat BSJ 3–2 and the boys beat St. Laurensia 3–0.'],
+    sections: [
+      { heading: 'Girls · SPH-LV 3–2 BSJ', paragraphs: ['Sherny Lim scored twice for an early 2–0 lead. BSJ drew level before Grace Priskila Nawipa scored the late winner. Key saves from the goalkeeper helped secure the result.'] },
+      { heading: 'Boys · SPH-LV 3–0 St. Laurensia', paragraphs: ['Deven, Solomon Schleper and Ben Yulianto scored, with Ben converting a penalty.'] },
+    ], publicationChannel: 'published',
+  },
   {
     id: '2026-10-15-sports-report', title: "LV Game Day Sport’s Report: October 12, 2026",
     publishedAt: '2026-10-15', dateLabel: 'OCTOBER 15, 2026', category: 'SPORTS REPORT',

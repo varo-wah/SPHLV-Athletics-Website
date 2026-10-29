@@ -1,6 +1,7 @@
 import { OCTOBER_UPDATES } from './octoberUpdates';
 import { OCTOBER_20_UPDATES } from './october20Updates';
 import { OCTOBER_26_UPDATES } from './october26Updates';
+import { OCTOBER_29_UPDATES } from './october29Updates';
 import { SEPTEMBER_UPDATES } from './septemberUpdates';
 import type { SheetMatch } from '../services/parsers';
 
@@ -23,6 +24,7 @@ export interface GameDayUpdate {
 // Provenance and unresolved results: docs/gameday-updates-20260914.md.
 export const GAMEDAY_UPDATES: GameDayUpdate[] = [
   // Keep later rounds ahead when an exact start time is unavailable.
+  ...OCTOBER_29_UPDATES,
   ...OCTOBER_26_UPDATES.slice().reverse(),
   ...OCTOBER_20_UPDATES.slice().reverse(),
   ...OCTOBER_UPDATES,

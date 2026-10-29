@@ -70,6 +70,10 @@ export function isVisibleScheduleEvent(
 ): boolean {
   if (IS_PROTOTYPE) return true;
 
+  // Swimming has its own public team page rather than a gendered team-catalog entry.
+  if (season === LAUNCH_SEASON && (sport === 'Swimming' || sport === null)
+    && /^varsity swim(?:ming)?$/i.test(teamName.trim())) return true;
+
   return season === LAUNCH_SEASON
     && sport !== null
     && PRODUCTION_TEAM_SPORTS.includes(sport as SportTab)

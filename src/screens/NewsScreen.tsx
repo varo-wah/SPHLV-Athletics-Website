@@ -94,7 +94,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
                 className={`grid max-w-3xl gap-4 ${
                   selectedArticle.posterImages.length > 1 ? 'sm:grid-cols-2' : 'sm:max-w-md'
                 }`}
-                aria-label="Player of the Week posters"
+                aria-label={`${selectedArticle.category} posters`}
               >
                 {selectedArticle.posterImages.map((poster) => (
                   <img

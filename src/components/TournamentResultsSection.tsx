@@ -45,6 +45,9 @@ export default function TournamentResultsSection({ teamId, matches = [] }: { tea
   } else if (teamId === 'volleyball-sma-girls') {
     cupPlacement = 'Runner-up';
     cupSummary = 'September 28–29, 2026 · 3 wins, 1 loss';
+  } else if (teamId === 'volleyball-sma-boys') {
+    cupPlacement = '3rd place · provisional';
+    cupSummary = 'September 2026 · Reported placement; awaiting confirmation.';
   } else if (basketballFinal) {
     cupPlacement = basketballFinal.result === 'W' ? 'Champions' : 'Runner-up';
     cupSummary = finalSummary(basketballFinal);
