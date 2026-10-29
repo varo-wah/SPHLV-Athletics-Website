@@ -8,7 +8,7 @@ const sources: ResultSourceMetadata[] = [{ id: 'girls', teamId: 'soccer-sma-girl
 
 test('adds only confirmed new fixtures and remains idempotent', () => {
   const matches = mergeGameDayResults([], sources);
-  assert.equal(matches.length, 6);
+  assert.equal(matches.length, 7);
   assert.deepEqual(matches.filter(m => ['SPH-KV', 'JIS'].includes(m.opponent)).map(m => [m.opponent, m.scoreFor, m.scoreAgainst]), [['SPH-KV', 2, 2], ['JIS', 3, 0]]);
   assert.deepEqual(mergeGameDayResults(matches, sources), matches);
 });
@@ -17,7 +17,7 @@ test('recognizes a later published fixture with an opponent alias without duplic
   const fixtures = mergeGameDayResults([], sources);
   const published = { ...fixtures.find(m => m.opponent === 'SPH-KV')!, id: 'published-kv', opponent: 'KV', time: '08:10' };
   const matches = mergeGameDayResults([published], sources);
-  assert.equal(matches.length, 6);
+  assert.equal(matches.length, 7);
   assert.equal(matches[0].id, 'published-kv');
   assert.equal(matches[0].time, '08:10');
 });

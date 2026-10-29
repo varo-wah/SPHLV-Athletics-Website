@@ -49,6 +49,13 @@ export interface AcscCompetitionSnapshot {
   complete?: boolean;
   finalPlacements?: { school: AcscSchoolCode; rank: number }[];
   awards?: { school: AcscSchoolCode; label: string; recipient?: string }[];
+  /** Reported tournament totals, separate from fixture-specific stat leaders. Omitted values are unknown. */
+  playerStats?: {
+    label: string;
+    sourceLabel: string;
+    reportedAt: string;
+    players: { name: string; goals?: number; assists?: number }[];
+  };
   pools: { name: string; complete: boolean; rows: AcscPoolRow[] }[];
   matches: AcscCompetitionMatch[];
 }

@@ -16,3 +16,10 @@ test('conditional times remain unset and sort after timed games on the same day'
   assert.equal(scheduleTimeLabel(event), 'Time to be confirmed');
   assert.ok(scheduleTimestamp(event) > scheduleTimestamp({ ...event, time: '16:00' }));
 });
+
+test('Seoul swimming sessions display Korea and Jakarta clocks without shifting the instant', () => {
+  const seoul = { date: '2026-10-29', time: '14:30', timeZone: 'Asia/Seoul' };
+  assert.equal(scheduleTimeLabel(seoul), '14:30 KST · 12:30 WIB');
+  assert.equal(scheduleTimestamp(seoul), Date.parse('2026-10-29T05:30:00Z'));
+  assert.equal(scheduleTimestamp(seoul), scheduleTimestamp({ ...seoul, time: '12:30', timeZone: 'Asia/Jakarta' }));
+});

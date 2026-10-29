@@ -39,6 +39,16 @@ test('shows the confirmed soccer Cup and ACSC final placements', () => {
   assert.doesNotMatch(html, />In progress</);
 });
 
+test('boys volleyball Cup placement is explicitly provisional without an invented final or stale tournament notice', () => {
+  const html = renderToStaticMarkup(createElement(TournamentResultsSection, { teamId: 'volleyball-sma-boys' }));
+  const cup = [...html.matchAll(/<article\b[^>]*>[\s\S]*?<\/article>/g)]
+    .map(match => match[0]).find(article => article.includes('>SPH Cup</p>'))!;
+  assert.ok(cup);
+  assert.equal(cup.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim(),
+    'SPH Cup 3rd place · provisional September 2026 · Reported placement; awaiting confirmation.');
+  assert.doesNotMatch(cup, /Final placement will be posted after the tournament|Final:|September \d{1,2},/);
+});
+
 test('renders reviewed basketball finals through the matches prop without inventing the girls match date', () => {
   const matches = mergeGameDayResults([], RESULT_SHEET_SOURCES);
   const boys = renderToStaticMarkup(createElement(TournamentResultsSection, {

@@ -2,6 +2,7 @@ import type { ScheduleEvent } from './scheduleTypes';
 import { ACSC_SOCCER_2026 } from './acscSoccer2026';
 import { ACSC_BOYS_VOLLEYBALL_2026 } from './acscBoysVolleyball2026';
 import { ACSC_GIRLS_VOLLEYBALL_2026 } from './acscGirlsVolleyball2026';
+import { ACSC_SWIMMING_2026 } from './swimming';
 
 export const ACSC_TOURNAMENTS = [
   {
@@ -20,5 +21,6 @@ export function acscTournamentForTeam(teamId?: string) {
 }
 
 export function acscTournamentForEvent(event: ScheduleEvent) {
+  if (event.tournamentId === 'acsc-swimming-2026') return ACSC_SWIMMING_2026;
   return ACSC_TOURNAMENTS.find(tournament => tournament.id === event.tournamentId);
 }
