@@ -674,6 +674,8 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                           <CellTag
                             key={`${month}-${index}`}
                             type={hasEvents ? 'button' : undefined}
+                            aria-label={day ? `${formatLongDate(dateIso)}${isToday ? ', today' : ''}: ${day.events.length} event${day.events.length === 1 ? '' : 's'}` : undefined}
+                            aria-current={isToday ? 'date' : undefined}
                             onClick={hasEvents ? (event) => {
                               calendarTriggerRef.current = event.currentTarget as HTMLButtonElement;
                               setSelectedCalendarDay({ label: formatLongDate(dateIso), events: day.events });
@@ -690,22 +692,23 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                           >
                             {day && (
                               <>
-                                <div className="flex items-center justify-between gap-1">
+                                <div className="schedule-calendar-day-heading flex items-center justify-between gap-1">
                                   <span className={`text-xs font-black ${hasEvents ? 'text-[#C1121F]' : 'text-foreground/38'}`}>
                                     {day.day}
                                   </span>
-                                  {isToday ? (
-                                    <span className="rounded-full bg-[#B5413F] px-1.5 py-0.5 text-[7px] font-black uppercase tracking-[0.08em] text-white">
+                                  {isToday && (
+                                    <span className="schedule-calendar-today-label rounded-full bg-[#B5413F] px-1.5 py-0.5 text-[7px] font-black uppercase tracking-[0.08em] text-white">
                                       Today
                                     </span>
-                                  ) : hasEvents && (
-                                    <span className="rounded-full bg-[#C1121F] px-1.5 py-0.5 text-[8px] font-black text-white shadow-[0_6px_14px_rgba(193,18,31,0.2)]">
+                                  )}
+                                  {hasEvents && (
+                                    <span className={`${isToday ? 'schedule-calendar-today-count ' : ''}rounded-full bg-[#C1121F] px-1.5 py-0.5 text-[8px] font-black text-white shadow-[0_6px_14px_rgba(193,18,31,0.2)]`}>
                                       {day.events.length}
                                     </span>
                                   )}
                                 </div>
 
-                                <div className="mt-2 space-y-1">
+                                <div className="schedule-calendar-previews mt-2 space-y-1">
                                   {day.events.slice(0, 2).map((event) => (
                                       <div
                                         key={event.id}
@@ -747,7 +750,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 <button
                   type="button"
                   onClick={() => toggleWeek(week)}
-                  className={`flex w-full items-center justify-between gap-4 border-b border-border/5 px-4 py-4 text-left ${
+                  className={`schedule-week-heading flex w-full items-center justify-between gap-4 border-b border-border/5 px-4 py-4 text-left ${
                     containsToday ? 'bg-white/[0.065]' : archived ? 'bg-foreground/[0.025]' : 'bg-muted/70'
                   }`}
                 >
@@ -803,7 +806,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                               <span aria-hidden="true" className="text-[23px] leading-none">{sportEmojiForEvent(event)}</span>
                             </div>
                             <div className="min-w-0 flex-1">
-                              <div className="flex min-w-0 items-center justify-between gap-2">
+                              <div className="schedule-event-meta flex min-w-0 items-center justify-between gap-2">
                                 <div className="flex min-w-0 flex-wrap items-baseline gap-x-2 gap-y-0.5">
                                   <p className="text-[13px] font-black uppercase tracking-[0.055em] text-foreground">
                                     {formatDate(event.date)}
