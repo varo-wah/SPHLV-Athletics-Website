@@ -1,3 +1,4 @@
+import '../styles/team-responsive.css';
 import { useState } from 'react';
 import { ArrowUpRight, Timer, Footprints } from 'lucide-react';
 import type { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -18,23 +19,23 @@ export default function CrossCountryScreen({ state }: { state: AthleticsDataStat
     { label: 'Upcoming', events: events.filter(event => event.date && event.date >= todayKey) },
     { label: 'Past schedule', events: events.filter(event => event.date && event.date < todayKey) },
   ];
-  return <div className="mx-auto max-w-3xl px-4 pb-12 pt-4">
+  return <div className="endurance-page cross-country-page mx-auto max-w-3xl px-4 pb-12 pt-4">
     <a href="#/teams" className="text-xs font-bold text-foreground/50">← All teams</a>
-    <header className="relative my-5 overflow-hidden rounded-3xl bg-brand-maroon p-6 text-white">
+    <header className="endurance-hero relative my-5 overflow-hidden rounded-3xl bg-brand-maroon p-6 text-white">
       <Footprints className="absolute -right-3 -top-2 opacity-10" size={160} aria-hidden="true" />
       <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/70">SPH Lippo Village · Eagles</p>
       <h1 className="mt-3 text-3xl font-black uppercase tracking-tight">Cross Country</h1>
       <p className="mt-2 text-sm text-white/80">One team. Every stride.</p>
       <div className="mt-6 flex gap-8 border-t border-white/20 pt-4"><div><p className="text-2xl font-black">5 km</p><p className="text-xs text-white/70">Reported distance</p></div><div><p className="text-2xl font-black">{CROSS_COUNTRY_PERSONAL_BESTS.length}</p><p className="text-xs text-white/70">Recorded runners</p></div></div>
     </header>
-    <div role="tablist" aria-label="Cross country sections" className="mb-5 grid grid-cols-3 gap-1 rounded-2xl border border-border/10 bg-card p-1.5">
+    <div role="tablist" aria-label="Cross country sections" className="endurance-tabs mb-5 grid grid-cols-3 gap-1 rounded-2xl border border-border/10 bg-card p-1.5">
       {sections.map((name, index) => <button key={name} type="button" role="tab" id={`xc-tab-${index}`} aria-selected={section === name} aria-controls="xc-panel" onClick={() => setSection(name)} className={`min-h-11 rounded-xl px-2 text-xs font-bold ${section === name ? 'bg-brand-maroon text-white' : 'text-foreground/60'}`}>{name}</button>)}
     </div>
     <section role="tabpanel" id="xc-panel" aria-labelledby={`xc-tab-${sections.indexOf(section)}`}>
       {section === 'Personal bests' && <>
         <div className="mb-4 flex items-center justify-between"><h2 className="text-xl font-black">5 km personal bests</h2><Timer size={20} className="text-brand-maroon" aria-hidden="true" /></div>
         <p className="mb-4 text-xs leading-relaxed text-foreground/60">Reported {dateLabel(CROSS_COUNTRY_REPORT_DATE)}. Times are personal bests, not race placings. Course and meet date were not supplied.</p>
-        <div className="overflow-hidden rounded-2xl border border-border/10 bg-card">
+        <div className="cross-country-bests overflow-hidden rounded-2xl border border-border/10 bg-card">
           {CROSS_COUNTRY_PERSONAL_BESTS.map(runner => <article key={runner.name} className="flex items-center justify-between gap-4 border-b border-border/10 px-4 py-4 last:border-0"><div><h3 className="font-bold">{runner.name}</h3><p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-foreground/45">5 km · Personal best</p></div><p className="text-2xl font-black tabular-nums text-brand-maroon dark:text-white">{runner.time}</p></article>)}
         </div>
         <p className="mt-4 text-xs leading-relaxed text-foreground/50">Times shown as minutes:seconds. Cross-country courses vary; these performances are not a league ranking.</p>
@@ -48,7 +49,7 @@ export default function CrossCountryScreen({ state }: { state: AthleticsDataStat
       </>}
       {section === 'Athletes' && <>
         <h2 className="text-xl font-black">Our runners</h2><p className="mb-4 mt-2 text-xs text-foreground/60">Athletes included in the latest personal-best report. Full roster details are pending.</p>
-        <div className="grid grid-cols-2 gap-3">{CROSS_COUNTRY_PERSONAL_BESTS.map(runner => <article key={runner.name} className="rounded-2xl border border-border/10 bg-card p-4"><div aria-hidden="true" className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-brand-maroon/10 font-black text-brand-maroon dark:text-white">{runner.name[0]}</div><h3 className="font-bold">{runner.name}</h3><p className="mt-2 text-xs text-foreground/50">5 km PB</p><p className="mt-1 text-xl font-black tabular-nums">{runner.time}</p></article>)}</div>
+        <div className="endurance-athletes grid grid-cols-2 gap-3">{CROSS_COUNTRY_PERSONAL_BESTS.map(runner => <article key={runner.name} className="rounded-2xl border border-border/10 bg-card p-4"><div aria-hidden="true" className="mb-3 flex h-10 w-10 items-center justify-center rounded-full bg-brand-maroon/10 font-black text-brand-maroon dark:text-white">{runner.name[0]}</div><h3 className="font-bold">{runner.name}</h3><p className="mt-2 text-xs text-foreground/50">5 km PB</p><p className="mt-1 text-xl font-black tabular-nums">{runner.time}</p></article>)}</div>
       </>}
     </section>
     <a href="#/teams" className="mt-6 flex items-center gap-2 text-xs font-bold text-foreground/60">Explore Eagles teams <ArrowUpRight size={14} /></a>

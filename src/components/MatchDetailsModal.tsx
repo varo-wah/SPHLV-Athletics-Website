@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, useReducedMotion } from 'motion/react';
 import { BarChart3, CalendarDays, MapPin, Sparkles, X } from 'lucide-react';
 import { SheetMatch } from '../services/parsers';
@@ -49,19 +50,31 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
     () => window.matchMedia('(min-width: 640px)').matches,
   );
   const closeButtonRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    closeButtonRef.current?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
+      if (event.key === 'Tab') {
+        const items = dialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex="0"]');
+        if (!items?.length) return;
+        const first = items[0]; const last = items[items.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last?.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      if (previousFocus?.isConnected) previousFocus.focus();
+    };
   }, [onClose]);
-
-  useEffect(() => {
-    closeButtonRef.current?.focus();
-  }, []);
 
   useEffect(() => {
     const media = window.matchMedia('(min-width: 640px)');
@@ -70,7 +83,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
     return () => media.removeEventListener('change', handleChange);
   }, []);
 
-  return (
+  return createPortal(
     <motion.div
       className="fixed inset-0 z-[80] flex items-end justify-center bg-black/55 px-3 pb-24 pt-10 backdrop-blur-sm sm:items-center sm:pb-10"
       initial={{ opacity: 0 }}
@@ -82,6 +95,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
       }}
     >
       <motion.section
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={`match-details-${match.id}`}
@@ -200,6 +214,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
           )}
         </div>
       </motion.section>
-    </motion.div>
+    </motion.div>,
+    document.body,
   );
 }

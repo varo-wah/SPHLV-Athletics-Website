@@ -22,7 +22,7 @@ export default function HomeTournamentRecap({ matches = [] }: { matches?: readon
   if (!isHomeRecapVisible(now)) return null;
   const recap = getHomeTournamentRecap(matches);
 
-  return <section aria-label="October tournament recap" className="overflow-hidden rounded-2xl border border-brand-maroon/20 bg-subcard shadow-sm">
+  return <section aria-label="October tournament recap" className="home-recap overflow-hidden rounded-2xl border border-brand-maroon/20 bg-subcard shadow-sm">
     <div className="flex items-center gap-3 border-b border-border/10 bg-brand-maroon/[0.04] px-4 py-3">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-maroon text-white"><Trophy size={20} aria-hidden="true" /></span>
       <div>

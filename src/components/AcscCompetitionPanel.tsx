@@ -38,13 +38,14 @@ export default function AcscCompetitionPanel({ teamId }: { teamId?: string }) {
   const playoffs = snapshot.matches.filter(match => match.kind === 'playoff');
   const sphAwards = snapshot.awards?.filter(award => award.school === 'SPH') ?? [];
   const next = snapshot.complete ? [] : snapshot.matches.filter(match => !acscMatchFinished(match) && (match.home === 'SPH' || match.away === 'SPH'));
-  return <section aria-label="ACSC standings and playoffs" className="space-y-4 rounded-2xl border border-brand-maroon/20 bg-subcard/50 p-4">
+  return <section aria-label="ACSC standings and playoffs" className="acsc-competition-panel space-y-4 rounded-2xl border border-brand-maroon/20 bg-subcard/50 p-4">
     <div className="flex items-center gap-3">
       <img src={ACSC_LOGO} alt="ACSC" className="h-11 w-11 rounded-xl bg-white object-contain p-1" />
       <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-brand-red">International tournament</p><h2 className="text-lg font-black uppercase">ACSC results & playoffs</h2></div>
     </div>
     <p className="text-xs font-semibold leading-relaxed">{snapshot.summary}</p>
     {snapshot.caveat && <p className="text-xs leading-relaxed text-foreground/60">{snapshot.caveat}</p>}
+    <div className="acsc-overview-grid space-y-4">
     {snapshot.finalPlacements && <div>
       <h3 className="mb-2 text-xs font-black uppercase tracking-wide">Final tournament standings</h3>
       <ol className="overflow-hidden rounded-xl border border-border/10">
@@ -53,6 +54,7 @@ export default function AcscCompetitionPanel({ teamId }: { teamId?: string }) {
         </li>)}
       </ol>
     </div>}
+    <div className="acsc-team-highlights space-y-4">
     {sphAwards.length > 0 && <div>
       <h3 className="mb-2 text-xs font-black uppercase tracking-wide">SPH tournament awards</h3>
       <ul className="space-y-2">{sphAwards.map(award => <li key={`${award.school}-${award.label}-${award.recipient ?? ''}`} className="rounded-xl border border-brand-maroon/15 bg-brand-maroon/[0.04] p-3 text-xs">
@@ -80,10 +82,13 @@ export default function AcscCompetitionPanel({ teamId }: { teamId?: string }) {
       </div>
       <p className="mt-2 text-[10px] leading-relaxed text-foreground/55">{snapshot.playerStats.sourceLabel}. — = not reported.</p>
     </div>}
+    </div>
+    </div>
     {next.length > 0 && <div>
       <h3 className="mb-2 text-xs font-black uppercase tracking-wide">Confirmed SPH fixtures</h3>
       <ul className="space-y-2">{next.map(match => <Match key={match.id} match={match} snapshot={snapshot} />)}</ul>
     </div>}
+    <div className="acsc-pools-grid space-y-4">
     {snapshot.pools.map(pool => <div key={pool.name}>
       <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-xs font-black uppercase tracking-wide">{pool.name}</h3>
@@ -113,15 +118,16 @@ export default function AcscCompetitionPanel({ teamId }: { teamId?: string }) {
         </table>
       </div>
     </div>)}
+    </div>
     <AcscBracket key={snapshot.teamId} snapshot={snapshot} />
     <details className="rounded-xl border border-border/10 p-3">
       <summary className="cursor-pointer text-xs font-black uppercase">Playoff match list</summary>
       <p className="my-2 text-[10px] leading-relaxed text-foreground/60">{snapshot.complete ? 'Tournament complete. Unpublished or conflicting scores remain unreported.' : 'Winner and loser labels are conditional. A scheduled match is not a confirmed result.'}</p>
-      <ul className="space-y-2">{playoffs.map(match => <Match key={match.id} match={match} snapshot={snapshot} />)}</ul>
+      <ul className="acsc-match-grid space-y-2">{playoffs.map(match => <Match key={match.id} match={match} snapshot={snapshot} />)}</ul>
     </details>
     <details className="rounded-xl border border-border/10 p-3">
       <summary className="cursor-pointer text-xs font-black uppercase">All schools · {results.length} confirmed results</summary>
-      <ul className="mt-3 space-y-2">{results.map(match => <Match key={match.id} match={match} snapshot={snapshot} />)}</ul>
+      <ul className="acsc-match-grid mt-3 space-y-2">{results.map(match => <Match key={match.id} match={match} snapshot={snapshot} />)}</ul>
     </details>
     <p className="text-[10px] leading-relaxed text-foreground/55">Verified {new Date(snapshot.verifiedAt).toLocaleString('en-GB', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' })} WIB · <a href={snapshot.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-bold text-brand-maroon underline underline-offset-2">{snapshot.sourceLabel}</a></p>
   </section>;

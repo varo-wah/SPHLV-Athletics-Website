@@ -25,6 +25,7 @@ import { SportFollowsProvider } from './contexts/SportFollowsContext';
 import { TeamFavoritesProvider } from './contexts/TeamFavoritesContext';
 import { isLaunchTeamSelection } from './config/launchSports';
 import { PAGE_TRANSITION } from './config/motion';
+import { readLayoutPreference, saveLayoutPreference } from './services/layoutPreference';
 
 export default function App() {
   return (
@@ -52,6 +53,7 @@ function AthleticsApp() {
   const activeDivision = route.team?.division ?? 'SMA';
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [newsArticleId, setNewsArticleId] = useState<string | null>(null);
+  const [layout, setLayout] = useState(readLayoutPreference);
   const reduceMotion = useReducedMotion();
 
   const athleticsDataState = useAthleticsData();
@@ -126,15 +128,21 @@ function AthleticsApp() {
   })();
 
   return (
-    <div className="min-h-screen bg-black font-sans">
+    <div className="sph-layout min-h-screen font-sans" data-layout={layout}>
       <main className="sph-app-shell relative mx-auto min-h-screen w-full border-x border-border/[0.02] bg-ucl-gradient pb-24">
         <TopBar
           isHome={activeTab === 'Home'}
           onOpenMenu={() => setIsSidebarOpen(true)}
           onOpenLogin={openLoginModal}
+          activeTab={activeTab}
+          onTabChange={handleTabChange}
+          phoneView={layout === 'phone'}
+          onToggleLayout={() => {
+            const next = layout === 'phone' ? 'wide' : 'phone';
+            saveLayoutPreference(next);
+            setLayout(next);
+          }}
         />
-        
-
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={route.enduranceSport ?? route.team?.id ?? activeTab}
@@ -150,16 +158,14 @@ function AthleticsApp() {
         {['Home', 'TeamPage', 'Standings'].includes(activeTab) && (
           <DataStatus state={athleticsDataState} tab={activeTab} teamId={route.team?.id} />
         )}
-
-        
-        <Sidebar 
-          isOpen={isSidebarOpen} 
-          onClose={() => setIsSidebarOpen(false)} 
-          onNavigateHome={() => handleTabChange('Home')}
-          onSelectTeam={navigateToTeam} 
-        />
       </main>
 
+      <Sidebar
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        onNavigateHome={() => handleTabChange('Home')}
+        onSelectTeam={navigateToTeam}
+      />
       <BottomNav activeTab={activeTab} onTabChange={handleTabChange} />
     </div>
   );

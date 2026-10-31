@@ -1,3 +1,5 @@
+import '../styles/team-responsive.css';
+import { createPortal } from 'react-dom';
 import { useHashRoute, navigateHash } from '../hooks/useHashRoute';
 import { parseScheduleQuery } from '../services/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -330,6 +332,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const reduceMotion = useReducedMotion();
   const calendarTriggerRef = useRef<HTMLButtonElement | null>(null);
   const calendarCloseRef = useRef<HTMLButtonElement | null>(null);
+  const calendarDialogRef = useRef<HTMLDivElement | null>(null);
   const todayIso = localIsoDate();
 
   const closeCalendarDay = useCallback(() => {
@@ -340,12 +343,29 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   useEffect(() => {
     if (!selectedCalendarDay) return undefined;
 
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     calendarCloseRef.current?.focus();
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') closeCalendarDay();
+      if (event.key !== 'Tab') return;
+      const focusable = calendarDialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], [tabindex="0"]');
+      if (!focusable?.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+    };
   }, [closeCalendarDay, selectedCalendarDay]);
 
 
@@ -419,8 +439,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   };
 
   return (
-    <div className="animate-in fade-in duration-500 px-4 pb-8 sm:px-6 lg:px-8 mt-4 space-y-4">
-      <section className="space-y-3">
+    <div className="schedule-page animate-in fade-in duration-500 px-4 pb-8 sm:px-6 lg:px-8 mt-4 space-y-4">
+      <header className="schedule-heading"><h1 className="text-2xl font-black uppercase tracking-tight">Schedule</h1><p className="mt-1 text-xs text-foreground/55">Games, meets and training</p></header>
+      <div className="schedule-layout">
+      <section className="schedule-filters space-y-3" aria-label="Schedule filters">
         {IS_PROTOTYPE && (
           <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar" aria-label="Schedule seasons">
             {seasons.map((season) => (
@@ -453,7 +475,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
           </div>
         )}
 
-        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 no-scrollbar" aria-label="Filter schedule by team">
+        <div className="schedule-team-filters -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 no-scrollbar" aria-label="Filter schedule by team">
           {TEAM_FILTER_OPTIONS.map((option) => {
             const active = teamFilter === option.id;
             return (
@@ -470,13 +492,13 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                 }`}
               >
                 <span aria-hidden="true" className="relative z-10 text-sm leading-none">{option.emoji}</span>
-                <span className="relative z-10">{option.label}</span>
+                <span className="schedule-team-short relative z-10">{option.label}</span><span className="schedule-team-name relative z-10">{option.title}</span>
               </motion.button>
             );
           })}
         </div>
 
-        <div className="flex items-end justify-between gap-4 border-b border-border/10">
+        <div className="schedule-view-controls flex items-end justify-between gap-4 border-b border-border/10">
           <div className="flex gap-5" aria-label="Filter schedule by event type">
             {([
               { id: 'games', label: 'Games', emoji: '🏆' },
@@ -564,6 +586,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
 
       <AnimatePresence mode="wait" initial={false}>
       <motion.div
+        className="schedule-content"
         key={`${activeSeason}-${teamFilter}-${scheduleScope}-${scheduleView}-${showArchivedWeeks}`}
         initial={{ opacity: 0, y: reduceMotion ? 0 : 8 }}
         animate={{ opacity: 1, y: 0 }}
@@ -655,7 +678,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                               calendarTriggerRef.current = event.currentTarget as HTMLButtonElement;
                               setSelectedCalendarDay({ label: formatLongDate(dateIso), events: day.events });
                             } : undefined}
-                            className={`min-h-[74px] rounded-2xl border p-2 text-left transition-all ${
+                            className={`schedule-calendar-day min-h-[74px] rounded-2xl border p-2 text-left transition-all ${
                               day
                                 ? isToday
                                   ? 'border-[#B5413F]/45 bg-[#B5413F]/10 ring-1 ring-inset ring-[#B5413F]/25 dark:bg-white/[0.075]'
@@ -767,7 +790,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                       return (
                         <article
                           key={event.id}
-                          className={`px-4 py-3 transition-colors ${
+                          className={`schedule-event-row px-4 py-3 transition-colors ${
                             isToday
                               ? 'bg-muted/70 ring-1 ring-inset ring-[#B5413F]/18 dark:bg-white/[0.065]'
                               : eventIndex % 2 === 0
@@ -836,8 +859,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       )}
       </motion.div>
       </AnimatePresence>
+      </div>
 
-      <AnimatePresence>
+      {typeof document !== 'undefined' && createPortal(<AnimatePresence>
         {selectedCalendarDay && (
           <motion.div
             className="fixed inset-0 z-[70] flex items-end justify-center bg-black/35 px-3 pb-24 pt-10 backdrop-blur-sm sm:items-center sm:pb-10"
@@ -847,6 +871,10 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             onClick={closeCalendarDay}
           >
             <motion.div
+              ref={calendarDialogRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="calendar-day-title"
               className="w-full max-w-2xl overflow-hidden rounded-[2rem] border border-border/10 bg-subcard shadow-[0_10px_24px_rgba(0,0,0,0.22)]"
               initial={{ opacity: 0, y: 42, scale: 0.94, rotateX: 8 }}
               animate={{ opacity: 1, y: 0, scale: 1, rotateX: 0 }}
@@ -862,7 +890,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
                     <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/65">
                       Calendar day
                     </p>
-                    <h3 className="mt-1 text-2xl font-black uppercase tracking-tight">
+                    <h3 id="calendar-day-title" className="mt-1 text-2xl font-black uppercase tracking-tight">
                       {selectedCalendarDay.label}
                     </h3>
                     <p className="mt-2 text-[10px] font-black uppercase tracking-[0.16em] text-white/65">
@@ -936,7 +964,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
             </motion.div>
           </motion.div>
         )}
-      </AnimatePresence>
+      </AnimatePresence>, document.body)}
     </div>
   );
 }

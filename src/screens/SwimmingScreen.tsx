@@ -1,3 +1,4 @@
+import '../styles/team-responsive.css';
 import { useState } from 'react';
 import { ArrowUpRight, Waves, Play, Timer } from 'lucide-react';
 import type { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -19,9 +20,10 @@ export default function SwimmingScreen({ state }: { state: AthleticsDataState })
     .filter(event => event.date && (practices || event.eventType !== 'Practice'))
     .sort((a, b) => (b.date ?? '').localeCompare(a.date ?? ''));
 
-  return <div className="mx-auto max-w-3xl px-4 pb-12 pt-4">
+  return <div className="endurance-page swimming-page mx-auto max-w-3xl px-4 pb-12 pt-4">
     <a href="#/teams" className="text-xs font-bold text-foreground/50">← All teams</a>
-    <header className="relative my-5 overflow-hidden rounded-3xl bg-brand-maroon p-6 text-white">
+    <div className="swimming-intro">
+    <header className="endurance-hero relative my-5 overflow-hidden rounded-3xl bg-brand-maroon p-6 text-white">
       <Waves className="absolute -right-3 -top-2 opacity-10" size={160} aria-hidden="true" />
       <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/70">SPH Lippo Village · Eagles</p>
       <h1 className="mt-3 text-3xl font-black uppercase tracking-tight">Varsity Swimming</h1>
@@ -45,14 +47,15 @@ export default function SwimmingScreen({ state }: { state: AthleticsDataState })
       </div>
     </section>
 
-    <div role="tablist" aria-label="Swimming sections" className="mb-5 grid grid-cols-3 gap-1 rounded-2xl border border-border/10 bg-card p-1.5">
+    </div>
+    <div role="tablist" aria-label="Swimming sections" className="endurance-tabs mb-5 grid grid-cols-3 gap-1 rounded-2xl border border-border/10 bg-card p-1.5">
       {sections.map((name, index) => <button key={name} type="button" role="tab" id={`swim-tab-${index}`} aria-selected={section === name} aria-controls="swim-panel" onClick={() => setSection(name)} className={`min-h-11 rounded-xl px-2 text-xs font-bold ${section === name ? 'bg-brand-maroon text-white' : 'text-foreground/60'}`}>{name}</button>)}
     </div>
     <section role="tabpanel" id="swim-panel" aria-labelledby={`swim-tab-${sections.indexOf(section)}`}>
       {section === 'Schedule' && <>
         <h2 className="text-xl font-black">Championship schedule</h2>
         <p className="mb-4 mt-2 text-xs leading-relaxed text-foreground/60">All five meet sessions from the official booklet. Jakarta times are shown first; Seoul is two hours ahead.</p>
-        <div className="space-y-3">{SWIMMING_ACSC_SESSIONS.map(session => <article key={session.number} className="rounded-2xl border border-border/10 bg-card p-4">
+        <div className="swimming-sessions space-y-3">{SWIMMING_ACSC_SESSIONS.map(session => <article key={session.number} className="rounded-2xl border border-border/10 bg-card p-4">
           <div className="flex items-center justify-between gap-3"><p className="text-xs font-bold text-brand-maroon dark:text-white">{dateLabel(session.date)}</p><span className="text-[10px] font-bold uppercase tracking-widest text-foreground/50">Session {session.number}</span></div>
           <h3 className="mt-3 text-xl font-black tabular-nums">{jakartaTime(session.date, session.start)}–{jakartaTime(session.date, session.end)} <span className="text-xs font-bold text-foreground/60">WIB</span></h3>
           <p className="mt-1 text-xs tabular-nums text-foreground/60">{session.start}–{session.end} KST · Guardian Pool</p>
@@ -61,7 +64,7 @@ export default function SwimmingScreen({ state }: { state: AthleticsDataState })
         <div className="mb-3 mt-7 flex items-center justify-between gap-3"><h2 className="text-lg font-black">Meets & training</h2><label className="flex items-center gap-2 text-xs"><input type="checkbox" checked={practices} onChange={event => setPractices(event.target.checked)} />Show practices</label></div>
         <p className="mb-4 text-xs text-foreground/60">Other entries from the master schedule. Past events do not imply confirmed results.</p>
         {state.loading && <p role="status" className="mb-3 text-sm text-foreground/60">Loading school schedule…</p>}
-        <div className="space-y-3">{otherEvents.length ? otherEvents.map(event => <article key={event.id} className="rounded-2xl border border-border/10 bg-card p-4"><p className="text-xs font-bold text-brand-maroon dark:text-white">{dateLabel(event.date!)} · {event.season}</p><h3 className="mt-2 font-bold">{event.eventText}</h3>{event.time && <p className="mt-2 text-xs text-foreground/60">{scheduleTimeLabel(event)}</p>}</article>) : <p className="text-sm text-foreground/50">No other meets listed.</p>}</div>
+        <div className="endurance-events space-y-3">{otherEvents.length ? otherEvents.map(event => <article key={event.id} className="rounded-2xl border border-border/10 bg-card p-4"><p className="text-xs font-bold text-brand-maroon dark:text-white">{dateLabel(event.date!)} · {event.season}</p><h3 className="mt-2 font-bold">{event.eventText}</h3>{event.time && <p className="mt-2 text-xs text-foreground/60">{scheduleTimeLabel(event)}</p>}</article>) : <p className="text-sm text-foreground/50">No other meets listed.</p>}</div>
       </>}
       {section === 'Results' && <div className="rounded-2xl border border-border/10 bg-card p-5">
         <Timer size={24} className="text-brand-maroon dark:text-white" aria-hidden="true" /><h2 className="mt-3 text-xl font-black">Race results</h2>
