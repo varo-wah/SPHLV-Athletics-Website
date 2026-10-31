@@ -1,0 +1,209 @@
+/* Content follows the shell width, including the optional desktop Phone view. */
+.home-games-heading,
+.teams-page-heading,
+.teams-full-name {
+  display: none;
+}
+
+.news-poster-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1rem;
+  max-width: 48rem;
+}
+
+.news-poster-grid[data-poster-count="1"] {
+  max-width: 28rem;
+}
+
+@container app (min-width: 40rem) {
+  .news-poster-grid:not([data-poster-count="1"]) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@container app (min-width: 56rem) {
+  .home-screen {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    grid-template-areas:
+      "banner banner"
+      "games recap"
+      "news coverage";
+    align-items: start;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding: 0 2rem 2.5rem;
+  }
+
+  .home-screen > * {
+    min-width: 0;
+    margin-block: 0;
+  }
+
+  .home-screen:not(:has(> .home-recap)) {
+    grid-template-areas:
+      "banner banner"
+      "games news"
+      "coverage news";
+  }
+
+  .home-banner {
+    grid-area: banner;
+  }
+
+  .home-recap {
+    grid-area: recap;
+  }
+
+  .home-coverage {
+    grid-area: coverage;
+  }
+
+  .home-games {
+    grid-area: games;
+  }
+
+  .home-news {
+    grid-area: news;
+  }
+
+  .home-games-heading {
+    display: block;
+    padding: 1.25rem 1.25rem 0;
+  }
+
+  .home-feed-controls {
+    margin-inline: 1rem;
+  }
+
+  .home-feed-body {
+    padding: 1rem;
+  }
+
+  .home-news .news-list-row {
+    grid-template-columns: 6rem minmax(0, 1fr);
+    min-height: 6.5rem;
+    padding: 0.875rem;
+  }
+
+  .home-news .news-list-image {
+    width: 6rem;
+    height: 4.5rem;
+  }
+
+  .home-news .news-list-title {
+    font-size: 0.875rem;
+    line-height: 1.4;
+  }
+
+  .teams-screen {
+    max-width: none;
+    min-height: auto;
+    padding: 1.75rem 2rem 2.5rem;
+  }
+
+  .teams-page-heading {
+    display: block;
+    margin-bottom: 1.75rem;
+  }
+
+  .teams-sport-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    align-items: stretch;
+    gap: 1.25rem;
+  }
+
+  .teams-sport-grid > * {
+    min-width: 0;
+    margin-block: 0;
+  }
+
+  .teams-sport-card {
+    padding: 1.25rem;
+  }
+
+  .teams-options {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .teams-options > button {
+    min-height: 4.25rem;
+  }
+
+  .teams-full-name {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1.35;
+    opacity: 0.75;
+  }
+
+  .news-screen {
+    padding: 1rem 2rem 2.5rem;
+  }
+
+  .news-story-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+  }
+
+  .news-story-grid > * {
+    min-width: 0;
+    margin-block: 0;
+  }
+
+  .news-story-grid .news-list-row {
+    grid-template-columns: 7rem minmax(0, 1fr);
+    gap: 1rem;
+    padding: 1rem;
+    min-height: 10rem;
+    align-items: center;
+  }
+
+  .news-story-grid .news-list-image {
+    width: 7rem;
+    height: 8rem;
+  }
+
+  .news-story-grid .news-list-title {
+    -webkit-line-clamp: 3;
+    font-size: 1rem;
+    line-height: 1.35;
+  }
+
+  .news-story-grid .news-list-excerpt {
+    -webkit-line-clamp: 2;
+    margin-top: 0.5rem;
+    font-size: 0.75rem;
+  }
+
+  .news-article {
+    max-width: 68rem;
+    margin-inline: auto;
+    padding-bottom: 2.5rem;
+  }
+
+  .news-article-copy {
+    max-width: 70ch;
+  }
+
+  .news-article-content > .news-poster-grid {
+    max-width: none;
+  }
+
+  .news-article-content > .news-poster-grid[data-poster-count="1"] {
+    max-width: 28rem;
+  }
+}
+
+@container app (min-width: 66rem) {
+  .news-poster-grid:not([data-poster-count="1"]):not([data-poster-count="2"]) {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}

@@ -1,0 +1,270 @@
+/* Respond to the app's width, so desktop Phone view keeps the compact layout. */
+.schedule-team-name {
+  display: none;
+}
+
+.schedule-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+.team-section-navigation {
+  top: var(--app-header-height, 4rem);
+}
+
+.team-standings-row {
+  min-width: 17.5rem;
+  grid-template-columns: 40px minmax(0, 1fr) 32px 68px;
+}
+
+.team-standings-detail-heading,
+.team-standings-detail-cell {
+  display: none;
+}
+
+.team-standings-club-name {
+  overflow-wrap: anywhere;
+}
+
+@container app (min-width: 40rem) {
+  .team-standings-row {
+    grid-template-columns: 52px minmax(0, 1fr) 44px 44px 44px 76px;
+    gap: 0.5rem;
+    padding-inline: 1rem;
+  }
+
+  .team-league-standings[data-show-draws='true'] .team-standings-row {
+    grid-template-columns: 52px minmax(0, 1fr) 44px 44px 44px 44px 76px;
+  }
+
+  .team-standings-detail-heading {
+    display: block;
+  }
+
+  .team-standings-detail-cell {
+    display: flex;
+  }
+
+  .team-standings-record {
+    display: none;
+  }
+}
+
+@container app (min-width: 56rem) {
+  .team-page-heading {
+    padding: 1.75rem 2rem;
+  }
+
+  .team-page-heading h1 {
+    font-size: 2rem;
+  }
+
+  .team-section-tabs {
+    margin-inline: 0;
+  }
+
+  .team-section-tabs button {
+    min-height: 2.75rem;
+    padding-inline: 1.5rem;
+    font-size: 0.75rem;
+  }
+
+  .team-games-grid,
+  .acsc-pools-grid,
+  .acsc-overview-grid,
+  .acsc-match-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: 1.25rem;
+  }
+
+  .team-games-grid > *,
+  .acsc-pools-grid > *,
+  .acsc-overview-grid > *,
+  .acsc-match-grid > *,
+  .swimming-sessions > *,
+  .endurance-events > * {
+    min-width: 0;
+    margin-block: 0;
+  }
+
+  .team-games-grid > button {
+    width: 100%;
+  }
+
+  .team-roster-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .team-league-standings {
+    max-width: 60rem;
+    margin-inline: auto;
+  }
+
+  .acsc-competition-panel {
+    padding: 1.5rem;
+  }
+
+  .acsc-competition-panel > p {
+    max-width: 70ch;
+  }
+
+  .acsc-overview-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    padding-block: 0.5rem;
+  }
+
+  .acsc-team-highlights > .max-w-md {
+    max-width: none;
+  }
+
+  .acsc-pools-grid table {
+    font-size: 0.8rem;
+  }
+
+  .acsc-pools-grid th,
+  .acsc-pools-grid td {
+    padding-block: 0.85rem;
+  }
+
+  .schedule-heading {
+    padding-block: 0.75rem;
+  }
+
+  .schedule-heading h1 {
+    font-size: 2rem;
+  }
+
+  .schedule-layout {
+    display: grid;
+    grid-template-columns: 16rem minmax(0, 1fr);
+    align-items: start;
+    gap: 1.5rem;
+  }
+
+  .schedule-filters {
+    position: sticky;
+    top: calc(var(--app-header-height, 4rem) + 1.5rem);
+    border: 1px solid var(--border);
+    border-radius: 1.25rem;
+    background: var(--card);
+    padding: 1.25rem;
+  }
+
+  .schedule-team-filters {
+    display: grid;
+    gap: 0.5rem;
+    margin-inline: 0;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .schedule-team-filters button {
+    min-height: 2.75rem;
+    border-radius: 0.75rem;
+    white-space: normal;
+    text-align: left;
+    font-size: 0.65rem;
+  }
+
+  .schedule-team-short {
+    display: none;
+  }
+
+  .schedule-team-name {
+    display: inline;
+  }
+
+  .schedule-view-controls {
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding-block: 0.75rem;
+  }
+
+  .schedule-content {
+    min-width: 0;
+  }
+
+  .schedule-event-row {
+    padding: 1.25rem;
+  }
+
+  .schedule-calendar-day {
+    min-height: 6rem;
+  }
+
+  .endurance-page {
+    max-width: none;
+    padding-inline: 2rem;
+    padding-top: 1.5rem;
+  }
+
+  .endurance-hero {
+    padding: 2rem;
+  }
+
+  .endurance-hero h1 {
+    font-size: 2.5rem;
+  }
+
+  .swimming-intro {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    align-items: stretch;
+    gap: 1.5rem;
+    margin-block: 1.25rem;
+  }
+
+  .swimming-intro > * {
+    margin-block: 0;
+  }
+
+  .swimming-intro > section {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 2rem;
+  }
+
+  .endurance-tabs {
+    max-width: 32rem;
+  }
+
+  .swimming-sessions {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .endurance-events,
+  .cross-country-bests {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .cross-country-bests {
+    gap: 0;
+  }
+
+  .cross-country-bests > article:nth-child(odd) {
+    border-right: 1px solid var(--border);
+  }
+
+  .cross-country-bests > article:last-child {
+    border-bottom: 1px solid var(--border);
+  }
+
+  .endurance-athletes {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+@container app (min-width: 72rem) {
+  .team-roster-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}

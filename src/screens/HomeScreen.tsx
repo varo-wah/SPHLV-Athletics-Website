@@ -1,3 +1,4 @@
+import '../styles/home-responsive.css';
 import { CalendarDays, ChevronRight, MapPin, Newspaper, Plus, Star, Trophy } from 'lucide-react';
 import { useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
@@ -202,8 +203,8 @@ export default function HomeScreen({
   const hasFavoriteTeams = Boolean(user && favoriteTeamSummaries.length > 0);
 
   return (
-    <div className="animate-in fade-in duration-500 mt-4 space-y-6 px-4 pb-8">
-      <div className="hero-image-card" aria-label="Eagle App banner">
+    <div className="home-screen animate-in fade-in duration-500 mt-4 space-y-6 px-4 pb-8">
+      <div className="home-banner hero-image-card" aria-label="Eagle App banner">
         <img
           src={eagleAppHomeBanner}
           alt="Eagle App — SPH-LV Athletics"
@@ -213,13 +214,17 @@ export default function HomeScreen({
 
       <HomeTournamentRecap matches={athleticsDataState.data.matches} />
 
-      <AcscWatchLinks />
+      <div className="home-coverage"><AcscWatchLinks /></div>
 
       <section
         aria-label="Games"
-        className="overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]"
+        className="home-games overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]"
       >
-        <div className="mx-auto mt-3 grid w-[calc(100%-1.5rem)] max-w-[23rem] grid-cols-2 gap-1.5 rounded-2xl border border-border/10 bg-subcard/70 p-2 shadow-sm">
+        <div className="home-games-heading">
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-brand-red">Eagles Athletics</p>
+          <h2 className="mt-1 text-xl font-black uppercase tracking-wide">Games & results</h2>
+        </div>
+        <div className="home-feed-controls mx-auto mt-3 grid w-[calc(100%-1.5rem)] max-w-[23rem] grid-cols-2 gap-1.5 rounded-2xl border border-border/10 bg-subcard/70 p-2 shadow-sm">
           {[
             { id: 'results' as const, label: 'Past', count: latestResults.length },
             { id: 'upcoming' as const, label: 'Upcoming', count: nextGames.length },
@@ -264,7 +269,7 @@ export default function HomeScreen({
           })}
         </div>
 
-        <div className="p-2" style={{ touchAction: 'pan-y' }}
+        <div className="home-feed-body p-2" style={{ touchAction: 'pan-y' }}
           onTouchStart={event => {
             const touch = event.touches[0];
             touchStart.current = { x: touch.clientX, y: touch.clientY };
@@ -716,7 +721,7 @@ export default function HomeScreen({
       {(
         <section
           aria-labelledby="home-news-widget-heading"
-          className="space-y-3"
+          className="home-news space-y-3"
         >
           <div className="px-1">
             <p className="text-[9px] font-black uppercase tracking-[0.22em] text-brand-red">

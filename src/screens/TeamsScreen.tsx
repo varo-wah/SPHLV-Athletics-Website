@@ -1,3 +1,4 @@
+import '../styles/home-responsive.css';
 import { ArrowUpRight } from 'lucide-react';
 import { motion, useReducedMotion } from 'motion/react';
 import FavoriteTeamsSection from '../components/FavoriteTeamsSection';
@@ -74,14 +75,19 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
   };
 
   return (
-    <div className="animate-in fade-in slide-in-from-bottom-4 mx-auto min-h-screen w-full max-w-3xl px-4 pb-24 pt-3 duration-500 sm:px-6 sm:pt-5">
+    <div className="teams-screen animate-in fade-in slide-in-from-bottom-4 mx-auto min-h-screen w-full max-w-3xl px-4 pb-24 pt-3 duration-500 sm:px-6 sm:pt-5">
+      <header className="teams-page-heading">
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-brand-red">SPH Lippo Village</p>
+        <h1 className="mt-2 text-3xl font-black uppercase tracking-tight">Eagles teams</h1>
+        <p className="mt-2 text-sm text-foreground/60">Find schedules, results and athletes across our teams.</p>
+      </header>
       <FavoriteTeamsSection
         athleticsDataState={athleticsDataState}
         onNavigateToTeam={onSelectTeam}
         onBrowseTeams={browseTeams}
       />
 
-      <section id="all-teams" aria-label="All teams" className="scroll-mt-20 space-y-3">
+      <section id="all-teams" aria-label="All teams" className="teams-sport-grid scroll-mt-20 space-y-3">
         {sportGroups.map((group, groupIndex) => {
           return (
             <motion.article
@@ -89,7 +95,7 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
               initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...QUICK_TRANSITION, delay: staggerDelay(groupIndex) }}
-              className={`relative overflow-hidden rounded-[1.35rem] border p-3 shadow-[0_3px_9px_rgba(0,0,0,0.07)] ${group.accent}`}
+              className={`teams-sport-card relative overflow-hidden rounded-[1.35rem] border p-3 shadow-[0_3px_9px_rgba(0,0,0,0.07)] ${group.accent}`}
             >
               <div className="pointer-events-none absolute -right-8 -top-12 h-32 w-32 rounded-full bg-white/[0.025] blur-2xl" />
 
@@ -105,7 +111,7 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
                 </span>
               </div>
 
-              <div className="relative grid grid-cols-2 gap-2">
+              <div className="teams-options relative grid grid-cols-2 gap-2">
                 {group.teams.map((team) => (
                   <motion.button
                     key={team.id}
@@ -115,8 +121,9 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
                     transition={PRESS_TRANSITION}
                     className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/45 [container-type:inline-size] ${teamButtonClasses(team.gender)}`}
                   >
-                    <span className="text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em]">
-                      {team.menuCode}
+                    <span className="min-w-0">
+                      <span className="block text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em]">{team.menuCode}</span>
+                      <span className="teams-full-name">{team.shortName}</span>
                     </span>
                     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 bg-white/55 text-current transition-colors dark:bg-black/10" aria-hidden="true">
                       <ArrowUpRight size={12} />
@@ -127,12 +134,12 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
             </motion.article>
           );
         })}
-        <article className="rounded-2xl border border-border/10 bg-card p-4">
+        <article className="teams-sport-card rounded-2xl border border-border/10 bg-card p-4">
           <h2 className="text-sm font-black uppercase tracking-widest">Swimming</h2>
           <a href="#/teams/swimming" className="mt-3 flex items-center justify-between rounded-xl bg-foreground/5 p-4 font-bold">Meet the swimmers <ArrowUpRight size={18} /></a>
           <p className="mt-3 text-xs text-foreground/60">ACSC schedule · Athletes · Livestream</p>
         </article>
-        <article className="rounded-2xl border border-border/10 bg-card p-4">
+        <article className="teams-sport-card rounded-2xl border border-border/10 bg-card p-4">
           <h2 className="text-sm font-black uppercase tracking-widest">Cross Country</h2>
           <a href="#/teams/cross-country" className="mt-3 flex items-center justify-between rounded-xl bg-foreground/5 p-4 font-bold">Meet the runners <ArrowUpRight size={18} /></a>
           <p className="mt-3 text-xs text-foreground/60">5 km personal bests · Meets & training</p>

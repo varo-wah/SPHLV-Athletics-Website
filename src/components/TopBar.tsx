@@ -1,14 +1,19 @@
-import { Images, Instagram, LogOut, Moon, Sheet, Sun, UserRound, Youtube } from 'lucide-react';
+import { Images, Instagram, LogOut, Monitor, Moon, Sheet, Smartphone, Sun, UserRound, Youtube } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { IS_PROTOTYPE } from '../config/launchSports';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
+import type { AppTab } from '../types';
 
 interface TopBarProps {
   isHome?: boolean;
   onOpenMenu: () => void;
   onOpenLogin: () => void;
+  activeTab: AppTab;
+  onTabChange: (tab: AppTab) => void;
+  phoneView: boolean;
+  onToggleLayout: () => void;
 }
 
 const HOME_LINKS = [
@@ -22,18 +27,18 @@ const HOME_LINKS = [
   },
 ] as const;
 
-export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopBarProps) {
+export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu, activeTab, onTabChange, phoneView, onToggleLayout }: TopBarProps) {
   const { loading, signOutUser, user } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const isDark = theme === 'dark';
 
   return (
-    <div className="flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border/70 dark:border-border/5">
-      <div className="flex min-w-0 items-center gap-3">
+    <header className={`sph-topbar ${isHome ? 'sph-topbar-home' : ''} flex items-center justify-between px-4 py-4 sticky top-0 z-50 bg-header/90 backdrop-blur-md border-b border-border/70 dark:border-border/5`}>
+      <div className="sph-topbar-brand flex min-w-0 items-center gap-3">
         <motion.button
           type="button"
           aria-label="Open teams menu"
-          className="flex h-10 w-14 items-center justify-center overflow-hidden rounded-xl border border-[#C1121F]/15 bg-white transition-colors hover:border-[#C1121F]/35 dark:border-white/10 dark:bg-white/90"
+          className="flex h-10 w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-[#C1121F]/15 bg-white transition-colors hover:border-[#C1121F]/35 dark:border-white/10 dark:bg-white/90"
           onClick={onOpenMenu}
           whileTap={{ scale: PRESS_SCALE }}
           transition={PRESS_TRANSITION}
@@ -46,7 +51,7 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
           />
         </motion.button>
         {isHome ? (
-          <nav aria-label="Athletics links" className="flex items-center gap-1.5">
+          <nav aria-label="Athletics links" className="sph-home-links flex items-center gap-1.5">
             {HOME_LINKS.map(({ href, icon: Icon, label }) => href ? (
               <motion.a
                 key={label}
@@ -83,7 +88,14 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
           </span>
         )}
       </div>
-      <div className="flex items-center gap-2 sm:gap-3">
+      <nav aria-label="Main navigation" className="sph-desktop-nav">
+        {(['Home', 'Teams', 'Schedule', 'News'] as const).map(tab => (
+          <button key={tab} type="button" onClick={() => onTabChange(tab)}
+            aria-current={activeTab === tab || (tab === 'Teams' && activeTab === 'TeamPage') ? 'page' : undefined}
+            className="sph-desktop-nav-link">{tab}</button>
+        ))}
+      </nav>
+      <div className="sph-account-actions flex shrink-0 items-center gap-2 sm:gap-3">
         <motion.button
           type="button"
           onClick={toggleTheme}
@@ -109,7 +121,7 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
         {user ? (
           <div className="flex min-w-0 items-center gap-2 rounded-full border border-border/10 bg-foreground/[0.035] px-3 py-1.5">
             <UserRound size={14} className="shrink-0 text-[#C1121F] dark:text-[#D85A57]" />
-            <span className="hidden max-w-[150px] truncate text-[10px] font-black uppercase tracking-[0.12em] text-foreground/65 sm:block">
+            <span className="sph-account-email hidden max-w-[128px] truncate text-[10px] font-black uppercase tracking-[0.12em] text-foreground/65">
               {user.email}
             </span>
             <motion.button
@@ -136,6 +148,12 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu }: TopB
           </motion.button>
         )}
       </div>
-    </div>
+      <button type="button" className="sph-view-toggle" onClick={onToggleLayout}
+        aria-label={phoneView ? 'Use wide view' : 'Use phone view'} aria-pressed={phoneView}
+        title={phoneView ? 'Expand to desktop layout' : 'Use the compact phone layout'}>
+        {phoneView ? <Monitor size={16} aria-hidden="true" /> : <Smartphone size={16} aria-hidden="true" />}
+        {phoneView ? 'Wide view' : 'Phone view'}
+      </button>
+    </header>
   );
 }

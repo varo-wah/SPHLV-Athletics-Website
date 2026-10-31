@@ -1,3 +1,4 @@
+import '../styles/home-responsive.css';
 import { useMemo, useState } from 'react';
 import { ArrowLeft, Newspaper } from 'lucide-react';
 import { IS_PROTOTYPE } from '../config/launchSports';
@@ -29,7 +30,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
     const isSample = selectedArticle.publicationChannel === 'prototype';
 
     return (
-      <article className="animate-in fade-in duration-500 mt-4 space-y-5 px-4 pb-8 sm:px-6 lg:px-8">
+      <article className="news-article animate-in fade-in duration-500 mt-4 space-y-5 px-4 pb-8 sm:px-6 lg:px-8">
         <button
           type="button"
           onClick={closeArticle}
@@ -78,7 +79,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
             </div>
           )}
 
-          <div className="space-y-6 p-5 sm:p-8">
+          <div className="news-article-content space-y-6 p-5 sm:p-8">
             {isSample && (
               <div className="rounded-2xl border border-amber-400/25 bg-amber-400/10 px-4 py-3 text-xs font-bold leading-relaxed text-amber-700 dark:text-amber-200">
                 Prototype sample — this is not published school news and will not appear on the production website.
@@ -91,9 +92,8 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
 
             {selectedArticle.posterImages && (
               <div
-                className={`grid max-w-3xl gap-4 ${
-                  selectedArticle.posterImages.length > 1 ? 'sm:grid-cols-2' : 'sm:max-w-md'
-                }`}
+                className="news-poster-grid"
+                data-poster-count={selectedArticle.posterImages.length}
                 aria-label={`${selectedArticle.category} posters`}
               >
                 {selectedArticle.posterImages.map((poster) => (
@@ -128,7 +128,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
               </div>
             )}
 
-            <div className="max-w-3xl space-y-4 text-sm font-medium leading-7 text-foreground/58 sm:text-base">
+            <div className="news-article-copy max-w-3xl space-y-4 text-sm font-medium leading-7 text-foreground/58 sm:text-base">
               {selectedArticle.body.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
@@ -163,7 +163,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
   }
 
   return (
-    <div className="animate-in fade-in duration-500 mt-4 space-y-6 px-4 pb-8 sm:px-6 lg:px-8">
+    <div className="news-screen animate-in fade-in duration-500 mt-4 space-y-6 px-4 pb-8 sm:px-6 lg:px-8">
       <div className="mb-6 flex items-center gap-3 px-2">
         <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#5A1C2C]/20">
           <Newspaper className="text-foreground/80" size={20} />
@@ -187,7 +187,7 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
           </p>
         </section>
       ) : (
-        <div className="space-y-2">
+        <div className="news-story-grid space-y-2">
           {articles.map((post) => (
             <NewsListRow
               key={post.id}
