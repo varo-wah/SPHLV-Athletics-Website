@@ -22,16 +22,16 @@ export default function HomeTournamentRecap({ matches = [] }: { matches?: readon
   if (!isHomeRecapVisible(now)) return null;
   const recap = getHomeTournamentRecap(matches);
 
-  return <section aria-label="October tournament recap" className="home-recap overflow-hidden rounded-2xl border border-brand-maroon/20 bg-subcard shadow-sm">
+  return <section aria-label="Season 1 tournament recap" className="home-recap overflow-hidden rounded-2xl border border-brand-maroon/20 bg-subcard shadow-sm">
     <div className="flex items-center gap-3 border-b border-border/10 bg-brand-maroon/[0.04] px-4 py-3">
       <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-maroon text-white"><Trophy size={20} aria-hidden="true" /></span>
       <div>
-        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-brand-red">October 2026</p>
+        <p className="text-[9px] font-black uppercase tracking-[0.18em] text-brand-red">Season 1 · 2026</p>
         <h2 className="text-base font-black uppercase tracking-wide">Tournament recap</h2>
       </div>
     </div>
     <div className="space-y-4 p-4">
-      {([{ key: 'jaac', title: 'JAAC basketball' }, { key: 'acsc', title: 'ACSC final placements' }] as const).map(group => <div key={group.key}>
+      {([{ key: 'jaac', title: 'JAAC finals' }, { key: 'acsc', title: 'ACSC final placements' }] as const).map(group => <div key={group.key}>
         <h3 className="mb-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-foreground/60">
           {group.key === 'acsc' && <img src={ACSC_LOGO} alt="" className="h-6 w-6 rounded-full bg-white object-contain p-0.5" />}
           {group.title}

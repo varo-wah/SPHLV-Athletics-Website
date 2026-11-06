@@ -1,4 +1,4 @@
-import { VOLLEYBALL_CUP_SCHEDULE } from '../data/volleyballCupSchedule';
+import { isInReleaseSeason } from '../config/launchSports';
 import { parseLeagueStandings } from '../services/leagueStandings';
 import { createSourceRetriever, type RemoteSourceState } from '../services/sourceRetrieval';
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -13,11 +13,9 @@ import {
   getSheetCacheGeneratedAt,
   fetchCsvMatrix,
   fetchCsvRows,
-  parseCsvMatrix,
 } from "../services/googleSheets";
 import { ScheduleEvent } from "../data/scheduleTypes";
-import { OFFICIAL_STANDINGS } from "../data/officialStandings";
-import seasonOneMasterScheduleCsv from "../data/master-schedule-season-1.csv?raw";
+import { OFFICIAL_STANDINGS, OFFICIAL_STANDINGS_VERIFIED_AT } from "../data/officialStandings";
 import { parseMasterScheduleSeason } from "../services/masterScheduleParser";
 import {
   Standing,
@@ -25,11 +23,9 @@ import {
   parseResultRows,
 } from "../services/parsers";
 import { mergeGameDayResults } from '../services/gamedayResults';
-import { mergeReviewedCupSchedule } from '../services/reviewedCupSchedule';
-import { mergeReviewedGirlsVolleyballSchedule } from '../services/reviewedGirlsVolleyballSchedule';
-import { mergeAcscSwimmingSchedule } from '../services/acscSwimmingSchedule';
-import { mergeAcscSoccerSchedule, mergeAcscVolleyballSchedule } from '../services/acscSchedule';
-import { acscGameDayUpdates, mergeAcscCompetitionSchedule } from '../services/acscResults';
+import { acscGameDayUpdates } from '../services/acscResults';
+import { BUNDLED_SCHEDULE, SEASON_ONE_MATRIX } from '../data/bundledSchedule';
+import { reviewedSchedule } from '../services/reviewedSchedule';
 import { GAMEDAY_UPDATES } from '../data/gamedayUpdates';
 import { loadResultFeeds } from "../services/resultFeeds";
 
@@ -83,9 +79,12 @@ export interface AthleticsDataState {
   refresh: () => Promise<void>;
 }
 
+const reviewedUpdates = [...GAMEDAY_UPDATES, ...acscGameDayUpdates()];
+const reviewedMatches = mergeGameDayResults([], RESULT_SHEET_SOURCES, reviewedUpdates);
+
 const EMPTY_DATA: AthleticsData = {
   standings: OFFICIAL_STANDINGS,
-  matches: [],
+  matches: reviewedMatches,
 
   rawSoccerMatchRows: [],
   rawSoccerStandingRows: [],
@@ -109,15 +108,15 @@ const EMPTY_DATA: AthleticsData = {
 
   pages: [],
 
-  soccerMatches: [],
+  soccerMatches: reviewedMatches.filter(match => match.sportKey === "Soccer"),
   soccerStandings: OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === "Soccer"),
 
-  basketballMatches: [],
+  basketballMatches: reviewedMatches.filter(match => match.sportKey === "Basketball"),
   basketballStandings: OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === "Basketball"),
 
-  volleyballMatches: [],
+  volleyballMatches: reviewedMatches.filter(match => match.sportKey === "Volleyball"),
   volleyballStandings: OFFICIAL_STANDINGS.filter((standing) => standing.sportKey === "Volleyball"),
-  masterScheduleEvents: [],
+  masterScheduleEvents: BUNDLED_SCHEDULE,
 };
 
 export function useAthleticsData(): AthleticsDataState {
@@ -154,11 +153,11 @@ export function useAthleticsData(): AthleticsDataState {
       ));
 
       const masterScheduleResultsPromise = Promise.all(
-        MASTER_SCHEDULE_URLS.map(async (sheet) => {
+        MASTER_SCHEDULE_URLS.filter(sheet => isInReleaseSeason(sheet.season)).map(async (sheet) => {
           if (sheet.season === "Season 1") {
             return {
               season: sheet.season,
-              matrix: parseCsvMatrix(seasonOneMasterScheduleCsv),
+              matrix: SEASON_ONE_MATRIX,
               failed: false,
             };
           }
@@ -179,7 +178,13 @@ export function useAthleticsData(): AthleticsDataState {
 
       const leagueStandingsPromise = Promise.all(LEAGUE_STANDING_SOURCES.map(({ sport, gender, url }) =>
         retrieve(`${sport.toLowerCase()}-${gender}-standings`, `${sport} ${gender} standings`, 'standings', url,
-          async (sourceUrl) => parseLeagueStandings(await fetchCsvMatrix(sourceUrl), sport, gender),
+          async (sourceUrl) => {
+            const matrix = await fetchCsvMatrix(sourceUrl);
+            if (!(Date.parse(getSheetCacheGeneratedAt() ?? '') >= Date.parse(OFFICIAL_STANDINGS_VERIFIED_AT))) {
+              throw new Error('Standings cache predates the verified league snapshot');
+            }
+            return parseLeagueStandings(matrix, sport, gender);
+          },
           OFFICIAL_STANDINGS.filter((row) => row.sportKey === sport && row.genderGroup === gender))));
 
       const [
@@ -205,7 +210,7 @@ export function useAthleticsData(): AthleticsDataState {
 
       const matches = mergeGameDayResults(loadedResultFeeds.flatMap((feed) => (
         parsedBySource.get(feed.source.id)?.matches ?? []
-      )), RESULT_SHEET_SOURCES, [...GAMEDAY_UPDATES, ...acscGameDayUpdates()]);
+      )), RESULT_SHEET_SOURCES, reviewedUpdates);
       const soccerMatches = matches.filter((match) => match.sportKey === "Soccer");
       const basketballMatches = matches.filter((match) => match.sportKey === "Basketball");
       const volleyballMatches = matches.filter((match) => match.sportKey === "Volleyball");
@@ -215,13 +220,8 @@ export function useAthleticsData(): AthleticsDataState {
       const basketballStandings = standings.filter((standing) => standing.sportKey === "Basketball");
       const volleyballStandings = standings.filter((standing) => standing.sportKey === "Volleyball");
 
-      const parsedMasterScheduleEvents = masterScheduleResults.flatMap(result => (
+      const masterScheduleEvents = reviewedSchedule(masterScheduleResults.flatMap(result =>
         parseMasterScheduleSeason(result.season, result.matrix)
-      )).filter(event => !(event.sportKey === 'Volleyball'
-        && ['2026-09-28', '2026-09-29'].includes(event.date ?? '') && /cup/i.test(event.eventText)));
-      const cupScheduleEvents = mergeReviewedCupSchedule([...parsedMasterScheduleEvents, ...VOLLEYBALL_CUP_SCHEDULE]);
-      const masterScheduleEvents = mergeAcscSwimmingSchedule(mergeReviewedGirlsVolleyballSchedule(
-        mergeAcscCompetitionSchedule(mergeAcscVolleyballSchedule(mergeAcscSoccerSchedule(cupScheduleEvents))),
       ));
       const masterScheduleErrorCount = masterScheduleResults.filter((result) => result.failed).length;
       const loadedFeedById = new Map(loadedResultFeeds.map((feed) => [feed.source.id, feed]));

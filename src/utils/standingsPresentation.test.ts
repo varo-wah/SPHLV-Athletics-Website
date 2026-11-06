@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import type { Standing } from '../services/parsers';
+import { parseStandings } from '../services/parsers';
 import { formatWinPercentage, rankStandings, standingsRecordLabel, standingsShowDraws } from './standingsPresentation';
 
 function standing(team: string, wins: number, losses: number, overrides: Partial<Standing> = {}): Standing {
@@ -17,6 +18,22 @@ test('a higher winning percentage ranks above more total wins or points', () => 
   assert.deepEqual(ranked.map(entry => entry.row.team), ['Unbeaten', 'One loss', 'More games']);
   assert.deepEqual(ranked.map(entry => entry.rank), [1, 2, 3]);
   assert.deepEqual(rows.map(entry => entry.team), ['More games', 'Unbeaten', 'One loss']);
+});
+
+test('partial or inconsistent spreadsheet ranks keep every team and honor unique valid positions', () => {
+  const rows = parseStandings([
+    { Team: 'Official second', Rank: '2', W: '0', L: '6' },
+    { Team: 'Same rank A', Rank: '4', W: '3', L: '0' },
+    { Team: 'Same rank B', Rank: '4', W: '1', L: '3' },
+    { Team: 'Invalid position', Rank: '9', W: '2', L: '1' },
+    { Team: 'No position', W: '0', L: '5' },
+  ], 'Basketball');
+  assert.equal(rows[4].rank, null);
+  const ranked = rankStandings([...rows, standing('Legacy row', 1, 1, { rank: undefined })]);
+  assert.deepEqual(ranked.map(entry => [entry.row.team, entry.rank]), [
+    ['Same rank A', 1], ['Official second', 2], ['Invalid position', 3],
+    ['Legacy row', 4], ['Same rank B', 5], ['No position', 6],
+  ]);
 });
 
 test('soccer counts draws as games played and keeps the draw record visible', () => {

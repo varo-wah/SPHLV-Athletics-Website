@@ -8,7 +8,7 @@ test('accepts changed school counts and current volleyball and basketball matric
     const rows = parseLeagueStandings(table.matrix, table.sport as 'Soccer' | 'Basketball' | 'Volleyball', table.gender as 'Boys' | 'Girls');
     const lv = rows.find(row => row.team === 'SPH-LV')!;
     assert.ok(lv);
-    if (table.sport === 'Volleyball') assert.deepEqual([rows.length, lv.wins, lv.points], [8, 6, 12]);
+    if (table.sport === 'Volleyball') assert.deepEqual([rows.length, lv.wins, lv.points], [8, 7, 14]);
     if (table.sport === 'Soccer') assert.equal(rows.length, table.gender === 'Boys' ? 6 : 7);
   }
 });
@@ -22,10 +22,10 @@ test('recovers a missing reciprocal result while rejecting a malformed matrix', 
   assert.throws(() => parseLeagueStandings(matrix, 'Volleyball', 'Boys'), /header/);
 });
 
-test('recovers spaced reciprocal scores without weakening points validation', () => {
+test('recovers spaced reciprocal scores and rejects nonnumeric published points', () => {
   const matrix = [['Standings'], ['', 'SPH-LV', 'STL', 'Points'], ['SPH-LV', '', '', '0'], ['STL', '42 – 25', '', '2']];
   const rows = parseLeagueStandings(matrix, 'Basketball', 'Boys');
   assert.deepEqual([rows[0].wins, rows[0].losses, rows[0].forValue, rows[0].againstValue], [0, 1, 25, 42]);
-  matrix[2][3] = '2';
-  assert.throws(() => parseLeagueStandings(matrix, 'Basketball', 'Boys'), /points disagree/);
+  matrix[2][3] = 'TBD';
+  assert.throws(() => parseLeagueStandings(matrix, 'Basketball', 'Boys'), /Invalid standings value/);
 });

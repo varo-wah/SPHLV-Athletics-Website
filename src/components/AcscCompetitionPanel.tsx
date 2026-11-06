@@ -1,8 +1,9 @@
 import { acscMatchFinished, acscResultsForTeam } from '../data/acscCompetitionResults2026';
 import type { AcscCompetitionMatch, AcscCompetitionSnapshot } from '../data/acscCompetitionTypes';
-import { ACSC_LOGO, acscSchoolForName } from '../data/acscSchools';
+import { acscSchoolForName } from '../data/acscSchools';
 import { scheduleTimeLabel } from '../utils/scheduleTime';
 import AcscBracket from './AcscBracket';
+import AcscTournamentBanner from './AcscTournamentBanner';
 
 function School({ name, compact = false }: { name: string; compact?: boolean }) {
   const school = acscSchoolForName(name);
@@ -39,11 +40,7 @@ export default function AcscCompetitionPanel({ teamId }: { teamId?: string }) {
   const sphAwards = snapshot.awards?.filter(award => award.school === 'SPH') ?? [];
   const next = snapshot.complete ? [] : snapshot.matches.filter(match => !acscMatchFinished(match) && (match.home === 'SPH' || match.away === 'SPH'));
   return <section aria-label="ACSC standings and playoffs" className="acsc-competition-panel space-y-4 rounded-2xl border border-brand-maroon/20 bg-subcard/50 p-4">
-    <div className="flex items-center gap-3">
-      <img src={ACSC_LOGO} alt="ACSC" className="h-11 w-11 rounded-xl bg-white object-contain p-1" />
-      <div><p className="text-[9px] font-black uppercase tracking-[0.18em] text-brand-red">International tournament</p><h2 className="text-lg font-black uppercase">ACSC results & playoffs</h2></div>
-    </div>
-    <p className="text-xs font-semibold leading-relaxed">{snapshot.summary}</p>
+    <AcscTournamentBanner teamId={teamId} />
     {snapshot.caveat && <p className="text-xs leading-relaxed text-foreground/60">{snapshot.caveat}</p>}
     <div className="acsc-overview-grid space-y-4">
     {snapshot.finalPlacements && <div>

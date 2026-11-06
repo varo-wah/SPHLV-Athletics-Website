@@ -67,6 +67,10 @@
 }
 
 @container app (min-width: 40rem) {
+  .jaac-playoff-rounds {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+
   .team-standings-row {
     grid-template-columns: 52px minmax(0, 1fr) 44px 44px 44px 76px;
     gap: 0.5rem;

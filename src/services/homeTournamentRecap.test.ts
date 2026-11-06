@@ -19,11 +19,14 @@ test('Home recap uses final tournament outcomes and SPH awards without inventing
   assert.deepEqual(jaac.map(entry => [entry.teamId, entry.outcome, entry.detail]), [
     ['basketball-smp-boys', 'Champions', 'Final: SPH 69–27 BSJ'],
     ['basketball-smp-girls', 'Champions', 'Final: SPH 47–22 Santa Laurensia'],
+    ['soccer-sma-girls', 'Champions', 'Final: SPH 2–1 STL'],
+    ['volleyball-sma-boys', 'Runner-up', 'Final: SPH 0–3 GJS'],
   ]);
   assert.deepEqual(acsc.map(entry => [entry.teamId, entry.outcome]), [
     ['soccer-sma-boys', '7th place'],
     ['volleyball-sma-girls', '6th place'],
     ['volleyball-sma-boys', '7th place'],
+    ['swimming', '7th place'],
   ]);
   assert.match(acsc[0].detail, /Solomon Schleper/);
   assert.match(acsc[1].detail, /Sportsmanship Award/);

@@ -3,7 +3,7 @@ import { SPORT_CATALOG, TEAM_CATALOG, findTeam } from './teamCatalog';
 
 export type ReleaseChannel = 'production' | 'prototype';
 
-const requestedReleaseChannel = import.meta.env.VITE_RELEASE_CHANNEL;
+const requestedReleaseChannel = import.meta.env?.VITE_RELEASE_CHANNEL;
 
 export const RELEASE_CHANNEL: ReleaseChannel = requestedReleaseChannel === 'prototype'
   ? 'prototype'
@@ -11,6 +11,10 @@ export const RELEASE_CHANNEL: ReleaseChannel = requestedReleaseChannel === 'prot
 
 export const IS_PROTOTYPE = RELEASE_CHANNEL === 'prototype';
 export const LAUNCH_SEASON = 'Season 1';
+
+export function isInReleaseSeason(season: string, includePrototypeSeasons = IS_PROTOTYPE): boolean {
+  return includePrototypeSeasons || season === LAUNCH_SEASON;
+}
 
 export const PRODUCTION_TEAM_SPORTS: readonly SportTab[] = SPORT_CATALOG
   .filter((sport) => TEAM_CATALOG.some((team) => team.sport === sport.id && team.production))

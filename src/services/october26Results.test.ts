@@ -27,6 +27,9 @@ test('JAAC playoff additions preserve the earlier BSJ result and Cup finals acro
     ['2026-09-26', 69, 25], ['2026-10-24', 69, 27],
   ]);
   assert.equal(matches.filter(match => match.matchType === 'SPH Cup final' && match.sportKey === 'Basketball').length, 2);
-  assert.equal(matches.filter(match => match.matchType === 'JAAC final').length, 2);
+  const basketballFinals = matches.filter(match => match.sportKey === 'Basketball' && match.matchType === 'JAAC final');
+  assert.deepEqual(basketballFinals.map(match => match.reviewedFixtureId).sort(), [
+    '2026-boys-basketball-jaac-final', '2026-girls-basketball-jaac-final',
+  ]);
   assert.deepEqual(mergeGameDayResults(matches, RESULT_SHEET_SOURCES), matches);
 });

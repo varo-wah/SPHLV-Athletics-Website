@@ -40,30 +40,43 @@ function BracketCard({ match }: { match: AcscCompetitionMatch }) {
   </article>;
 }
 
-function BracketView({ snapshot, expanded = false }: { key?: string; snapshot: AcscCompetitionSnapshot; expanded?: boolean }) {
+interface BracketViewProps {
+  snapshot: AcscCompetitionSnapshot;
+  expanded?: boolean;
+  selected: string;
+  onSelect: (id: string) => void;
+}
+
+function BracketView({ snapshot, expanded = false, selected, onSelect }: BracketViewProps) {
   const definition = acscBracketForTeam(snapshot.teamId)!;
-  const [selected, setSelected] = useState(definition.lanes[0].id);
-  const [scale, setScale] = useState(1);
+  const [manualScale, setManualScale] = useState<number | null>(expanded ? null : 1);
+  const [fitScale, setFitScale] = useState(1);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lane = definition.lanes.find(item => item.id === selected) ?? definition.lanes[0];
   const matches = new Map(snapshot.matches.map(match => [match.id, match]));
   const { positions, width, height, paths } = bracketLayout(lane, matches);
-  const changeLane = (id: string) => { setSelected(id); scrollRef.current?.scrollTo({ top: 0, left: 0 }); };
-  const fit = () => {
+  const scale = manualScale ?? fitScale;
+  useEffect(() => {
     const viewport = scrollRef.current;
-    if (viewport) setScale(Math.max(0.1, Math.min(1, (viewport.clientWidth - 16) / width, (viewport.clientHeight - 16) / height)));
-  };
+    if (!viewport) return;
+    const measure = () => setFitScale(Math.max(0.1, Math.min(1, (viewport.clientWidth - 16) / width, (viewport.clientHeight - 16) / height)));
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(viewport);
+    return () => observer.disconnect();
+  }, [width, height]);
+  const changeLane = (id: string) => { onSelect(id); scrollRef.current?.scrollTo({ top: 0, left: 0 }); };
   return <div className={`flex min-h-0 flex-col ${expanded ? 'h-full' : ''}`}>
     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/10 p-3">
       {definition.lanes.length > 1 ? <div className="flex flex-wrap gap-1.5" role="group" aria-label="Bracket paths">
         {definition.lanes.map(item => <button key={item.id} type="button" onClick={() => changeLane(item.id)} aria-pressed={lane.id === item.id} className={`min-h-9 rounded-lg px-3 text-[11px] font-bold ${lane.id === item.id ? 'bg-brand-maroon text-white' : 'border border-border/15 bg-subcard text-foreground/70 hover:bg-foreground/5'}`}>{item.title}</button>)}
       </div> : <p className="text-xs font-bold">{lane.title}</p>}
       <div className="flex items-center gap-1" role="group" aria-label="Bracket zoom">
-        <button type="button" aria-label="Zoom bracket out" disabled={scale <= 0.35} onClick={() => setScale(value => Math.max(0.35, value - 0.15))} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/15 disabled:opacity-30"><Minus size={15} /></button>
+        <button type="button" aria-label="Zoom bracket out" disabled={scale <= 0.1} onClick={() => setManualScale(Math.max(0.1, scale - 0.15))} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/15 disabled:opacity-30"><Minus size={15} /></button>
         <output aria-live="polite" className="w-10 text-center text-[10px] font-bold tabular-nums">{Math.round(scale * 100)}%</output>
-        <button type="button" aria-label="Zoom bracket in" disabled={scale >= 1.6} onClick={() => setScale(value => Math.min(1.6, value + 0.15))} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/15 disabled:opacity-30"><Plus size={15} /></button>
-        <button type="button" onClick={fit} className="h-9 rounded-lg border border-border/15 px-2 text-[10px] font-bold">Fit</button>
-        <button type="button" aria-label="Reset bracket zoom" onClick={() => setScale(1)} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/15"><RotateCcw size={13} /></button>
+        <button type="button" aria-label="Zoom bracket in" disabled={scale >= 1.6} onClick={() => setManualScale(Math.min(1.6, scale + 0.15))} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/15 disabled:opacity-30"><Plus size={15} /></button>
+        <button type="button" onClick={() => setManualScale(null)} className="h-9 rounded-lg border border-border/15 px-2 text-[10px] font-bold">Fit</button>
+        <button type="button" aria-label="Reset bracket zoom" onClick={() => setManualScale(1)} className="flex h-9 w-9 items-center justify-center rounded-lg border border-border/15"><RotateCcw size={13} /></button>
       </div>
     </div>
     <div className="space-y-1.5 border-b border-border/10 px-3 py-2 text-[10px] leading-relaxed text-foreground/60">
@@ -72,7 +85,7 @@ function BracketView({ snapshot, expanded = false }: { key?: string; snapshot: A
       <ul className="sr-only" aria-label="Bracket progression">{lane.edges.map(edge => <li key={`${edge.from}-${edge.to}-${edge.outcome}`}>{edge.outcome} of {matches.get(edge.from)?.stage} advances to {matches.get(edge.to)?.stage}.</li>)}</ul>
     </div>
     <div ref={scrollRef} tabIndex={0} role="region" aria-label={`${lane.title} bracket, scroll to explore`} className={`overflow-auto overscroll-contain bg-subcard outline-offset-[-2px] ${expanded ? 'min-h-0 flex-1' : 'h-[420px]'}`}>
-      <div className="mx-auto" style={{ width: width * scale, height: height * scale }}>
+      <div className="mx-auto overflow-clip" style={{ width: width * scale, height: height * scale }}>
         <div className="relative origin-top-left" style={{ width, height, transform: `scale(${scale})` }}>
           <svg width={width} height={height} aria-hidden="true" className="pointer-events-none absolute inset-0">
             {paths.map(edge => <g key={`${edge.from}-${edge.to}-${edge.outcome}`}>
@@ -96,6 +109,8 @@ function BracketView({ snapshot, expanded = false }: { key?: string; snapshot: A
 
 export default function AcscBracket({ snapshot }: { key?: string; snapshot: AcscCompetitionSnapshot }) {
   const [expanded, setExpanded] = useState(false);
+  const definition = acscBracketForTeam(snapshot.teamId);
+  const [selected, setSelected] = useState(definition?.lanes[0].id ?? '');
   const dialogRef = useRef<HTMLDialogElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
@@ -112,13 +127,13 @@ export default function AcscBracket({ snapshot }: { key?: string; snapshot: Acsc
       triggerRef.current?.focus({ preventScroll: true });
     };
   }, [expanded]);
-  if (!acscBracketForTeam(snapshot.teamId)) return null;
+  if (!definition) return null;
   return <section aria-label="Visual tournament bracket" className="overflow-hidden rounded-xl border border-brand-maroon/20 bg-card">
     <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border/10 px-3 py-3">
       <div><h3 className="text-sm font-black uppercase">Tournament bracket</h3><p className="mt-1 text-[10px] text-foreground/55">Scroll across rounds, or open the large view.</p></div>
       <button ref={triggerRef} type="button" onClick={() => setExpanded(true)} className="inline-flex min-h-10 items-center gap-2 rounded-lg bg-brand-maroon px-3 text-xs font-bold text-white"><Maximize2 size={15} />Open large bracket</button>
     </div>
-    <BracketView key={snapshot.teamId} snapshot={snapshot} />
+    <BracketView snapshot={snapshot} selected={selected} onSelect={setSelected} />
     {expanded && createPortal(<dialog ref={dialogRef} onClose={() => setExpanded(false)} aria-labelledby={titleId} className="fixed inset-0 m-auto h-[calc(100dvh-24px)] max-h-none w-[calc(100vw-24px)] max-w-none overflow-hidden rounded-2xl border border-border/20 bg-card p-0 text-foreground shadow-2xl backdrop:bg-black/60">
       <div className="flex h-full min-h-0 flex-col">
         <div className="flex shrink-0 items-center gap-3 border-b border-border/10 px-4 py-3">
@@ -126,7 +141,7 @@ export default function AcscBracket({ snapshot }: { key?: string; snapshot: Acsc
           <div className="min-w-0 flex-1"><h2 id={titleId} className="text-sm font-black uppercase">{title}</h2><p className="mt-0.5 text-[10px] text-foreground/60">Tournament bracket · verified results</p></div>
           <button autoFocus type="button" aria-label="Close large bracket" onClick={() => setExpanded(false)} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border/15"><X size={18} /></button>
         </div>
-        <div className="min-h-0 flex-1"><BracketView key={snapshot.teamId} snapshot={snapshot} expanded /></div>
+        <div className="min-h-0 flex-1"><BracketView snapshot={snapshot} selected={selected} onSelect={setSelected} expanded /></div>
       </div>
     </dialog>, document.body)}
   </section>;

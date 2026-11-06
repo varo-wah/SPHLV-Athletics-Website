@@ -5,7 +5,7 @@ import { acscResultsForTeam } from '../data/acscCompetitionResults2026';
 
 const watchClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-brand-maroon px-3 py-2 text-xs font-bold text-white hover:bg-brand-red focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2';
 
-export default function AcscTournamentBanner({ teamId, onViewStandings }: { teamId?: string; onViewStandings?: () => void }) {
+export default function AcscTournamentBanner({ teamId }: { teamId?: string }) {
   const tournament = acscTournamentForTeam(teamId);
   if (!tournament) return null;
   const host = acscSchoolForName(tournament.host);
@@ -22,9 +22,8 @@ export default function AcscTournamentBanner({ teamId, onViewStandings }: { team
         {host && <img src={host.logo} alt={`${host.name} host logo`} className="h-10 w-10 shrink-0 rounded-full bg-white object-contain p-1" />}
       </div>
       <p className="mt-3 text-xs font-semibold leading-relaxed text-foreground/65">{snapshot?.summary ?? tournament.sourceNote}</p>
-      {onViewStandings && <button type="button" onClick={onViewStandings} className="mt-2 min-h-10 text-xs font-black text-brand-maroon underline underline-offset-2 dark:text-red-300">View ACSC standings & playoffs</button>}
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
-        <a href={tournament.livestreamUrl} target="_blank" rel="noopener noreferrer" className={watchClass}><Play size={14} aria-hidden="true" />Watch on YouTube</a>
+        <a href={tournament.livestreamUrl} target="_blank" rel="noopener noreferrer" className={watchClass}><Play size={14} aria-hidden="true" />Tournament broadcasts</a>
         <a href={tournament.scheduleUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center gap-1 text-xs font-bold text-brand-maroon underline underline-offset-2 dark:text-red-300">Official schedule<ExternalLink size={12} aria-hidden="true" /></a>
         <a href={tournament.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center text-xs font-bold text-brand-maroon underline underline-offset-2 dark:text-red-300">Booklet</a>
       </div>

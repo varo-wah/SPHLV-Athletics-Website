@@ -35,7 +35,7 @@ export default function StandingsScreen({ athleticsDataState }: StandingsScreenP
           Soccer Standings
         </h1>
         <p className="mt-2 text-xs font-bold uppercase tracking-[0.18em] text-foreground/40">
-          Ranked by wins ÷ games played. Draws count as games played.
+          Official league positions come first. The remaining teams are ranked by winning percentage.
         </p>
       </div>
 
