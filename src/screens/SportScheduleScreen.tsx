@@ -5,8 +5,8 @@ import { parseScheduleQuery } from '../services/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
-import scheduleDataJson from '../data/schedule.json';
-import { ScheduleData, ScheduleEvent, ScheduleEventType } from '../data/scheduleTypes';
+import { BUNDLED_SCHEDULE, BUNDLED_SEASONS } from '../data/bundledSchedule';
+import { ScheduleEvent, ScheduleEventType } from '../data/scheduleTypes';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import ScheduleEventNotes from '../components/ScheduleEventNotes';
 import { scheduleTimestamp } from '../utils/scheduleTime';
@@ -31,8 +31,6 @@ import {
   STANDARD_SPRING,
   staggerDelay,
 } from '../config/motion';
-
-const fallbackScheduleData = scheduleDataJson as ScheduleData;
 
 const EVENT_TYPE_STYLES: Record<ScheduleEventType, string> = {
   Practice: 'border-[#7F1D1D]/25 bg-muted text-[#7F1D1D] dark:border-[#BFD7EA]/20 dark:bg-muted dark:text-[#BFD7EA]',
@@ -300,18 +298,17 @@ function groupEventsByWeek(events: ScheduleEvent[]) {
 }
 
 export default function SportScheduleScreen({ athleticsDataState }: SportScheduleScreenProps) {
-  const liveEvents = athleticsDataState?.data.masterScheduleEvents || [];
-  const scheduleEvents = liveEvents.length > 0 ? liveEvents : fallbackScheduleData.events;
+  const scheduleEvents = athleticsDataState?.data.masterScheduleEvents ?? BUNDLED_SCHEDULE;
   const seasons = useMemo(() => {
     const availableSeasons = new Set(scheduleEvents.map((event) => event.season));
-    const configuredSeasons = fallbackScheduleData.seasons.filter((season) => availableSeasons.has(season));
+    const configuredSeasons = BUNDLED_SEASONS.filter((season) => availableSeasons.has(season));
     const additionalSeasons = [...availableSeasons]
       .filter((season) => !configuredSeasons.includes(season))
       .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
     return configuredSeasons.length > 0
       ? [...configuredSeasons, ...additionalSeasons]
-      : fallbackScheduleData.seasons;
+      : BUNDLED_SEASONS;
   }, [scheduleEvents]);
   const hash = useHashRoute();
   const filters = parseScheduleQuery(hash.split('?')[1] ?? '', IS_PROTOTYPE ? seasons : [LAUNCH_SEASON], LAUNCH_SEASON);

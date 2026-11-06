@@ -20,6 +20,8 @@ import troyMihardjaBiantoroPlayerOfWeek from '../assets/news/troy-mihardja-biant
 import samanthaChaiAcsc from '../assets/news/samantha-chai-acsc-all-tournament-2026.png';
 import paulSchleperAcsc from '../assets/news/paul-schleper-acsc-all-tournament-2026.png';
 import solomonSchleperAcsc from '../assets/news/solomon-schleper-acsc-all-tournament-2026.png';
+import swimResultsPoster from '../assets/swimming/acsc-results-2026.png';
+import { SWIM_MEDAL_HIGHLIGHT } from './swimmingResults';
 
 export type NewsPublicationChannel = 'published' | 'prototype';
 
@@ -58,6 +60,25 @@ export interface NewsArticle {
 }
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
+  {
+    id: '2026-11-03-acsc-swimming-results',
+    title: 'Eagles finish seventh at ACSC Swimming',
+    publishedAt: '2026-11-03', dateLabel: 'NOVEMBER 3, 2026', category: 'SWIMMING',
+    excerpt: SWIM_MEDAL_HIGHLIGHT,
+    image: swimResultsPoster, imageAlt: 'Eagles swimming championship results poster',
+    body: ['Nine girls and ten boys represented SPH in Seoul from October 29 to 31. ' + SWIM_MEDAL_HIGHLIGHT, 'Mingze Lee scored in five events. His best finish was eighth in the 200 individual medley in 3:05.08.'],
+    posterImages: [{ src: swimResultsPoster, alt: 'SPH-LV Eagles Sports Media report with race times and placings' }],
+    publicationChannel: 'published',
+  },
+  {
+    id: '2026-10-29-sports-report',
+    title: 'LV Game Day Sports Report, October 29',
+    publishedAt: '2026-10-29', dateLabel: 'OCTOBER 29, 2026', category: 'SPORTS REPORT',
+    excerpt: 'Watch the October 29 report from LV GameDay.',
+    image: 'https://i.ytimg.com/vi/NXsadV_Vux8/hqdefault.jpg', imageAlt: 'October 29 LV Game Day Sports Report thumbnail',
+    body: ['Watch the October 29 edition of the LV Game Day Sports Report below.'],
+    youtubeVideoId: 'NXsadV_Vux8', videoUrl: 'https://www.youtube.com/watch?v=NXsadV_Vux8', publicationChannel: 'published',
+  },
   {
     id: '2026-10-29-acsc-all-tournament', title: 'ACSC All-Tournament Honours: Samantha, Paul and Solomon',
     publishedAt: '2026-10-29', dateLabel: 'OCTOBER 29, 2026', category: 'ACSC AWARDS',

@@ -1,7 +1,8 @@
 import { TEAM_CATALOG } from '../config/teamCatalog';
 import type { SheetMatch } from '../services/parsers';
 import { ACSC_COMPETITION_RESULTS } from './acscCompetitionResults2026';
-import { OCTOBER_26_UPDATES } from './october26Updates';
+import { SWIM_MEDAL_HIGHLIGHT, SWIM_TEAM_FINISH } from './swimmingResults';
+import { JAAC_FINAL_RESULTS } from './novemberJaacResults';
 
 export const HOME_RECAP_START = Date.parse('2026-10-26T00:00:00+07:00');
 /** Exclusive end: retain the recap throughout November 16 in Jakarta. */
@@ -32,22 +33,19 @@ function placementLabel(rank: number): string {
 
 /** Reuse the verified tournament records; never substitute pool ranks or posting dates. */
 export function getHomeTournamentRecap(matches: readonly SheetMatch[] = []): { jaac: RecapEntry[]; acsc: RecapEntry[] } {
-  const finalIds = ['2026-boys-basketball-jaac-final', '2026-girls-basketball-jaac-final'];
-  const jaac = finalIds.flatMap(fixtureId => {
-    const reviewed = OCTOBER_26_UPDATES.find(update => update.fixtureId === fixtureId);
-    if (!reviewed) return [];
+  const jaac = JAAC_FINAL_RESULTS.map(reviewed => {
     const published = matches.find(match => match.teamId === reviewed.teamId
-      && match.reviewedFixtureId === fixtureId && match.status === 'Finished'
+      && match.reviewedFixtureId === reviewed.fixtureId && match.status === 'Finished'
       && match.scoreFor !== null && match.scoreAgainst !== null
       && Number.isFinite(match.scoreFor) && Number.isFinite(match.scoreAgainst)
       && match.scoreFor !== match.scoreAgainst);
     const final = published ?? reviewed;
-    return [{
+    return {
       teamId: reviewed.teamId,
       label: teamLabel(reviewed.teamId),
       outcome: final.scoreFor! > final.scoreAgainst! ? 'Champions' : 'Runner-up',
       detail: `Final: SPH ${final.scoreFor}–${final.scoreAgainst} ${final.opponent || reviewed.opponent}`,
-    }];
+    };
   });
   const acsc = ACSC_COMPETITION_RESULTS.flatMap(snapshot => {
     const placement = snapshot.finalPlacements?.find(row => row.school === 'SPH');
@@ -63,5 +61,6 @@ export function getHomeTournamentRecap(matches: readonly SheetMatch[] = []): { j
         .join(' · '),
     }];
   });
+  acsc.push({ teamId: 'swimming', label: 'Varsity Swimming', outcome: placementLabel(SWIM_TEAM_FINISH), detail: SWIM_MEDAL_HIGHLIGHT });
   return { jaac, acsc };
 }

@@ -8,18 +8,37 @@ const sources: ResultSourceMetadata[] = [{ id: 'girls', teamId: 'soccer-sma-girl
 
 test('adds only confirmed new fixtures and remains idempotent', () => {
   const matches = mergeGameDayResults([], sources);
-  assert.equal(matches.length, 7);
+  assert.equal(new Set(matches.map(match => match.id)).size, matches.length);
+  // August's scorer reports enrich existing feed rows and cannot create games on their own.
+  assert.ok(matches.every(match => match.date !== '2026-08-15' && match.date !== '2026-08-22'));
   assert.deepEqual(matches.filter(m => ['SPH-KV', 'JIS'].includes(m.opponent)).map(m => [m.opponent, m.scoreFor, m.scoreAgainst]), [['SPH-KV', 2, 2], ['JIS', 3, 0]]);
   assert.deepEqual(mergeGameDayResults(matches, sources), matches);
 });
 
 test('recognizes a later published fixture with an opponent alias without duplicating it', () => {
   const fixtures = mergeGameDayResults([], sources);
-  const published = { ...fixtures.find(m => m.opponent === 'SPH-KV')!, id: 'published-kv', opponent: 'KV', time: '08:10' };
+  const published = { ...fixtures.find(m => m.opponent === 'SPH-KV')!, id: 'published-kv', reviewedFixtureId: undefined, opponent: 'KV', time: '08:10' };
   const matches = mergeGameDayResults([published], sources);
-  assert.equal(matches.length, 7);
+  assert.equal(matches.length, fixtures.length);
+  const kvResults = matches.filter(match => match.date === published.date && ['KV', 'SPH-KV'].includes(match.opponent));
+  assert.deepEqual(kvResults.map(match => match.id), ['published-kv']);
   assert.equal(matches[0].id, 'published-kv');
   assert.equal(matches[0].time, '08:10');
+  assert.deepEqual(mergeGameDayResults(matches, sources), matches);
+});
+
+test('the girls soccer championship reconciles its published opponent alias without merging the regular-season loss', () => {
+  const fixtures = mergeGameDayResults([], sources);
+  const final = fixtures.find(match => match.reviewedFixtureId === '2026-girls-soccer-jaac-final')!;
+  const published = { ...final, id: 'published-championship', reviewedFixtureId: undefined, opponent: 'Santa Laurensia' };
+  const matches = mergeGameDayResults([published], sources);
+  const stl = matches.filter(match => ['STL', 'Santa Laurensia'].includes(match.opponent));
+  assert.deepEqual(stl.map(match => [match.date, match.scoreFor, match.scoreAgainst]).sort(), [
+    ['2026-10-19', 1, 2], ['2026-11-03', 2, 1],
+  ]);
+  assert.equal(matches[0].id, published.id);
+  assert.equal(matches[0].reviewedFixtureId, final.reviewedFixtureId);
+  assert.deepEqual(mergeGameDayResults(matches, sources), matches);
 });
 
 test('preserves a corrected published score and does not attach conflicting reviewed stats', () => {

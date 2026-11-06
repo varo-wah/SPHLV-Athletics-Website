@@ -38,15 +38,27 @@ function compareResults(a: PresentedStanding, b: PresentedStanding): number {
     || b.wins - a.wins;
 }
 
-/** Rank one sport/division/gender table by wins divided by games played. */
+// Respect the league's published positions. Fill any unseeded places using the usual win-percentage order.
 export function rankStandings(rows: readonly Standing[]) {
-  const sorted = rows.map(presentStanding).sort((a, b) => compareResults(a, b) || a.row.team.localeCompare(b.row.team));
-  return sorted.map((entry, index) => {
-    const firstMatchingIndex = sorted.findIndex(candidate => compareResults(candidate, entry) === 0);
-    return {
-      ...entry,
-      rank: firstMatchingIndex + 1,
-      isTied: sorted.some((candidate, candidateIndex) => candidateIndex !== index && compareResults(candidate, entry) === 0),
-    };
+  const entries = rows.map(presentStanding);
+  const published = new Map<number, PresentedStanding | null>();
+  for (const entry of entries) {
+    const position = entry.row.rank;
+    if (position == null || !Number.isInteger(position) || position < 1 || position > entries.length) continue;
+    // A duplicate position cannot identify which team belongs in that slot.
+    published.set(position, published.has(position) ? null : entry);
+  }
+  const seeded = new Set(published.values());
+  const unseeded = entries.filter(entry => !seeded.has(entry))
+    .sort((a, b) => compareResults(a, b) || a.row.team.localeCompare(b.row.team));
+  let unseededIndex = 0;
+  const ordered = entries.map((_, index) => published.get(index + 1) ?? unseeded[unseededIndex++]);
+  let rank = 0;
+  return ordered.map((entry, index) => {
+    const previous = ordered[index - 1];
+    const next = ordered[index + 1];
+    const tiedWith = (other: PresentedStanding | undefined) => Boolean(other && !seeded.has(entry) && !seeded.has(other) && compareResults(entry, other) === 0);
+    if (!tiedWith(previous)) rank = index + 1;
+    return { ...entry, rank, isTied: tiedWith(previous) || tiedWith(next) };
   });
 }

@@ -1,19 +1,21 @@
 import '../styles/team-responsive.css';
 import { useState } from 'react';
-import { ArrowUpRight, Waves, Play, Timer } from 'lucide-react';
+import { ArrowUpRight, Waves, Play } from 'lucide-react';
 import type { AthleticsDataState } from '../hooks/useAthleticsData';
 import { ACSC_LOGO, acscSchoolByCode } from '../data/acscSchools';
 import { ACSC_SWIMMING_2026, SWIMMING_ACSC_SESSIONS } from '../data/swimming';
+import { SWIM_DELEGATION, SWIM_HIGHLIGHTS, SWIM_MEDAL_HIGHLIGHT, SWIM_TEAM_FINISH } from '../data/swimmingResults';
+import resultsPoster from '../assets/swimming/acsc-results-2026.png';
 import { scheduleTimeLabel, scheduleTimestamp } from '../utils/scheduleTime';
 
-const sections = ['Schedule', 'Results', 'Athletes'] as const;
+const sections = ['Results', 'Schedule', 'Athletes'] as const;
 const dateLabel = (date: string) => new Date(`${date}T12:00:00+07:00`).toLocaleDateString('en-GB', { timeZone: 'Asia/Jakarta', weekday: 'short', day: 'numeric', month: 'short' });
 const jakartaTime = (date: string, time: string) => new Intl.DateTimeFormat('en-GB', {
   timeZone: 'Asia/Jakarta', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
 }).format(new Date(scheduleTimestamp({ date, time, timeZone: 'Asia/Seoul' })));
 
 export default function SwimmingScreen({ state }: { state: AthleticsDataState }) {
-  const [section, setSection] = useState<typeof sections[number]>('Schedule');
+  const [section, setSection] = useState<typeof sections[number]>('Results');
   const [practices, setPractices] = useState(false);
   const otherEvents = state.data.masterScheduleEvents
     .filter(event => /swim/i.test(event.team) && !/\bacsc\b/i.test(event.eventText))
@@ -29,8 +31,8 @@ export default function SwimmingScreen({ state }: { state: AthleticsDataState })
       <h1 className="mt-3 text-3xl font-black uppercase tracking-tight">Varsity Swimming</h1>
       <p className="mt-2 text-sm text-white/80">ACSC Championship · Seoul, South Korea</p>
       <div className="mt-6 flex gap-8 border-t border-white/20 pt-4">
-        <div><p className="text-2xl font-black">29–31 Oct</p><p className="text-xs text-white/70">2026 championship</p></div>
-        <div><p className="text-2xl font-black">Seoul</p><p className="text-xs text-white/70">Host city</p></div>
+        <div><p className="text-2xl font-black">{SWIM_TEAM_FINISH}th</p><p className="text-xs text-white/70">Overall finish</p></div>
+        <div><p className="text-2xl font-black">{SWIM_DELEGATION.girls + SWIM_DELEGATION.boys}</p><p className="text-xs text-white/70">SPH swimmers</p></div>
       </div>
     </header>
 
@@ -66,15 +68,28 @@ export default function SwimmingScreen({ state }: { state: AthleticsDataState })
         {state.loading && <p role="status" className="mb-3 text-sm text-foreground/60">Loading school schedule…</p>}
         <div className="endurance-events space-y-3">{otherEvents.length ? otherEvents.map(event => <article key={event.id} className="rounded-2xl border border-border/10 bg-card p-4"><p className="text-xs font-bold text-brand-maroon dark:text-white">{dateLabel(event.date!)} · {event.season}</p><h3 className="mt-2 font-bold">{event.eventText}</h3>{event.time && <p className="mt-2 text-xs text-foreground/60">{scheduleTimeLabel(event)}</p>}</article>) : <p className="text-sm text-foreground/50">No other meets listed.</p>}</div>
       </>}
-      {section === 'Results' && <div className="rounded-2xl border border-border/10 bg-card p-5">
-        <Timer size={24} className="text-brand-maroon dark:text-white" aria-hidden="true" /><h2 className="mt-3 text-xl font-black">Race results</h2>
-        <p className="mt-3 text-sm leading-relaxed text-foreground/65">Verified race times, placings and team points have not been added yet. Follow the championship through the official results page and livestream.</p>
-        <a href={ACSC_SWIMMING_2026.sourceUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-brand-maroon dark:text-white">Official meet results<ArrowUpRight size={15} aria-hidden="true" /></a>
+      {section === 'Results' && <div className="space-y-4">
+        <div className="rounded-2xl border border-border/10 bg-card p-5">
+          <h2 className="text-xl font-black">ACSC championship results</h2>
+          <p className="mt-1 text-xs text-foreground/55">29–31 October 2026 · Seoul</p>
+          <p className="mt-3 text-sm leading-relaxed">{SWIM_MEDAL_HIGHLIGHT} Mingze Lee scored in five events. His best finish was eighth in the 200 individual medley.</p>
+          <a href={resultsPoster} target="_blank" rel="noreferrer" className="mt-4 inline-flex min-h-11 items-center gap-1 text-sm font-bold text-brand-maroon dark:text-white">Open the Eagles meet poster<ArrowUpRight size={15} aria-hidden="true" /></a>
+        </div>
+        {SWIM_HIGHLIGHTS.map(group => <details key={group.division} className="rounded-2xl border border-border/10 bg-card px-4">
+          <summary className="cursor-pointer py-4 text-sm font-bold">{group.division}’ race highlights</summary>
+          <ul className="divide-y divide-border/10 pb-2">{group.swimmers.map(swimmer => <li key={swimmer.name} className="py-3">
+            <h3 className="font-bold">{swimmer.name}</h3>
+            {swimmer.races.map(race => <p key={race} className="mt-1 text-sm tabular-nums text-foreground/70">{race}</p>)}
+          </li>)}</ul>
+        </details>)}
       </div>}
       {section === 'Athletes' && <div className="rounded-2xl border border-border/10 bg-card p-5">
         <h2 className="text-xl font-black">Our ACSC swimmers</h2>
-        <p className="mt-3 text-sm leading-relaxed text-foreground/65">SPH's 2026 meet entries are awaiting confirmation. The team roster will be added once confirmed.</p>
-        <a href={ACSC_SWIMMING_2026.sourceUrl} target="_blank" rel="noreferrer" className="mt-4 inline-flex items-center gap-1 text-sm font-bold text-brand-maroon dark:text-white">Published ACSC roster<ArrowUpRight size={15} aria-hidden="true" /></a>
+        <p className="mt-3 text-sm leading-relaxed text-foreground/65">SPH sent {SWIM_DELEGATION.girls} girls and {SWIM_DELEGATION.boys} boys to Seoul. The Eagles meet report highlights these swimmers.</p>
+        {SWIM_HIGHLIGHTS.map(group => <div key={group.division} className="mt-4">
+          <h3 className="text-sm font-black">{group.division}</h3>
+          <ul className="mt-2 flex flex-wrap gap-2">{group.swimmers.map(swimmer => <li key={swimmer.name} className="rounded-lg bg-muted px-3 py-2 text-sm">{swimmer.name}</li>)}</ul>
+        </div>)}
       </div>}
     </section>
     <a href="#/teams" className="mt-6 flex items-center gap-2 text-xs font-bold text-foreground/60">Explore Eagles teams<ArrowUpRight size={14} aria-hidden="true" /></a>

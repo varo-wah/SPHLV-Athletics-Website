@@ -7,15 +7,31 @@ import AcscCompetitionPanel from '../components/AcscCompetitionPanel';
 import { RESULT_SHEET_SOURCES } from '../config/sheets';
 import { mergeGameDayResults } from './gamedayResults';
 
-test('all three tournament placements start pending without stale scores or sport-specific links', () => {
+test('teams without an ACSC tournament have only domestic tournament cards', () => {
   const html = renderToStaticMarkup(createElement(TournamentResultsSection));
 
-  assert.equal((html.match(/<article\b/g) || []).length, 3);
-  assert.equal((html.match(/>Pending</g) || []).length, 3);
-  for (const name of ['SPH Cup', 'JAAC', 'ACSC']) {
+  assert.equal((html.match(/<article\b/g) || []).length, 2);
+  assert.equal((html.match(/>Pending</g) || []).length, 2);
+  for (const name of ['SPH Cup', 'JAAC']) {
     assert.ok(html.includes(`>${name}</p>`));
   }
-  assert.doesNotMatch(html, /Runner-up|0–2|BSJ|href=/);
+  assert.doesNotMatch(html, /ACSC|Runner-up|0–2|BSJ|href=/);
+});
+
+test('JAAC cards distinguish completed finals from the last verified semifinal', () => {
+  const matches = mergeGameDayResults([], RESULT_SHEET_SOURCES);
+  const cases = [
+    ['soccer-sma-girls', 'Champions', 'Final: SPH-LV 2–1 STL'],
+    ['volleyball-sma-boys', 'Runner-up', 'Final: SPH-LV 0–3 GJS'],
+    ['volleyball-sma-girls', 'Finalist', 'Semifinal: SPH-LV 3–0 BSJ'],
+    ['soccer-sma-boys', 'Semifinalist', 'Semifinal: SPH-LV 1–3 BSJ'],
+  ];
+  for (const [teamId, placement, score] of cases) {
+    const html = renderToStaticMarkup(createElement(TournamentResultsSection, { teamId, matches }));
+    const jaac = [...html.matchAll(/<article\b[^>]*>[\s\S]*?<\/article>/g)]
+      .map(match => match[0]).find(article => article.includes('>JAAC</p>'));
+    assert.ok(jaac?.includes(`>${placement}<`) && jaac.includes(score));
+  }
 });
 
 test('SMP basketball shows Cup and JAAC cards without an ACSC card or heading', () => {

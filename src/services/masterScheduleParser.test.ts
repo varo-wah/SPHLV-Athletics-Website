@@ -4,7 +4,7 @@ import { parseMasterScheduleSeason } from './masterScheduleParser';
 
 test('corrects the known August 22 SMP boys basketball fixture to GJS only', () => {
   const matrix = [
-    [],
+    ['SPH SPORTS 2026-27 MASTER SCHEDULE'],
     [],
     [],
     ['Day', 'Date', 'SMP Boys Basketball', 'SMP Girls Basketball'],
@@ -23,7 +23,7 @@ test('corrects the known August 22 SMP boys basketball fixture to GJS only', () 
 
 test('recognizes a shared LV and KV trip as an away game', () => {
   const matrix = [
-    [],
+    ['SPH SPORTS 2026-27 MASTER SCHEDULE'],
     [],
     [],
     ['Day', 'Date', 'Varsity Boys Soccer'],
@@ -36,4 +36,16 @@ test('recognizes a shared LV and KV trip as an away game', () => {
   assert.equal(event?.eventType, 'Away Game');
   assert.equal(event?.opponent, 'GJS');
   assert.equal(event?.location, 'GJS');
+});
+
+
+test('weekday dates follow the academic year declared by each tab, including the January rollover', () => {
+  const schedule = (title: string) => [
+    ['Season 3', '', title], [], [], ['', '', 'Varsity Girls Soccer'],
+    ['Sat', '8-Nov', 'SPH-LV @ BSJ'], ['Sat', '14-Feb', 'SPH-LV @ GJS'],
+  ];
+  const dates = (title: string) => parseMasterScheduleSeason('Season 3', schedule(title)).map(event => event.date);
+  assert.deepEqual(dates('SPH SPORTS 2025-2026 MASTER SCHEDULE'), ['2025-11-08', '2026-02-14']);
+  assert.deepEqual(dates('SPH SPORTS 2026-27 MASTER SCHEDULE'), ['2026-11-08', '2027-02-14']);
+  assert.deepEqual(dates('SPH SPORTS MASTER SCHEDULE'), []);
 });

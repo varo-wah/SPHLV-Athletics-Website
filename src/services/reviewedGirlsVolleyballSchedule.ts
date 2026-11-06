@@ -23,13 +23,23 @@ export function mergeReviewedGirlsVolleyballSchedule(events: ScheduleEvent[]): S
   ));
   const index = merged.findIndex(event => event.id === fixture.id || (
     isGirlsVolleyball(event) && event.date === fixture.date
+    && (!event.opponent || event.opponent === fixture.opponent)
     && /\bjaac\b/i.test(event.eventText) && /\bsemi[ -]?finals?\b/i.test(event.eventText)
   ));
-  if (index < 0) merged.push({ ...fixture });
-  else merged[index] = {
-    ...fixture,
-    ...merged[index],
-    details: merged[index].details || fixture.details,
-  };
+  if (index < 0) {
+    merged.push({ ...fixture });
+  } else {
+    const published = merged[index];
+    merged[index] = {
+      ...fixture,
+      ...published,
+      status: 'Finished',
+      opponent: published.opponent || fixture.opponent,
+      time: published.time || fixture.time,
+      location: published.location || fixture.location,
+      resultScore: published.resultScore || fixture.resultScore,
+      details: published.details || fixture.details,
+    };
+  }
   return merged;
 }

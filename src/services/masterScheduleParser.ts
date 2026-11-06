@@ -26,6 +26,10 @@ interface TeamIdentity {
 }
 
 export function parseMasterScheduleSeason(season: string, matrix: string[][]): ScheduleEvent[] {
+  const yearRange = (matrix[0] || []).join(' ').match(/\b(20\d{2})\s*[-–—/]\s*(20\d{2}|\d{2})\b/);
+  const firstYear = yearRange ? Number(yearRange[1]) : null;
+  const lastYear = yearRange && firstYear ? (yearRange[2].length === 2 ? 2000 : 0) + Number(yearRange[2]) : null;
+  if (!firstYear || lastYear !== firstYear + 1) return [];
   const headers = headerMap(matrix);
   const events: ScheduleEvent[] = [];
   let currentWeek: string | null = null;
@@ -41,12 +45,8 @@ export function parseMasterScheduleSeason(season: string, matrix: string[][]): S
       continue;
     }
 
-    const parsedDate = parseScheduleDate(second || first) || currentDate;
-
-    if (parseScheduleDate(second || first)) {
-      currentDate = parsedDate;
-    }
-
+    currentDate = parseScheduleDate(second || first, firstYear) ?? currentDate;
+    const parsedDate = currentDate;
     if (!parsedDate) {
       continue;
     }
@@ -128,7 +128,7 @@ function isDayLabel(value: string): boolean {
   return DAY_NAMES.includes(value.replace(/\.$/, ''));
 }
 
-function parseScheduleDate(value: string): string | null {
+function parseScheduleDate(value: string, schoolYear: number): string | null {
   const cleaned = clean(value);
   const match = cleaned.match(/^(\d{1,2})[-/\s]([A-Za-z]{3,5})$/);
 
@@ -143,7 +143,7 @@ function parseScheduleDate(value: string): string | null {
     return null;
   }
 
-  const year = month >= 6 ? 2026 : 2027;
+  const year = month >= 6 ? schoolYear : schoolYear + 1;
   const date = new Date(year, month, day);
 
   if (Number.isNaN(date.getTime())) {

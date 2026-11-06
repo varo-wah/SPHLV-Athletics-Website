@@ -23,6 +23,6 @@ test('rejects unavailable, malformed, and inconsistent source data instead of sh
   malformed[9][5] = 'postponed';
   assert.throws(() => parseSoccerStandings(malformed, 'Boys'), /Invalid soccer score/);
   const inconsistent = structuredClone(snapshot.boys);
-  inconsistent[9][10] = '9';
-  assert.throws(() => parseSoccerStandings(inconsistent, 'Boys'), /points disagree/);
+  inconsistent[9][5] = '2-1';
+  assert.throws(() => parseSoccerStandings(inconsistent, 'Boys'), /reciprocal/);
 });

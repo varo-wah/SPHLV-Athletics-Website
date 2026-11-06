@@ -500,7 +500,7 @@ export function parseStandings(rows: CsvRow[], fallbackSport: SheetSport): Stand
         level,
         genderGroup,
         tournament,
-        rank: num(get(row, "Rank", "#", "Position", "No", "No.")) ?? index + 1,
+        rank: num(get(row, "Rank", "#", "Position", "No", "No.")),
         team: get(row, "Team", "School", "Name", "TEAM", "School Name") || "TBD",
         wins,
         draws,

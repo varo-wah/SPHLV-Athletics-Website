@@ -11,7 +11,10 @@ test('October 27 soccer results retain match dates, report dates and confirmed s
     ['soccer-sma-girls', '2026-10-27', '2026-10-27', 3, 2],
   ]);
   assert.ok(matches.every(match => match.status === 'Finished' && match.result === 'W' && match.tournament === 'JAAC'));
-  assert.ok(matches.every(match => match.time === '' && match.venue === '' && match.locationType === 'TBD'));
+  assert.deepEqual(matches.map(match => [match.time, match.venue, match.locationType, match.matchType]), [
+    ['16:00', 'SPH-LV', 'Home', 'JAAC'],
+    ['16:00', 'BSJ', 'Away', 'JAAC semifinal'],
+  ]);
   assert.deepEqual(matches[0].statLeaders, ['Deven — 1 goal', 'Solomon Schleper — 1 goal', 'Ben Yulianto — 1 goal (penalty)']);
   assert.deepEqual(matches[1].statLeaders, ['Sherny Lim — 2 goals', 'Grace Priskila Nawipa — 1 goal']);
   assert.equal(matches[0].penalties, undefined, 'an in-game penalty goal is not a shootout');

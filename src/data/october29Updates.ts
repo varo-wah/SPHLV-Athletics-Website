@@ -8,7 +8,7 @@ export const OCTOBER_29_UPDATES: GameDayUpdate[] = [
     fixtureId: '2026-boys-soccer-jaac-stl-oct27',
     teamId: 'soccer-sma-boys', date: '2026-10-27', reportedDate: '2026-10-28',
     opponent: 'STL', scoreFor: 3, scoreAgainst: 0,
-    newFixture: { time: '', venue: '', locationType: 'TBD' },
+    newFixture: { time: '16:00', venue: 'SPH-LV', locationType: 'Home' },
     details: {
       tournament: 'JAAC', matchType: 'JAAC',
       statLeaders: ['Deven — 1 goal', 'Solomon Schleper — 1 goal', 'Ben Yulianto — 1 goal (penalty)'],
@@ -19,9 +19,9 @@ export const OCTOBER_29_UPDATES: GameDayUpdate[] = [
     fixtureId: '2026-girls-soccer-jaac-bsj-oct27',
     teamId: 'soccer-sma-girls', date: '2026-10-27', reportedDate: '2026-10-27',
     opponent: 'BSJ', scoreFor: 3, scoreAgainst: 2,
-    newFixture: { time: '', venue: '', locationType: 'TBD' },
+    newFixture: { time: '16:00', venue: 'BSJ', locationType: 'Away' },
     details: {
-      tournament: 'JAAC', matchType: 'JAAC',
+      tournament: 'JAAC', matchType: 'JAAC semifinal',
       statLeaders: ['Sherny Lim — 2 goals', 'Grace Priskila Nawipa — 1 goal'],
       highlights: [
         'No. 4 SPH-LV upset No. 1 BSJ 3–2.',

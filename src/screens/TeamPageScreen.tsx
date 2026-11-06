@@ -7,8 +7,9 @@ import { AthleticsDataState } from '../hooks/useAthleticsData';
 import TeamFavoriteButton from '../components/TeamFavoriteButton';
 import CompactResultCard from '../components/CompactResultCard';
 import ScheduleEventNotes from '../components/ScheduleEventNotes';
-import AcscTournamentBanner from '../components/AcscTournamentBanner';
+import JaacTournamentBracket from '../components/JaacTournamentBracket';
 import AcscCompetitionPanel from '../components/AcscCompetitionPanel';
+import { acscResultsForTeam } from '../data/acscCompetitionResults2026';
 import { scheduleTimestamp } from '../utils/scheduleTime';
 import { formatWinPercentage, rankStandings, standingsRecordLabel, standingsShowDraws } from '../utils/standingsPresentation';
 import TournamentResultsSection from '../components/TournamentResultsSection';
@@ -21,7 +22,7 @@ import {
 import type { JaacSchool } from '../data/jaacSchools';
 import type { ScheduleEvent } from '../data/scheduleTypes';
 import { rosterForTeam } from '../data/teamRosters';
-import leagueSnapshot from '../data/leagueStandingsSnapshot.json';
+import { officialStandingsUrlFor, OFFICIAL_STANDINGS_VERIFIED_AT } from '../data/officialStandings';
 import { isCompetitiveScheduleEvent } from '../services/masterScheduleParser';
 import {
   PAGE_TRANSITION,
@@ -138,7 +139,7 @@ export default function TeamPageScreen({
   athleticsDataState,
 }: TeamPageScreenProps) {
   const [activeSection, setActiveSection] = useState<TeamPageSection>('games');
-  const [gamesView, setGamesView] = useState<GamesView>('upcoming');
+  const [chosenGamesView, setGamesView] = useState<GamesView | null>(null);
   const [sectionDirection, setSectionDirection] = useState(1);
   const [gamesDirection, setGamesDirection] = useState(1);
   const reduceMotion = useReducedMotion();
@@ -169,7 +170,7 @@ export default function TeamPageScreen({
 
   useEffect(() => {
     setActiveSection('games');
-    setGamesView('upcoming');
+    setGamesView(null);
   }, [sport, division, gender]);
 
   const standingsForDisplay = (athleticsDataState?.data.standings || []).filter(
@@ -180,7 +181,8 @@ export default function TeamPageScreen({
   );
   const showDraws = standingsShowDraws(sport);
   const standingsSource = athleticsDataState?.remoteSources.find((source) => source.id === `${sport.toLowerCase()}-${gender}-standings`);
-  const standingsDate = new Date(standingsSource?.publishedAt ?? leagueSnapshot.verifiedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
+  const standingsDate = new Date(standingsSource?.publishedAt ?? OFFICIAL_STANDINGS_VERIFIED_AT).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
+  const standingsUrl = officialStandingsUrlFor(sport, gender);
   const differenceLabel =
     sport === 'Soccer'
       ? 'GD'
@@ -233,6 +235,7 @@ export default function TeamPageScreen({
     );
 
   const standingsRows = rankStandings(standingsForDisplay);
+  const gamesView = chosenGamesView ?? (upcomingEvents.length === 0 && completedResults.length > 0 ? 'results' : 'upcoming');
   const allTeamsTied = standingsRows.length > 1 && standingsRows.every(entry => entry.rank === 1 && entry.isTied);
 
   const EmptyPanel = ({
@@ -350,10 +353,9 @@ export default function TeamPageScreen({
             transition={PAGE_TRANSITION}
           >
         <div className="space-y-10">
-          {activeSection === 'standings' && <AcscCompetitionPanel teamId={team?.id} />}
           {activeSection === 'standings' && (
             <section className="team-league-standings" data-show-draws={showDraws}>
-              <h2 className="mb-3 text-sm font-black uppercase tracking-wide">JAAC standings</h2>
+              <h2 className="mb-3 text-sm font-black uppercase tracking-wide">JAAC regular-season standings</h2>
               <div className="team-standings-scroll overflow-x-auto rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
                 <div className={`team-standings-row grid gap-1 border-b border-border/10 bg-[#F1F2F3] px-3 py-4 text-[9px] font-black uppercase tracking-[0.12em] text-brand-maroon sm:text-[10px] sm:tracking-[0.18em] dark:border-white/10 dark:bg-muted dark:text-[#D85A57]`}>
                   <div>Rank</div>
@@ -400,6 +402,7 @@ export default function TeamPageScreen({
                         losses,
                         gp,
                         winPercentage,
+                        pts,
                         rank,
                         diff,
                         isTied,
@@ -454,6 +457,7 @@ export default function TeamPageScreen({
                                 <p className="team-standings-club-name text-sm font-black uppercase leading-tight tracking-[0.02em] text-foreground sm:text-base sm:tracking-wide">
                                   {row.team}
                                 </p>
+                                {row.notes && <p className="mt-1 text-xs text-foreground/65">{row.notes}</p>}
 
                                 <p className="team-standings-record mt-1 text-[10px] font-black uppercase tracking-[0.14em] text-foreground/35">
                                   {standingsRecordLabel(wins, draws, losses, sport)}
@@ -482,7 +486,7 @@ export default function TeamPageScreen({
                                 </p>
 
                                 <p className="text-[9px] font-black uppercase tracking-[0.14em] text-foreground/30">
-                                  {differenceLabel}{' '}
+                                  {pts} pts · {differenceLabel}{' '}
                                   {diff !== null &&
                                   diff > 0
                                     ? `+${diff}`
@@ -498,9 +502,7 @@ export default function TeamPageScreen({
                 </div>
 
                 <div className="flex flex-col gap-2 border-t border-brand-maroon/5 bg-[#F4F4F3] px-5 py-4 text-[10px] font-black uppercase tracking-[0.16em] text-foreground/45 sm:flex-row sm:items-center sm:justify-between dark:border-border/5 dark:bg-foreground/[0.025] dark:text-foreground/35">
-                  <span>
-                    Official workbook snapshot
-                  </span>
+                  {standingsUrl && <a href={standingsUrl} target="_blank" rel="noreferrer" className="underline hover:text-brand-maroon">Official JAAC workbook</a>}
 
                   <span>
                     {standingsRows.length} Teams ·{' '}
@@ -508,24 +510,12 @@ export default function TeamPageScreen({
                   </span>
                 </div>
               </div>
+              <p className="mt-2 text-xs text-foreground/60">League seeds and published positions take priority. Remaining schools are ranked by win percentage.</p>
             </section>
           )}
 
           {activeSection === 'games' && (
-            <section className="space-y-4">
-              <AcscTournamentBanner teamId={team?.id} onViewStandings={() => selectSection('standings')} />
-              <div className="flex flex-col gap-4 rounded-2xl border border-border/10 bg-subcard/50 px-4 py-4 shadow-sm sm:flex-row sm:items-center sm:justify-between">
-                <div>
-                  <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[#B5413F]">
-                    Schedule & results
-                  </p>
-
-                  <h2 className="mt-1 text-lg font-black uppercase tracking-[0.06em] text-foreground">
-                    Season Games
-                  </h2>
-                </div>
-              </div>
-
+            <section className="space-y-4" aria-label="Schedule and results">
               <div
                 role="group"
                 aria-label="Choose upcoming games or completed results"
@@ -747,7 +737,18 @@ export default function TeamPageScreen({
           )}
         </div>
 
-        {activeSection === 'standings' && <TournamentResultsSection teamId={team?.id} matches={completedResults} />}
+        {activeSection === 'standings' && (
+          <>
+            <JaacTournamentBracket teamId={team?.id} matches={completedResults} />
+            <TournamentResultsSection teamId={team?.id} matches={completedResults} />
+            {acscResultsForTeam(team?.id) && (
+              <details className="mt-8 rounded-2xl border border-border/15 bg-subcard/50">
+                <summary className="cursor-pointer px-4 py-4 text-sm font-bold">ACSC 2026 archive · results &amp; bracket</summary>
+                <AcscCompetitionPanel teamId={team?.id} />
+              </details>
+            )}
+          </>
+        )}
 
         {activeSection === 'players' && (
           <section
