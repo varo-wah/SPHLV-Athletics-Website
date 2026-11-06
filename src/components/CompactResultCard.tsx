@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SheetMatch } from '../services/parsers';
 import { penaltyScoreLabel, presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
+import { volleyballRecap } from '../utils/volleyballRecaps';
 import MatchDetailsModal from './MatchDetailsModal';
 import TeamLogo from './TeamLogo';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
@@ -18,8 +19,9 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const teams = presentResultTeams(match);
   const outcome = resultOutcomeLabel(match.result);
+  const recap = volleyballRecap(match);
   const hasDetails = Boolean(
-    match.reportedDate ||
+    recap || match.reportedDate ||
     match.matchType ||
     match.setScores?.length ||
     match.statLeaders?.length ||
@@ -66,11 +68,12 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
           </span>
           {hasDetails && (
             <span className="mt-1 text-[7px] font-black uppercase tracking-[0.1em] text-brand-maroon">
-              Stats ›
+              {recap ? 'Recap' : 'Stats'} ›
             </span>
           )}
         </div>
       </div>
+      {!dense && recap && <p className="border-t border-border/10 px-3 py-2 text-xs font-medium leading-relaxed text-foreground/75">{recap}</p>}
       {match.penalties && <p className="border-t border-border/10 px-3 py-2 text-center text-[10px] font-bold text-foreground/70">{penaltyScoreLabel(match)}</p>}
     </motion.article>
   );
@@ -83,7 +86,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
         ref={triggerRef}
         type="button"
         onClick={() => setDetailsOpen(true)}
-        aria-label={`Open ${match.opponent} game statistics`}
+        aria-label={`Open ${match.opponent} game ${recap ? 'recap' : 'statistics'}`}
         aria-haspopup="dialog"
         className="group block w-full rounded-2xl text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-maroon focus-visible:ring-offset-2"
         whileTap={{ scale: PRESS_SCALE }}

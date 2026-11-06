@@ -14,6 +14,7 @@ import { DivisionTab, GenderTab, SportTab } from '../types';
 import {
   IS_PROTOTYPE,
   LAUNCH_SEASON,
+  VARSITY_BASKETBALL_SEASON,
   isVisibleScheduleEvent,
 } from '../config/launchSports';
 import {
@@ -98,6 +99,8 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
     title: 'SMP Girls Basketball',
     emoji: '🏀',
   },
+  { id: 'VBB', label: 'VBB', title: 'Varsity Boys Basketball', emoji: '🏀' },
+  { id: 'VGB', label: 'VGB', title: 'Varsity Girls Basketball', emoji: '🏀' },
 ];
 
 const ALL = 'All';
@@ -199,7 +202,7 @@ function teamFilterClasses(filter: ScheduleTeamFilter, active: boolean) {
       : 'border-[#8FC1DD] bg-[#EAF4FA] text-[#235B7A] hover:border-[#669BBC] dark:bg-[#669BBC]/15 dark:text-[#9CCCE5]';
   }
 
-  const boysTeam = filter === 'VBS' || filter === 'VBV' || filter === 'SMPBB';
+  const boysTeam = filter === 'VBS' || filter === 'VBV' || filter === 'SMPBB' || filter === 'VBB';
   if (boysTeam) {
     return active
       ? 'border-[#669BBC] bg-[#DCEEF8] text-[#174D6B] ring-2 ring-[#669BBC]/25 shadow-[0_8px_20px_rgba(102,155,188,0.18)] dark:bg-[#669BBC]/25 dark:text-[#BFDFF0]'
@@ -311,9 +314,14 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       : BUNDLED_SEASONS;
   }, [scheduleEvents]);
   const hash = useHashRoute();
-  const filters = parseScheduleQuery(hash.split('?')[1] ?? '', IS_PROTOTYPE ? seasons : [LAUNCH_SEASON], LAUNCH_SEASON);
+  const visibleSeasons = IS_PROTOTYPE ? seasons : seasons.filter(season =>
+    season === LAUNCH_SEASON || season === VARSITY_BASKETBALL_SEASON);
+  const defaultSeason = visibleSeasons.includes(VARSITY_BASKETBALL_SEASON) ? VARSITY_BASKETBALL_SEASON : LAUNCH_SEASON;
+  const filters = parseScheduleQuery(hash.split('?')[1] ?? '', visibleSeasons, defaultSeason);
   const activeSeason = filters.season;
-  const teamFilter = filters.team as ScheduleTeamFilter;
+  const teamOptions = TEAM_FILTER_OPTIONS.filter(option => option.id === 'All' || IS_PROTOTYPE
+    || (['VBB', 'VGB'].includes(option.id) === (activeSeason === VARSITY_BASKETBALL_SEASON)));
+  const teamFilter = teamOptions.find(option => option.id === filters.team)?.id ?? 'All';
   const scheduleScope = filters.scope;
   const scheduleView: ScheduleView = filters.view;
   const updateFilters = (patch: Partial<typeof filters>) => {
@@ -404,7 +412,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   });
   const seasonEventCounts = useMemo(() => (
     scheduleEvents.reduce<Record<string, number>>((counts, event) => {
-      if (isMeaningfulScheduleEvent(event)) {
+      if (isMeaningfulScheduleEvent(event) && isVisibleScheduleEvent(event.season, eventSportKey(event), event.team)) {
         counts[event.season] = (counts[event.season] || 0) + 1;
       }
       return counts;
@@ -440,9 +448,9 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
       <header className="schedule-heading"><h1 className="text-2xl font-black uppercase tracking-tight">Schedule</h1><p className="mt-1 text-xs text-foreground/55">Games, meets and training</p></header>
       <div className="schedule-layout">
       <section className="schedule-filters space-y-3" aria-label="Schedule filters">
-        {IS_PROTOTYPE && (
+        {visibleSeasons.length > 1 && (
           <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar" aria-label="Schedule seasons">
-            {seasons.map((season) => (
+            {visibleSeasons.map((season) => (
               <motion.button
                 key={season}
                 type="button"
@@ -473,7 +481,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
         )}
 
         <div className="schedule-team-filters -mx-1 flex gap-2 overflow-x-auto px-1 pb-1 no-scrollbar" aria-label="Filter schedule by team">
-          {TEAM_FILTER_OPTIONS.map((option) => {
+          {teamOptions.map((option) => {
             const active = teamFilter === option.id;
             return (
               <motion.button

@@ -99,7 +99,8 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 2,
       "awayScore": 0,
       "venue": "International Christian School, Hong Kong · LG",
-      "fixtureId": "acsc-volleyball-boys-2026-round-1"
+      "fixtureId": "acsc-volleyball-boys-2026-round-1",
+      "notes": "YISS took both sets in SPH’s tournament opener in Hong Kong. The teams would meet again in Friday’s playoffs."
     },
     {
       "id": "acsc-bvb-2026-pool-ics-bkk-gis",
@@ -124,7 +125,8 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 2,
       "awayScore": 0,
       "venue": "International Christian School, Hong Kong · UG",
-      "fixtureId": "acsc-volleyball-boys-2026-round-2"
+      "fixtureId": "acsc-volleyball-boys-2026-round-2",
+      "notes": "Faith Academy beat SPH 2–0 in the second match of the day. Faith went on to win all six pool matches and the tournament title."
     },
     {
       "id": "acsc-bvb-2026-pool-yiss-dalat",
@@ -161,7 +163,8 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 0,
       "awayScore": 2,
       "venue": "International Christian School, Hong Kong · UG",
-      "fixtureId": "acsc-volleyball-boys-2026-round-3"
+      "fixtureId": "acsc-volleyball-boys-2026-round-3",
+      "notes": "Grace won in straight sets in SPH’s third match on Wednesday. SPH’s next pool match was against Dalat on Thursday morning."
     },
     {
       "id": "acsc-bvb-2026-pool-faith-dalat",
@@ -198,7 +201,8 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 2,
       "awayScore": 0,
       "venue": "International Christian School, Hong Kong · UG",
-      "fixtureId": "acsc-volleyball-boys-2026-round-4"
+      "fixtureId": "acsc-volleyball-boys-2026-round-4",
+      "notes": "SPH opened Thursday’s play against Dalat. The eventual tournament runner-up took both sets."
     },
     {
       "id": "acsc-bvb-2026-pool-faith-ics-bkk",
@@ -259,7 +263,8 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 0,
       "awayScore": 2,
       "venue": "International Christian School, Hong Kong · UG",
-      "fixtureId": "acsc-volleyball-boys-2026-round-5"
+      "fixtureId": "acsc-volleyball-boys-2026-round-5",
+      "notes": "Tournament host ICS Hong Kong beat SPH 2–0 in the Eagles’ second and final match on Thursday."
     },
     {
       "id": "acsc-bvb-2026-pool-ics-bkk-yiss",
@@ -320,7 +325,8 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 2,
       "awayScore": 0,
       "venue": "International Christian School, Hong Kong · LG",
-      "fixtureId": "acsc-volleyball-boys-2026-round-7"
+      "fixtureId": "acsc-volleyball-boys-2026-round-7",
+      "notes": "ICS Bangkok took both sets on Friday morning. SPH finished pool play in seventh and drew second-seeded YISS in the opening playoff round."
     },
     {
       "id": "acsc-bvb-2026-pool-gis-dalat",
@@ -359,7 +365,7 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong · LG",
-      "notes": "Named pairing verified in the final official bracket; exact score not published.",
+      "notes": "SPH met YISS for the second time in three days. YISS advanced to face Dalat, while SPH moved into the placement bracket against ICS Bangkok.",
       "fixtureId": "acsc-volleyball-boys-2026-seeding"
     },
     {
@@ -412,7 +418,7 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong · LG",
-      "notes": "Seventh-place elimination match. SPH finished seventh according to the official awards; the exact match score is not published in the bracket.",
+      "notes": "SPH finished seventh after this placement match. ICS Bangkok advanced to face ICS Hong Kong on Saturday morning.",
       "fixtureId": "acsc-volleyball-boys-2026-consolation"
     },
     {
@@ -517,7 +523,7 @@ export const ACSC_BOYS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": null,
       "awayScore": null,
       "venue": "International Christian School, Hong Kong · UG",
-      "notes": "Exhibition pairing verified in the final official bracket; exact score not published. This does not change final placement.",
+      "notes": "SPH and ICS Bangkok were paired for a Saturday exhibition after the placement rounds. SPH’s seventh-place finish was already settled.",
       "fixtureId": "acsc-volleyball-boys-2026-playoffs-placement"
     }
   ],

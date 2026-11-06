@@ -194,7 +194,7 @@ export const OCTOBER_20_UPDATES: GameDayUpdate[] = [
     fixtureId: '2026-boys-volleyball-oct-cubic',
     teamId: 'volleyball-sma-boys', date: '', reportedDate: '2026-10-16', opponent: 'Cubic', scoreFor: 0, scoreAgainst: 2,
     newFixture: { time: '', venue: '', locationType: 'TBD' },
-    details: { setScores: ['13–25', '17–25'], highlights: ['Competition to be confirmed.'] },
+    details: { setScores: ['13–25', '17–25'], highlights: ['Cubic won both sets, 25–13 and 25–17.', 'Competition to be confirmed.'] },
   },
   {
     fixtureId: '2026-boys-volleyball-oct-popb',

@@ -1,6 +1,6 @@
 import { ExternalLink, Play } from 'lucide-react';
 import { ACSC_LOGO, acscSchoolForName } from '../data/acscSchools';
-import { acscTournamentForTeam, ACSC_TOURNAMENTS } from '../data/acscTournaments2026';
+import { acscTournamentForTeam } from '../data/acscTournaments2026';
 import { acscResultsForTeam } from '../data/acscCompetitionResults2026';
 
 const watchClass = 'inline-flex min-h-10 items-center justify-center gap-2 rounded-xl bg-brand-maroon px-3 py-2 text-xs font-bold text-white hover:bg-brand-red focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2';
@@ -28,27 +28,5 @@ export default function AcscTournamentBanner({ teamId }: { teamId?: string }) {
         <a href={tournament.sourceUrl} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center text-xs font-bold text-brand-maroon underline underline-offset-2 dark:text-red-300">Booklet</a>
       </div>
     </aside>
-  );
-}
-
-export function AcscWatchLinks() {
-  return (
-    <section aria-label="ACSC 2026 coverage" className="rounded-2xl border border-brand-maroon/25 bg-subcard p-4 shadow-sm">
-      <div className="flex items-center gap-3">
-        <img src={ACSC_LOGO} alt="ACSC" className="h-10 w-16 rounded-lg bg-white object-contain p-1" />
-        <div>
-          <h2 className="text-sm font-black uppercase tracking-[0.08em]">Eagles at ACSC 2026</h2>
-          <p className="text-[11px] font-semibold text-foreground/60">October 21–24 · Results, playoffs & broadcasts</p>
-        </div>
-      </div>
-      <div className="mt-3 divide-y divide-border/10">
-        {ACSC_TOURNAMENTS.map(tournament => (
-          <div key={tournament.id} className="flex items-center justify-between gap-3 py-2 first:pt-0 last:pb-0">
-            <a href={`#/teams/${tournament.teamId}`} className="min-w-0 text-xs font-bold text-foreground underline decoration-brand-maroon/25 underline-offset-4">{tournament.title.replace('ACSC ', '').replace(' 2026', '')}<span className="block text-[10px] font-semibold text-foreground/55">{tournament.city}</span></a>
-            <a href={tournament.livestreamUrl} target="_blank" rel="noopener noreferrer" aria-label={`Watch ${tournament.title} on YouTube`} className="inline-flex min-h-10 shrink-0 items-center gap-1.5 rounded-lg bg-brand-maroon px-3 text-[11px] font-bold text-white"><Play size={12} aria-hidden="true" />YouTube</a>
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }

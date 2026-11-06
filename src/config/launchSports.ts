@@ -11,6 +11,7 @@ export const RELEASE_CHANNEL: ReleaseChannel = requestedReleaseChannel === 'prot
 
 export const IS_PROTOTYPE = RELEASE_CHANNEL === 'prototype';
 export const LAUNCH_SEASON = 'Season 1';
+export const VARSITY_BASKETBALL_SEASON = 'Season 2';
 
 export function isInReleaseSeason(season: string, includePrototypeSeasons = IS_PROTOTYPE): boolean {
   return includePrototypeSeasons || season === LAUNCH_SEASON;
@@ -73,6 +74,10 @@ export function isVisibleScheduleEvent(
   teamName: string,
 ): boolean {
   if (IS_PROTOTYPE) return true;
+
+  if (season === VARSITY_BASKETBALL_SEASON) {
+    return sport === 'Basketball' && /^varsity (?:boys|girls|boys & girls) basketball$/i.test(teamName.trim());
+  }
 
   // Swimming has its own public team page rather than a gendered team-catalog entry.
   if (season === LAUNCH_SEASON && (sport === 'Swimming' || sport === null)

@@ -29,7 +29,7 @@
     grid-template-areas:
       "banner banner"
       "games recap"
-      "news coverage";
+      "news recap";
     align-items: start;
     gap: 1.5rem;
     margin-top: 1.5rem;
@@ -44,8 +44,7 @@
   .home-screen:not(:has(> .home-recap)) {
     grid-template-areas:
       "banner banner"
-      "games news"
-      "coverage news";
+      "games news";
   }
 
   .home-banner {
@@ -54,10 +53,6 @@
 
   .home-recap {
     grid-area: recap;
-  }
-
-  .home-coverage {
-    grid-area: coverage;
   }
 
   .home-games {

@@ -256,6 +256,7 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 2",
       "fixtureId": "acsc-volleyball-girls-2026-round-robin-dalat",
+      "notes": "Dalat took the opening set 25–14. SPH narrowed the margin in the second, which Dalat won 25–22.",
       "setScores": [
         "25-14",
         "25-22"
@@ -322,6 +323,7 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 2",
       "fixtureId": "acsc-volleyball-girls-2026-round-robin-ics-hk",
+      "notes": "SPH earned its first win of the tournament, beating ICS Hong Kong in straight sets, 25–21 and 25–19.",
       "setScores": [
         "25-21",
         "25-19"
@@ -371,6 +373,7 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 1",
       "fixtureId": "acsc-volleyball-girls-2026-round-robin-ics-bkk",
+      "notes": "Tournament host ICS Bangkok beat SPH in straight sets to close the Eagles’ opening day.",
       "setScores": [
         "25-12",
         "25-17"
@@ -454,6 +457,7 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "awayScore": 2,
       "venue": "International Community School, Bangkok, Thailand · Court 2",
       "fixtureId": "acsc-volleyball-girls-2026-round-robin-yiss",
+      "notes": "YISS won the opening set 25–10 and the second 25–17 in SPH’s first match on Thursday.",
       "setScores": [
         "10-25",
         "17-25"
@@ -517,6 +521,7 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "awayScore": 2,
       "venue": "International Community School, Bangkok, Thailand · Court 2",
       "fixtureId": "acsc-volleyball-girls-2026-round-robin-grace",
+      "notes": "SPH won the opener 25–15. Grace forced a third set with a 25–23 win before the Eagles took the decider 15–13.",
       "setScores": [
         "15-25",
         "25-23",
@@ -617,6 +622,7 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 2",
       "fixtureId": "acsc-volleyball-girls-2026-round-robin-faith",
+      "notes": "Faith Academy won both sets against SPH, 25–20 and 25–19.",
       "setScores": [
         "25-20",
         "25-19"
@@ -683,6 +689,7 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "awayScore": 2,
       "venue": "International Community School, Bangkok, Thailand · Court 2",
       "fixtureId": "acsc-volleyball-girls-2026-round-robin-morrison",
+      "notes": "SPH won the second set 25–23 to draw level. Morrison took the decider 15–9, leaving the Eagles with two wins in seven round-robin matches.",
       "setScores": [
         "12-25",
         "25-23",
@@ -724,7 +731,8 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 3,
       "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 1",
-      "fixtureId": "acsc-volleyball-girls-2026-quarterfinal"
+      "fixtureId": "acsc-volleyball-girls-2026-quarterfinal",
+      "notes": "Morrison won the quarterfinal in three sets. SPH moved into the consolation bracket to face Faith Academy.",
     },
     {
       "id": "acsc-girls-volleyball-2026-g4",
@@ -761,7 +769,8 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 2,
       "awayScore": 0,
       "venue": "International Community School, Bangkok, Thailand · Court 2",
-      "fixtureId": "acsc-volleyball-girls-2026-semifinal-consolation"
+      "fixtureId": "acsc-volleyball-girls-2026-semifinal-consolation",
+      "notes": "After losing to Faith in round-robin play, SPH won the rematch 2–0 to reach the fifth-place match.",
     },
     {
       "id": "acsc-girls-volleyball-2026-g7",
@@ -798,7 +807,8 @@ export const ACSC_GIRLS_VOLLEYBALL_RESULTS: AcscCompetitionSnapshot = {
       "homeScore": 2,
       "awayScore": 3,
       "venue": "International Community School, Bangkok, Thailand · Court 1",
-      "fixtureId": "acsc-volleyball-girls-2026-final-placement"
+      "fixtureId": "acsc-volleyball-girls-2026-final-placement",
+      "notes": "SPH and ICS Hong Kong went to a fifth set in their rematch. Hong Kong won 3–2, and the Eagles finished sixth."
     },
     {
       "id": "acsc-girls-volleyball-2026-g10",

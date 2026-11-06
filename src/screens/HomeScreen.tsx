@@ -7,7 +7,6 @@ import CompactResultCard from '../components/CompactResultCard';
 import HomeTournamentRecap from '../components/HomeTournamentRecap';
 import NewsListRow from '../components/NewsListRow';
 import TeamLogo from '../components/TeamLogo';
-import { AcscWatchLinks } from '../components/AcscTournamentBanner';
 import { ACSC_LOGO, acscSchoolForName } from '../data/acscSchools';
 import { acscTournamentForEvent } from '../data/acscTournaments2026';
 import { scheduleTimeLabel, scheduleTimestamp } from '../utils/scheduleTime';
@@ -92,8 +91,7 @@ export default function HomeScreen({
   onNavigateToTeam,
   onBrowseTeams,
 }: HomeScreenProps) {
-  const [gameFeedView, setGameFeedView] =
-    useState<'upcoming' | 'results'>('upcoming');
+  const [selectedGameFeed, setGameFeedView] = useState<'upcoming' | 'results' | null>(null);
   const reduceMotion = useReducedMotion();
   const [feedPages, setFeedPages] = useState({ upcoming: 0, results: 0 });
   const touchStart = useRef<{ x: number; y: number } | null>(null);
@@ -193,6 +191,7 @@ export default function HomeScreen({
       .sort((a, b) => scheduleTimestamp({ ...a.event, time: a.time }) - scheduleTimestamp({ ...b.event, time: b.time }));
   }, [athleticsDataState.data.masterScheduleEvents]);
 
+  const gameFeedView = selectedGameFeed ?? (nextGames.length === 0 && latestResults.length > 0 ? 'results' : 'upcoming');
   const feedCount = gameFeedView === 'results' ? latestResults.length : nextGames.length;
   const lastPage = Math.max(0, Math.ceil(feedCount / 4) - 1);
   const feedPage = Math.min(feedPages[gameFeedView], lastPage);
@@ -212,10 +211,6 @@ export default function HomeScreen({
         />
       </div>
 
-      <HomeTournamentRecap matches={athleticsDataState.data.matches} />
-
-      <div className="home-coverage"><AcscWatchLinks /></div>
-
       <section
         aria-label="Games"
         className="home-games overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]"
@@ -226,8 +221,8 @@ export default function HomeScreen({
         </div>
         <div className="home-feed-controls mx-auto mt-3 grid w-[calc(100%-1.5rem)] max-w-[23rem] grid-cols-2 gap-1.5 rounded-2xl border border-border/10 bg-subcard/70 p-2 shadow-sm">
           {[
-            { id: 'results' as const, label: 'Past', count: latestResults.length },
             { id: 'upcoming' as const, label: 'Upcoming', count: nextGames.length },
+            { id: 'results' as const, label: 'Results', count: latestResults.length },
           ].map((view) => {
             const active = gameFeedView === view.id;
 
@@ -363,14 +358,14 @@ export default function HomeScreen({
           {gameFeedView === 'results' &&
             latestResults.length === 0 && (
               <p className="px-3 py-5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/38">
-                {athleticsDataState.loading ? 'Loading results…' : athleticsDataState.data.resultSourceStates.some(source => source.failed || !source.configured) ? 'Results unavailable — retry using Data status above' : 'No completed results recorded yet'}
+                {athleticsDataState.loading ? 'Loading results…' : athleticsDataState.data.resultSourceStates.some(source => source.failed || !source.configured) ? 'Results unavailable. Retry at the bottom of the page.' : 'No completed results recorded yet'}
               </p>
             )}
 
           {gameFeedView === 'upcoming' &&
             nextGames.length === 0 && (
               <p className="px-3 py-5 text-center text-[10px] font-bold uppercase tracking-[0.1em] text-foreground/38">
-                No upcoming games listed
+                {athleticsDataState.loading ? 'Loading upcoming games…' : 'No upcoming games listed'}
               </p>
             )}
             </motion.div>
@@ -384,6 +379,8 @@ export default function HomeScreen({
           )}
         </div>
       </section>
+
+      <HomeTournamentRecap matches={athleticsDataState.data.matches} />
 
       {user && favoritesLoading ? (
         <section

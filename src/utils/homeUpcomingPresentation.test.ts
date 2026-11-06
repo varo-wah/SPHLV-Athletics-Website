@@ -73,3 +73,15 @@ test('keeps both opponent logos on a combined JAAC fixture', () => {
   const [fixture] = homeUpcomingFixtures([event({ team: 'SMP Boys & Girls Basketball', sportKey: 'Basketball', eventText: 'AIS/STL @ LV', raw: 'AIS/STL @ LV', opponent: 'AIS/STL', time: null })]);
   assert.deepEqual(fixture.opponentLogoNames, ['AIS', 'SSL']);
 });
+
+test('labels Season 2 varsity basketball teams and preserves shared game slots and unknown times', () => {
+  const teams = ['Varsity Boys Basketball', 'Varsity Girls Basketball', 'Varsity Boys & Girls Basketball'];
+  const fixtures = teams.map((team, index) => event({
+    id: `season2-${index}`, team, sportKey: 'Basketball', season: 'Season 2',
+    eventText: 'KV/GJS @ LV', raw: 'KV/GJS @ LV', opponent: 'KV/GJS', time: null,
+    sourceUrl: 'https://example.org/schedule',
+  }));
+  assert.deepEqual(homeUpcomingFixtures(fixtures).map(({ teamCode, opponent, time }) => [teamCode, opponent, time]), [
+    ['VBB', 'KV/GJS', null], ['VGB', 'KV/GJS', null], ['VBB/VGB', 'KV/GJS', null],
+  ]);
+});
