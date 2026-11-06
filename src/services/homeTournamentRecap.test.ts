@@ -21,6 +21,7 @@ test('Home recap uses final tournament outcomes and SPH awards without inventing
     ['basketball-smp-girls', 'Champions', 'Final: SPH 47–22 Santa Laurensia'],
     ['soccer-sma-girls', 'Champions', 'Final: SPH 2–1 STL'],
     ['volleyball-sma-boys', 'Runner-up', 'Final: SPH 0–3 GJS'],
+    ['soccer-sma-boys', 'Semifinalists', 'Semifinal: SPH 1–2 BSJ · Troy Biantoro — 1 goal'],
   ]);
   assert.deepEqual(acsc.map(entry => [entry.teamId, entry.outcome]), [
     ['soccer-sma-boys', '7th place'],

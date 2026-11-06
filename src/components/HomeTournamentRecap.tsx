@@ -31,7 +31,7 @@ export default function HomeTournamentRecap({ matches = [] }: { matches?: readon
       </div>
     </div>
     <div className="space-y-4 p-4">
-      {([{ key: 'jaac', title: 'JAAC finals' }, { key: 'acsc', title: 'ACSC final placements' }] as const).map(group => <div key={group.key}>
+      {([{ key: 'jaac', title: 'JAAC playoffs' }, { key: 'acsc', title: 'ACSC final placements' }] as const).map(group => <div key={group.key}>
         <h3 className="mb-1 flex items-center gap-2 text-[10px] font-black uppercase tracking-wider text-foreground/60">
           {group.key === 'acsc' && <img src={ACSC_LOGO} alt="" className="h-6 w-6 rounded-full bg-white object-contain p-0.5" />}
           {group.title}
