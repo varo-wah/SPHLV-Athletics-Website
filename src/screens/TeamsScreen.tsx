@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import FavoriteTeamsSection from '../components/FavoriteTeamsSection';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { DivisionTab, GenderTab, SportTab } from '../types';
-import { TEAM_DIRECTORY } from '../config/launchSports';
+import { TEAM_DIRECTORY, IS_PROTOTYPE } from '../config/launchSports';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, staggerDelay } from '../config/motion';
 
 interface TeamsScreenProps {
@@ -62,6 +62,51 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
     });
   };
 
+  const renderSport = (group: typeof sportGroups[number], groupIndex: number) => (
+    <motion.article
+      key={group.key}
+      initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...QUICK_TRANSITION, delay: staggerDelay(groupIndex) }}
+      className={`teams-sport-card relative overflow-hidden rounded-[1.35rem] border p-3 shadow-[0_3px_9px_rgba(0,0,0,0.07)] ${group.accent}`}
+    >
+      <div className="pointer-events-none absolute -right-8 -top-12 h-32 w-32 rounded-full bg-white/[0.025] blur-2xl" />
+
+      <div className="relative mb-2.5 flex items-center justify-between gap-3">
+        <h3 className="flex min-w-0 items-center gap-2.5 text-sm font-black uppercase tracking-[0.07em] text-foreground sm:text-base">
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${group.iconStyle}`} aria-hidden="true">
+            <span className="text-lg leading-none" aria-hidden="true">{group.ballGlyph}</span>
+          </span>
+          {group.label}
+        </h3>
+        <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/35">
+          {group.teams.length} team{group.teams.length === 1 ? '' : 's'}
+        </span>
+      </div>
+
+      <div className="teams-options relative grid grid-cols-2 gap-2">
+        {group.teams.map((team) => (
+          <motion.button
+            key={team.id}
+            type="button"
+            onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
+            whileTap={{ scale: PRESS_SCALE }}
+            transition={PRESS_TRANSITION}
+            className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/45 [container-type:inline-size] ${teamButtonClasses(team.gender)}`}
+          >
+            <span className="min-w-0">
+              <span className="block text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em]">{team.menuCode}</span>
+              <span className="teams-full-name">{team.shortName}</span>
+            </span>
+            <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 bg-white/55 text-current transition-colors dark:bg-black/10" aria-hidden="true">
+              <ArrowUpRight size={12} />
+            </span>
+          </motion.button>
+        ))}
+      </div>
+    </motion.article>
+  );
+
   return (
     <div className="teams-screen animate-in fade-in slide-in-from-bottom-4 mx-auto min-h-screen w-full max-w-3xl px-4 pb-24 pt-3 duration-500 sm:px-6 sm:pt-5">
       <header className="teams-page-heading">
@@ -75,64 +120,46 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
         onBrowseTeams={browseTeams}
       />
 
-      <section id="all-teams" aria-label="All teams" className="teams-sport-grid scroll-mt-20 space-y-3">
-        {sportGroups.map((group, groupIndex) => {
-          return (
-            <motion.article
-              key={group.key}
-              initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...QUICK_TRANSITION, delay: staggerDelay(groupIndex) }}
-              className={`teams-sport-card relative overflow-hidden rounded-[1.35rem] border p-3 shadow-[0_3px_9px_rgba(0,0,0,0.07)] ${group.accent}`}
-            >
-              <div className="pointer-events-none absolute -right-8 -top-12 h-32 w-32 rounded-full bg-white/[0.025] blur-2xl" />
-
-              <div className="relative mb-2.5 flex items-center justify-between gap-3">
-                <h2 className="flex min-w-0 items-center gap-2.5 text-sm font-black uppercase tracking-[0.07em] text-foreground sm:text-base">
-                  <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border ${group.iconStyle}`} aria-hidden="true">
-                    <span className="text-lg leading-none" aria-hidden="true">{group.ballGlyph}</span>
-                  </span>
-                  {group.label}
-                </h2>
-                <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/35">
-                  0{groupIndex + 1} · {group.teams.length} team{group.teams.length === 1 ? '' : 's'}
-                </span>
-              </div>
-
-              <div className="teams-options relative grid grid-cols-2 gap-2">
-                {group.teams.map((team) => (
-                  <motion.button
-                    key={team.id}
-                    type="button"
-                    onClick={() => onSelectTeam(group.sport, team.division, team.gender)}
-                    whileTap={{ scale: PRESS_SCALE }}
-                    transition={PRESS_TRANSITION}
-                    className={`group flex min-h-12 items-center justify-between gap-2 rounded-xl border px-3 py-2 text-left transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-sky/45 [container-type:inline-size] ${teamButtonClasses(team.gender)}`}
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-[clamp(0.9rem,8cqi,1.2rem)] font-black uppercase leading-none tracking-[0.06em]">{team.menuCode}</span>
-                      <span className="teams-full-name">{team.shortName}</span>
-                    </span>
-                    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full border border-current/20 bg-white/55 text-current transition-colors dark:bg-black/10" aria-hidden="true">
-                      <ArrowUpRight size={12} />
-                    </span>
-                  </motion.button>
-                ))}
-              </div>
-            </motion.article>
-          );
-        })}
-        <article className="teams-sport-card rounded-2xl border border-border/10 bg-card p-4">
-          <h2 className="text-sm font-black uppercase tracking-widest">Swimming</h2>
-          <a href="#/teams/swimming" className="mt-3 flex items-center justify-between rounded-xl bg-foreground/5 p-4 font-bold">Meet the swimmers <ArrowUpRight size={18} /></a>
-          <p className="mt-3 text-xs text-foreground/60">ACSC schedule · Athletes · Livestream</p>
-        </article>
-        <article className="teams-sport-card rounded-2xl border border-border/10 bg-card p-4">
-          <h2 className="text-sm font-black uppercase tracking-widest">Cross Country</h2>
-          <a href="#/teams/cross-country" className="mt-3 flex items-center justify-between rounded-xl bg-foreground/5 p-4 font-bold">Meet the runners <ArrowUpRight size={18} /></a>
-          <p className="mt-3 text-xs text-foreground/60">5 km personal bests · Meets & training</p>
-        </article>
-      </section>
+      <div id="all-teams" className="scroll-mt-20 space-y-8">
+        <section aria-labelledby="season-two-teams">
+          <h2 id="season-two-teams" className="mb-3 text-xl font-black">Season 2</h2>
+          <div className="teams-season-two space-y-3">
+            {sportGroups.filter(group => group.key === 'Basketball-SMA').map(renderSport)}
+            <div className="rounded-2xl border border-border/10 bg-subcard/50 p-4">
+              <h3 className="mb-2 text-sm font-bold">Coming soon</h3>
+              <ul className="divide-y divide-border/10 text-sm text-foreground/75">
+                {['SMP boys’ and girls’ volleyball', 'Grades 7–12 swimming', 'Grades 5–6 boys’ and girls’ volleyball', 'Grades 3–4 Active Living'].map(name =>
+                  <li key={name} className="py-2">{name}</li>
+                )}
+              </ul>
+            </div>
+          </div>
+        </section>
+        <section aria-labelledby="season-one-teams">
+          <h2 id="season-one-teams" className="mb-3 text-xl font-black">Season 1 teams &amp; results</h2>
+          <div className="teams-sport-grid space-y-3">
+            {sportGroups.filter(group => ['Volleyball', 'Basketball-SMP', 'Soccer'].includes(group.key)).map(group =>
+              ({ ...group, teams: group.teams.filter(team => team.production) })
+            ).map(renderSport)}
+            <article className="teams-sport-card rounded-2xl border border-border/10 bg-card p-4">
+              <h2 className="text-sm font-black uppercase tracking-widest">Swimming</h2>
+              <a href="#/teams/swimming" className="mt-3 flex items-center justify-between rounded-xl bg-foreground/5 p-4 font-bold">Meet the swimmers <ArrowUpRight size={18} /></a>
+              <p className="mt-3 text-xs text-foreground/60">ACSC schedule · Athletes · Livestream</p>
+            </article>
+            <article className="teams-sport-card rounded-2xl border border-border/10 bg-card p-4">
+              <h2 className="text-sm font-black uppercase tracking-widest">Cross Country</h2>
+              <a href="#/teams/cross-country" className="mt-3 flex items-center justify-between rounded-xl bg-foreground/5 p-4 font-bold">Meet the runners <ArrowUpRight size={18} /></a>
+              <p className="mt-3 text-xs text-foreground/60">5 km personal bests · Meets & training</p>
+            </article>
+          </div>
+        </section>
+        {IS_PROTOTYPE && (
+          <section aria-label="Additional prototype teams" className="teams-sport-grid space-y-3">
+            {sportGroups.map(group => ({ ...group, teams: group.teams.filter(team => !team.production) }))
+              .filter(group => group.teams.length).map(renderSport)}
+          </section>
+        )}
+      </div>
     </div>
   );
 }
