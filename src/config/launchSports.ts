@@ -88,3 +88,15 @@ export function isVisibleScheduleEvent(
     && PRODUCTION_TEAM_SPORTS.includes(sport as SportTab)
     && scheduleTeamMatchesLaunchSelection(teamName);
 }
+
+// Lead both team directories with the current varsity basketball season.
+const directoryOrder: readonly [SportTab, DivisionTab?][] = [
+  ['Basketball', 'SMA'], ['Volleyball'], ['Basketball', 'SMP'], ['Soccer'], ['Badminton'], ['TrackAndField'],
+];
+export const TEAM_DIRECTORY = directoryOrder.flatMap(([id, division]) => {
+  const sport = SPORT_CATALOG.find(entry => entry.id === id)!;
+  const teams = TEAM_CATALOG.filter(team => team.sport === id && (!division || team.division === division)
+    && (IS_PROTOTYPE || team.production));
+  const label = division === 'SMA' ? 'Varsity Basketball' : division === 'SMP' ? 'SMP Basketball' : sport.label;
+  return teams.length ? [{ ...sport, label, key: division ? id + '-' + division : id, teams }] : [];
+});

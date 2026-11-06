@@ -53,7 +53,7 @@ test('the reserve weekend becomes an optional staff friendly and preserves expli
   const remaining = mergeReviewedJaacSchedule([...nov7, explicit]).filter(event => event.date === '2026-11-07');
   assert.deepEqual(remaining.map(event => [event.team, event.eventText]), [
     ['Varsity Girls Soccer', 'Friendly vs STL'],
-    ['Varsity Boys Soccer', 'Optional friendly: SMA boys vs staff'],
+    ['Varsity Boys Soccer', 'Exhibition: SMA boys vs teachers and staff'],
   ]);
   const friendly = remaining[1];
   assert.deepEqual([friendly.eventType, friendly.time, friendly.location], ['Home Game', '15:00', 'Main Field']);

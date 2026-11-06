@@ -19,7 +19,7 @@ const finalPractice: ScheduleEvent = {
 };
 const staffExhibition: ScheduleEvent = {
   ...soccerBoys, id: 'boys-soccer-staff-friendly-20261107', date: '2026-11-07', day: 'Sat',
-  eventType: 'Home Game', eventText: 'Optional friendly: SMA boys vs staff', opponent: 'SPH staff',
+  eventType: 'Home Game', eventText: 'Exhibition: SMA boys vs teachers and staff', opponent: 'SPH staff',
   time: '15:00', timeZone: 'Asia/Jakarta', location: 'Main Field', status: 'Scheduled',
   details: 'Optional end-of-season exhibition against the school staff. SMA boys wear white.',
   raw: 'Coach Trey · Saturday, November 7, 3 pm on the main field.',
@@ -81,11 +81,12 @@ export function mergeReviewedJaacSchedule(events: ScheduleEvent[]): ScheduleEven
   for (const fixture of fixtures) {
     const index = merged.findIndex(event => sameFixture(event, fixture));
     const published = merged[index];
+    const correctedSemifinal = fixture.id === 'schedule-2026-boys-soccer-jaac-semifinal' && published?.resultScore === '1–3';
     const confirmed: ScheduleEvent = {
       ...fixture, ...published, eventText: fixture.eventText,
-      status: fixture.status ?? published?.status, resultScore: published?.resultScore || fixture.resultScore,
+      status: fixture.status ?? published?.status, resultScore: correctedSemifinal ? fixture.resultScore : published?.resultScore || fixture.resultScore,
       time: published?.time || fixture.time, location: published?.location || fixture.location,
-      details: published?.details || fixture.details,
+      details: correctedSemifinal ? fixture.details : published?.details || fixture.details,
     };
     if (index < 0) merged.push(confirmed);
     else merged[index] = confirmed;

@@ -4,10 +4,8 @@ import { AnimatePresence, motion } from 'motion/react';
 import { DivisionTab, GenderTab, SportTab } from '../types';
 import {
   IS_PROTOTYPE,
-  LAUNCH_TEAM_SPORTS,
-  isLaunchTeamSelection,
+  TEAM_DIRECTORY,
 } from '../config/launchSports';
-import { SPORT_CATALOG, teamsForSport } from '../config/teamCatalog';
 import { PRESS_SCALE, PRESS_TRANSITION, STANDARD_SPRING, staggerDelay } from '../config/motion';
 
 interface SidebarProps {
@@ -17,16 +15,7 @@ interface SidebarProps {
   onSelectTeam: (sport: SportTab, division: DivisionTab, gender: GenderTab) => void;
 }
 
-const sports = SPORT_CATALOG.filter((sport) => LAUNCH_TEAM_SPORTS.includes(sport.id));
-
 export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam }: SidebarProps) {
-  const teamGroups = React.useMemo(() => sports.map((sport) => ({
-    ...sport,
-    teams: teamsForSport(sport.id).filter((team) => (
-      isLaunchTeamSelection(sport.id, team.division, team.gender)
-    )),
-  })), []);
-
   const panelRef = React.useRef<HTMLElement>(null);
   const closeRef = React.useRef(onClose);
   closeRef.current = onClose;
@@ -140,20 +129,18 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             </div>
 
             <div className="team-overlay-scroll flex-1 space-y-3 overflow-y-auto px-3.5 py-3.5">
-              <a href="#/teams/swimming" onClick={onClose} className="block rounded-xl border border-border/10 bg-foreground/5 p-4 text-sm font-bold">Swimming ↗</a>
-              <a href="#/teams/cross-country" onClick={onClose} className="mb-4 block rounded-xl border border-border/10 bg-foreground/5 p-4 text-sm font-bold">Cross Country ↗</a>
-              {teamGroups.map((sport, index) => {
+              {TEAM_DIRECTORY.map((sport, index) => {
                 return (
                   <motion.section
-                    key={sport.id}
-                    aria-labelledby={`menu-${sport.id}`}
+                    key={sport.key}
+                    aria-labelledby={`menu-${sport.key}`}
                     className="overflow-hidden rounded-2xl border border-brand-maroon/10 bg-white/72 p-3 shadow-[0_3px_10px_rgba(120,0,0,0.06)] dark:border-white/[0.065] dark:bg-white/[0.025] dark:shadow-[0_3px_10px_rgba(0,0,0,0.16)]"
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ ...STANDARD_SPRING, delay: staggerDelay(index) }}
                   >
                     <div className="mb-2.5 flex items-center justify-between gap-3">
-                      <h2 id={`menu-${sport.id}`} className="flex min-w-0 items-center gap-2.5 text-xs font-black uppercase tracking-[0.13em] text-brand-navy dark:text-foreground">
+                      <h2 id={`menu-${sport.key}`} className="flex min-w-0 items-center gap-2.5 text-xs font-black uppercase tracking-[0.13em] text-brand-navy dark:text-foreground">
                         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-brand-red/20 bg-brand-red/10 text-brand-red dark:border-[#B5413F]/25 dark:bg-[#B5413F]/14 dark:text-[#F06865]" aria-hidden="true">
                           <span className="text-[18px] leading-none">{sport.ballGlyph}</span>
                         </span>
@@ -187,7 +174,9 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                           </motion.button>
                         );
                       })}
-                    </div>
+                      <a href="#/teams/swimming" onClick={onClose} className="block rounded-xl border border-border/10 bg-foreground/5 p-4 text-sm font-bold">Swimming ↗</a>
+              <a href="#/teams/cross-country" onClick={onClose} className="mb-4 block rounded-xl border border-border/10 bg-foreground/5 p-4 text-sm font-bold">Cross Country ↗</a>
+            </div>
                   </motion.section>
                 );
               })}
