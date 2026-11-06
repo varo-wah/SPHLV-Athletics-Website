@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import { BarChart3, CalendarDays, MapPin, Sparkles, X } from 'lucide-react';
 import { SheetMatch } from '../services/parsers';
 import { penaltyScoreLabel, presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
+import { volleyballRecap } from '../utils/volleyballRecaps';
 import TeamLogo from './TeamLogo';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, SOFT_SPRING, staggerDelay } from '../config/motion';
 
@@ -45,6 +46,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
   const setScores = match.setScores || [];
   const statLeaders = match.statLeaders || [];
   const highlights = match.highlights || [];
+  const recap = volleyballRecap(match);
   const reduceMotion = useReducedMotion();
   const [isDesktop, setIsDesktop] = useState(
     () => window.matchMedia('(min-width: 640px)').matches,
@@ -174,6 +176,14 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
 
           {match.penalties && <p className="text-sm font-bold text-foreground">{penaltyScoreLabel(match)}</p>}
 
+          {recap && (
+            <section>
+              <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-brand-maroon">Game recap</h3>
+              <p className="text-sm font-medium leading-relaxed">{recap}</p>
+              {highlights.length > 1 && <DetailList items={highlights.slice(1)} />}
+            </section>
+          )}
+
           {setScores.length > 0 && (
             <section>
               <h3 className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-foreground/55">
@@ -182,7 +192,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {setScores.map((score, index) => (
                   <motion.div
-                    key={score}
+                    key={index}
                     className="rounded-xl border border-border/10 bg-subcard px-3 py-2 text-center font-mono text-xs font-black text-foreground"
                     initial={{ opacity: 0, y: reduceMotion ? 0 : 6 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -204,7 +214,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
             </section>
           )}
 
-          {highlights.length > 0 && (
+          {!recap && highlights.length > 0 && (
             <section className="rounded-2xl border border-brand-maroon/15 bg-brand-maroon/[0.045] p-4">
               <h3 className="mb-3 flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-brand-maroon">
                 <Sparkles size={14} /> ⚡ Highlights

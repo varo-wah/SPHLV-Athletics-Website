@@ -40,6 +40,7 @@ export const RESULT_SHEET_SOURCES: ResultSheetSource[] = sheetSources.results.ma
 }));
 
 export const MASTER_SCHEDULE_URLS = sheetSources.masterSchedules;
+export const SCHOOL_MASTER_SCHEDULE_URL = 'https://sphacid-my.sharepoint.com/:x:/g/personal/pe-lv_sph_ac_id/IQApbiLW2BKYSriawFHuP4m6Aa6EmT6xX_otnN_PWWLFWpY?e=Tn4JPh';
 
 export function hasValidSheetUrl(url: string): boolean {
   return (

@@ -1,6 +1,6 @@
 import { ScheduleEvent } from '../data/scheduleTypes';
 
-export type ScheduleTeamFilter = 'All' | 'VBS' | 'VGS' | 'VBV' | 'VGV' | 'SMPBB' | 'SMPGB';
+export type ScheduleTeamFilter = 'All' | 'VBS' | 'VGS' | 'VBV' | 'VGV' | 'SMPBB' | 'SMPGB' | 'VBB' | 'VGB';
 
 export interface ScheduleFixtureLine {
   label: string;
@@ -14,6 +14,8 @@ const TEAM_FILTER_NAMES: Record<Exclude<ScheduleTeamFilter, 'All'>, string> = {
   VGV: 'Varsity Girls Volleyball',
   SMPBB: 'SMP Boys Basketball',
   SMPGB: 'SMP Girls Basketball',
+  VBB: 'Varsity Boys Basketball',
+  VGB: 'Varsity Girls Basketball',
 };
 
 const GAME_EVENT_TYPES = new Set<ScheduleEvent['eventType']>([
@@ -73,12 +75,13 @@ function combinedEventLabel(value: string) {
   return value.replace(/\b(?:boys?|girls?)\b/gi, '').replace(/\s+/g, ' ').trim();
 }
 
-function teamCodeForSchedule(team: string) {
+export function teamCodeForSchedule(team: string) {
   const value = normalized(team);
   const combined = /boys\s*&\s*girls/.test(value);
 
   if (value.includes('soccer')) return combined ? 'VBS/VGS' : value.includes('girls') ? 'VGS' : 'VBS';
   if (value.includes('volleyball')) return combined ? 'VBV/VGV' : value.includes('girls') ? 'VGV' : 'VBV';
+  if (value.includes('basketball') && value.includes('varsity')) return combined ? 'VBB/VGB' : value.includes('girls') ? 'VGB' : 'VBB';
   if (value.includes('basketball')) return combined ? 'SMPBB/SMPGB' : value.includes('girls') ? 'SMPGB' : 'SMPBB';
   return team;
 }

@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { IS_PROTOTYPE } from '../config/launchSports';
+import { SCHOOL_MASTER_SCHEDULE_URL } from '../config/sheets';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
 import type { AppTab } from '../types';
 
@@ -22,7 +23,7 @@ const HOME_LINKS = [
   { label: 'Game photos', href: 'https://photos.app.goo.gl/g4MqVW3TJPQ3WNSF6', icon: Images },
   {
     label: 'Official schedule spreadsheet',
-    href: 'https://sphacid-my.sharepoint.com/:x:/g/personal/pe-lv_sph_ac_id/IQApbiLW2BKYSriawFHuP4m6Aa6EmT6xX_otnN_PWWLFWpY?e=Tn4JPh',
+    href: SCHOOL_MASTER_SCHEDULE_URL,
     icon: Sheet,
   },
 ] as const;

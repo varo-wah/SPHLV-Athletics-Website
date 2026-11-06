@@ -94,6 +94,23 @@ test('the final snapshot imports only the 22 SPH fixtures with confirmed scores'
   assert.deepEqual(mergeGameDayResults(matches, RESULT_SHEET_SOURCES, updates), matches);
 });
 
+test('all nine SPH boys volleyball matches retain individual recaps, including fixtures without a published score', () => {
+  const [boys] = ACSC_COMPETITION_RESULTS.filter(snapshot => snapshot.teamId === 'volleyball-sma-boys');
+  const fixtures = boys.matches.filter(match => match.home === 'SPH' || match.away === 'SPH');
+  const calendar = mergeAcscCompetitionSchedule([...ACSC_BOYS_VOLLEYBALL_SCHEDULE], [boys]);
+  const results = mergeGameDayResults([], RESULT_SHEET_SOURCES, acscGameDayUpdates([boys]));
+  assert.equal(fixtures.length, 9);
+  assert.equal(new Set(fixtures.map(match => match.notes)).size, 9);
+  for (const match of fixtures) {
+    assert.ok(match.notes);
+    const event = calendar.find(item => item.id === match.fixtureId);
+    assert.ok(event?.details?.includes(match.notes), match.id);
+    const result = results.find(item => item.reviewedFixtureId === match.fixtureId);
+    if (acscMatchFinished(match)) assert.deepEqual(result?.highlights, [match.notes], match.id);
+    else assert.equal(event.resultScore, undefined, match.id);
+  }
+});
+
 test('neutral results retain SPH score and set-point orientation for either official home/away order', () => {
   const matches = mergeGameDayResults([], RESULT_SHEET_SOURCES, acscGameDayUpdates());
   const sourceOrders = new Set<string>();

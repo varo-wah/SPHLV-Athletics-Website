@@ -2,7 +2,7 @@
 
 SPH LV Athletics has two release channels built from the same codebase:
 
-- Firebase Hosting is the only official deployment. Production shows the six approved Season 1 teams: SMA Soccer, SMA Volleyball, and SMP Basketball for boys and girls.
+- Firebase Hosting serves the public site. Season 1 includes varsity soccer, varsity volleyball and SMP basketball. Season 2 adds varsity boys’ and girls’ basketball from the school’s 2026–27 master schedule. Swimming and cross country have dedicated team pages.
 - The complete in-progress sports and season catalog is viewed locally from the `prototype` branch.
 
 ## Release Channels

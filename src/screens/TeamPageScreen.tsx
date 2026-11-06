@@ -11,6 +11,7 @@ import JaacTournamentBracket from '../components/JaacTournamentBracket';
 import AcscCompetitionPanel from '../components/AcscCompetitionPanel';
 import { acscResultsForTeam } from '../data/acscCompetitionResults2026';
 import { scheduleTimestamp } from '../utils/scheduleTime';
+import { unscoredVolleyballFixtures } from '../utils/volleyballRecaps';
 import { formatWinPercentage, rankStandings, standingsRecordLabel, standingsShowDraws } from '../utils/standingsPresentation';
 import TournamentResultsSection from '../components/TournamentResultsSection';
 import { findTeam, sportDetails } from '../config/teamCatalog';
@@ -167,6 +168,7 @@ export default function TeamPageScreen({
       ? '#8C1D2C'
       : '#64748B';
   const roster = team ? rosterForTeam(team.id) : undefined;
+  const isVarsityBasketball = sport === 'Basketball' && division === 'SMA';
 
   useEffect(() => {
     setActiveSection('games');
@@ -182,7 +184,7 @@ export default function TeamPageScreen({
   const showDraws = standingsShowDraws(sport);
   const standingsSource = athleticsDataState?.remoteSources.find((source) => source.id === `${sport.toLowerCase()}-${gender}-standings`);
   const standingsDate = new Date(standingsSource?.publishedAt ?? OFFICIAL_STANDINGS_VERIFIED_AT).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
-  const standingsUrl = officialStandingsUrlFor(sport, gender);
+  const standingsUrl = isVarsityBasketball ? null : officialStandingsUrlFor(sport, gender);
   const differenceLabel =
     sport === 'Soccer'
       ? 'GD'
@@ -234,8 +236,12 @@ export default function TeamPageScreen({
         scheduleTimestamp(a) - scheduleTimestamp(b),
     );
 
+  const resultEntries = [
+    ...completedResults.map(match => ({ kind: 'scored' as const, match, timestamp: gameTimestamp(match.date || match.reportedDate || '', match.time) })),
+    ...unscoredVolleyballFixtures(team?.id, completedResults).map(match => ({ kind: 'unscored' as const, match, timestamp: gameTimestamp(match.date, match.time) })),
+  ].sort((a, b) => b.timestamp - a.timestamp);
   const standingsRows = rankStandings(standingsForDisplay);
-  const gamesView = chosenGamesView ?? (upcomingEvents.length === 0 && completedResults.length > 0 ? 'results' : 'upcoming');
+  const gamesView = chosenGamesView ?? (upcomingEvents.length === 0 && resultEntries.length > 0 ? 'results' : 'upcoming');
   const allTeamsTied = standingsRows.length > 1 && standingsRows.every(entry => entry.rank === 1 && entry.isTied);
 
   const EmptyPanel = ({
@@ -353,7 +359,10 @@ export default function TeamPageScreen({
             transition={PAGE_TRANSITION}
           >
         <div className="space-y-10">
-          {activeSection === 'standings' && (
+          {activeSection === 'standings' && isVarsityBasketball && standingsRows.length === 0 && (
+            <EmptyPanel title="Varsity standings pending" body="The standings will appear when the league publishes the varsity basketball table." />
+          )}
+          {activeSection === 'standings' && (!isVarsityBasketball || standingsRows.length > 0) && (
             <section className="team-league-standings" data-show-draws={showDraws}>
               <h2 className="mb-3 text-sm font-black uppercase tracking-wide">JAAC regular-season standings</h2>
               <div className="team-standings-scroll overflow-x-auto rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
@@ -530,7 +539,7 @@ export default function TeamPageScreen({
                   {
                     id: 'results' as const,
                     label: 'Results',
-                    count: completedResults.length,
+                    count: resultEntries.length,
                   },
                 ].map((view) => {
                   const isActive =
@@ -672,25 +681,25 @@ export default function TeamPageScreen({
                       </span>
                     </div>
 
-                    {completedResults.length === 0 && !resultSourceState?.configured ? (
+                    {resultEntries.length === 0 && !resultSourceState?.configured ? (
                       <EmptyPanel
-                        title="Results sheet awaiting publication"
-                        body="This team feed will activate when its published CSV URL is configured."
+                        title="Results pending"
+                        body="Game scores will appear here once confirmed."
                       />
-                    ) : completedResults.length === 0 && resultSourceState?.failed &&
+                    ) : resultEntries.length === 0 && resultSourceState?.failed &&
                       !resultSourceState.fromCache ? (
                       <EmptyPanel
                         title="Results temporarily unavailable"
                         body="The team sheet could not be loaded and no cached result is available."
                       />
                     ) : athleticsDataState?.loading &&
-                      completedResults.length ===
+                      resultEntries.length ===
                         0 ? (
                       <EmptyPanel
                         title="Loading results"
                         body="Fetching completed matches from the team manager sheet."
                       />
-                    ) : completedResults.length ===
+                    ) : resultEntries.length ===
                       0 ? (
                       <EmptyPanel
                         title="No completed results yet"
@@ -698,17 +707,20 @@ export default function TeamPageScreen({
                       />
                     ) : (
                       <div className="team-games-grid space-y-3">
-                        {completedResults.map(
-                          (match) => (
+                        {resultEntries.map(entry => entry.kind === 'scored' ? (
                             <CompactResultCard
-                              key={match.id}
-                              match={match}
-                              formatDate={
-                                formatGameDate
-                              }
+                              key={entry.match.id}
+                              match={entry.match}
+                              formatDate={formatGameDate}
                             />
-                          ),
-                        )}
+                          ) : (
+                            <article key={entry.match.id} className="rounded-2xl border border-border/10 bg-subcard p-4">
+                              <p className="text-xs font-semibold text-foreground/65">{formatGameDate(entry.match.date)} · ACSC {entry.match.stage}</p>
+                              <h4 className="mt-1 text-sm font-bold">SPH-LV vs {entry.match.opponent}</h4>
+                              {entry.match.notes && <p className="mt-2 text-xs leading-relaxed">{entry.match.notes}</p>}
+                              <p className="mt-2 text-xs text-foreground/60">Score unreported</p>
+                            </article>
+                          ))}
                       </div>
                     )}
 
@@ -737,7 +749,7 @@ export default function TeamPageScreen({
           )}
         </div>
 
-        {activeSection === 'standings' && (
+        {activeSection === 'standings' && !isVarsityBasketball && (
           <>
             <JaacTournamentBracket teamId={team?.id} matches={completedResults} />
             <TournamentResultsSection teamId={team?.id} matches={completedResults} />

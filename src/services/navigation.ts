@@ -20,7 +20,7 @@ export function parseScheduleQuery(query: string, seasons: readonly string[], de
   const team = params.get('team') ?? '';
   return {
     season: seasons.includes(season) ? season : defaultSeason,
-    team: ['All', 'VBS', 'VGS', 'VBV', 'VGV', 'SMPBB', 'SMPGB'].includes(team) ? team : 'All',
+    team: ['All', 'VBS', 'VGS', 'VBV', 'VGV', 'SMPBB', 'SMPGB', 'VBB', 'VGB'].includes(team) ? team : 'All',
     scope: params.get('scope') === 'practices' ? 'practices' as const : 'games' as const,
     view: params.get('view') === 'calendar' ? 'calendar' as const : 'list' as const,
   };

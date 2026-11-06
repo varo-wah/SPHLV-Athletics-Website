@@ -18,14 +18,15 @@ export const NOVEMBER_JAAC_RESULTS: GameDayUpdate[] = [
     opponent: 'GJS', scoreFor: 0, scoreAgainst: 3,
     newFixture: { time: '11:30', venue: 'SPH-LV', locationType: 'Neutral' },
     details: { tournament: 'JAAC', matchType: 'JAAC final',
-      highlights: ['SPH-LV finished second in the JAAC tournament.'] },
+      highlights: ['Global Jaya won the final in three sets. SPH-LV finished as JAAC runner-up after going 7–0 in the regular season.'] },
   },
   {
     fixtureId: '2026-boys-volleyball-jaac-semifinal',
     teamId: 'volleyball-sma-boys', date: '2026-10-31',
     opponent: 'STL', scoreFor: 3, scoreAgainst: 1,
     newFixture: { time: '09:15', venue: 'SPH-LV', locationType: 'Neutral' },
-    details: { tournament: 'JAAC', matchType: 'JAAC semifinal' },
+    details: { tournament: 'JAAC', matchType: 'JAAC semifinal',
+      highlights: ['SPH-LV beat Santa Laurensia in four sets to earn a place in the final against Global Jaya later that morning.'] },
   },
   {
     fixtureId: '2026-boys-soccer-jaac-semifinal',
@@ -41,7 +42,7 @@ export const NOVEMBER_JAAC_RESULTS: GameDayUpdate[] = [
     newFixture: { time: '16:00', venue: 'SPH-LV', locationType: 'Home' },
     details: { tournament: 'JAAC', matchType: 'JAAC semifinal',
       setScores: ['25–15', '25–23', '25–23'],
-      highlights: ['SPH-LV advanced to the JAAC final.'] },
+      highlights: ['SPH-LV beat BSJ in straight sets to reach the JAAC final. After a 25–15 opening set, the Eagles won both remaining sets 25–23.'] },
   },
 ];
 

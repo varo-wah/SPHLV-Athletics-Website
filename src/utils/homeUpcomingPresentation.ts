@@ -1,6 +1,6 @@
 import { jaacSchoolForName } from '../data/jaacSchools';
 import { ScheduleEvent } from '../data/scheduleTypes';
-import { scheduleFixtureLines } from '../services/schedulePresentation';
+import { scheduleFixtureLines, teamCodeForSchedule } from '../services/schedulePresentation';
 
 export interface HomeUpcomingFixture {
   id: string;
@@ -17,20 +17,6 @@ export function opponentLogoNames(value: string): string[] {
     .map((part) => jaacSchoolForName(part)?.code)
     .filter((code): code is NonNullable<typeof code> => Boolean(code));
   return schools.length ? [...new Set(schools)] : [value];
-}
-
-function teamCodeForEvent(event: ScheduleEvent) {
-  const combined = /boys\s*&\s*girls/i.test(event.team);
-  const gender = combined
-    ? 'B/G'
-    : event.genderGroup === 'Girls'
-      ? 'G'
-      : 'B';
-
-  if (event.sportKey === 'Soccer') return combined ? 'VBS/VGS' : `V${gender}S`;
-  if (event.sportKey === 'Volleyball') return combined ? 'VBV/VGV' : `V${gender}V`;
-  if (event.sportKey === 'Basketball') return combined ? 'SMP-BB/SMP-GB' : `SMP-${gender}B`;
-  return event.team;
 }
 
 function sideContainsOurTeam(value: string, teamCode: string) {
@@ -64,10 +50,15 @@ function fallbackOpponent(event: ScheduleEvent) {
 
 export function homeUpcomingFixtures(events: ScheduleEvent[]) {
   return events.flatMap((event) => {
-    const teamCode = teamCodeForEvent(event);
-    const lines = scheduleFixtureLines(event);
+    const scheduleCode = teamCodeForSchedule(event.team);
+    const teamCode = scheduleCode.replace(/SMP([BG]B)/g, 'SMP-$1');
+    // A reviewed fixture or a shared time slot already names its opponent(s).
+    // Only expand individual fixtures when the sheet actually lists them.
+    const fixtureLines = scheduleFixtureLines(event);
+    const sharedSlot = event.opponent?.includes('/') && fixtureLines.every(line => line.time === fixtureLines[0]?.time);
+    const lines = event.opponent && (event.sourceUrl || sharedSlot) ? [] : fixtureLines;
     const ourFixtures = lines.flatMap((line, index) => {
-      const opponent = opponentFromFixtureLabel(line.label, teamCode);
+      const opponent = opponentFromFixtureLabel(line.label, scheduleCode);
       if (!opponent) return [];
 
       const school = jaacSchoolForName(opponent);
@@ -91,7 +82,7 @@ export function homeUpcomingFixtures(events: ScheduleEvent[]) {
       event,
       opponent: school?.code ?? opponent.toUpperCase(),
       opponentLogoName: school?.code ?? opponent,
-        opponentLogoNames: opponentLogoNames(opponent),
+      opponentLogoNames: opponentLogoNames(opponent),
       teamCode,
       time: event.time ?? null,
     } satisfies HomeUpcomingFixture];
