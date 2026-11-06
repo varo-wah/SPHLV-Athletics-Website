@@ -4,8 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import FavoriteTeamsSection from '../components/FavoriteTeamsSection';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
 import { DivisionTab, GenderTab, SportTab } from '../types';
-import { IS_PROTOTYPE } from '../config/launchSports';
-import { SPORT_CATALOG, TEAM_CATALOG } from '../config/teamCatalog';
+import { TEAM_DIRECTORY } from '../config/launchSports';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, staggerDelay } from '../config/motion';
 
 interface TeamsScreenProps {
@@ -39,18 +38,7 @@ const sportVisuals: Record<SportTab, {
   },
 };
 
-const sportGroups = SPORT_CATALOG
-  .map((sport) => ({
-    sport: sport.id,
-    label: sport.label,
-    ballGlyph: sport.ballGlyph,
-    ...sportVisuals[sport.id],
-    teams: TEAM_CATALOG.filter((team) => (
-      team.sport === sport.id
-      && (IS_PROTOTYPE || team.production)
-    )),
-  }))
-  .filter((group) => group.teams.length > 0);
+const sportGroups = TEAM_DIRECTORY.map(group => ({ ...group, sport: group.id, ...sportVisuals[group.id] }));
 
 function teamButtonClasses(gender: GenderTab) {
   if (gender === 'Boys') {
@@ -91,7 +79,7 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
         {sportGroups.map((group, groupIndex) => {
           return (
             <motion.article
-              key={group.sport}
+              key={group.key}
               initial={{ opacity: 0, y: reduceMotion ? 0 : 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ ...QUICK_TRANSITION, delay: staggerDelay(groupIndex) }}

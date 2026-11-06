@@ -41,6 +41,9 @@ export default function TournamentResultsSection({ teamId, matches = [] }: { tea
   if (teamId === 'soccer-sma-boys') {
     cupPlacement = 'Runner-up';
     cupSummary = 'September 19, 2026 · Final: SPH-LV 1–4 SLH Moria';
+  } else if (teamId === 'soccer-sma-girls') {
+    cupPlacement = 'Runner-up';
+    cupSummary = '';
   } else if (teamId === 'volleyball-sma-girls') {
     cupPlacement = 'Runner-up';
     cupSummary = 'September 28–29, 2026 · 3 wins, 1 loss';
@@ -94,9 +97,9 @@ export default function TournamentResultsSection({ teamId, matches = [] }: { tea
                 <p className="mt-0.5 text-lg font-black uppercase tracking-tight text-foreground">
                   {outcomes[name].placement}
                 </p>
-                <p className="mt-1 text-[11px] font-semibold leading-relaxed text-foreground/48">
+                {outcomes[name].summary && <p className="mt-1 text-[11px] font-semibold leading-relaxed text-foreground/48">
                   {outcomes[name].summary}
-                </p>
+                </p>}
                 {name === 'ACSC' && acsc && (
                   <div className="mt-2 space-y-1 text-[11px] font-semibold leading-relaxed text-foreground/55">
                     <p>{acsc.summary}</p>

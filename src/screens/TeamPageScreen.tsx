@@ -288,6 +288,9 @@ export default function TeamPageScreen({
             <h1 className="text-[clamp(1.15rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.035em] text-foreground sm:text-3xl">
               {teamName}
             </h1>
+            {team?.id === 'soccer-sma-boys' && completedResults.some(match => match.reviewedFixtureId === '2026-boys-soccer-jaac-semifinal') && (
+              <p className="mt-2 text-sm font-semibold text-foreground/75"><strong>End of Season!</strong> Season 1 · JAAC semifinalists</p>
+            )}
           </div>
 
           <TeamFavoriteButton

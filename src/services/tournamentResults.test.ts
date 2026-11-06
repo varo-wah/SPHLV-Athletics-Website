@@ -24,7 +24,7 @@ test('JAAC cards distinguish completed finals from the last verified semifinal',
     ['soccer-sma-girls', 'Champions', 'Final: SPH-LV 2–1 STL'],
     ['volleyball-sma-boys', 'Runner-up', 'Final: SPH-LV 0–3 GJS'],
     ['volleyball-sma-girls', 'Finalist', 'Semifinal: SPH-LV 3–0 BSJ'],
-    ['soccer-sma-boys', 'Semifinalist', 'Semifinal: SPH-LV 1–3 BSJ'],
+    ['soccer-sma-boys', 'Semifinalist', 'Semifinal: SPH-LV 1–2 BSJ'],
   ];
   for (const [teamId, placement, score] of cases) {
     const html = renderToStaticMarkup(createElement(TournamentResultsSection, { teamId, matches }));

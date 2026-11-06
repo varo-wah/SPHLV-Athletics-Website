@@ -31,9 +31,11 @@ export const NOVEMBER_JAAC_RESULTS: GameDayUpdate[] = [
   {
     fixtureId: '2026-boys-soccer-jaac-semifinal',
     teamId: 'soccer-sma-boys', date: '2026-10-30',
-    opponent: 'BSJ', scoreFor: 1, scoreAgainst: 3,
+    opponent: 'BSJ', scoreFor: 1, scoreAgainst: 2, replacesScore: { scoreFor: 1, scoreAgainst: 3 },
     newFixture: { time: '15:30', venue: 'SPH-LV', locationType: 'Home' },
-    details: { tournament: 'JAAC', matchType: 'JAAC semifinal' },
+    details: { tournament: 'JAAC', matchType: 'JAAC semifinal',
+      statLeaders: ['Troy Biantoro — 1 goal'],
+      highlights: ['Troy Biantoro scored for SPH-LV in the 2–1 semifinal loss to BSJ.'] },
   },
   {
     fixtureId: '2026-girls-volleyball-jaac-semifinal',
