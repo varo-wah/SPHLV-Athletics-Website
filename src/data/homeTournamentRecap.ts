@@ -2,7 +2,7 @@ import { TEAM_CATALOG } from '../config/teamCatalog';
 import type { SheetMatch } from '../services/parsers';
 import { ACSC_COMPETITION_RESULTS } from './acscCompetitionResults2026';
 import { SWIM_MEDAL_HIGHLIGHT, SWIM_TEAM_FINISH } from './swimmingResults';
-import { JAAC_FINAL_RESULTS } from './novemberJaacResults';
+import { JAAC_FINAL_RESULTS, NOVEMBER_JAAC_RESULTS } from './novemberJaacResults';
 
 export const HOME_RECAP_START = Date.parse('2026-10-26T00:00:00+07:00');
 /** Exclusive end: retain the recap throughout November 16 in Jakarta. */
@@ -33,18 +33,22 @@ function placementLabel(rank: number): string {
 
 /** Reuse the verified tournament records; never substitute pool ranks or posting dates. */
 export function getHomeTournamentRecap(matches: readonly SheetMatch[] = []): { jaac: RecapEntry[]; acsc: RecapEntry[] } {
-  const jaac = JAAC_FINAL_RESULTS.map(reviewed => {
+  const boysSoccerSemifinal = NOVEMBER_JAAC_RESULTS.filter(row => row.fixtureId === '2026-boys-soccer-jaac-semifinal');
+  const jaac = [...JAAC_FINAL_RESULTS, ...boysSoccerSemifinal].map(reviewed => {
     const published = matches.find(match => match.teamId === reviewed.teamId
       && match.reviewedFixtureId === reviewed.fixtureId && match.status === 'Finished'
       && match.scoreFor !== null && match.scoreAgainst !== null
       && Number.isFinite(match.scoreFor) && Number.isFinite(match.scoreAgainst)
       && match.scoreFor !== match.scoreAgainst);
-    const final = published ?? reviewed;
+    const result = published ?? reviewed;
+    const semifinal = reviewed.details.matchType === 'JAAC semifinal';
+    const won = result.scoreFor! > result.scoreAgainst!;
+    const scorer = semifinal ? (published ? published.statLeaders : reviewed.details.statLeaders)?.join(' · ') : undefined;
     return {
       teamId: reviewed.teamId,
       label: teamLabel(reviewed.teamId),
-      outcome: final.scoreFor! > final.scoreAgainst! ? 'Champions' : 'Runner-up',
-      detail: `Final: SPH ${final.scoreFor}–${final.scoreAgainst} ${final.opponent || reviewed.opponent}`,
+      outcome: semifinal ? (won ? 'Finalist' : 'Semifinalists') : (won ? 'Champions' : 'Runner-up'),
+      detail: `${semifinal ? 'Semifinal' : 'Final'}: SPH ${result.scoreFor}–${result.scoreAgainst} ${result.opponent || reviewed.opponent}${scorer ? ' · ' + scorer : ''}`,
     };
   });
   const acsc = ACSC_COMPETITION_RESULTS.flatMap(snapshot => {
