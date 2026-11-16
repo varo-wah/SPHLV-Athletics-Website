@@ -23,7 +23,7 @@ test('JAAC cards distinguish completed finals from the last verified semifinal',
   const cases = [
     ['soccer-sma-girls', 'Champions', 'Final: SPH-LV 2–1 STL'],
     ['volleyball-sma-boys', 'Runner-up', 'Final: SPH-LV 0–3 GJS'],
-    ['volleyball-sma-girls', 'Finalist', 'Semifinal: SPH-LV 3–0 BSJ'],
+    ['volleyball-sma-girls', 'Champions', 'Final: SPH-LV 3–0 JIS'],
     ['soccer-sma-boys', 'Semifinalist', 'Semifinal: SPH-LV 1–2 BSJ'],
   ];
   for (const [teamId, placement, score] of cases) {

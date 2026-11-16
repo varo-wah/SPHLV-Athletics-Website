@@ -4,7 +4,7 @@ import { motion, useReducedMotion } from 'motion/react';
 import { BarChart3, CalendarDays, MapPin, Sparkles, X } from 'lucide-react';
 import { SheetMatch } from '../services/parsers';
 import { penaltyScoreLabel, presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
-import { volleyballRecap } from '../utils/volleyballRecaps';
+import { matchRecap } from '../utils/matchRecap';
 import TeamLogo from './TeamLogo';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION, SOFT_SPRING, staggerDelay } from '../config/motion';
 
@@ -46,7 +46,7 @@ export default function MatchDetailsModal({ match, formatDate, onClose }: MatchD
   const setScores = match.setScores || [];
   const statLeaders = match.statLeaders || [];
   const highlights = match.highlights || [];
-  const recap = volleyballRecap(match);
+  const recap = matchRecap(match);
   const reduceMotion = useReducedMotion();
   const [isDesktop, setIsDesktop] = useState(
     () => window.matchMedia('(min-width: 640px)').matches,

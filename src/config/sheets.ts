@@ -39,6 +39,15 @@ export const RESULT_SHEET_SOURCES: ResultSheetSource[] = sheetSources.results.ma
   url: resultUrlOverrides[source.envKey] || source.url,
 }));
 
+// Reviewed GameDay reports can exist before a team has a connected results sheet.
+// These identities are used for merging only, never for remote fetch/status checks.
+export const REVIEWED_RESULT_SOURCES = [
+  ...RESULT_SHEET_SOURCES,
+  { id: 'reviewed-varsity-boys-basketball', teamId: 'basketball-sma-boys',
+    displayName: 'Varsity Boys Basketball', sport: 'Basketball' as const,
+    sportKey: 'Basketball' as const, level: 'SMA' as const, genderGroup: 'Boys' as const },
+];
+
 export const MASTER_SCHEDULE_URLS = sheetSources.masterSchedules;
 export const SCHOOL_MASTER_SCHEDULE_URL = 'https://sphacid-my.sharepoint.com/:x:/g/personal/pe-lv_sph_ac_id/IQApbiLW2BKYSriawFHuP4m6Aa6EmT6xX_otnN_PWWLFWpY?e=Tn4JPh';
 

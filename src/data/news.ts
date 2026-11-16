@@ -61,6 +61,58 @@ export interface NewsArticle {
 
 const PUBLISHED_NEWS_ARTICLES: readonly NewsArticle[] = [
   {
+    id: '2026-11-15-season-one-sports-report',
+    title: 'Season 1: The Final Sports Report',
+    publishedAt: '2026-11-15', dateLabel: 'SHARED NOVEMBER 15, 2026', category: 'SPORTS REPORT',
+    excerpt: 'Catch up on Season 1 with the final LV GameDay Sports Report.',
+    image: 'https://i.ytimg.com/vi/tH9igR4XBi8/hqdefault.jpg',
+    imageAlt: 'Season 1 final LV GameDay Sports Report video thumbnail',
+    body: ['Watch the final Sports Report for Season 1, shared by Mr Mark on November 15.'],
+    youtubeVideoId: 'tH9igR4XBi8',
+    videoUrl: 'https://www.youtube.com/watch?v=tH9igR4XBi8',
+    publicationChannel: 'published',
+  },
+  {
+    id: '2026-11-15-varsity-basketball-lippo-cikarang-recap',
+    title: 'Varsity Boys Rally, Fall One Point Short Against Lippo Cikarang',
+    publishedAt: '2026-11-15', dateLabel: 'REPORTED NOVEMBER 15, 2026', category: 'GAME RECAP',
+    excerpt: 'A 16–4 fourth quarter brought the Eagles back into contention in a 54–55 loss.',
+    image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
+    body: ['In Mr Mark’s November 15 GameDay report, the varsity boys fell 54–55 to SPH Lippo Cikarang after a late comeback. Trailing 38–51 entering the fourth quarter, the Eagles outscored their opponents 16–4 before the final shot missed.'],
+    sections: [
+      {
+        heading: 'Kiano leads the comeback',
+        paragraphs: ['Kiano scored 12 of his team-high 14 points in the fourth quarter. He finished with eight rebounds and one block, shooting 6-for-8 from the field (75%).'],
+      },
+      {
+        heading: 'Contributions across the team',
+        paragraphs: ['Ryu recorded 13 points, seven rebounds, six steals, four assists and three blocks, shooting 5-for-16. Evans added three steals and made one of two three-point attempts. Ming also made one of two three-point attempts, while Sean shot 3-for-7 from the field.'],
+      },
+    ],
+    publicationChannel: 'published',
+  },
+  {
+    id: '2026-11-08-varsity-girls-volleyball-jaac-final-recap',
+    title: 'Varsity Girls Sweep JIS to Win the JAAC Final',
+    publishedAt: '2026-11-08', dateLabel: 'REPORTED NOVEMBER 8, 2026', category: 'GAME RECAP',
+    excerpt: 'The Eagles won the final 3–0: 25–21, 25–8 and 25–11.',
+    image: eagleAppHomeBanner, imageAlt: 'SPH-LV Athletics Eagle App banner',
+    body: ['The varsity girls volleyball team beat JIS in straight sets in the JAAC final on November 6 at SPH-LV. Trisha’s November 8 GameDay report recorded set scores of 25–21, 25–8 and 25–11.'],
+    sections: [
+      {
+        heading: 'Final contributions',
+        highlights: [
+          { label: 'Sam Chai', text: '10 kills and 11 aces.' },
+          { label: 'Nicolyne', text: 'Four kills and four aces.' },
+          { label: 'Christa', text: 'Two kills and three aces.' },
+          { label: 'Elaine', text: 'Two kills and two aces.' },
+          { label: 'Bev', text: 'Two blocks.' },
+        ],
+      },
+    ],
+    publicationChannel: 'published',
+  },
+  {
     id: '2026-11-03-acsc-swimming-results',
     title: 'Eagles finish seventh at ACSC Swimming',
     publishedAt: '2026-11-03', dateLabel: 'NOVEMBER 3, 2026', category: 'SWIMMING',

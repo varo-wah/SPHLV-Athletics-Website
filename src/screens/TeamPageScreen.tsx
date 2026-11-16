@@ -783,6 +783,9 @@ export default function TeamPageScreen({
                   <h3 className="mt-2 text-2xl font-black uppercase tracking-[0.08em] text-foreground sm:text-3xl">
                     Player Roster
                   </h3>
+                  {roster?.sourceNote && (
+                    <p className="mt-2 max-w-lg text-xs leading-relaxed text-foreground/60">{roster.sourceNote}</p>
+                  )}
                 </div>
 
                 <div className="relative flex h-14 min-w-14 shrink-0 flex-col items-center justify-center rounded-2xl border border-[#B5413F]/20 bg-[#5A1C2C] px-3 text-white shadow-[0_12px_30px_rgba(90,28,44,0.24)]">
@@ -825,8 +828,11 @@ export default function TeamPageScreen({
                         )}
                       </span>
 
-                      <span className="min-w-0 text-[13px] font-black uppercase leading-snug tracking-[0.045em] text-foreground sm:text-sm">
-                        {player}
+                      <span className="min-w-0">
+                        <span className="block text-[13px] font-black uppercase leading-snug tracking-[0.045em] text-foreground sm:text-sm">{player}</span>
+                        {roster.grades?.[player] && (
+                          <span className="mt-1 block text-xs text-foreground/60">Grade {roster.grades[player]}</span>
+                        )}
                       </span>
                     </li>
                   ),

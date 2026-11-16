@@ -5,6 +5,19 @@ import { OCTOBER_26_UPDATES } from './october26Updates';
 // The October 31 and November 1 GameDay reports confirm the volleyball results.
 export const NOVEMBER_JAAC_RESULTS: GameDayUpdate[] = [
   {
+    // Official JAAC Girls Schedule row 32; Trisha's GameDay report, November 8.
+    fixtureId: '2026-girls-volleyball-jaac-final',
+    teamId: 'volleyball-sma-girls', date: '2026-11-06', reportedDate: '2026-11-08',
+    opponent: 'JIS', scoreFor: 3, scoreAgainst: 0,
+    newFixture: { time: '16:30', venue: 'SPH-LV', locationType: 'Home' },
+    details: { tournament: 'JAAC', matchType: 'JAAC final',
+      setScores: ['25–21', '25–8', '25–11'],
+      statLeaders: ['Sam Chai — 10 kills, 11 aces', 'Nicolyne — 4 kills, 4 aces',
+        'Christa — 2 kills, 3 aces', 'Elaine — 2 kills, 2 aces', 'Bev — 2 blocks'],
+      highlights: ['SPH-LV won the JAAC championship with a straight-sets victory over JIS. After a 25–21 opening set, the Eagles took the next two sets 25–8 and 25–11.',
+        'Sam Chai led the attack with 10 kills and added 11 aces. Nicolyne contributed four kills and four aces.'] },
+  },
+  {
     fixtureId: '2026-girls-soccer-jaac-final',
     teamId: 'soccer-sma-girls', date: '2026-11-03',
     opponent: 'STL', scoreFor: 2, scoreAgainst: 1,

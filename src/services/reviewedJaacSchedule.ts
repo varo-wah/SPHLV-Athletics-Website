@@ -34,7 +34,7 @@ function teamId(event: ScheduleEvent) {
 function reviewedFixtures(): ScheduleEvent[] {
   const fixtures: ScheduleEvent[] = [];
   for (const result of [...OCTOBER_26_UPDATES, ...OCTOBER_29_UPDATES, ...NOVEMBER_JAAC_RESULTS]) {
-    if (!result.date || !result.fixtureId || result.teamId === 'volleyball-sma-girls') continue;
+    if (!result.date || !result.fixtureId || (result.teamId === 'volleyball-sma-girls' && result.details.matchType !== 'JAAC final')) continue;
     const team = TEAM_CATALOG.find(entry => entry.id === result.teamId);
     if (!team || (team.sport !== 'Basketball' && team.sport !== 'Soccer' && team.sport !== 'Volleyball')) continue;
     const date = new Date(result.date + 'T12:00:00Z');
