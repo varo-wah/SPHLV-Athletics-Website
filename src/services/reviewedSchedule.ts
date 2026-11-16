@@ -1,6 +1,7 @@
 import type { ScheduleEvent } from '../data/scheduleTypes';
 import { IS_PROTOTYPE, VARSITY_BASKETBALL_SEASON, isInReleaseSeason } from '../config/launchSports';
 import { VOLLEYBALL_CUP_SCHEDULE } from '../data/volleyballCupSchedule';
+import { SMP_VOLLEYBALL_SCHEDULE } from '../data/smpVolleyballSchedule2026';
 import { VARSITY_BASKETBALL_SCHEDULE } from '../data/varsityBasketballSchedule2026';
 import { mergeReviewedCupSchedule } from './reviewedCupSchedule';
 import { mergeReviewedJaacSchedule } from './reviewedJaacSchedule';
@@ -12,11 +13,11 @@ import { mergeAcscSwimmingSchedule } from './acscSwimmingSchedule';
 export function reviewedSchedule(events: ScheduleEvent[], includePrototypeSeasons = IS_PROTOTYPE) {
   const master = events.filter(event => {
     if (!isInReleaseSeason(event.season, includePrototypeSeasons)) return false;
-    // The legacy Season 2 feed uses last year's dates for varsity basketball.
-    if (event.season === VARSITY_BASKETBALL_SEASON && /^Varsity (Boys|Girls) Basketball$/i.test(event.team)) return false;
+    // The legacy Season 2 feed uses last year's dates for these Season 2 teams.
+    if (event.season === VARSITY_BASKETBALL_SEASON && /^(?:Varsity (?:Boys|Girls) Basketball|SMP (?:Boys|Girls) Volleyball)$/i.test(event.team)) return false;
     return !(event.sportKey === 'Volleyball' && ['2026-09-28', '2026-09-29'].includes(event.date ?? '') && /cup/i.test(event.eventText));
   });
   const cup = mergeReviewedCupSchedule([...master, ...VOLLEYBALL_CUP_SCHEDULE]);
   const acsc = mergeAcscCompetitionSchedule(mergeAcscVolleyballSchedule(mergeAcscSoccerSchedule(cup)));
-  return [...mergeAcscSwimmingSchedule(mergeReviewedJaacSchedule(acsc)), ...VARSITY_BASKETBALL_SCHEDULE];
+  return [...mergeAcscSwimmingSchedule(mergeReviewedJaacSchedule(acsc)), ...VARSITY_BASKETBALL_SCHEDULE, ...SMP_VOLLEYBALL_SCHEDULE];
 }

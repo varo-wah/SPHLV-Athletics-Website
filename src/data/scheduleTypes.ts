@@ -21,6 +21,8 @@ export interface ScheduleEvent {
   eventType: ScheduleEventType;
   location?: string | null;
   opponent?: string | null;
+  /** A multi-school session whose individual fixtures have not been published. */
+  pairingsPending?: boolean;
   time?: string | null;
   timeZone?: string;
   details?: string;

@@ -80,7 +80,7 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
           {group.label}
         </h3>
         <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/35">
-          {group.teams.length} team{group.teams.length === 1 ? '' : 's'}
+          {group.key === 'Volleyball-SMP' ? 'Standby' : `${group.teams.length} team${group.teams.length === 1 ? '' : 's'}`}
         </span>
       </div>
 
@@ -124,11 +124,11 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
         <section aria-labelledby="season-two-teams">
           <h2 id="season-two-teams" className="mb-3 text-xl font-black">Season 2</h2>
           <div className="teams-season-two space-y-3">
-            {sportGroups.filter(group => group.key === 'Basketball-SMA').map(renderSport)}
+            {sportGroups.filter(group => ['Basketball-SMA', 'Volleyball-SMP'].includes(group.key)).map(renderSport)}
             <div className="rounded-2xl border border-border/10 bg-subcard/50 p-4">
               <h3 className="mb-2 text-sm font-bold">Coming soon</h3>
               <ul className="divide-y divide-border/10 text-sm text-foreground/75">
-                {['SMP boys’ and girls’ volleyball', 'Grades 7–12 swimming', 'Grades 5–6 boys’ and girls’ volleyball', 'Grades 3–4 Active Living'].map(name =>
+                {['Grades 7–12 swimming', 'Grades 5–6 boys’ and girls’ volleyball', 'Grades 3–4 Active Living'].map(name =>
                   <li key={name} className="py-2">{name}</li>
                 )}
               </ul>
@@ -138,7 +138,7 @@ export default function TeamsScreen({ onSelectTeam, athleticsDataState }: TeamsS
         <section aria-labelledby="season-one-teams">
           <h2 id="season-one-teams" className="mb-3 text-xl font-black">Season 1 teams &amp; results</h2>
           <div className="teams-sport-grid space-y-3">
-            {sportGroups.filter(group => ['Volleyball', 'Basketball-SMP', 'Soccer'].includes(group.key)).map(group =>
+            {sportGroups.filter(group => ['Volleyball-SMA', 'Basketball-SMP', 'Soccer'].includes(group.key)).map(group =>
               ({ ...group, teams: group.teams.filter(team => team.production) })
             ).map(renderSport)}
             <article className="teams-sport-card rounded-2xl border border-border/10 bg-card p-4">

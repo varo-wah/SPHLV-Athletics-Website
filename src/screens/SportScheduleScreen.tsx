@@ -101,6 +101,8 @@ const TEAM_FILTER_OPTIONS: ReadonlyArray<{
   },
   { id: 'VBB', label: 'VBB', title: 'Varsity Boys Basketball', emoji: '🏀' },
   { id: 'VGB', label: 'VGB', title: 'Varsity Girls Basketball', emoji: '🏀' },
+  { id: 'SMPBV', label: 'SMPBV', title: 'SMP Boys Volleyball', emoji: '🏐' },
+  { id: 'SMPGV', label: 'SMPGV', title: 'SMP Girls Volleyball', emoji: '🏐' },
 ];
 
 const ALL = 'All';
@@ -202,7 +204,7 @@ function teamFilterClasses(filter: ScheduleTeamFilter, active: boolean) {
       : 'border-[#8FC1DD] bg-[#EAF4FA] text-[#235B7A] hover:border-[#669BBC] dark:bg-[#669BBC]/15 dark:text-[#9CCCE5]';
   }
 
-  const boysTeam = filter === 'VBS' || filter === 'VBV' || filter === 'SMPBB' || filter === 'VBB';
+  const boysTeam = filter === 'VBS' || filter === 'VBV' || filter === 'SMPBB' || filter === 'VBB' || filter === 'SMPBV';
   if (boysTeam) {
     return active
       ? 'border-[#669BBC] bg-[#DCEEF8] text-[#174D6B] ring-2 ring-[#669BBC]/25 shadow-[0_8px_20px_rgba(102,155,188,0.18)] dark:bg-[#669BBC]/25 dark:text-[#BFDFF0]'
@@ -320,7 +322,7 @@ export default function SportScheduleScreen({ athleticsDataState }: SportSchedul
   const filters = parseScheduleQuery(hash.split('?')[1] ?? '', visibleSeasons, defaultSeason);
   const activeSeason = filters.season;
   const teamOptions = TEAM_FILTER_OPTIONS.filter(option => option.id === 'All' || IS_PROTOTYPE
-    || (['VBB', 'VGB'].includes(option.id) === (activeSeason === VARSITY_BASKETBALL_SEASON)));
+    || (['VBB', 'VGB', 'SMPBV', 'SMPGV'].includes(option.id) === (activeSeason === VARSITY_BASKETBALL_SEASON)));
   const teamFilter = teamOptions.find(option => option.id === filters.team)?.id ?? 'All';
   const scheduleScope = filters.scope;
   const scheduleView: ScheduleView = filters.view;

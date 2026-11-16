@@ -12,6 +12,7 @@ export const RELEASE_CHANNEL: ReleaseChannel = requestedReleaseChannel === 'prot
 export const IS_PROTOTYPE = RELEASE_CHANNEL === 'prototype';
 export const LAUNCH_SEASON = 'Season 1';
 export const VARSITY_BASKETBALL_SEASON = 'Season 2';
+export const SMP_VOLLEYBALL_SEASON = 'Season 2';
 
 export function isInReleaseSeason(season: string, includePrototypeSeasons = IS_PROTOTYPE): boolean {
   return includePrototypeSeasons || season === LAUNCH_SEASON;
@@ -76,8 +77,11 @@ export function isVisibleScheduleEvent(
   if (IS_PROTOTYPE) return true;
 
   if (season === VARSITY_BASKETBALL_SEASON) {
-    return sport === 'Basketball' && /^varsity (?:boys|girls|boys & girls) basketball$/i.test(teamName.trim());
+    return (sport === 'Basketball' && /^varsity (?:boys|girls|boys & girls) basketball$/i.test(teamName.trim()))
+      || (sport === 'Volleyball' && /^smp (?:boys|girls|boys & girls) volleyball$/i.test(teamName.trim()));
   }
+
+  if (sport === 'Volleyball' && /^smp /i.test(teamName.trim())) return false;
 
   // Swimming has its own public team page rather than a gendered team-catalog entry.
   if (season === LAUNCH_SEASON && (sport === 'Swimming' || sport === null)
@@ -91,12 +95,12 @@ export function isVisibleScheduleEvent(
 
 // Lead both team directories with the current varsity basketball season.
 const directoryOrder: readonly [SportTab, DivisionTab?][] = [
-  ['Basketball', 'SMA'], ['Volleyball'], ['Basketball', 'SMP'], ['Soccer'], ['Badminton'], ['TrackAndField'],
+  ['Basketball', 'SMA'], ['Volleyball', 'SMP'], ['Volleyball', 'SMA'], ['Basketball', 'SMP'], ['Soccer'], ['Badminton'], ['TrackAndField'],
 ];
 export const TEAM_DIRECTORY = directoryOrder.flatMap(([id, division]) => {
   const sport = SPORT_CATALOG.find(entry => entry.id === id)!;
   const teams = TEAM_CATALOG.filter(team => team.sport === id && (!division || team.division === division)
     && (IS_PROTOTYPE || team.production));
-  const label = division === 'SMA' ? 'Varsity Basketball' : division === 'SMP' ? 'SMP Basketball' : sport.label;
+  const label = division === 'SMA' ? `Varsity ${sport.label}` : division === 'SMP' ? `SMP ${sport.label}` : sport.label;
   return teams.length ? [{ ...sport, label, key: division ? id + '-' + division : id, teams }] : [];
 });

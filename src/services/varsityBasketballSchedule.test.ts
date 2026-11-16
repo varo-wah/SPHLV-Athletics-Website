@@ -9,7 +9,7 @@ test('varsity basketball shows the reviewed workbook dates on initial load and r
   const first = VARSITY_BASKETBALL_SCHEDULE[0];
   const stale = { ...first, id: 'old-google-row', date: '2025-11-03' };
   for (const prototype of [false, true]) {
-    const current = reviewedSchedule([stale, first], prototype).filter(event => event.season === 'Season 2');
+    const current = reviewedSchedule([stale, first], prototype).filter(event => event.season === 'Season 2' && event.sportKey === 'Basketball');
     assert.deepEqual(current, VARSITY_BASKETBALL_SCHEDULE);
     assert.equal(new Set(current.map(event => event.id)).size, 42);
     for (const gender of ['Boys', 'Girls'] as const) {

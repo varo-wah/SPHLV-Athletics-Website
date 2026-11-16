@@ -92,6 +92,7 @@ function SchoolIdentity({ school }: { school: JaacSchool }) {
 }
 
 function JaacMatchup({ event }: { event: ScheduleEvent }) {
+  if (event.pairingsPending) return null;
   const opponents = jaacOpponentSchoolsForEvent(
     event.opponent,
     event.eventText,
@@ -169,6 +170,11 @@ export default function TeamPageScreen({
       : '#64748B';
   const roster = team ? rosterForTeam(team.id) : undefined;
   const isVarsityBasketball = sport === 'Basketball' && division === 'SMA';
+  const isSmpVolleyball = sport === 'Volleyball' && division === 'SMP';
+  const hasSeasonTwoSchedule = (athleticsDataState?.data.masterScheduleEvents ?? []).some(event =>
+    event.season === 'Season 2' && event.sportKey === sport && event.level === division
+    && event.genderGroup === gender && Boolean(event.date),
+  );
 
   useEffect(() => {
     setActiveSection('games');
@@ -184,7 +190,7 @@ export default function TeamPageScreen({
   const showDraws = standingsShowDraws(sport);
   const standingsSource = athleticsDataState?.remoteSources.find((source) => source.id === `${sport.toLowerCase()}-${gender}-standings`);
   const standingsDate = new Date(standingsSource?.publishedAt ?? OFFICIAL_STANDINGS_VERIFIED_AT).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
-  const standingsUrl = isVarsityBasketball ? null : officialStandingsUrlFor(sport, gender);
+  const standingsUrl = isVarsityBasketball || isSmpVolleyball ? null : officialStandingsUrlFor(sport, gender);
   const differenceLabel =
     sport === 'Soccer'
       ? 'GD'
@@ -288,6 +294,14 @@ export default function TeamPageScreen({
             <h1 className="text-[clamp(1.15rem,5.2vw,2.25rem)] font-black uppercase leading-tight tracking-[-0.035em] text-foreground sm:text-3xl">
               {teamName}
             </h1>
+            {isSmpVolleyball && (
+              <div className="mt-2 space-y-2">
+                <p className="inline-flex rounded-full border border-border/10 bg-foreground/[0.04] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/65">Season 2 · Standby</p>
+                <p className="text-xs leading-relaxed text-foreground/60">
+                  {hasSeasonTwoSchedule ? 'Schedule available · Roster and results coming soon.' : 'Schedule awaiting confirmation · Roster and results coming soon.'}
+                </p>
+              </div>
+            )}
             {team?.id === 'soccer-sma-boys' && completedResults.some(match => match.reviewedFixtureId === '2026-boys-soccer-jaac-semifinal') && (
               <p className="mt-2 text-sm font-semibold text-foreground/75"><strong>End of Season!</strong> Season 1 · JAAC semifinalists</p>
             )}
@@ -362,10 +376,13 @@ export default function TeamPageScreen({
             transition={PAGE_TRANSITION}
           >
         <div className="space-y-10">
-          {activeSection === 'standings' && isVarsityBasketball && standingsRows.length === 0 && (
-            <EmptyPanel title="Varsity standings pending" body="The standings will appear when the league publishes the varsity basketball table." />
+          {activeSection === 'standings' && (isVarsityBasketball || isSmpVolleyball) && standingsRows.length === 0 && (
+            <EmptyPanel
+              title={isSmpVolleyball ? 'Season 2 standings coming soon' : 'Varsity standings pending'}
+              body={isSmpVolleyball ? 'The SMP volleyball league table will appear once official standings are available.' : 'The standings will appear when the league publishes the varsity basketball table.'}
+            />
           )}
-          {activeSection === 'standings' && (!isVarsityBasketball || standingsRows.length > 0) && (
+          {activeSection === 'standings' && ((!isVarsityBasketball && !isSmpVolleyball) || standingsRows.length > 0) && (
             <section className="team-league-standings" data-show-draws={showDraws}>
               <h2 className="mb-3 text-sm font-black uppercase tracking-wide">JAAC regular-season standings</h2>
               <div className="team-standings-scroll overflow-x-auto rounded-3xl border border-brand-maroon/10 bg-white/95 shadow-[0_4px_12px_rgba(15,23,42,0.06)] dark:border-border/10 dark:bg-subcard dark:shadow-[0_4px_12px_rgba(0,0,0,0.16)]">
@@ -528,6 +545,14 @@ export default function TeamPageScreen({
 
           {activeSection === 'games' && (
             <section className="space-y-4" aria-label="Schedule and results">
+              {isSmpVolleyball && hasSeasonTwoSchedule && team && (
+                <a
+                  href={`#/schedule?season=Season+2&team=${team.menuCode}&scope=practices`}
+                  className="inline-flex min-h-11 items-center rounded-xl border border-border/10 bg-subcard px-4 py-2 text-xs font-bold text-foreground/75 transition-colors hover:text-brand-maroon focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-maroon"
+                >
+                  View Season 2 practices &amp; tryouts →
+                </a>
+              )}
               <div
                 role="group"
                 aria-label="Choose upcoming games or completed results"
@@ -618,8 +643,8 @@ export default function TeamPageScreen({
                     ) : upcomingEvents.length ===
                       0 ? (
                       <EmptyPanel
-                        title="No upcoming games"
-                        body="No future competitive events are listed for this team."
+                        title={isSmpVolleyball ? 'Match schedule coming soon' : 'No upcoming games'}
+                        body={isSmpVolleyball ? 'Confirmed SMP volleyball fixtures will appear here. Practices and tryouts are listed separately in Schedule.' : 'No future competitive events are listed for this team.'}
                       />
                     ) : (
                       <div className="team-games-grid space-y-3">
@@ -686,8 +711,8 @@ export default function TeamPageScreen({
 
                     {resultEntries.length === 0 && !resultSourceState?.configured ? (
                       <EmptyPanel
-                        title="Results pending"
-                        body="Game scores will appear here once confirmed."
+                        title={isSmpVolleyball ? 'Season 2 results coming soon' : 'Results pending'}
+                        body={isSmpVolleyball ? 'Confirmed scores and game recaps will appear here as the SMP volleyball season gets underway.' : 'Game scores will appear here once confirmed.'}
                       />
                     ) : resultEntries.length === 0 && resultSourceState?.failed &&
                       !resultSourceState.fromCache ? (
@@ -752,7 +777,7 @@ export default function TeamPageScreen({
           )}
         </div>
 
-        {activeSection === 'standings' && !isVarsityBasketball && (
+        {activeSection === 'standings' && !isVarsityBasketball && !isSmpVolleyball && (
           <>
             <JaacTournamentBracket teamId={team?.id} matches={completedResults} />
             <TournamentResultsSection teamId={team?.id} matches={completedResults} />
@@ -849,8 +874,7 @@ export default function TeamPageScreen({
                 </p>
 
                 <p className="mt-2 max-w-md text-xs font-semibold leading-relaxed text-foreground/38">
-                  Player names will appear after the
-                  official team list is submitted.
+                  {isSmpVolleyball ? 'The Season 2 SMP volleyball roster will appear once the team list is confirmed.' : 'Player names will appear after the official team list is submitted.'}
                 </p>
               </div>
             )}
