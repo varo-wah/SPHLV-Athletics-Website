@@ -9,6 +9,7 @@ import {
 
 const expectedCounts: Record<string, number> = {
   'basketball-sma-boys': 13,
+  'basketball-sma-girls': 15,
   'soccer-sma-boys': 24,
   'soccer-sma-girls': 21,
   'volleyball-sma-boys': 17,
@@ -18,7 +19,7 @@ const expectedCounts: Record<string, number> = {
 };
 
 test('contains the supplied team rosters with the verified player counts', () => {
-  assert.equal(TEAM_ROSTERS.length, 7);
+  assert.equal(TEAM_ROSTERS.length, 8);
 
   for (const [teamId, count] of Object.entries(expectedCounts)) {
     assert.equal(rosterForTeam(teamId)?.players.length, count, teamId);
@@ -37,7 +38,6 @@ test('makes the confirmed varsity boys basketball list available to its public t
   assert.deepEqual(roster.players.map(name => roster.grades?.[name]), [12, 12, 12, 12, 11, 11, 10, 10, 10, 10, 10, 10, 12]);
   assert.match(roster.sourceNote ?? '', /15 Nov 2026/);
   assert.match(roster.sourceNote ?? '', /not jersey numbers/);
-  assert.equal(rosterForTeam('basketball-sma-girls'), undefined, 'unconfirmed girls roster stays pending');
 });
 
 test('keeps every player name non-empty and unique within a team', () => {

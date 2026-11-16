@@ -65,6 +65,28 @@ export const SMP_BOYS_BASKETBALL_SQUADS = {
 
 export const TEAM_ROSTERS = [
   {
+    // Mark Heil, Teams private chat, November 16, 2026 at 09:20.
+    teamId: 'basketball-sma-girls',
+    players: [
+      'Marchyie Aurelia Naftanel',
+      'Isabelle Lily Chendra',
+      'Giselle London Sudjana',
+      'Hope Hardjadinata',
+      'Hillary Julianne Tandra',
+      'Nicolyne Clarissa Alianna',
+      'Christabelle Valencie Teguh',
+      'Jocelyn Jessie Liu',
+      'Kimberly Alexis Chiu',
+      'Yujin Jeong',
+      'Ellyana Celine Assa',
+      'Julietta Sugih Soemarno',
+      'Abbiegail Johnson Juadi',
+      'Esther Gao',
+      'Angel Suprapto',
+    ],
+    sourceNote: 'Confirmed by Mr Mark · 16 Nov 2026. Numbers show list order, not jersey numbers.',
+  },
+  {
     teamId: 'basketball-sma-boys',
     players: VARSITY_BOYS_BASKETBALL_ROSTER.map(player => player.name),
     grades: Object.fromEntries(VARSITY_BOYS_BASKETBALL_ROSTER.map(player => [player.name, player.grade])),
