@@ -32,9 +32,9 @@
     grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
     grid-template-areas:
       "banner banner"
+      "resources resources"
       "games recap"
-      "news recap"
-      "resources resources";
+      "news recap";
     align-items: start;
     gap: 1.5rem;
     margin-top: 1.5rem;
@@ -49,8 +49,8 @@
   .home-screen:not(:has(> .home-recap)) {
     grid-template-areas:
       "banner banner"
-      "games news"
-      "resources resources";
+      "resources resources"
+      "games news";
   }
 
   .home-banner {

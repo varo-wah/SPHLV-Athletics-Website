@@ -212,6 +212,8 @@ export default function HomeScreen({
         />
       </div>
 
+      <HomeResources />
+
       <section
         aria-label="Games"
         className="home-games overflow-hidden rounded-3xl border border-border/10 bg-subcard/75 shadow-[0_3px_10px_rgba(0,0,0,0.06)]"
@@ -380,8 +382,6 @@ export default function HomeScreen({
           )}
         </div>
       </section>
-
-      <HomeResources />
 
       <HomeTournamentRecap matches={athleticsDataState.data.matches} />
 
