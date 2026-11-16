@@ -3,7 +3,7 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { IS_PROTOTYPE } from '../config/launchSports';
-import { SCHOOL_MASTER_SCHEDULE_URL } from '../config/sheets';
+import { SCHOOL_MASTER_SCHEDULE_URL, SENIOR_BASKETBALL_WORKBOOK_URL, JUNIOR_VOLLEYBALL_WORKBOOK_URL } from '../config/sheets';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
 import type { AppTab } from '../types';
 
@@ -18,6 +18,8 @@ interface TopBarProps {
 }
 
 const HOME_LINKS = [
+  { label: 'Senior Basketball 26/27', href: SENIOR_BASKETBALL_WORKBOOK_URL, icon: Sheet },
+  { label: 'Junior Volleyball 26/27', href: JUNIOR_VOLLEYBALL_WORKBOOK_URL, icon: Sheet },
   { label: 'Instagram', href: 'https://www.instagram.com/sphlv.athletics?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==', icon: Instagram },
   { label: 'YouTube', href: 'https://www.youtube.com/@SPH-LV-Athletics', icon: Youtube },
   { label: 'Game photos', href: 'https://photos.app.goo.gl/g4MqVW3TJPQ3WNSF6', icon: Images },
@@ -62,7 +64,7 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu, active
           />
         </motion.button>
         {isHome ? (
-          <nav aria-label="Athletics links" className="sph-home-links flex items-center gap-1.5">
+          <nav aria-label="Athletics links" className="sph-home-links flex flex-wrap items-center gap-1.5">
             {HOME_LINKS.map(({ href, icon: Icon, label }) => href ? (
               <motion.a
                 key={label}

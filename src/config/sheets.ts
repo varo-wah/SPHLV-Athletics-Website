@@ -64,3 +64,7 @@ export const LEAGUE_STANDING_SOURCES = (['Soccer', 'Volleyball', 'Basketball'] a
   (['Boys', 'Girls'] as const).map(gender => ({ sport, gender,
     url: sheetSources.standings[`${sport.toLowerCase()}${gender}` as keyof typeof sheetSources.standings],
   })));
+
+// Official Season 2 workbooks shared by Mark Heil on 17 November 2026.
+export const SENIOR_BASKETBALL_WORKBOOK_URL = 'https://docs.google.com/spreadsheets/d/1rno8atR4ZZDrC9tKZzFQm2a4zCRwNcQBz8MBKDiGSNc/edit?usp=sharing';
+export const JUNIOR_VOLLEYBALL_WORKBOOK_URL = 'https://docs.google.com/spreadsheets/d/1Vbc2l77a8BtIECvEX1aTjklFZkglQEnUS255LP6dz4g/edit?usp=sharing';
