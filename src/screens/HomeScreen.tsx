@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import eagleAppHomeBanner from '../assets/eagleappheadbanner.png';
 import CompactResultCard from '../components/CompactResultCard';
+import HomeResources from '../components/HomeResources';
 import HomeTournamentRecap from '../components/HomeTournamentRecap';
 import NewsListRow from '../components/NewsListRow';
 import TeamLogo from '../components/TeamLogo';
@@ -379,6 +380,8 @@ export default function HomeScreen({
           )}
         </div>
       </section>
+
+      <HomeResources />
 
       <HomeTournamentRecap matches={athleticsDataState.data.matches} />
 

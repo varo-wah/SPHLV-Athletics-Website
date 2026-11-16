@@ -17,6 +17,10 @@
 }
 
 @container app (min-width: 40rem) {
+  .home-resource-links {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .news-poster-grid:not([data-poster-count="1"]) {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -29,7 +33,8 @@
     grid-template-areas:
       "banner banner"
       "games recap"
-      "news recap";
+      "news recap"
+      "resources resources";
     align-items: start;
     gap: 1.5rem;
     margin-top: 1.5rem;
@@ -44,7 +49,8 @@
   .home-screen:not(:has(> .home-recap)) {
     grid-template-areas:
       "banner banner"
-      "games news";
+      "games news"
+      "resources resources";
   }
 
   .home-banner {
@@ -61,6 +67,10 @@
 
   .home-news {
     grid-area: news;
+  }
+
+  .home-resources {
+    grid-area: resources;
   }
 
   .home-games-heading {
