@@ -1,3 +1,4 @@
+import { SENIOR_BASKETBALL_WORKBOOK_URL, JUNIOR_VOLLEYBALL_WORKBOOK_URL } from '../config/sheets';
 import '../styles/team-responsive.css';
 import { SportTab, DivisionTab, GenderTab } from '../types';
 import { Users } from 'lucide-react';
@@ -190,7 +191,7 @@ export default function TeamPageScreen({
   const showDraws = standingsShowDraws(sport);
   const standingsSource = athleticsDataState?.remoteSources.find((source) => source.id === `${sport.toLowerCase()}-${gender}-standings`);
   const standingsDate = new Date(standingsSource?.publishedAt ?? OFFICIAL_STANDINGS_VERIFIED_AT).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
-  const standingsUrl = isVarsityBasketball || isSmpVolleyball ? null : officialStandingsUrlFor(sport, gender);
+  const standingsUrl = isVarsityBasketball ? SENIOR_BASKETBALL_WORKBOOK_URL : isSmpVolleyball ? JUNIOR_VOLLEYBALL_WORKBOOK_URL : officialStandingsUrlFor(sport, gender);
   const differenceLabel =
     sport === 'Soccer'
       ? 'GD'
@@ -366,6 +367,12 @@ export default function TeamPageScreen({
         aria-labelledby={`team-section-tab-${activeSection}`}
         className="mt-5 space-y-8 px-4 sm:px-6 lg:px-8"
       >
+        {(isVarsityBasketball || isSmpVolleyball) && (
+          <a href={standingsUrl!} target="_blank" rel="noopener noreferrer"
+            className="block rounded-xl border border-brand-maroon/15 bg-brand-maroon/5 px-4 py-3 text-sm font-bold text-brand-maroon underline underline-offset-4 dark:text-[#FCA5A5]">
+            {isVarsityBasketball ? 'Senior Basketball 26/27' : 'Junior Volleyball 26/27'} · Official fixtures, results and standings ↗
+          </a>
+        )}
         <AnimatePresence mode="wait" initial={false} custom={sectionDirection}>
           <motion.div
             key={activeSection}
