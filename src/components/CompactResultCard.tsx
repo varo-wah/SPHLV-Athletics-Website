@@ -2,7 +2,7 @@ import { useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { SheetMatch } from '../services/parsers';
 import { penaltyScoreLabel, presentResultTeams, resultOutcomeLabel } from '../utils/teamGamePresentation';
-import { volleyballRecap } from '../utils/volleyballRecaps';
+import { matchRecap } from '../utils/matchRecap';
 import MatchDetailsModal from './MatchDetailsModal';
 import TeamLogo from './TeamLogo';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
@@ -19,7 +19,7 @@ export default function CompactResultCard({ match, formatDate, dense = false }: 
   const triggerRef = useRef<HTMLButtonElement>(null);
   const teams = presentResultTeams(match);
   const outcome = resultOutcomeLabel(match.result);
-  const recap = volleyballRecap(match);
+  const recap = matchRecap(match);
   const hasDetails = Boolean(
     recap || match.reportedDate ||
     match.matchType ||

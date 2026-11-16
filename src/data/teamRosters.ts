@@ -1,7 +1,27 @@
 export interface TeamRoster {
   teamId: string;
   players: readonly string[];
+  grades?: Readonly<Record<string, number>>;
+  sourceNote?: string;
 }
+
+// Mark Heil's confirmed team list, shared in Teams on November 15, 2026.
+// The source's numbered rows indicate list order, not jersey numbers.
+export const VARSITY_BOYS_BASKETBALL_ROSTER = [
+  { name: 'Evans Sudjatma', grade: 12 },
+  { name: 'Sean Danuseputra', grade: 12 },
+  { name: 'Ryu Honda', grade: 12 },
+  { name: 'Brian Kang', grade: 12 },
+  { name: 'Coby Heil', grade: 11 },
+  { name: 'Maxwell Go', grade: 11 },
+  { name: 'Kiano Jauri', grade: 10 },
+  { name: 'Mingze Lee', grade: 10 },
+  { name: 'Rayn Danuseputra', grade: 10 },
+  { name: 'Neil Alianson', grade: 10 },
+  { name: 'Jordan Jon Jr', grade: 10 },
+  { name: 'Giovan Lim', grade: 10 },
+  { name: 'Morgan Ongko', grade: 12 },
+] as const;
 
 export const SMP_BOYS_BASKETBALL_SQUADS = {
   A: [
@@ -44,6 +64,12 @@ export const SMP_BOYS_BASKETBALL_SQUADS = {
 } as const;
 
 export const TEAM_ROSTERS = [
+  {
+    teamId: 'basketball-sma-boys',
+    players: VARSITY_BOYS_BASKETBALL_ROSTER.map(player => player.name),
+    grades: Object.fromEntries(VARSITY_BOYS_BASKETBALL_ROSTER.map(player => [player.name, player.grade])),
+    sourceNote: 'Confirmed by Mr Mark · 15 Nov 2026. Numbers show list order, not jersey numbers.',
+  },
   {
     teamId: 'soccer-sma-boys',
     players: [

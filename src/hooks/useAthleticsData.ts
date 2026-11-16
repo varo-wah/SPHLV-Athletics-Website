@@ -6,6 +6,7 @@ import {
   LEAGUE_STANDING_SOURCES,
   MASTER_SCHEDULE_URLS,
   RESULT_SHEET_SOURCES,
+  REVIEWED_RESULT_SOURCES,
   hasValidSheetUrl,
 } from "../config/sheets";
 import {
@@ -80,7 +81,7 @@ export interface AthleticsDataState {
 }
 
 const reviewedUpdates = [...GAMEDAY_UPDATES, ...acscGameDayUpdates()];
-const reviewedMatches = mergeGameDayResults([], RESULT_SHEET_SOURCES, reviewedUpdates);
+const reviewedMatches = mergeGameDayResults([], REVIEWED_RESULT_SOURCES, reviewedUpdates);
 
 const EMPTY_DATA: AthleticsData = {
   standings: OFFICIAL_STANDINGS,
@@ -210,7 +211,7 @@ export function useAthleticsData(): AthleticsDataState {
 
       const matches = mergeGameDayResults(loadedResultFeeds.flatMap((feed) => (
         parsedBySource.get(feed.source.id)?.matches ?? []
-      )), RESULT_SHEET_SOURCES, reviewedUpdates);
+      )), REVIEWED_RESULT_SOURCES, reviewedUpdates);
       const soccerMatches = matches.filter((match) => match.sportKey === "Soccer");
       const basketballMatches = matches.filter((match) => match.sportKey === "Basketball");
       const volleyballMatches = matches.filter((match) => match.sportKey === "Volleyball");

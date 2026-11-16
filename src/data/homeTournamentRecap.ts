@@ -5,8 +5,8 @@ import { SWIM_MEDAL_HIGHLIGHT, SWIM_TEAM_FINISH } from './swimmingResults';
 import { JAAC_FINAL_RESULTS, NOVEMBER_JAAC_RESULTS } from './novemberJaacResults';
 
 export const HOME_RECAP_START = Date.parse('2026-10-26T00:00:00+07:00');
-/** Exclusive end: retain the recap throughout November 16 in Jakarta. */
-export const HOME_RECAP_END = Date.parse('2026-11-17T00:00:00+07:00');
+/** Exclusive end: retain the recap throughout November 30 in Jakarta. */
+export const HOME_RECAP_END = Date.parse('2026-12-01T00:00:00+07:00');
 
 export interface RecapEntry {
   teamId: string;

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import { isLaunchTeamSelection } from '../config/launchSports';
 import {
   rosterForTeam,
   SMP_BOYS_BASKETBALL_SQUADS,
@@ -7,6 +8,7 @@ import {
 } from '../data/teamRosters';
 
 const expectedCounts: Record<string, number> = {
+  'basketball-sma-boys': 13,
   'soccer-sma-boys': 24,
   'soccer-sma-girls': 21,
   'volleyball-sma-boys': 17,
@@ -15,12 +17,27 @@ const expectedCounts: Record<string, number> = {
   'basketball-smp-girls': 24,
 };
 
-test('contains the six supplied team rosters with the verified player counts', () => {
-  assert.equal(TEAM_ROSTERS.length, 6);
+test('contains the supplied team rosters with the verified player counts', () => {
+  assert.equal(TEAM_ROSTERS.length, 7);
 
   for (const [teamId, count] of Object.entries(expectedCounts)) {
     assert.equal(rosterForTeam(teamId)?.players.length, count, teamId);
   }
+});
+
+test('makes the confirmed varsity boys basketball list available to its public team page', () => {
+  assert.equal(isLaunchTeamSelection('Basketball', 'SMA', 'Boys'), true);
+  const roster = rosterForTeam('basketball-sma-boys');
+  assert.ok(roster);
+  assert.deepEqual(roster.players, [
+    'Evans Sudjatma', 'Sean Danuseputra', 'Ryu Honda', 'Brian Kang',
+    'Coby Heil', 'Maxwell Go', 'Kiano Jauri', 'Mingze Lee',
+    'Rayn Danuseputra', 'Neil Alianson', 'Jordan Jon Jr', 'Giovan Lim', 'Morgan Ongko',
+  ]);
+  assert.deepEqual(roster.players.map(name => roster.grades?.[name]), [12, 12, 12, 12, 11, 11, 10, 10, 10, 10, 10, 10, 12]);
+  assert.match(roster.sourceNote ?? '', /15 Nov 2026/);
+  assert.match(roster.sourceNote ?? '', /not jersey numbers/);
+  assert.equal(rosterForTeam('basketball-sma-girls'), undefined, 'unconfirmed girls roster stays pending');
 });
 
 test('keeps every player name non-empty and unique within a team', () => {

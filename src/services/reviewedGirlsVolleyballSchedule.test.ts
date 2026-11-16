@@ -63,7 +63,7 @@ test('the JAAC date correction is repeatable and includes every dated postseason
   const merged = mergeReviewedJaacSchedule(master);
   assert.deepEqual(mergeReviewedJaacSchedule(merged), merged);
   const playoffs = merged.filter(event => event.status === 'Finished' && event.eventText.includes('JAAC'));
-  assert.equal(playoffs.length, 9); // 8 playoff matches plus the Oct 27 boys league match.
+  assert.equal(playoffs.length, 10); // 9 playoff matches plus the Oct 27 boys league match.
   assert.ok(playoffs.some(event => event.date === '2026-11-03' && event.team === 'Varsity Girls Soccer' && event.resultScore === '2–1'));
   assert.deepEqual(playoffs.filter(event => event.date === '2026-10-31' && event.team === 'Varsity Boys Volleyball')
     .map(event => [event.opponent, event.resultScore]).sort(), [['GJS', '0–3'], ['STL', '3–1']]);

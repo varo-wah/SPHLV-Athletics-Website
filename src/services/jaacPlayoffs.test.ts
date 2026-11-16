@@ -19,7 +19,9 @@ test('JAAC brackets keep official other-school fixtures separate from SPH result
 
 test('brackets include only reported stages and never substitute report dates for match dates', () => {
   const girlsVolleyball = jaacPlayoffsForTeam('volleyball-sma-girls', results);
-  assert.deepEqual(girlsVolleyball.map(game => game.stage), ['Semifinal']);
+  assert.deepEqual(girlsVolleyball.map(game => game.stage), ['Final', 'Semifinal']);
+  assert.equal(girlsVolleyball.find(game => game.stage === 'Final')?.date, '2026-11-06');
+  assert.deepEqual(girlsVolleyball.find(game => game.stage === 'Final')?.scores, [3, 0]);
   const girlsSoccer = jaacPlayoffsForTeam('soccer-sma-girls', results);
   assert.equal(girlsSoccer.filter(match => match.stage === 'Semifinal').length, 2);
   assert.deepEqual(girlsSoccer.find(match => match.stage === 'Final')?.scores, [2, 1]);

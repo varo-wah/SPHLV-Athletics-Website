@@ -4,12 +4,12 @@ import { RESULT_SHEET_SOURCES } from '../config/sheets';
 import { getHomeTournamentRecap, HOME_RECAP_END, HOME_RECAP_START, isHomeRecapVisible } from '../data/homeTournamentRecap';
 import { mergeGameDayResults } from './gamedayResults';
 
-test('Home recap appears October 26 and expires after November 16 in Jakarta', () => {
+test('Home recap appears October 26 and expires after November 30 in Jakarta', () => {
   assert.equal(HOME_RECAP_START, Date.parse('2026-10-25T17:00:00Z'));
-  assert.equal(HOME_RECAP_END, Date.parse('2026-11-16T17:00:00Z'));
+  assert.equal(HOME_RECAP_END, Date.parse('2026-11-30T17:00:00Z'));
   assert.equal(isHomeRecapVisible(HOME_RECAP_START - 1), false);
   assert.equal(isHomeRecapVisible(HOME_RECAP_START), true);
-  assert.equal(isHomeRecapVisible(Date.parse('2026-11-16T23:59:59+07:00')), true);
+  assert.equal(isHomeRecapVisible(Date.parse('2026-11-30T23:59:59+07:00')), true);
   assert.equal(isHomeRecapVisible(HOME_RECAP_END), false);
   assert.equal(isHomeRecapVisible(Number.NaN), false);
 });
@@ -19,6 +19,7 @@ test('Home recap uses final tournament outcomes and SPH awards without inventing
   assert.deepEqual(jaac.map(entry => [entry.teamId, entry.outcome, entry.detail]), [
     ['basketball-smp-boys', 'Champions', 'Final: SPH 69–27 BSJ'],
     ['basketball-smp-girls', 'Champions', 'Final: SPH 47–22 Santa Laurensia'],
+    ['volleyball-sma-girls', 'Champions', 'Final: SPH 3–0 JIS'],
     ['soccer-sma-girls', 'Champions', 'Final: SPH 2–1 STL'],
     ['volleyball-sma-boys', 'Runner-up', 'Final: SPH 0–3 GJS'],
     ['soccer-sma-boys', 'Semifinalists', 'Semifinal: SPH 1–2 BSJ · Troy Biantoro — 1 goal'],

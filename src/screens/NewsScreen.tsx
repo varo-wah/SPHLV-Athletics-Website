@@ -6,6 +6,14 @@ import { visibleNewsArticles } from '../data/news';
 import type { NewsArticle } from '../data/news';
 import NewsListRow from '../components/NewsListRow';
 
+const NEWS_FILTERS = [
+  { id: 'all', label: 'All news' },
+  { id: 'recaps', label: 'Written recaps' },
+  { id: 'reports', label: 'Video reports' },
+] as const;
+type NewsFilter = typeof NEWS_FILTERS[number]['id'];
+const RECAP_CATEGORIES = new Set(['GAME RECAP', 'GAMEDAY RECAP', 'SPH CUP', 'SWIMMING']);
+
 function scrollToPageTop() {
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   window.scrollTo({ top: 0, behavior: reduceMotion ? 'auto' : 'smooth' });
@@ -14,7 +22,13 @@ function scrollToPageTop() {
 export default function NewsScreen({ initialArticleId = null }: { initialArticleId?: string | null }) {
   const articles = useMemo(() => visibleNewsArticles(IS_PROTOTYPE), []);
   const [selectedArticleId, setSelectedArticleId] = useState<string | null>(initialArticleId);
+  const [activeFilter, setActiveFilter] = useState<NewsFilter>('all');
   const selectedArticle = articles.find((article) => article.id === selectedArticleId) || null;
+  const filteredArticles = articles.filter((article) => {
+    if (activeFilter === 'reports') return Boolean(article.youtubeVideoId || article.videoUrl);
+    if (activeFilter === 'recaps') return RECAP_CATEGORIES.has(article.category);
+    return true;
+  });
 
   const openArticle = (article: NewsArticle) => {
     setSelectedArticleId(article.id);
@@ -171,6 +185,22 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
         <h2 className="text-xl font-black uppercase tracking-widest text-foreground">EAGLES NEWS</h2>
       </div>
 
+      {articles.length > 0 && (
+        <div className="flex flex-wrap gap-2" role="group" aria-label="Filter news by format">
+          {NEWS_FILTERS.map((filter) => (
+            <button
+              key={filter.id}
+              type="button"
+              aria-pressed={activeFilter === filter.id}
+              onClick={() => setActiveFilter(filter.id)}
+              className={`min-h-11 rounded-full border px-4 py-2 text-xs font-bold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-maroon ${activeFilter === filter.id ? 'border-brand-maroon bg-brand-maroon text-white' : 'border-border/10 bg-subcard text-foreground/70 hover:text-foreground'}`}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       {articles.length === 0 ? (
         <section className="rounded-[2rem] border border-border/10 bg-subcard px-6 py-14 text-center shadow-[0_4px_12px_rgba(0,0,0,0.09)]">
           <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl border border-border/10 bg-foreground/[0.035] text-[#B5413F]">
@@ -188,7 +218,12 @@ export default function NewsScreen({ initialArticleId = null }: { initialArticle
         </section>
       ) : (
         <div className="news-story-grid space-y-2">
-          {articles.map((post) => (
+          {filteredArticles.length === 0 && (
+            <p role="status" className="py-8 text-center text-sm text-foreground/60">
+              No {activeFilter === 'reports' ? 'video reports' : 'written recaps'} published yet.
+            </p>
+          )}
+          {filteredArticles.map((post) => (
             <NewsListRow
               key={post.id}
               article={post}
