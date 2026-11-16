@@ -39,6 +39,7 @@ function opponentFromFixtureLabel(label: string, teamCode: string) {
 }
 
 function fallbackOpponent(event: ScheduleEvent) {
+  if (event.pairingsPending) return 'Pairings pending';
   return event.opponent
     || event.eventText
       .replace(/\b(?:SPH[-\s]?LV|LV)\b/gi, '')
@@ -56,7 +57,7 @@ export function homeUpcomingFixtures(events: ScheduleEvent[]) {
     // Only expand individual fixtures when the sheet actually lists them.
     const fixtureLines = scheduleFixtureLines(event);
     const sharedSlot = event.opponent?.includes('/') && fixtureLines.every(line => line.time === fixtureLines[0]?.time);
-    const lines = event.opponent && (event.sourceUrl || sharedSlot) ? [] : fixtureLines;
+    const lines = event.pairingsPending || (event.opponent && (event.sourceUrl || sharedSlot)) ? [] : fixtureLines;
     const ourFixtures = lines.flatMap((line, index) => {
       const opponent = opponentFromFixtureLabel(line.label, scheduleCode);
       if (!opponent) return [];
