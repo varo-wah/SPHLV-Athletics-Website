@@ -125,7 +125,7 @@ body {
   }
 }
 
-@container app (max-width: 28rem) {
+@container app (max-width: 32rem) {
   .sph-topbar-home {
     display: grid;
     grid-template-columns: 1fr auto;
@@ -140,7 +140,7 @@ body {
     grid-column: 1 / -1;
     grid-row: 2;
     justify-content: center;
-    gap: 16px;
+    gap: 12px;
   }
 
   .sph-topbar-home .sph-account-actions {

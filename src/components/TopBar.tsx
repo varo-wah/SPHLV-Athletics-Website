@@ -1,4 +1,4 @@
-import { Images, Instagram, LogOut, Monitor, Moon, Sheet, Smartphone, Sun, UserRound, Youtube } from 'lucide-react';
+import { BookOpen, CalendarRange, Images, Instagram, LogOut, Monitor, Moon, Sheet, Smartphone, Sun, UserRound, Youtube } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -25,6 +25,16 @@ const HOME_LINKS = [
     label: 'Official schedule spreadsheet',
     href: SCHOOL_MASTER_SCHEDULE_URL,
     icon: Sheet,
+  },
+  {
+    label: 'Sports Seasons 2026–27',
+    href: 'https://sphacid-my.sharepoint.com/:x:/g/personal/pe-lv_sph_ac_id/IQAaWkY6EQF5TLE1rNpLxXhWAbyXQ8pljpe8S8_S_zy4zmg?e=XEvp9v',
+    icon: CalendarRange,
+  },
+  {
+    label: 'Sports Handbook 2026–27',
+    href: 'https://sphacid-my.sharepoint.com/personal/pe-lv_sph_ac_id/_layouts/15/Doc.aspx?sourcedoc=%7BF101382F-91A9-4D8C-9A69-10D761A6DBCD%7D&file=SPHLV+Sports+Handbook+26-27.docx&action=default&mobileredirect=true&CT=1786708516306&OR=ItemsView',
+    icon: BookOpen,
   },
 ] as const;
 
@@ -58,10 +68,10 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu, active
                 key={label}
                 href={href}
                 target="_blank"
-                rel="noreferrer"
+                rel="noopener noreferrer"
                 aria-label={label}
                 title={label}
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:text-brand-maroon"
+                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border/10 bg-foreground/[0.035] text-foreground/55 transition-colors hover:border-brand-maroon/30 hover:text-brand-maroon focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-red"
                 whileTap={{ scale: 0.94 }}
                 transition={PRESS_TRANSITION}
               >
