@@ -174,12 +174,26 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
                           </motion.button>
                         );
                       })}
-                      <a href="#/teams/swimming" onClick={onClose} className="block rounded-xl border border-border/10 bg-foreground/5 p-4 text-sm font-bold">Swimming ↗</a>
-              <a href="#/teams/cross-country" onClick={onClose} className="mb-4 block rounded-xl border border-border/10 bg-foreground/5 p-4 text-sm font-bold">Cross Country ↗</a>
-            </div>
+                    </div>
                   </motion.section>
                 );
               })}
+              <section aria-labelledby="menu-individual-sports" className="rounded-2xl border border-brand-maroon/10 bg-white/72 p-3 dark:border-white/[0.065] dark:bg-white/[0.025]">
+                <h2 id="menu-individual-sports" className="mb-2.5 text-xs font-black uppercase tracking-[0.13em] text-brand-navy dark:text-foreground">
+                  Individual sports
+                </h2>
+                <div className="grid gap-2">
+                  {[
+                    { href: '#/teams/swimming', label: 'Swimming' },
+                    { href: '#/teams/cross-country', label: 'Cross Country' },
+                  ].map(({ href, label }) => (
+                    <a key={href} href={href} onClick={onClose}
+                      className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-brand-maroon/10 bg-muted/70 px-3 py-2 text-sm font-bold text-brand-navy/80 hover:border-brand-red/25 hover:bg-brand-red/8 dark:border-white/[0.065] dark:bg-black/18 dark:text-foreground/80">
+                      <span>{label}</span><span aria-hidden="true">→</span>
+                    </a>
+                  ))}
+                </div>
+              </section>
             </div>
 
             {IS_PROTOTYPE && (
