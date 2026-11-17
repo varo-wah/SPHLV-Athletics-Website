@@ -68,7 +68,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-brand-navy/35 backdrop-blur-sm dark:bg-black/65"
+            className="fixed inset-0 z-[60] bg-brand-navy/35 backdrop-blur-sm dark:bg-black/65"
           />
 
           <motion.aside
@@ -81,7 +81,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
             exit={{ x: '-100%' }}
             transition={STANDARD_SPRING}
             aria-label="Teams menu"
-            className="sph-sidebar-shell fixed bottom-0 top-0 z-50 flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-black/10 bg-[linear-gradient(160deg,#FFFFFF_0%,#F4F4F4_100%)] shadow-[12px_0_24px_rgba(0,0,0,0.14)] dark:border-white/10 dark:bg-none dark:bg-[#111111] dark:shadow-[12px_0_24px_rgba(0,0,0,0.38)]"
+            className="sph-sidebar-shell fixed bottom-0 top-0 z-[70] flex w-[22rem] max-w-[90vw] flex-col overflow-hidden border-r border-black/10 bg-[linear-gradient(160deg,#FFFFFF_0%,#F4F4F4_100%)] shadow-[12px_0_24px_rgba(0,0,0,0.14)] dark:border-white/10 dark:bg-none dark:bg-[#111111] dark:shadow-[12px_0_24px_rgba(0,0,0,0.38)]"
           >
             <div className="relative border-b border-brand-maroon/10 px-4 py-3.5 dark:border-white/[0.065]">
               <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(0,0,0,0.055),transparent_46%)] dark:bg-[radial-gradient(circle_at_12%_0%,rgba(255,255,255,0.055),transparent_44%)]" />
@@ -128,7 +128,7 @@ export default function Sidebar({ isOpen, onClose, onNavigateHome, onSelectTeam 
               </div>
             </div>
 
-            <div className="team-overlay-scroll flex-1 space-y-3 overflow-y-auto px-3.5 py-3.5">
+            <div className="team-overlay-scroll min-h-0 flex-1 space-y-3 overflow-y-auto px-3.5 py-3.5">
               {TEAM_DIRECTORY.map((sport, index) => {
                 return (
                   <motion.section
