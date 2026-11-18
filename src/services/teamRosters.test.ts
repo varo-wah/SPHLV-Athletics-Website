@@ -8,6 +8,8 @@ import {
 } from '../data/teamRosters';
 
 const expectedCounts: Record<string, number> = {
+  'volleyball-smp-boys': 15,
+  'volleyball-smp-girls': 12,
   'basketball-sma-boys': 13,
   'basketball-sma-girls': 15,
   'soccer-sma-boys': 24,
@@ -19,7 +21,7 @@ const expectedCounts: Record<string, number> = {
 };
 
 test('contains the supplied team rosters with the verified player counts', () => {
-  assert.equal(TEAM_ROSTERS.length, 8);
+  assert.equal(TEAM_ROSTERS.length, 10);
 
   for (const [teamId, count] of Object.entries(expectedCounts)) {
     assert.equal(rosterForTeam(teamId)?.players.length, count, teamId);

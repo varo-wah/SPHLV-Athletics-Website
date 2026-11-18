@@ -23,6 +23,7 @@ export type MatchStage = 'APR-7' | 'APR-8' | 'APR-9' | 'APR-10' | 'APR-11';
 // User-facing labels should say "Match Results", not "ACSC Results".
 export type AppTab =
   | 'Home'
+  | 'Resources'
   | 'Schedule'
   | 'Standings'
   | 'News'

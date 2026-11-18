@@ -3,7 +3,7 @@ import test from 'node:test';
 import { parseRoute, parseScheduleQuery } from './navigation';
 
 test('direct routes restore all pages and approved teams', () => {
-  for (const page of ['home', 'schedule', 'teams', 'standings', 'news', 'login']) {
+  for (const page of ['resources', 'home', 'schedule', 'teams', 'standings', 'news', 'login']) {
     assert.equal(parseRoute(`#/${page}`).tab.toLowerCase(), page);
   }
   assert.equal(parseRoute('#/teams/soccer-sma-boys').team?.id, 'soccer-sma-boys');

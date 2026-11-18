@@ -64,6 +64,62 @@ export const SMP_BOYS_BASKETBALL_SQUADS = {
 } as const;
 
 export const TEAM_ROSTERS = [
+{
+  "teamId": "volleyball-smp-boys",
+  "players": [
+    "Jacob Chandra",
+    "Aldrick Ramaun",
+    "Dominic Winata",
+    "Jackson Widjaja",
+    "Finn Vrmeer",
+    "Connor Korompis",
+    "Yu Seong Nam",
+    "Isaac Alexander",
+    "Brandon Ryce Gunawan",
+    "Denzel Lityo",
+    "Bryan Wang",
+    "Matthew Wikarta",
+    "Judah Samron",
+    "Kingdon Yaputra",
+    "Nathan Holmgren"
+  ],
+  "grades": {
+    "Jacob Chandra": 9,
+    "Aldrick Ramaun": 9,
+    "Dominic Winata": 9,
+    "Jackson Widjaja": 9,
+    "Finn Vrmeer": 9,
+    "Connor Korompis": 9,
+    "Yu Seong Nam": 9,
+    "Isaac Alexander": 9,
+    "Brandon Ryce Gunawan": 9,
+    "Denzel Lityo": 9,
+    "Bryan Wang": 8,
+    "Matthew Wikarta": 8,
+    "Judah Samron": 8,
+    "Kingdon Yaputra": 8,
+    "Nathan Holmgren": 7
+  },
+  "sourceNote": "Confirmed by Mr Mark \u00b7 17 Nov 2026. Numbers show list order, not jersey numbers."
+},
+{
+  "teamId": "volleyball-smp-girls",
+  "players": [
+    "Joan Grace Arifin",
+    "Maggie Johnson Juadi",
+    "Catherine Eliana Liman",
+    "Seraphina Annette Kertawijaya",
+    "Samantha Winardi",
+    "Grace White Bachtiar",
+    "Elizabeth Sofia Holmgren",
+    "Kona Hail",
+    "Marianne Lee Ali",
+    "Kiki Nakamura",
+    "Sophia Dillane",
+    "Astara Ai Limasnax"
+  ],
+  "sourceNote": "Confirmed by Mr Mark \u00b7 17 Nov 2026. Numbers show list order, not jersey numbers."
+},
   {
     // Mark Heil, Teams private chat, November 16, 2026 at 09:20.
     teamId: 'basketball-sma-girls',
