@@ -13,7 +13,7 @@ test('SMP volleyball routes and directory are public and separate from varsity',
     const id = `volleyball-smp-${gender.toLowerCase()}`;
     assert.ok(isLaunchTeamSelection('Volleyball', 'SMP', gender));
     assert.equal(parseRoute(`#/teams/${id}`).team?.id, id);
-    assert.equal(rosterForTeam(id), undefined);
+    assert.ok(rosterForTeam(id)?.players.length, 'Confirmed SMP roster is available');
   }
   assert.equal(TEAM_DIRECTORY.find(group => group.key === 'Volleyball-SMP')?.teams.length, 2);
   assert.ok(TEAM_DIRECTORY.find(group => group.key === 'Volleyball-SMA')?.teams.every(team => team.division === 'SMA'));

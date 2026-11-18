@@ -297,9 +297,9 @@ export default function TeamPageScreen({
             </h1>
             {isSmpVolleyball && (
               <div className="mt-2 space-y-2">
-                <p className="inline-flex rounded-full border border-border/10 bg-foreground/[0.04] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/65">Season 2 · Standby</p>
+                <p className="inline-flex rounded-full border border-border/10 bg-foreground/[0.04] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/65">{roster ? 'Season 2' : 'Season 2 · Standby'}</p>
                 <p className="text-xs leading-relaxed text-foreground/60">
-                  {hasSeasonTwoSchedule ? 'Schedule available · Roster and results coming soon.' : 'Schedule awaiting confirmation · Roster and results coming soon.'}
+                  {hasSeasonTwoSchedule ? 'Schedule available' : 'Schedule awaiting confirmation'} · {roster ? 'Roster confirmed · Results coming soon.' : 'Roster and results coming soon.'}
                 </p>
               </div>
             )}

@@ -1,9 +1,8 @@
-import { BookOpen, CalendarRange, Images, Instagram, LogOut, Monitor, Moon, Sheet, Smartphone, Sun, UserRound, Youtube } from 'lucide-react';
+import { Link as LinkIcon, Images, Instagram, LogOut, Monitor, Moon, Smartphone, Sun, UserRound, Youtube } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { IS_PROTOTYPE } from '../config/launchSports';
-import { SCHOOL_MASTER_SCHEDULE_URL, SENIOR_BASKETBALL_WORKBOOK_URL, JUNIOR_VOLLEYBALL_WORKBOOK_URL } from '../config/sheets';
 import { PRESS_SCALE, PRESS_TRANSITION, QUICK_TRANSITION } from '../config/motion';
 import type { AppTab } from '../types';
 
@@ -18,26 +17,10 @@ interface TopBarProps {
 }
 
 const HOME_LINKS = [
-  { label: 'Senior Basketball 26/27', href: SENIOR_BASKETBALL_WORKBOOK_URL, icon: Sheet },
-  { label: 'Junior Volleyball 26/27', href: JUNIOR_VOLLEYBALL_WORKBOOK_URL, icon: Sheet },
+  { label: 'Documents and spreadsheets', href: '#/resources', icon: LinkIcon },
   { label: 'Instagram', href: 'https://www.instagram.com/sphlv.athletics?utm_source=ig_web_button_share_sheet&igsi=ZDNlZDc0MzIxNw==', icon: Instagram },
   { label: 'YouTube', href: 'https://www.youtube.com/@SPH-LV-Athletics', icon: Youtube },
   { label: 'Game photos', href: 'https://photos.app.goo.gl/g4MqVW3TJPQ3WNSF6', icon: Images },
-  {
-    label: 'Official schedule spreadsheet',
-    href: SCHOOL_MASTER_SCHEDULE_URL,
-    icon: Sheet,
-  },
-  {
-    label: 'Sports Seasons 2026–27',
-    href: 'https://sphacid-my.sharepoint.com/:x:/g/personal/pe-lv_sph_ac_id/IQAaWkY6EQF5TLE1rNpLxXhWAbyXQ8pljpe8S8_S_zy4zmg?e=XEvp9v',
-    icon: CalendarRange,
-  },
-  {
-    label: 'Sports Handbook 2026–27',
-    href: 'https://sphacid-my.sharepoint.com/personal/pe-lv_sph_ac_id/_layouts/15/Doc.aspx?sourcedoc=%7BF101382F-91A9-4D8C-9A69-10D761A6DBCD%7D&file=SPHLV+Sports+Handbook+26-27.docx&action=default&mobileredirect=true&CT=1786708516306&OR=ItemsView',
-    icon: BookOpen,
-  },
 ] as const;
 
 export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu, activeTab, onTabChange, phoneView, onToggleLayout }: TopBarProps) {
@@ -69,7 +52,7 @@ export default function TopBar({ isHome = false, onOpenLogin, onOpenMenu, active
               <motion.a
                 key={label}
                 href={href}
-                target="_blank"
+                target={href.startsWith('#/') ? undefined : '_blank'}
                 rel="noopener noreferrer"
                 aria-label={label}
                 title={label}

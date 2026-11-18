@@ -1,3 +1,4 @@
+import ResourcesScreen from './screens/ResourcesScreen';
 import { useState } from 'react';
 import { useHashRoute, navigateHash } from './hooks/useHashRoute';
 import { parseRoute } from './services/navigation';
@@ -81,6 +82,7 @@ function AthleticsApp() {
   const activeScreen = (() => {
     if (route.enduranceSport === 'cross-country') return <CrossCountryScreen state={athleticsDataState} />;
     if (route.enduranceSport === 'swimming') return <SwimmingScreen state={athleticsDataState} />;
+    if (activeTab === 'Resources') return <ResourcesScreen />;
     if (activeTab === 'Home') {
       return (
         <HomeScreen

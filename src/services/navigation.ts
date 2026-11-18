@@ -1,7 +1,7 @@
 import { TEAM_CATALOG } from '../config/teamCatalog';
 import { AppTab } from '../types';
 
-const pages: Record<string, AppTab> = { home: 'Home', schedule: 'Schedule', teams: 'Teams', standings: 'Standings', news: 'News', login: 'Login' };
+const pages: Record<string, AppTab> = { home: 'Home', resources: 'Resources', schedule: 'Schedule', teams: 'Teams', standings: 'Standings', news: 'News', login: 'Login' };
 export function parseRoute(hash: string, prototype = false) {
   const [path, query = ''] = hash.replace(/^#\/?/, '').split('?');
   const parts = path.split('/');
