@@ -1,3 +1,4 @@
+import { mergeSeasonTwoFixtures } from '../data/seasonTwoLeague';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { VARSITY_BASKETBALL_SCHEDULE } from '../data/varsityBasketballSchedule2026';
@@ -10,16 +11,18 @@ test('varsity basketball shows the reviewed workbook dates on initial load and r
   const stale = { ...first, id: 'old-google-row', date: '2025-11-03' };
   for (const prototype of [false, true]) {
     const current = reviewedSchedule([stale, first], prototype).filter(event => event.season === 'Season 2' && event.sportKey === 'Basketball');
-    assert.deepEqual(current, VARSITY_BASKETBALL_SCHEDULE);
-    assert.equal(new Set(current.map(event => event.id)).size, 42);
+    assert.deepEqual(current, mergeSeasonTwoFixtures(VARSITY_BASKETBALL_SCHEDULE).filter(event => event.sportKey === 'Basketball'));
+    assert.equal(new Set(current.map(event => event.id)).size, current.length);
     for (const gender of ['Boys', 'Girls'] as const) {
       assert.ok(isLaunchTeamSelection('Basketball', 'SMA', gender));
       const games = current.filter(event => event.genderGroup === gender && isGameScheduleEvent(event));
       assert.ok(games.every(event => event.level === 'SMA' && isVisibleScheduleEvent(event.season, event.sportKey!, event.team)));
       assert.deepEqual(games.map(event => [event.date, event.opponent, event.time ?? null]), [
         ...(gender === 'Boys' ? [['2026-11-06', 'Dragons Club', '17:00']] : []),
-        ['2026-11-20', 'STL', null], ['2026-11-21', 'BSJ', null],
-        ['2026-12-05', 'ACS/ACG', '09:00'], ['2026-12-12', 'KV/GJS', null],
+        ['2026-11-20', 'STL', '16:00'], ['2026-11-21', 'BSJ', '09:30'],
+        ['2026-12-05', 'ACS', '11:00'], ['2026-12-05', 'ACG', '12:30'],
+        ['2026-12-12', 'KV', '09:30'], ['2026-12-12', 'GJS', '11:00'],
+        ['2027-01-22', 'JIS', ''],
       ]);
     }
   }

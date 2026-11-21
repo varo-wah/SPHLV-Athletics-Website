@@ -1,3 +1,4 @@
+import { SEASON_TWO_RESULT_SOURCES } from '../data/seasonTwoLeague';
 import { DivisionTab, GenderTab, SheetSport, SportTab } from "../types";
 import sheetSources from "./sheetSources.json";
 
@@ -43,6 +44,7 @@ export const RESULT_SHEET_SOURCES: ResultSheetSource[] = sheetSources.results.ma
 // These identities are used for merging only, never for remote fetch/status checks.
 export const REVIEWED_RESULT_SOURCES = [
   ...RESULT_SHEET_SOURCES,
+  ...SEASON_TWO_RESULT_SOURCES.filter(source => source.teamId !== 'basketball-sma-boys'),
   { id: 'reviewed-varsity-boys-basketball', teamId: 'basketball-sma-boys',
     displayName: 'Varsity Boys Basketball', sport: 'Basketball' as const,
     sportKey: 'Basketball' as const, level: 'SMA' as const, genderGroup: 'Boys' as const },

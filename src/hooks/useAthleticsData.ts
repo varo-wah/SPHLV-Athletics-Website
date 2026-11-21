@@ -1,3 +1,4 @@
+import { SEASON_TWO_RESULTS, SEASON_TWO_STANDINGS } from '../data/seasonTwoLeague';
 import { isInReleaseSeason } from '../config/launchSports';
 import { parseLeagueStandings } from '../services/leagueStandings';
 import { createSourceRetriever, type RemoteSourceState } from '../services/sourceRetrieval';
@@ -80,7 +81,7 @@ export interface AthleticsDataState {
   refresh: () => Promise<void>;
 }
 
-const reviewedUpdates = [...GAMEDAY_UPDATES, ...acscGameDayUpdates()];
+const reviewedUpdates = [...SEASON_TWO_RESULTS, ...GAMEDAY_UPDATES, ...acscGameDayUpdates()];
 const reviewedMatches = mergeGameDayResults([], REVIEWED_RESULT_SOURCES, reviewedUpdates);
 
 const EMPTY_DATA: AthleticsData = {
@@ -186,7 +187,7 @@ export function useAthleticsData(): AthleticsDataState {
             }
             return parseLeagueStandings(matrix, sport, gender);
           },
-          OFFICIAL_STANDINGS.filter((row) => row.sportKey === sport && row.genderGroup === gender))));
+          OFFICIAL_STANDINGS.filter((row) => row.sportKey === sport && row.genderGroup === gender && row.level === (sport === 'Basketball' ? 'SMP' : 'SMA')))));
 
       const [
         loadedResultFeeds,
@@ -216,7 +217,7 @@ export function useAthleticsData(): AthleticsDataState {
       const basketballMatches = matches.filter((match) => match.sportKey === "Basketball");
       const volleyballMatches = matches.filter((match) => match.sportKey === "Volleyball");
 
-      const standings = leagueStandingResults.flatMap((result) => result.rows);
+      const standings = [...SEASON_TWO_STANDINGS, ...leagueStandingResults.flatMap((result) => result.rows)];
       const soccerStandings = standings.filter((standing) => standing.sportKey === "Soccer");
       const basketballStandings = standings.filter((standing) => standing.sportKey === "Basketball");
       const volleyballStandings = standings.filter((standing) => standing.sportKey === "Volleyball");

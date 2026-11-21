@@ -1,3 +1,4 @@
+import { SEASON_TWO_VERIFIED_AT } from '../data/seasonTwoLeague';
 import { SENIOR_BASKETBALL_WORKBOOK_URL, JUNIOR_VOLLEYBALL_WORKBOOK_URL } from '../config/sheets';
 import '../styles/team-responsive.css';
 import { SportTab, DivisionTab, GenderTab } from '../types';
@@ -190,7 +191,7 @@ export default function TeamPageScreen({
   );
   const showDraws = standingsShowDraws(sport);
   const standingsSource = athleticsDataState?.remoteSources.find((source) => source.id === `${sport.toLowerCase()}-${gender}-standings`);
-  const standingsDate = new Date(standingsSource?.publishedAt ?? OFFICIAL_STANDINGS_VERIFIED_AT).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
+  const standingsDate = new Date((isVarsityBasketball || isSmpVolleyball) ? SEASON_TWO_VERIFIED_AT : (standingsSource?.publishedAt ?? OFFICIAL_STANDINGS_VERIFIED_AT)).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Jakarta' });
   const standingsUrl = isVarsityBasketball ? SENIOR_BASKETBALL_WORKBOOK_URL : isSmpVolleyball ? JUNIOR_VOLLEYBALL_WORKBOOK_URL : officialStandingsUrlFor(sport, gender);
   const differenceLabel =
     sport === 'Soccer'
@@ -299,7 +300,7 @@ export default function TeamPageScreen({
               <div className="mt-2 space-y-2">
                 <p className="inline-flex rounded-full border border-border/10 bg-foreground/[0.04] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.14em] text-foreground/65">{roster ? 'Season 2' : 'Season 2 · Standby'}</p>
                 <p className="text-xs leading-relaxed text-foreground/60">
-                  {hasSeasonTwoSchedule ? 'Schedule available' : 'Schedule awaiting confirmation'} · {roster ? 'Roster confirmed · Results coming soon.' : 'Roster and results coming soon.'}
+                  {hasSeasonTwoSchedule ? 'Schedule available' : 'Schedule awaiting confirmation'} · {roster ? `Roster confirmed · ${completedResults.length ? 'Results available.' : 'Results coming soon.'}` : 'Roster and results coming soon.'}
                 </p>
               </div>
             )}

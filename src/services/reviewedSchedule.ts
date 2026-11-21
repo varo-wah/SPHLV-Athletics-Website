@@ -1,3 +1,4 @@
+import { mergeSeasonTwoFixtures } from '../data/seasonTwoLeague';
 import type { ScheduleEvent } from '../data/scheduleTypes';
 import { IS_PROTOTYPE, VARSITY_BASKETBALL_SEASON, isInReleaseSeason } from '../config/launchSports';
 import { VOLLEYBALL_CUP_SCHEDULE } from '../data/volleyballCupSchedule';
@@ -19,5 +20,5 @@ export function reviewedSchedule(events: ScheduleEvent[], includePrototypeSeason
   });
   const cup = mergeReviewedCupSchedule([...master, ...VOLLEYBALL_CUP_SCHEDULE]);
   const acsc = mergeAcscCompetitionSchedule(mergeAcscVolleyballSchedule(mergeAcscSoccerSchedule(cup)));
-  return [...mergeAcscSwimmingSchedule(mergeReviewedJaacSchedule(acsc)), ...VARSITY_BASKETBALL_SCHEDULE, ...SMP_VOLLEYBALL_SCHEDULE];
+  return mergeSeasonTwoFixtures([...mergeAcscSwimmingSchedule(mergeReviewedJaacSchedule(acsc)), ...VARSITY_BASKETBALL_SCHEDULE, ...SMP_VOLLEYBALL_SCHEDULE]);
 }
