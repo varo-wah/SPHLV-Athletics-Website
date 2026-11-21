@@ -2,7 +2,7 @@ import { SEASON_TWO_VERIFIED_AT } from '../data/seasonTwoLeague';
 import { SENIOR_BASKETBALL_WORKBOOK_URL, JUNIOR_VOLLEYBALL_WORKBOOK_URL } from '../config/sheets';
 import '../styles/team-responsive.css';
 import { SportTab, DivisionTab, GenderTab } from '../types';
-import { Users } from 'lucide-react';
+import { Users, Trophy, ExternalLink } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { AthleticsDataState } from '../hooks/useAthleticsData';
@@ -370,8 +370,19 @@ export default function TeamPageScreen({
       >
         {(isVarsityBasketball || isSmpVolleyball) && (
           <a href={standingsUrl!} target="_blank" rel="noopener noreferrer"
-            className="block rounded-xl border border-brand-maroon/15 bg-brand-maroon/5 px-4 py-3 text-sm font-bold text-brand-maroon underline underline-offset-4 dark:text-[#FCA5A5]">
-            {isVarsityBasketball ? 'Senior Basketball 26/27' : 'Junior Volleyball 26/27'} · Official fixtures, results and standings ↗
+            aria-label={`Open official JAAC ${isVarsityBasketball ? 'Senior Basketball' : 'Junior Volleyball'} 2026/27 workbook (opens in a new tab)`}
+            className="group flex items-center gap-3 rounded-2xl border border-brand-maroon/15 bg-white p-4 no-underline shadow-sm transition-colors hover:border-brand-maroon/40 hover:bg-brand-maroon/[0.03] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-maroon focus-visible:ring-offset-4 dark:border-white/15 dark:bg-white/5 dark:hover:bg-white/10 dark:focus-visible:ring-[#FCA5A5]">
+            <span aria-hidden="true" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-maroon/10 text-brand-maroon dark:bg-red-300/10 dark:text-[#FCA5A5]">
+              <Trophy size={21} strokeWidth={1.75} />
+            </span>
+            <span className="min-w-0 flex-1">
+              <span className="mb-1 block text-[10px] font-bold uppercase tracking-[0.16em] text-brand-maroon dark:text-[#FCA5A5]">JAAC · 2026/27</span>
+              <span className="block text-sm font-bold leading-snug text-slate-800 dark:text-white">{isVarsityBasketball ? 'Senior Basketball' : 'Junior Volleyball'}</span>
+              <span className="mt-1 block text-xs leading-relaxed text-slate-500 dark:text-slate-300">Official fixtures, results &amp; standings</span>
+            </span>
+            <span aria-hidden="true" className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors group-hover:bg-brand-maroon group-hover:text-white dark:bg-white/10 dark:text-slate-300">
+              <ExternalLink size={15} />
+            </span>
           </a>
         )}
         <AnimatePresence mode="wait" initial={false} custom={sectionDirection}>
