@@ -1,3 +1,4 @@
+import { SEASON_TWO_STANDINGS, SEASON_TWO_LADDERS } from './seasonTwoLeague';
 import leagueSnapshot from './leagueStandingsSnapshot.json';
 import { parseLeagueMatchups, parseLeagueStandings, type LeagueSport } from '../services/leagueStandings';
 import type { Standing } from '../services/parsers';
@@ -30,13 +31,13 @@ export interface OfficialStandingsLadder {
 
 export const OFFICIAL_STANDINGS_VERIFIED_AT = leagueSnapshot.verifiedAt;
 
-export const OFFICIAL_STANDINGS: Standing[] = leagueSnapshot.tables.flatMap(table =>
-  parseLeagueStandings(table.matrix, table.sport as LeagueSport, table.gender as 'Boys' | 'Girls'));
+export const OFFICIAL_STANDINGS: Standing[] = [...SEASON_TWO_STANDINGS, ...leagueSnapshot.tables.flatMap(table =>
+  parseLeagueStandings(table.matrix, table.sport as LeagueSport, table.gender as 'Boys' | 'Girls'))];
 
-export const OFFICIAL_STANDINGS_LADDERS: readonly OfficialStandingsLadder[] = leagueSnapshot.tables.map(table => {
+export const OFFICIAL_STANDINGS_LADDERS: readonly OfficialStandingsLadder[] = [...SEASON_TWO_LADDERS, ...leagueSnapshot.tables.map(table => {
   const matchups = parseLeagueMatchups(table.matrix, table.sport as LeagueSport);
-  return { sportKey: table.sport as SportTab, level: table.sport === 'Basketball' ? 'SMP' : 'SMA', genderGroup: table.gender as GenderTab, matchups };
-});
+  return { sportKey: table.sport as SportTab, level: (table.sport === 'Basketball' ? 'SMP' : 'SMA') as DivisionTab, genderGroup: table.gender as GenderTab, matchups };
+})];
 
 export function officialStandingsLadderFor(
   sportKey: SportTab,

@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { rankStandings } from '../utils/standingsPresentation';
 import {
-  OFFICIAL_STANDINGS,
+  OFFICIAL_STANDINGS as ALL_OFFICIAL_STANDINGS,
   OFFICIAL_STANDINGS_LADDERS,
   officialStandingsLadderFor,
 } from '../data/officialStandings';
+
+const OFFICIAL_STANDINGS = ALL_OFFICIAL_STANDINGS.filter(row => row.level === (row.sportKey === 'Basketball' ? 'SMP' : 'SMA'));
 
 function row(sportKey: string, genderGroup: string, team: string) {
   return OFFICIAL_STANDINGS.find((standing) => (
@@ -53,7 +55,7 @@ test('matches the supplied girls volleyball ladder points', () => {
 });
 
 test('provides a head-to-head ladder for all six production team pages', () => {
-  assert.equal(OFFICIAL_STANDINGS_LADDERS.length, 6);
+  assert.equal(OFFICIAL_STANDINGS_LADDERS.length, 10);
   assert.ok(officialStandingsLadderFor('Soccer', 'SMA', 'Boys'));
   assert.ok(officialStandingsLadderFor('Soccer', 'SMA', 'Girls'));
   assert.ok(officialStandingsLadderFor('Volleyball', 'SMA', 'Boys'));

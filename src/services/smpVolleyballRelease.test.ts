@@ -1,3 +1,4 @@
+import { mergeSeasonTwoFixtures } from '../data/seasonTwoLeague';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { isLaunchTeamSelection, isVisibleScheduleEvent, TEAM_DIRECTORY } from '../config/launchSports';
@@ -24,7 +25,7 @@ test('reviewed SMP schedule is public on first load and refresh without stale-ye
   const once = reviewedSchedule([{ ...first, id: 'old-feed', date: '2025-11-03' }]);
   for (const events of [once, reviewedSchedule(once), reviewedSchedule(once, true)]) {
     const smp = events.filter(event => event.sportKey === 'Volleyball' && event.level === 'SMP' && event.season === 'Season 2');
-    assert.deepEqual(smp, SMP_VOLLEYBALL_SCHEDULE);
+    assert.deepEqual(smp, mergeSeasonTwoFixtures(SMP_VOLLEYBALL_SCHEDULE).filter(event => event.sportKey === 'Volleyball'));
     assert.ok(smp.every(event => isVisibleScheduleEvent(event.season, event.sportKey!, event.team)));
     assert.equal(new Set(smp.map(event => event.id)).size, smp.length);
   }
