@@ -18,3 +18,7 @@ Girls volleyball ladder cells represented 1–2 and 2–1 as Excel date serials 
 Jackson's 17 November GameDay report supplies boys volleyball sets (25–20, 25–16), recap and named stat leaders. Names are preserved as reported; no guessed roster aliases. No new roster changes beyond the already published 17 November lists were found.
 
 Unscored fixtures remain scheduled. November 21 basketball vs BSJ had no published score. Missing start times stay blank; repeated December 12 volleyball times are retained as written. January 22 basketball fixtures fall in 2027. Official fixture entries supersede provisional school-schedule games for the same team/date while preserving practices.
+
+## November 21 BSJ results — user confirmation
+
+The user subsequently confirmed varsity boys lost 43–51 and varsity girls won 57–32 against BSJ. Dates, home/away and times come from the existing November 21 official fixtures; scores come from the user's report, not a new workbook fetch. Both fixture scores and reciprocal league matrix cells are updated. SPH-LV now has one win and one loss (2 points) in each division; BSJ boys have 2 points and BSJ girls 0 from these reported games. No player stats were supplied.
