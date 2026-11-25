@@ -775,10 +775,10 @@
         },
         {
           "date": "2026-11-28",
-          "time": "",
-          "venue": "ACG",
-          "home": "ACG",
-          "away": "SPH-LV",
+          "time": "09:00",
+          "venue": "SPH-LV",
+          "home": "SPH-LV",
+          "away": "ACG",
           "homeScore": null,
           "awayScore": null
         },
@@ -929,19 +929,19 @@
         },
         {
           "date": "2026-11-28",
-          "time": "",
-          "venue": "ACG",
-          "home": "ACG",
-          "away": "SPH-LV",
+          "time": "08:00",
+          "venue": "SPH-LV",
+          "home": "SPH-LV",
+          "away": "ACG",
           "homeScore": null,
           "awayScore": null
         },
         {
           "date": "2026-11-28",
-          "time": "",
-          "venue": "ACG",
-          "home": "ACS",
-          "away": "SPH-LV",
+          "time": "10:00",
+          "venue": "SPH-LV",
+          "home": "SPH-LV",
+          "away": "ACS",
           "homeScore": null,
           "awayScore": null
         },
