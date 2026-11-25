@@ -3,6 +3,9 @@ import assert from 'node:assert/strict';
 import { SEASON_TWO_STANDINGS, SEASON_TWO_RESULTS, SEASON_TWO_FIXTURES } from '../data/seasonTwoLeague';
 import { mergeGameDayResults } from './gamedayResults';
 import { REVIEWED_RESULT_SOURCES } from '../config/sheets';
+import { SMP_VOLLEYBALL_SCHEDULE } from '../data/smpVolleyballSchedule2026';
+import { homeUpcomingFixtures } from '../utils/homeUpcomingPresentation';
+import { reviewedSchedule } from './reviewedSchedule';
 
 test('Season 2 workbook results agree with each team ladder and survive repeated merging', () => {
   const expected = [['basketball-sma-boys',63,38],['basketball-sma-girls',32,64],['volleyball-smp-boys',2,0],['volleyball-smp-girls',1,2]] as const;
@@ -22,10 +25,25 @@ test('Season 2 workbook results agree with each team ladder and survive repeated
   }
   assert.deepEqual(matches.find(m => m.teamId === 'volleyball-smp-boys')?.setScores,['25–20','25–16']);
 });
-test('official fixtures resolve girls extra ACS game and multi-school pairings without inventing start times', () => {
-  const girls = SEASON_TWO_FIXTURES.filter(f => f.sportKey === 'Volleyball' && f.genderGroup === 'Girls' && f.date === '2026-11-28');
-  assert.deepEqual(girls.map(f => [f.opponent,f.time]),[['ACG',''],['ACS','']]);
-  assert.equal(SEASON_TWO_FIXTURES.filter(f => f.status === 'Finished').length,6);
+test('November 28 SMP volleyball uses all three JAAC home fixtures on first load and refresh', () => {
+  const date = '2026-11-28';
+  const forDate = (events: ReturnType<typeof reviewedSchedule>) => events
+    .filter(f => f.sportKey === 'Volleyball' && f.level === 'SMP' && f.date === date);
+  const staleFeed = SMP_VOLLEYBALL_SCHEDULE.filter(f => f.date === date);
+  const firstLoad = reviewedSchedule([]);
+  const refreshed = reviewedSchedule([...firstLoad, ...staleFeed]);
+  for (const schedule of [firstLoad, refreshed]) {
+    const fixtures = forDate(schedule);
+    assert.equal(new Set(fixtures.map(f => f.id)).size, 3);
+    assert.deepEqual(homeUpcomingFixtures(fixtures).map(({ event, opponent, time }) =>
+      [time, event.genderGroup, opponent, event.location, event.eventType, event.status, event.resultScore]
+    ).sort(), [
+      ['08:00', 'Girls', 'ACG', 'SPH-LV', 'Home Game', 'Scheduled', undefined],
+      ['09:00', 'Boys', 'ACG', 'SPH-LV', 'Home Game', 'Scheduled', undefined],
+      ['10:00', 'Girls', 'ACS', 'SPH-LV', 'Home Game', 'Scheduled', undefined],
+    ]);
+  }
+  assert.equal(SEASON_TWO_FIXTURES.filter(f => f.status === 'Finished').length, 6);
 });
 
 test('November 21 BSJ scores use SPH perspective and finish both scheduled fixtures', () => {
