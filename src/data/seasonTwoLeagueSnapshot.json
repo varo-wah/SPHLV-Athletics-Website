@@ -775,10 +775,10 @@
         },
         {
           "date": "2026-11-28",
-          "time": "09:00",
-          "venue": "SPH-LV",
-          "home": "SPH-LV",
-          "away": "ACG",
+          "time": "11:00",
+          "venue": "ACG",
+          "home": "ACG",
+          "away": "SPH-LV",
           "homeScore": null,
           "awayScore": null
         },
