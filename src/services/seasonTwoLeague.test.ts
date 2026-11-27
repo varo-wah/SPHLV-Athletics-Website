@@ -25,13 +25,20 @@ test('Season 2 workbook results agree with each team ladder and survive repeated
   }
   assert.deepEqual(matches.find(m => m.teamId === 'volleyball-smp-boys')?.setScores,['25–20','25–16']);
 });
-test('November 28 SMP volleyball uses all three JAAC home fixtures on first load and refresh', () => {
+test('November 28 SMP volleyball uses one JAAC away fixture and two home fixtures on first load and refresh', () => {
   const date = '2026-11-28';
   const forDate = (events: ReturnType<typeof reviewedSchedule>) => events
     .filter(f => f.sportKey === 'Volleyball' && f.level === 'SMP' && f.date === date);
   const staleFeed = SMP_VOLLEYBALL_SCHEDULE.filter(f => f.date === date);
+  const oldBoysFixture = {
+    ...SEASON_TWO_FIXTURES.find(f => f.date === date && f.sportKey === 'Volleyball' && f.genderGroup === 'Boys')!,
+    id: 'jaac-volleyball-smp-boys-2026-11-28-sph-lv-acg',
+    time: '09:00',
+    location: 'SPH-LV',
+    eventType: 'Home Game' as const,
+  };
   const firstLoad = reviewedSchedule([]);
-  const refreshed = reviewedSchedule([...firstLoad, ...staleFeed]);
+  const refreshed = reviewedSchedule([...firstLoad, ...staleFeed, oldBoysFixture]);
   for (const schedule of [firstLoad, refreshed]) {
     const fixtures = forDate(schedule);
     assert.equal(new Set(fixtures.map(f => f.id)).size, 3);
@@ -39,8 +46,8 @@ test('November 28 SMP volleyball uses all three JAAC home fixtures on first load
       [time, event.genderGroup, opponent, event.location, event.eventType, event.status, event.resultScore]
     ).sort(), [
       ['08:00', 'Girls', 'ACG', 'SPH-LV', 'Home Game', 'Scheduled', undefined],
-      ['09:00', 'Boys', 'ACG', 'SPH-LV', 'Home Game', 'Scheduled', undefined],
       ['10:00', 'Girls', 'ACS', 'SPH-LV', 'Home Game', 'Scheduled', undefined],
+      ['11:00', 'Boys', 'ACG', 'ACG', 'Away Game', 'Scheduled', undefined],
     ]);
   }
   assert.equal(SEASON_TWO_FIXTURES.filter(f => f.status === 'Finished').length, 6);
